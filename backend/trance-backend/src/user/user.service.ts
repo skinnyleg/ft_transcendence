@@ -30,7 +30,7 @@ export class UserService {
 		return user;
 	}
 
-	async create(userData: any)
+	async create(userData: any, token: string)
 	{
 		await this.prisma.user.create({
 			data: {
@@ -44,7 +44,7 @@ export class UserService {
 			wallet: userData.wallet,
 			level: userData.level,
 			grade: userData.grade,
-			token: userData.token,
+			token: token,
 			status: userData.status,
 			}
 		})

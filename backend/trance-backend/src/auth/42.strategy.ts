@@ -5,6 +5,8 @@ import { PrismaClient } from '@prisma/client'
 import { Injectable } from "@nestjs/common";
 import { UserService } from "src/user/user.service";
 import { UserStatus } from "src/classes/classes";
+import { JwtService } from "@nestjs/jwt";
+import { AuthService } from "./auth.service";
 // import { CreateUserDto } from "src/users/dto/create-user.dto";
 // import { CreateTodoDto } from "src/todo/dto/create-todo.dto";
 
@@ -12,7 +14,8 @@ import { UserStatus } from "src/classes/classes";
 export class Strategy42 extends PassportStrategy(Strategy, '42') {
 	private prisma = new PrismaClient();
 
-	constructor(private readonly usersService: UserService) {
+	constructor(private readonly usersService: UserService,
+				private readonly authService: AuthService) {
 		super({
 			clientID: process.env.client_id,
 			clientSecret: process.env.client_secret,
@@ -34,7 +37,6 @@ export class Strategy42 extends PassportStrategy(Strategy, '42') {
     wallet: profile._json.wallet,
     level: profile._json.cursus_users[1].level,
     grade: profile._json.cursus_users[1].grade,
-    token: accessToken,
 	status: UserStatus.ONLINE,
 	// isEnabled: false,
 	// Secret: null,
@@ -51,7 +53,11 @@ export class Strategy42 extends PassportStrategy(Strategy, '42') {
 		const user = this.extractUserData(profile, accessToken);
 		let userExits: any = await this.usersService.findOneByIntraId(user.intraId);
 		if (!userExits)
-			userExits = await this.usersService.create(user)
+		{
+			const token = await this.authService.createToken(user.intraId, user.login)
+			userExits = await this.usersService.create(user, token)
+			userExits.token = token;
+		}
 		return cb(null, userExits);
 	}
 }

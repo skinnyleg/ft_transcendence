@@ -41,9 +41,10 @@ export class AuthController {
 		}
 		response.cookie('login', request.user.login)
 		const token = await this.authService.createToken(request.user.id, request.user.login);
+		console.log("token form user == ", request.user.token)
 		response.cookie('token', token);
 		// console.log("before cookie == ", request.user.token)
-		response.cookie('accesstoken', request.user.token);
+		// response.cookie('accesstoken', request.user.token);
 		response.redirect(`http://localhost:3000/${request.user.login}`);
 	}
 
