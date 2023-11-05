@@ -1,0 +1,114 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserStatus {
+  ONLINE
+  OFFLINE
+  IN_GAME
+}
+
+enum Status {
+  MUTED
+  FRIEND
+  BLOCKED
+  PENDING
+}
+
+enum AchievementStatus {
+  DONE
+  NOTDONE
+}
+
+model User {
+  id          Int        @id @default(autoincrement())
+  intraId     String     @unique
+  email       String
+  login       String     @unique
+  password    String?
+  firstName   String
+  lastName    String
+  profilePic  String
+  wallet      Int
+  level       Int
+  grade       String
+  token       String
+  nickname    String?
+  status      UserStatus
+  isEnabled   Boolean    @default(false)
+  Secret      String?
+  otpauth_url String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt()
+
+  channels     Channel[]
+  Message      Message[]
+  Match        Match[]
+  Chat         Chat[]
+  users        FriendStatus[]
+  achievements Achievement[]
+}
+
+model FriendStatus {
+  id     Int    @id @default(autoincrement())
+  user   User   @relation(fields: [userId], references: [id])
+  status Status
+  userId Int
+}
+
+model Channel {
+  id       Int       @id @default(autoincrement())
+  type     String
+  users    User[]
+  messages Message[]
+  // Define other fields for the channel as needed
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  content   String
+  sender    User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  channel   Channel? @relation(fields: [channelId], references: [id])
+  channelId Int?
+  userId    Int
+  Chat      Chat?    @relation(fields: [chatId], references: [id])
+  chatId    Int?
+}
+
+// Define an Achievement model (you can further customize this)
+model Achievement {
+  id          Int               @id @default(autoincrement())
+  title       String
+  description String
+  status      AchievementStatus
+  score       Int
+  User        User?             @relation(fields: [userId], references: [id])
+  userId      Int?
+}
+
+// Define a Match model
+model Match {
+  id      Int  @id @default(autoincrement())
+  wins    Int
+  losses  Int
+  score   Int
+  against User @relation(fields: [userId], references: [id])
+  userId  Int
+}
+
+// Define a Chat model
+model Chat {
+  id       Int       @id @default(autoincrement())
+  toUser   User      @relation(fields: [userId], references: [id])
+  messages Message[]
+  userId   Int
+}
