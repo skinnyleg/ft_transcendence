@@ -30,7 +30,7 @@ enum AchievementStatus {
 
 model User {
   id          Int        @id @default(autoincrement())
-  intraId     String     @unique
+  intraId     Int     @unique
   email       String
   login       String     @unique
   password    String?

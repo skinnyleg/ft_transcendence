@@ -20,7 +20,7 @@ export class UserService {
 
 
 
-	async findOneByIntraId(intraId: string)
+	async findOneByIntraId(intraId: number)
 	{
 		const user = await this.prisma.user.findUnique({
 			where: {
