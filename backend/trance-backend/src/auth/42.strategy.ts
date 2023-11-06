@@ -12,7 +12,6 @@ import { AuthService } from "./auth.service";
 
 @Injectable()
 export class Strategy42 extends PassportStrategy(Strategy, '42') {
-	private prisma = new PrismaClient();
 
 	constructor(private readonly usersService: UserService,
 				private readonly authService: AuthService) {
@@ -34,10 +33,10 @@ export class Strategy42 extends PassportStrategy(Strategy, '42') {
     firstName: profile._json.first_name,
     lastName: profile._json.last_name,
     profilePic: profile._json.image.link,
+	BackgroundPic: process.env.BackendHost + "/upload/DefaultBackground.jpg",
     wallet: profile._json.wallet,
     level: profile._json.cursus_users[1].level,
     grade: profile._json.cursus_users[1].grade,
-	status: UserStatus.ONLINE,
 	// isEnabled: false,
 	// Secret: null,
 	// otpauth_url: null,

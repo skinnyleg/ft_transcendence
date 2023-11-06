@@ -1,8 +1,8 @@
 import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { UserStatus } from 'src/classes/classes';
 import * as bcrypt from 'bcrypt';
 import { authenticator } from 'otplib';
+import { UserStatus } from '@prisma/client';
 
 @Injectable()
 export class UserService {
@@ -30,6 +30,18 @@ export class UserService {
 		return user;
 	}
 
+	async findOneById(Id: number)
+	{
+		const user = await this.prisma.user.findUnique({
+			where: {
+				id: Id,
+			}
+		})
+		return user;
+	}
+
+
+
 	async create(userData: any)
 	{
 		await this.prisma.user.create({
@@ -41,10 +53,11 @@ export class UserService {
 			firstName: userData.firstName,
 			lastName: userData.lastName,
 			profilePic: userData.profilePic,
+			BackgroundPic: userData.BackgroundPic,
 			wallet: userData.wallet,
 			level: userData.level,
 			grade: userData.grade,
-			status: userData.status,
+			status: UserStatus.ONLINE,
 			token: null,
 			}
 		})
@@ -63,11 +76,11 @@ export class UserService {
 		})
 	}
 
-	async getSecret(login: string)
+	async getSecret(id: number)
 	{
 		const secret = await this.prisma.user.findUnique({
 			where:{
-				login: login,
+				id,
 			},
 			select: {
 				Secret: true
@@ -78,10 +91,15 @@ export class UserService {
 	}
 
 
-		async changePassword(newPass : string, login : string, oldPass: string) {
+		async changePassword(newPass : string, id : number, oldPass: string) {
 		// console.log("pass == ", newPass)
 		// console.log("login == ", login)
-		const user = await this.findOneByLogin(login);
+		// const user = await this.findOneByLogin(login);
+		const user = await this.findOneById(id);
+
+		if (!user)
+			throw new UnauthorizedException("No User Found")
+	
 		const isMatch = await bcrypt.compare(oldPass,user.password);
 		if (isMatch == false)
 			throw new UnauthorizedException('Wrong Crendentiels')
@@ -91,31 +109,31 @@ export class UserService {
 		// const hashedPass = newPass;
 		await this.prisma.user.update({
 			where: {
-				login: login
+				id:id,
 			},
 			data: {
 				password: hashedPass
 			}
 		})
 		return 'password changed succufully'
-
 	}
 
 
 
 
-		async changeNickname(newNick : string, login : string) {
+		async changeNickname(newNick : string, id: number) {
 		// console.log("login == ", login)
 		// console.log("newNick == ", newNick);
 		
-		const user = await this.findOneByLogin(login);
+		// const user = await this.findOneByLogin(login);
+		const user = await this.findOneById(id)
 
 		if (!user)
 			throw new BadRequestException("user doesn't exist")
 
 		await this.prisma.user.update({
 			where: {
-				login: login
+				id: id
 			},
 			data: {
 				nickname: newNick
@@ -140,8 +158,10 @@ export class UserService {
 			wallet: true,
 			grade:true,
 			profilePic: true,
+			BackgroundPic: true,
 			level: true,
 			status: true,
+			isEnabled: true,
 			},
 		})
 		return user;
@@ -149,7 +169,7 @@ export class UserService {
 
 
 
-	async enableTwoFA(login: string)
+	async enableTwoFA(login: string, id: number)
 	{
 		console.log("enabling")
 		// user.isEnabled = !user.isEnabled;
@@ -160,7 +180,7 @@ export class UserService {
 		// console.log("url == ", url)
 		await this.prisma.user.update({
 			where: {
-				login: login,
+				id: id,
 			},
 			data: {
 				isEnabled: true,
@@ -171,12 +191,12 @@ export class UserService {
 		return {valid:true, img: url}
 	}
 
-	async disableTwoFA(login: string)
+	async disableTwoFA(id: number)
 	{
 		console.log("disabling")
 		await this.prisma.user.update({
 			where: {
-				login: login,
+				id: id,
 			},
 			data: {
 				isEnabled: false,

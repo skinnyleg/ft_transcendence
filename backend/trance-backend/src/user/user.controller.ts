@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { JwtAuthGuard } from 'src/auth/jwt.guard';
 
@@ -11,16 +11,21 @@ export class UserController {
 	@UseGuards(JwtAuthGuard)
 	@Post('pass')
 	changePassword(@Body() payload :{password: string, oldPassword: string}, @Req() req) {
-		const id = req.cookies.id;
-		console.log("id == ", typeof id);
-		console.log("id == ", id);
-		// return this.userService.changePassword(payload.password, payload.login, payload.oldPassword)
+		const idString = req.cookies.id
+		const id = parseInt(idString, 10)
+		if (isNaN(id))
+			throw new BadRequestException('id not valid number')
+		return this.userService.changePassword(payload.password, id, payload.oldPassword)
 	}
 	
 	@UseGuards(JwtAuthGuard)
 	@Post('nick')
-	changeNickname(@Body() payload :{nick: string, login: string}) {
-		return this.userService.changeNickname(payload.nick, payload.login)
+	changeNickname(@Body() payload :{nick: string, login: string}, @Req() req) {
+		const idString = req.cookies.id
+		const id = parseInt(idString, 10)
+		if (isNaN(id))
+			throw new BadRequestException('id not valid number')
+		return this.userService.changeNickname(payload.nick, id)
 	}
 
 	@UseGuards(JwtAuthGuard)
@@ -34,11 +39,17 @@ export class UserController {
 
 	@UseGuards(JwtAuthGuard)
 	@Post('2FA')
-	handleTwoFA(@Body() payload :{login: string, twoFA: boolean}) {
+	handleTwoFA(@Body() payload :{twoFA: boolean}, @Req() req) {
+		const idString = req.cookies.id
+		const id = parseInt(idString, 10)
+		if (isNaN(id))
+			throw new BadRequestException('id not valid number')
+
+		const login = req.cookies.login;
 		if (payload.twoFA === true)
-			return this.userService.enableTwoFA(payload.login)
+			return this.userService.enableTwoFA(login , id)
 		else if (payload.twoFA === false)
-			return this.userService.disableTwoFA(payload.login)
+			return this.userService.disableTwoFA(id)
 	}
 }
 

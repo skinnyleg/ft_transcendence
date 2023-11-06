@@ -29,25 +29,26 @@ enum AchievementStatus {
 }
 
 model User {
-  id          Int        @id @default(autoincrement())
-  intraId     Int        @unique
-  email       String
-  login       String     @unique
-  password    String?
-  firstName   String
-  lastName    String
-  profilePic  String
-  wallet      Int
-  level       Int
-  grade       String
-  token       String
-  nickname    String?
-  status      UserStatus
-  isEnabled   Boolean    @default(false)
-  Secret      String?
-  otpauth_url String?
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt()
+  id            Int        @id @default(autoincrement())
+  intraId       Int        @unique
+  email         String
+  login         String     @unique
+  password      String?
+  firstName     String
+  lastName      String
+  profilePic    String
+  BackgroundPic String
+  wallet        Int
+  level         Int
+  grade         String
+  token         String
+  nickname      String?
+  status        UserStatus
+  isEnabled     Boolean    @default(false)
+  Secret        String?
+  otpauth_url   String?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt()
 
   channels     Channel[]
   Message      Message[]

@@ -35,17 +35,19 @@ export class AuthController {
 		if (request.user.isEnabled === true)
 		{
 			response.cookie('id', request.user.id)
-			response.redirect(`http://localhost:3000/qrLogin`);
+			response.cookie('login', request.user.login)
+			response.redirect(`${process.env.FrontendHost}/qrLogin`);
 			// response.redirect(`http://localhost:3000/smsVerification`);
 			return;
 		}
 		response.cookie('id', request.user.id)
+		response.cookie('login', request.user.login)
 		// const token = await this.authService.createToken(request.user.id, request.user.login);
 		console.log("token form user == ", request.user.token)
 		response.cookie('token', request.user.token);
 		// console.log("before cookie == ", request.user.token)
 		// response.cookie('accesstoken', request.user.token);
-		response.redirect(`http://localhost:3000/${request.user.login}`);
+		response.redirect(`${process.env.FrontendHost}/${request.user.login}`);
 	}
 
 	@Get('signout')
