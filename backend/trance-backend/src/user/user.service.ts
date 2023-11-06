@@ -20,7 +20,7 @@ export class UserService {
 
 
 
-	async findOneByIntraId(intraId: string)
+	async findOneByIntraId(intraId: number)
 	{
 		const user = await this.prisma.user.findUnique({
 			where: {
@@ -30,7 +30,7 @@ export class UserService {
 		return user;
 	}
 
-	async create(userData: any, token: string)
+	async create(userData: any)
 	{
 		await this.prisma.user.create({
 			data: {
@@ -44,8 +44,21 @@ export class UserService {
 			wallet: userData.wallet,
 			level: userData.level,
 			grade: userData.grade,
-			token: token,
 			status: userData.status,
+			token: null,
+			}
+		})
+	}
+
+
+	async updateToken(id: number, token: string)
+	{
+		await this.prisma.user.update({
+			where:{
+				id: id,
+			},
+			data: {
+				token: token,
 			}
 		})
 	}

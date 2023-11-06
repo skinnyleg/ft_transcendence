@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { JwtAuthGuard } from 'src/auth/jwt.guard';
 
@@ -10,9 +10,11 @@ export class UserController {
 
 	@UseGuards(JwtAuthGuard)
 	@Post('pass')
-	changePassword(@Body() payload :{password: string, login: string, oldPassword: string}) {
-		console.log("login is ", payload.login)
-		return this.userService.changePassword(payload.password, payload.login, payload.oldPassword)
+	changePassword(@Body() payload :{password: string, oldPassword: string}, @Req() req) {
+		const id = req.cookies.id;
+		console.log("id == ", typeof id);
+		console.log("id == ", id);
+		// return this.userService.changePassword(payload.password, payload.login, payload.oldPassword)
 	}
 	
 	@UseGuards(JwtAuthGuard)

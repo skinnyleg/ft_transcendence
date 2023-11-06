@@ -34,15 +34,15 @@ export class AuthController {
 		// pass the user data to the function that signs the jwt token
 		if (request.user.isEnabled === true)
 		{
-			response.cookie('login', request.user.login)
+			response.cookie('id', request.user.id)
 			response.redirect(`http://localhost:3000/qrLogin`);
 			// response.redirect(`http://localhost:3000/smsVerification`);
 			return;
 		}
-		response.cookie('login', request.user.login)
-		const token = await this.authService.createToken(request.user.id, request.user.login);
+		response.cookie('id', request.user.id)
+		// const token = await this.authService.createToken(request.user.id, request.user.login);
 		console.log("token form user == ", request.user.token)
-		response.cookie('token', token);
+		response.cookie('token', request.user.token);
 		// console.log("before cookie == ", request.user.token)
 		// response.cookie('accesstoken', request.user.token);
 		response.redirect(`http://localhost:3000/${request.user.login}`);

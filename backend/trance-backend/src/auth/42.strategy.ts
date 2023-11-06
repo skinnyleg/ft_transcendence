@@ -54,9 +54,10 @@ export class Strategy42 extends PassportStrategy(Strategy, '42') {
 		let userExits: any = await this.usersService.findOneByIntraId(user.intraId);
 		if (!userExits)
 		{
-			const token = await this.authService.createToken(user.intraId, user.login)
-			userExits = await this.usersService.create(user, token)
-			userExits.token = token;
+			userExits = await this.usersService.create(user)
+			const token = await this.authService.createToken(userExits.id, userExits.login)
+			userExits = await this.usersService.updateToken(userExits.id, token)
+			// userExits.token = token;;
 		}
 		return cb(null, userExits);
 	}
