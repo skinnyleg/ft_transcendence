@@ -103,7 +103,8 @@ export class UserService {
 				Secret: true
 			}
 		})
-
+		if (!secret)
+			throw new BadRequestException('User hasn\'t enable 2FA')
 		return secret.Secret;
 	}
 
@@ -125,7 +126,6 @@ export class UserService {
 			throw new UnauthorizedException('Wrong Crendentiels')
 
 		const hashedPass = await hashPass(newPass);
-		// const hashedPass = newPass;
 		await this.prisma.user.update({
 			where: {
 				id:id,
@@ -141,10 +141,7 @@ export class UserService {
 
 
 		async changeNickname(newNick : string, id: number) {
-		// console.log("login == ", login)
-		// console.log("newNick == ", newNick);
-		
-		// const user = await this.findOneByLogin(login);
+
 		const isunique = await this.findOneByNickname(newNick);
 		if (isunique)
 			throw new BadRequestException('nickname already taken')
@@ -185,6 +182,8 @@ export class UserService {
 			isEnabled: true,
 			},
 		})
+		if (!user)
+			throw new BadRequestException('user not found')
 		return user;
   }
 
@@ -206,6 +205,8 @@ export class UserService {
 			status: true,
 			},
 		})
+		if (!user)
+			throw new BadRequestException('user not found')
 		return user;
   }
 
@@ -213,7 +214,6 @@ export class UserService {
 
 	async enableTwoFA(login: string, id: number)
 	{
-		console.log("enabling")
 		const secret = authenticator.generateSecret();
 		const url = authenticator.keyuri(login,'Pong',secret);
 		await this.prisma.user.update({
@@ -231,7 +231,6 @@ export class UserService {
 
 	async disableTwoFA(id: number)
 	{
-		console.log("disabling")
 		await this.prisma.user.update({
 			where: {
 				id: id,

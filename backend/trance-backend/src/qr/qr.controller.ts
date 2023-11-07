@@ -1,5 +1,6 @@
 import { BadRequestException, Body, Controller, Post, Req } from '@nestjs/common';
 import { QrService } from './qr.service';
+import { getId } from 'src/utils/getId';
 
 @Controller('qr')
 export class QrController {
@@ -8,11 +9,7 @@ export class QrController {
 
 	@Post('check')
 	verifyQrcode(@Body() payload :{code: string}, @Req() req) {
-		const idString = req.cookies.id
-		const id = parseInt(idString, 10)
-		if (isNaN(id))
-			throw new BadRequestException('id not valid number')
-		// console.log("payload == ", payload)
+		const id = getId(req);
 		return this.qrService.checkQrCode(payload.code, id);
 	}
 
