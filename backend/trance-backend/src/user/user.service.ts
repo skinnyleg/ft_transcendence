@@ -5,6 +5,7 @@ import { authenticator } from 'otplib';
 import { UserStatus } from '@prisma/client';
 import { isStrongPassword } from 'src/utils/passwordStrength';
 import { compareHash, hashPass } from 'src/utils/bcryptUtils';
+import { generateNickname } from 'src/utils/generateNickname';
 
 @Injectable()
 export class UserService {
@@ -58,6 +59,7 @@ export class UserService {
 
 	async create(userData: any)
 	{
+		const nick = await generateNickname(userData.login);
 		await this.prisma.user.create({
 			data: {
 			intraId: userData.intraId,
@@ -73,7 +75,7 @@ export class UserService {
 			grade: userData.grade,
 			status: UserStatus.ONLINE,
 			token: null,
-			nickname: "newUser",
+			nickname: nick,
 			}
 		})
 	}
