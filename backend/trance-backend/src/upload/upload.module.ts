@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MulterModule } from '@nestjs/platform-express';
 import { UploadController } from './upload.controller';
-import { backgroundPicMulterOptions, profilePicMulterOptions } from './multer.config';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { UploadService } from './upload.service';
 

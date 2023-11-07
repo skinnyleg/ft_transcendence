@@ -29,14 +29,26 @@ export class UserController {
 	}
 
 	@UseGuards(JwtAuthGuard)
- 	@Get('userProfile')
- 	getUserProfile(@Query('user') login: string) {
+ 	@Get('PrivateProfile')
+ 	getPrivateProfile(@Req() req) {
     // Now, the `login` variable contains the value of the 'user' parameter from the query string.
-		return this.userService.userProfile(login);
+		const idString = req.cookies.id
+		const id = parseInt(idString, 10)
+		if (isNaN(id))
+			throw new BadRequestException('id not valid number')
+		return this.userService.privateProfile(id);
 
     // Your logic here
   }
 
+	@UseGuards(JwtAuthGuard)
+ 	@Get('PublicProfile')
+ 	getPublicProfile(@Query('user') login: string) {
+    // Now, the `login` variable contains the value of the 'user' parameter from the query string.
+		return this.userService.publicProfile(login);
+
+    // Your logic here
+  }
 	@UseGuards(JwtAuthGuard)
 	@Post('2FA')
 	handleTwoFA(@Body() payload :{twoFA: boolean}, @Req() req) {

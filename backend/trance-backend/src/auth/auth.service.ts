@@ -3,6 +3,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt'
 import { JwtService } from '@nestjs/jwt';
 import { Request, Response } from 'express';
+import { compareHash } from 'src/utils/bcryptUtils';
 
 @Injectable()
 export class AuthService {
@@ -44,7 +45,7 @@ export class AuthService {
 		if (!user)
 			throw new BadRequestException("User Doesn't Exits")
 	
-		const isMatch = await this.compareHash(password, user.password);
+		const isMatch = await compareHash(password, user.password);
 		if (isMatch == false)
 			throw new UnauthorizedException('Wrong Crendentiels')
 		
@@ -57,8 +58,18 @@ export class AuthService {
 		
 		if (!token)
 			throw new ForbiddenException();
+
+		await this.prisma.user.update({
+			where:{
+				id: user.id,
+			},
+			data: {
+				token: token,
+			}
+		})
+		res.cookie('id', user.id)
 		res.cookie('token', token);
-		return res.send({message: "signIn is succefull", login: user.login})
+		return res.send({message: "signIn is succefull"})
 	}
 
 	async signOut(req: Request ,res: Response) {
@@ -69,19 +80,6 @@ export class AuthService {
 		return res.send({message: "signOut was succefull"})
 	}
 
-
-	async hashPass(password : string)
-	{
-		const SALT_ROUNDS = 10;
-		return await bcrypt.hash(password, SALT_ROUNDS);
-	}
-
-
-	async compareHash(password:string, hashedPassword:string)
-	{
-		return await bcrypt.compare(password,hashedPassword);
-	}
-	
 
 	async createToken(id: string, login: string)
 	{

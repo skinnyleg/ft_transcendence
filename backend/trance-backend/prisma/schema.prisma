@@ -42,7 +42,7 @@ model User {
   level         Int
   grade         String
   token         String
-  nickname      String?
+  nickname      String     @unique
   status        UserStatus
   isEnabled     Boolean    @default(false)
   Secret        String?

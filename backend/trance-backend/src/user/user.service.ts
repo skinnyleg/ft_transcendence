@@ -3,6 +3,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { authenticator } from 'otplib';
 import { UserStatus } from '@prisma/client';
+import { isStrongPassword } from 'src/utils/passwordStrength';
+import { compareHash, hashPass } from 'src/utils/bcryptUtils';
 
 @Injectable()
 export class UserService {
@@ -42,6 +44,18 @@ export class UserService {
 
 
 
+	async findOneByNickname(nick: string)
+	{
+		const user = await this.prisma.user.findUnique({
+			where: {
+				nickname: nick,
+			}
+		})
+		return user;
+	}
+
+
+
 	async create(userData: any)
 	{
 		await this.prisma.user.create({
@@ -59,6 +73,7 @@ export class UserService {
 			grade: userData.grade,
 			status: UserStatus.ONLINE,
 			token: null,
+			nickname: "newUser",
 			}
 		})
 	}
@@ -95,17 +110,19 @@ export class UserService {
 		// console.log("pass == ", newPass)
 		// console.log("login == ", login)
 		// const user = await this.findOneByLogin(login);
+		  if (!isStrongPassword(newPass)) {
+			throw new BadRequestException('Password does not meet strength requirements');
+		}
 		const user = await this.findOneById(id);
 
 		if (!user)
 			throw new UnauthorizedException("No User Found")
 	
-		const isMatch = await bcrypt.compare(oldPass,user.password);
+		const isMatch = await compareHash(oldPass,user.password);
 		if (isMatch == false)
 			throw new UnauthorizedException('Wrong Crendentiels')
 
-		const SALT_ROUNDS = 10;
-		const hashedPass = await bcrypt.hash(newPass, SALT_ROUNDS);
+		const hashedPass = await hashPass(newPass);
 		// const hashedPass = newPass;
 		await this.prisma.user.update({
 			where: {
@@ -115,7 +132,7 @@ export class UserService {
 				password: hashedPass
 			}
 		})
-		return 'password changed succufully'
+		return {valid: true}
 	}
 
 
@@ -126,6 +143,10 @@ export class UserService {
 		// console.log("newNick == ", newNick);
 		
 		// const user = await this.findOneByLogin(login);
+		const isunique = await this.findOneByNickname(newNick);
+		if (isunique)
+			throw new BadRequestException('nickname already taken')
+	
 		const user = await this.findOneById(id)
 
 		if (!user)
@@ -144,12 +165,10 @@ export class UserService {
 	}
 
 
-
-
-	async userProfile(id: string) {
+	async privateProfile(id: number) {
     	const user = await this.prisma.user.findUnique({
 			where: {
-				login: id,
+				id: id,
 			},
 			select: {
 			id: true,
@@ -168,16 +187,33 @@ export class UserService {
   }
 
 
+	async publicProfile(id: string) {
+    	const user = await this.prisma.user.findUnique({
+			where: {
+				login: id,
+			},
+			select: {
+			id: true,
+			nickname: true,
+			login:true,
+			wallet: true,
+			grade:true,
+			profilePic: true,
+			BackgroundPic: true,
+			level: true,
+			status: true,
+			},
+		})
+		return user;
+  }
+
+
 
 	async enableTwoFA(login: string, id: number)
 	{
 		console.log("enabling")
-		// user.isEnabled = !user.isEnabled;
-		// using authenticator
 		const secret = authenticator.generateSecret();
 		const url = authenticator.keyuri(login,'Pong',secret);
-		// console.log("secret == ", secret)
-		// console.log("url == ", url)
 		await this.prisma.user.update({
 			where: {
 				id: id,

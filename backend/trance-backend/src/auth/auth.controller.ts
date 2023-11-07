@@ -17,11 +17,11 @@ export class AuthController {
 
 
 
-	// @Post('signin')
-	// async signIn(@Body() authDto: AuthDto, @Req() req, @Res() res)
-	// {
-	// 	await this.authService.signIn(authDto.username, authDto.password, req, res)
-	// }
+	@Post('signin')
+	async signIn(@Body() payload : {username: string, password: string}, @Req() req, @Res() res)
+	{
+		return await this.authService.signIn(payload.username, payload.password, req, res)
+	}
 
 	@Get('42')
 	@UseGuards(intraAuthGuard)
@@ -32,21 +32,18 @@ export class AuthController {
 	async intra42AuthRedirect(@Req() request, @Res() response)
 	{//request contains user_data, response used to bake cookies
 		// pass the user data to the function that signs the jwt token
+		console.log("token form user == ", request.user.token)
 		if (request.user.isEnabled === true)
 		{
 			response.cookie('id', request.user.id)
 			response.cookie('login', request.user.login)
+			response.cookie('token', request.user.token);
 			response.redirect(`${process.env.FrontendHost}/qrLogin`);
-			// response.redirect(`http://localhost:3000/smsVerification`);
 			return;
 		}
 		response.cookie('id', request.user.id)
 		response.cookie('login', request.user.login)
-		// const token = await this.authService.createToken(request.user.id, request.user.login);
-		console.log("token form user == ", request.user.token)
 		response.cookie('token', request.user.token);
-		// console.log("before cookie == ", request.user.token)
-		// response.cookie('accesstoken', request.user.token);
 		response.redirect(`${process.env.FrontendHost}/${request.user.login}`);
 	}
 

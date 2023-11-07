@@ -4,7 +4,6 @@ import { PrismaClient } from '@prisma/client'
 // import { UsersService } from "src/users/users.service";
 import { Injectable } from "@nestjs/common";
 import { UserService } from "src/user/user.service";
-import { UserStatus } from "src/classes/classes";
 import { JwtService } from "@nestjs/jwt";
 import { AuthService } from "./auth.service";
 // import { CreateUserDto } from "src/users/dto/create-user.dto";
