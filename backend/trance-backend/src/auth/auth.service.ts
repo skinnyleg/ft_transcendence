@@ -12,6 +12,9 @@ export class AuthService {
 	){}
 
 	async signIn(username: string , password: string,  res: Response) {
+		if (username === undefined || password === undefined)
+			throw new BadRequestException('empty fields')
+
 		const user = await this.prisma.user.findUnique({
 			where: {
 				login : username
@@ -21,8 +24,8 @@ export class AuthService {
 		if (!user)
 			throw new BadRequestException("User Doesn't Exits")
 	
-		if (user.setPass == false)
-			throw new BadRequestException('you need to set up a password')
+		// if (user.setPass == false)
+		// 	throw new BadRequestException('you need to set up a password')
 
 		const isMatch = await compareHash(password, user.password);
 		if (isMatch == false)
@@ -51,7 +54,6 @@ export class AuthService {
 	async signOut(req: Request, res: Response) {
 		res.clearCookie('token');
 		res.clearCookie('accesstoken');
-		res.clearCookie('login')
 		console.log("signing out")
 		return res.send({message: "signOut was succefull"})
 	}

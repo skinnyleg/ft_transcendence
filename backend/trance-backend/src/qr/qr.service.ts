@@ -7,7 +7,7 @@ export class QrService {
 
 	constructor(private userservice: UserService){}
 
-	async checkQrCode(QrCode: string, id: number)
+	async checkQrCode(QrCode: string, id: string)
 	{
 		const secret = await this.userservice.getSecret(id);
 		const isValid = authenticator.check(QrCode, secret);

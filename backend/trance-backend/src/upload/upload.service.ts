@@ -7,7 +7,7 @@ export class UploadService {
 
 	constructor(private prisma: PrismaService){}
 
-	async updateProfilePic(pic: string, id: number)
+	async updateProfilePic(pic: string, id: string)
 	{
 		await this.prisma.user.update({
 			where: {
@@ -19,7 +19,7 @@ export class UploadService {
 		})
 	}
 
-	async updateBackgroundPic(pic: string, id: number)
+	async updateBackgroundPic(pic: string, id: string)
 	{
 		await this.prisma.user.update({
 			where: {

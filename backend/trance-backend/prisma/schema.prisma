@@ -29,7 +29,7 @@ enum AchievementStatus {
 }
 
 model User {
-  id            Int        @id @default(autoincrement())
+  id            String     @id @default(uuid())
   intraId       Int        @unique
   email         String
   login         String     @unique
@@ -63,7 +63,7 @@ model FriendStatus {
   id     Int    @id @default(autoincrement())
   user   User   @relation(fields: [userId], references: [id])
   status Status
-  userId Int
+  userId String
 }
 
 model Channel {
@@ -81,7 +81,7 @@ model Message {
   createdAt DateTime @default(now())
   channel   Channel? @relation(fields: [channelId], references: [id])
   channelId Int?
-  userId    Int
+  userId    String
   Chat      Chat?    @relation(fields: [chatId], references: [id])
   chatId    Int?
 }
@@ -94,17 +94,17 @@ model Achievement {
   status      AchievementStatus
   score       Int
   User        User?             @relation(fields: [userId], references: [id])
-  userId      Int?
+  userId      String
 }
 
 // Define a Match model
 model Match {
-  id      Int  @id @default(autoincrement())
+  id      Int    @id @default(autoincrement())
   wins    Int
   losses  Int
   score   Int
-  against User @relation(fields: [userId], references: [id])
-  userId  Int
+  against User   @relation(fields: [userId], references: [id])
+  userId  String
 }
 
 // Define a Chat model
@@ -112,5 +112,5 @@ model Chat {
   id       Int       @id @default(autoincrement())
   toUser   User      @relation(fields: [userId], references: [id])
   messages Message[]
-  userId   Int
+  userId   String
 }

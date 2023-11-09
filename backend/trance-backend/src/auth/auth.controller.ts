@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { intraAuthGuard } from './42.guard';
 
@@ -22,10 +22,9 @@ export class AuthController {
 	@UseGuards(intraAuthGuard)
 	async intra42AuthRedirect(@Req() request, @Res() response)
 	{
-		// console.log("token form user == ", request.user.token)
 		response.cookie('id', request.user.id)
+		console.log("login is -", request.user.login)
 		response.cookie('login', request.user.login)
-		response.cookie('token', request.user.token);
 		if (request.user.isEnabled === true)
 		{
 			response.redirect(`${process.env.FrontendHost}/qrLogin`);

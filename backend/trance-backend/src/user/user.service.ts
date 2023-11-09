@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { authenticator } from 'otplib';
-import { UserStatus } from '@prisma/client';
+import { User, UserStatus } from '@prisma/client';
 import { isStrongPassword } from 'src/utils/passwordStrength';
 import { compareHash, hashPass } from 'src/utils/bcryptUtils';
 import { generateNickname } from 'src/utils/generateNickname';
@@ -33,7 +33,7 @@ export class UserService {
 		return user;
 	}
 
-	async findOneById(Id: number)
+	async findOneById(Id: string)
 	{
 		const user = await this.prisma.user.findUnique({
 			where: {
@@ -60,12 +60,13 @@ export class UserService {
 	async create(userData: any)
 	{
 		const nick = await generateNickname(userData.login);
-		await this.prisma.user.create({
+		const hashedPass : string = await hashPass(userData.password);
+		return await this.prisma.user.create({
 			data: {
 			intraId: userData.intraId,
 			email: userData.email,
 			login: userData.login,
-			// password: hashedPass,
+			password: hashedPass,
 			firstName: userData.firstName,
 			lastName: userData.lastName,
 			profilePic: userData.profilePic,
@@ -74,16 +75,16 @@ export class UserService {
 			level: userData.level,
 			grade: userData.grade,
 			status: UserStatus.ONLINE,
-			token: null,
 			nickname: nick,
+			token: "",
 			}
 		})
 	}
 
 
-	async updateToken(id: number, token: string)
+	async updateToken(id: string, token: string)
 	{
-		await this.prisma.user.update({
+		return await this.prisma.user.update({
 			where:{
 				id: id,
 			},
@@ -93,7 +94,7 @@ export class UserService {
 		})
 	}
 
-	async getSecret(id: number)
+	async getSecret(id: string)
 	{
 		const secret = await this.prisma.user.findUnique({
 			where:{
@@ -109,7 +110,7 @@ export class UserService {
 	}
 
 
-		async changePassword(newPass : string, id : number, oldPass: string) {
+		async changePassword(newPass : string, id : string) {
 		// console.log("pass == ", newPass)
 		// console.log("login == ", login)
 		// const user = await this.findOneByLogin(login);
@@ -120,9 +121,9 @@ export class UserService {
 		if (!user)
 			throw new UnauthorizedException("No User Found")
 	
-		const isMatch = await compareHash(oldPass,user.password);
-		if (isMatch == false)
-			throw new UnauthorizedException('Wrong Crendentiels')
+		// const isMatch = await compareHash(oldPass,user.password);
+		// if (isMatch == false)
+		// 	throw new UnauthorizedException('Wrong Crendentiels')
 
 		const hashedPass = await hashPass(newPass);
 		await this.prisma.user.update({
@@ -140,7 +141,7 @@ export class UserService {
 
 
 
-		async changeNickname(newNick : string, id: number) {
+		async changeNickname(newNick : string, id: string) {
 
 		const isunique = await this.findOneByNickname(newNick);
 		if (isunique)
@@ -164,7 +165,7 @@ export class UserService {
 	}
 
 
-	async privateProfile(id: number) {
+	async privateProfile(id: string) {
     	const user = await this.prisma.user.findUnique({
 			where: {
 				id: id,
@@ -212,36 +213,42 @@ export class UserService {
 
 
 
-	async enableTwoFA(login: string, id: number)
+	async TwoFA(id: string)
 	{
-		const secret = authenticator.generateSecret();
-		const url = authenticator.keyuri(login,'Pong',secret);
-		await this.prisma.user.update({
-			where: {
-				id: id,
-			},
-			data: {
-				isEnabled: true,
-				Secret: secret,
-				otpauth_url: url
-			}
-		})
-		return {valid:true, img: url}
-	}
+		const user = await this.findOneById(id);
+		if (!user)
+			throw new BadRequestException('user not found')
 
-	async disableTwoFA(id: number)
-	{
-		await this.prisma.user.update({
-			where: {
-				id: id,
-			},
-			data: {
-				isEnabled: false,
-				Secret: null,
-				otpauth_url: null
-			}
-		})
-		return {valid:false}
+		if (user.isEnabled == false)
+		{
+			const secret = authenticator.generateSecret();
+			const url = authenticator.keyuri(user.login,'Pong',secret);
+			await this.prisma.user.update({
+				where: {
+					id: id,
+				},
+				data: {
+					isEnabled: true,
+					Secret: secret,
+					otpauth_url: url
+				}
+			})
+			return {valid:true, img: url}
+		}
+		else
+		{
+			await this.prisma.user.update({
+				where: {
+					id: id,
+				},
+				data: {
+					isEnabled: false,
+					Secret: null,
+					otpauth_url: null
+				}
+			})
+			return {valid:false}
+		}
 	}
 
 }
