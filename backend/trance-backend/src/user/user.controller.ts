@@ -36,8 +36,6 @@ export class UserController {
 		if (login === undefined)
 			throw new BadRequestException('login is undefined')
 		return this.userService.publicProfile(login);
-
-    // Your logic here
   }
 	@UseGuards(JwtAuthGuard)
 	@Post('2FA')

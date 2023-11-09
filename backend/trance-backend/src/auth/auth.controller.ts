@@ -22,7 +22,7 @@ export class AuthController {
 	@UseGuards(intraAuthGuard)
 	async intra42AuthRedirect(@Req() request, @Res() response)
 	{
-		console.log("token form user == ", request.user.token)
+		// console.log("token form user == ", request.user.token)
 		response.cookie('id', request.user.id)
 		response.cookie('login', request.user.login)
 		response.cookie('token', request.user.token);
@@ -31,7 +31,7 @@ export class AuthController {
 			response.redirect(`${process.env.FrontendHost}/qrLogin`);
 			return;
 		}
-		response.redirect(`${process.env.FrontendHost}/${request.user.login}`);
+		response.redirect(`${process.env.FrontendHost}/Dashboard`);
 	}
 
 	@Get('signout')

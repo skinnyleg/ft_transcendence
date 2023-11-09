@@ -29,7 +29,7 @@ export class Strategy42 extends PassportStrategy(Strategy, '42') {
 			level: profile._json.cursus_users[1].level,
 			grade: profile._json.cursus_users[1].grade,
 		  };
-	  	return user;
+		return user;
 }
 
 	async validate(accessToken: string, refreshToken: string, profile: any, cb: Function)

@@ -49,6 +49,7 @@ model User {
   otpauth_url   String?
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt()
+  setPass       Boolean    @default(false)
 
   channels     Channel[]
   Message      Message[]

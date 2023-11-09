@@ -113,9 +113,8 @@ export class UserService {
 		// console.log("pass == ", newPass)
 		// console.log("login == ", login)
 		// const user = await this.findOneByLogin(login);
-		  if (!isStrongPassword(newPass)) {
+		if (!isStrongPassword(newPass))
 			throw new BadRequestException('Password does not meet strength requirements');
-		}
 		const user = await this.findOneById(id);
 
 		if (!user)
@@ -131,7 +130,8 @@ export class UserService {
 				id:id,
 			},
 			data: {
-				password: hashedPass
+				password: hashedPass,
+				setPass: true
 			}
 		})
 		return {valid: true}
