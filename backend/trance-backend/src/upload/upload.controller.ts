@@ -17,8 +17,9 @@ export class UploadController {
   @UseInterceptors(FileInterceptor('file', profilePicMulterOptions))
   async uploadProfilePic(@UploadedFile() file: Express.Multer.File, @Req() req) {
 
+	if (file === undefined)
+		throw new BadRequestException('Server doesn\'t this upload')
 	const id = getId(req);
-
 	const newDir =  'http://localhost:8000/' + 'upload/Profile/'
 	const filePath = newDir + file.filename
 	await this.uploadService.updateProfilePic(filePath, id)
@@ -30,8 +31,9 @@ export class UploadController {
   @UseInterceptors(FileInterceptor('file', backgroundPicMulterOptions))
   async uploadBackgroundPic(@UploadedFile() file: Express.Multer.File, @Req() req) {
 
+	if (file === undefined)
+		throw new BadRequestException('Server doesn\'t this upload')
 	const id = getId(req);
-
 	const newDir =  'http://localhost:8000/' + 'upload/background/'
 	const filePath = newDir + file.filename
 	await this.uploadService.updateBackgroundPic(filePath, id)
@@ -40,14 +42,14 @@ export class UploadController {
 
 
 	@UseGuards(JwtAuthGuard)
-	@Get('/profile:filename')
+	@Get('/profile/:filename')
 	serveProfilePic(@Param('filename') filename: string, @Res() res: Response) {
 		const newDir =  path.join(__dirname, '..', '..', 'uploads', 'avatar')
     	res.sendFile(filename, { root: newDir });
 	}
 	
 	@UseGuards(JwtAuthGuard)
-	@Get('/background:filename')
+	@Get('/background/:filename')
 	serveBackgroundPic(@Param('filename') filename: string, @Res() res: Response) {
 		const newDir =  path.join(__dirname, '..', '..', 'uploads', 'background')
     	res.sendFile(filename, { root: newDir });

@@ -1,7 +1,10 @@
-import { BadRequestException, Body, Controller, Get, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Post, Query, Req, UseGuards, ValidationPipe } from '@nestjs/common';
 import { UserService } from './user.service';
 import { JwtAuthGuard } from 'src/auth/jwt.guard';
 import { getId } from 'src/utils/getId';
+import { ChangeNicknameDto } from './Dto/nicknameDto';
+import { ChangePasswordDto } from './Dto/passwordDto';
+import { publicProfileDto } from './Dto/publicProfileDto';
 
 @Controller('user')
 export class UserController {
@@ -11,17 +14,14 @@ export class UserController {
 
 	@UseGuards(JwtAuthGuard)
 	@Post('pass')
-	changePassword(@Body() payload :{password: string}, @Req() req) {
+	changePassword(@Body() payload: ChangePasswordDto, @Req() req) {
 		const id = getId(req);
 		return this.userService.changePassword(payload.password, id)
 	}
 	
 	@UseGuards(JwtAuthGuard)
 	@Post('nick')
-	changeNickname(@Body() payload :{nick: string}, @Req() req) {
-		if (payload.nick === undefined)
-			throw new BadRequestException('nick is undefined')
-			
+	changeNickname(@Body() payload: ChangeNicknameDto, @Req() req) {
 		const id = getId(req);
 		return this.userService.changeNickname(payload.nick, id)
 	}
@@ -34,11 +34,9 @@ export class UserController {
   }
 
 	@UseGuards(JwtAuthGuard)
- 	@Get('PublicProfile')
- 	getPublicProfile(@Query('user') login: string) {
-		if (login === undefined)
-			throw new BadRequestException('login is undefined')
-		return this.userService.publicProfile(login);
+ 	@Post('PublicProfile')
+ 	getPublicProfile(@Body() payload: publicProfileDto) {
+		return this.userService.publicProfile(payload.login);
   }
 	@UseGuards(JwtAuthGuard)
 	@Post('2FA')
@@ -47,5 +45,14 @@ export class UserController {
 		const id = getId(req);
 		return this.userService.TwoFA(id)
 	}
+
+
+
+	@Get('profiles')
+	@UseGuards(JwtAuthGuard)
+ 	getProfiles() {
+		return this.userService.getProfiles();
+  }
+
 }
 

@@ -1,6 +1,7 @@
-import { BadRequestException, Body, Controller, Post, Req } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Post, Req, ValidationPipe } from '@nestjs/common';
 import { QrService } from './qr.service';
 import { getId } from 'src/utils/getId';
+import { VerifyQrCodeDto } from './Dto/qrCodeDto';
 
 @Controller('qr')
 export class QrController {
@@ -8,7 +9,7 @@ export class QrController {
 
 
 	@Post('check')
-	verifyQrcode(@Body() payload :{code: string}, @Req() req) {
+	verifyQrcode(@Body() payload: VerifyQrCodeDto, @Req() req) {
 		const id = getId(req);
 		return this.qrService.checkQrCode(payload.code, id);
 	}

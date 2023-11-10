@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Logger, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { intraAuthGuard } from './42.guard';
+import { authDto } from './Dto/authDto';
 
 @Controller('auth')
 export class AuthController {
@@ -9,7 +10,7 @@ export class AuthController {
 
 
 	@Post('signin')
-	async signIn(@Body() payload : {username: string, password: string},  @Res() res)
+	async signIn(@Body() payload : authDto,  @Res() res)
 	{
 		return await this.authService.signIn(payload.username, payload.password, res)
 	}

@@ -12,8 +12,6 @@ export class AuthService {
 	){}
 
 	async signIn(username: string , password: string,  res: Response) {
-		if (username === undefined || password === undefined)
-			throw new BadRequestException('empty fields')
 
 		const user = await this.prisma.user.findUnique({
 			where: {
@@ -69,7 +67,4 @@ export class AuthService {
 			throw new ForbiddenException();
 		return token;
 	}
-
-
-
 }

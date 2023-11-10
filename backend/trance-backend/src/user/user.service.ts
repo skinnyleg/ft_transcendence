@@ -1,10 +1,8 @@
 import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import * as bcrypt from 'bcrypt';
 import { authenticator } from 'otplib';
-import { User, UserStatus } from '@prisma/client';
-import { isStrongPassword } from 'src/utils/passwordStrength';
-import { compareHash, hashPass } from 'src/utils/bcryptUtils';
+import { UserStatus } from '@prisma/client';
+import { hashPass } from 'src/utils/bcryptUtils';
 import { generateNickname } from 'src/utils/generateNickname';
 
 @Injectable()
@@ -111,11 +109,9 @@ export class UserService {
 
 
 		async changePassword(newPass : string, id : string) {
-		// console.log("pass == ", newPass)
-		// console.log("login == ", login)
-		// const user = await this.findOneByLogin(login);
-		if (!isStrongPassword(newPass))
-			throw new BadRequestException('Password does not meet strength requirements');
+
+		// if (!isStrongPassword(newPass))
+		// 	throw new BadRequestException('Password does not meet strength requirements');
 		const user = await this.findOneById(id);
 
 		if (!user)
@@ -211,7 +207,49 @@ export class UserService {
 		return user;
   }
 
+	async getProfiles() {
+    	const users = await this.prisma.user.findMany({
+			select: {
+			id: true,
+			nickname: true,
+			login:true,
+			profilePic: true,
+			status: true,
+			},
+		})
+		return users;
+  }
 
+	async enable2FA(id: string, login: string)
+	{
+		const secret = authenticator.generateSecret();
+		const url = authenticator.keyuri(login,'Pong',secret);
+		await this.prisma.user.update({
+			where: {
+				id: id,
+			},
+			data: {
+				isEnabled: true,
+				Secret: secret,
+				otpauth_url: url
+			}
+		})
+		return url;
+	}
+
+	async disable2FA(id: string)
+	{
+		await this.prisma.user.update({
+			where: {
+				id: id,
+			},
+			data: {
+				isEnabled: false,
+				Secret: null,
+				otpauth_url: null
+			}
+		})
+	}
 
 	async TwoFA(id: string)
 	{
@@ -221,34 +259,11 @@ export class UserService {
 
 		if (user.isEnabled == false)
 		{
-			const secret = authenticator.generateSecret();
-			const url = authenticator.keyuri(user.login,'Pong',secret);
-			await this.prisma.user.update({
-				where: {
-					id: id,
-				},
-				data: {
-					isEnabled: true,
-					Secret: secret,
-					otpauth_url: url
-				}
-			})
+			const url = await this.enable2FA(id, user.login)
 			return {valid:true, img: url}
 		}
-		else
-		{
-			await this.prisma.user.update({
-				where: {
-					id: id,
-				},
-				data: {
-					isEnabled: false,
-					Secret: null,
-					otpauth_url: null
-				}
-			})
-			return {valid:false}
-		}
+		await this.disable2FA(id)
+		return {valid:false}
 	}
 
 }
