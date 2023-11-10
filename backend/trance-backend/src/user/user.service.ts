@@ -185,10 +185,10 @@ export class UserService {
   }
 
 
-	async publicProfile(id: string) {
+	async publicProfile(nick: string) {
     	const user = await this.prisma.user.findUnique({
 			where: {
-				login: id,
+				nickname: nick,
 			},
 			select: {
 			id: true,

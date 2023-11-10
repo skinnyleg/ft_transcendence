@@ -36,7 +36,7 @@ export class UserController {
 	@UseGuards(JwtAuthGuard)
  	@Post('PublicProfile')
  	getPublicProfile(@Body() payload: publicProfileDto) {
-		return this.userService.publicProfile(payload.login);
+		return this.userService.publicProfile(payload.nick);
   }
 	@UseGuards(JwtAuthGuard)
 	@Post('2FA')
