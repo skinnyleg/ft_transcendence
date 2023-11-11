@@ -24,13 +24,14 @@ export class AuthController {
 	async intra42AuthRedirect(@Req() request, @Res() response)
 	{
 		response.cookie('id', request.user.id)
-		console.log("login is -", request.user.login)
 		response.cookie('login', request.user.login)
 		if (request.user.isEnabled === true)
 		{
 			response.redirect(`${process.env.FrontendHost}/qrLogin`);
 			return;
 		}
+		const token = await this.authService.createToken(request.user.id, request.user.login)
+		response.cookie('token', token)
 		response.redirect(`${process.env.FrontendHost}/Dashboard`);
 	}
 

@@ -22,37 +22,25 @@ export class AuthService {
 		if (!user)
 			throw new BadRequestException("User Doesn't Exits")
 	
-		// if (user.setPass == false)
-		// 	throw new BadRequestException('you need to set up a password')
+		if (user.setPass == false)
+			throw new BadRequestException('you need to set up a password')
 
 		const isMatch = await compareHash(password, user.password);
 		if (isMatch == false)
 			throw new UnauthorizedException('Wrong Crendentiels')
-		
-		const payload = {sub: user.id, username: user.login}
-
-		const token = await this.jwtservice.signAsync(payload);
-		
-		if (!token)
-			throw new ForbiddenException();
-
-		await this.prisma.user.update({
-			where:{
-				id: user.id,
-			},
-			data: {
-				token: token,
-			}
-		})
 		res.cookie('id', user.id)
+		if (user.isEnabled == true)
+			res.redirect(`${process.env.FrontendHost}/qrLogin`);
+	
+		const token = await this.createToken(user.id, user.login)
 		res.cookie('token', token);
-		return res.send({message: "signIn is succefull"})
+		res.redirect(`${process.env.FrontendHost}/Dashboard`);
 	}
 
 	async signOut(req: Request, res: Response) {
 		res.clearCookie('token');
-		res.clearCookie('accesstoken');
-		console.log("signing out")
+		res.clearCookie('id');
+		res.clearCookie('login')
 		return res.send({message: "signOut was succefull"})
 	}
 
@@ -65,6 +53,15 @@ export class AuthService {
 		
 		if (!token)
 			throw new ForbiddenException();
+		await this.prisma.user.update({
+			where:{
+				id: id,
+			},
+			data: {
+				token: token,
+			}
+		})
+
 		return token;
 	}
 }

@@ -9,9 +9,9 @@ export class QrController {
 
 
 	@Post('check')
-	verifyQrcode(@Body() payload: VerifyQrCodeDto, @Req() req) {
+	verifyQrcode(@Body() payload: VerifyQrCodeDto, @Req() req, @Req() res) {
 		const id = getId(req);
-		return this.qrService.checkQrCode(payload.code, id);
+		return this.qrService.checkQrCode(payload.code, id, res);
 	}
 
 }

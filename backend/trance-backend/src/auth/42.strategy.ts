@@ -38,11 +38,7 @@ export class Strategy42 extends PassportStrategy(Strategy, '42') {
 		const user = this.extractUserData(profile, accessToken);
 		let userExits: any = await this.usersService.findOneByIntraId(user.intraId);
 		if (!userExits)
-		{
 			userExits = await this.usersService.create(user)
-			const token = await this.authService.createToken(userExits.id, userExits.login)
-			userExits = await this.usersService.updateToken(userExits.id, token)
-		}
 		return cb(null, userExits);
 	}
 }
