@@ -28,19 +28,18 @@ export class AuthService {
 		const isMatch = await compareHash(password, user.password);
 		if (isMatch == false)
 			throw new UnauthorizedException('Wrong Crendentiels')
-		res.cookie('id', user.id)
+		res.cookie('id', user.id, {signed: true})
 		if (user.isEnabled == true)
 			res.redirect(`${process.env.FrontendHost}/qrLogin`);
-	
 		const token = await this.createToken(user.id, user.login)
-		res.cookie('token', token);
+		res.cookie('token', token, {signed: true});
+		console.log("token == ", token)
 		res.redirect(`${process.env.FrontendHost}/Dashboard`);
 	}
 
 	async signOut(req: Request, res: Response) {
 		res.clearCookie('token');
 		res.clearCookie('id');
-		res.clearCookie('login')
 		return res.send({message: "signOut was succefull"})
 	}
 

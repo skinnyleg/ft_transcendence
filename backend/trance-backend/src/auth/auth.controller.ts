@@ -23,15 +23,14 @@ export class AuthController {
 	@UseGuards(intraAuthGuard)
 	async intra42AuthRedirect(@Req() request, @Res() response)
 	{
-		response.cookie('id', request.user.id)
-		response.cookie('login', request.user.login)
+		response.cookie('id', request.user.id, {signed: true})
 		if (request.user.isEnabled === true)
 		{
 			response.redirect(`${process.env.FrontendHost}/qrLogin`);
 			return;
 		}
 		const token = await this.authService.createToken(request.user.id, request.user.login)
-		response.cookie('token', token)
+		response.cookie('token', token, {signed: true})
 		response.redirect(`${process.env.FrontendHost}/Dashboard`);
 	}
 

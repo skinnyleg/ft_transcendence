@@ -12,7 +12,7 @@ async function bootstrap() {
 	app.useGlobalPipes(new ValidationPipe({
 		whitelist: true
 	}));
-	app.use(cookieParser());
+	app.use(cookieParser(process.env.cookie_secret));
   await app.listen(8000);
 }
 bootstrap();

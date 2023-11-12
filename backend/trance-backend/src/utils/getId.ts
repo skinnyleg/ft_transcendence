@@ -1,11 +1,12 @@
-import { BadRequestException } from "@nestjs/common"
+import { BadRequestException, UnauthorizedException } from "@nestjs/common"
 import { Request } from "express"
 
 export const getId = (req: Request) => {
 
-	const id = req.cookies.id
-	// const id = parseInt(idString, 10)
-	// if (isNaN(id))
-	// 	throw new BadRequestException('id not valid number')
+	if (!req || !req.signedCookies)
+		throw new BadRequestException('Error Cookies')
+	const id = req.signedCookies.id;
+	if (id == false)
+		throw new UnauthorizedException('Cookie has been compromised')
 	return (id);
 }
