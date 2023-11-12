@@ -25,6 +25,7 @@ export class AuthService {
 		if (user.setPass == false)
 			throw new BadRequestException('you need to set up a password')
 
+
 		const isMatch = await compareHash(password, user.password);
 		if (isMatch == false)
 			throw new UnauthorizedException('Wrong Crendentiels')

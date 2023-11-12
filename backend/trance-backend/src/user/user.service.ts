@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { authenticator } from 'otplib';
-import { UserStatus } from '@prisma/client';
+import { Status, UserStatus } from '@prisma/client';
 import { hashPass } from 'src/utils/bcryptUtils';
 import { generateNickname } from 'src/utils/generateNickname';
 
@@ -54,6 +54,30 @@ export class UserService {
 	}
 
 
+	async getFriends(id: string)
+	{
+	  return await this.prisma.friendStatus.findMany({
+		where: {
+		  userId: id,
+		  status: Status.FRIEND,
+		},
+		select: {
+		  user: true,
+		},
+	  });
+	}
+
+	async setNewFriend(toSendId: string, senderId: string, friendStatus: any)
+	{
+		  const createdFriendStatus = await this.prisma.friendStatus.create({
+			data: {
+			  user: { connect: { id: senderId } },
+			  status: friendStatus,
+				userId: senderId,
+			},
+		  });
+	}
+
 
 	async create(userData: any)
 	{
@@ -91,6 +115,19 @@ export class UserService {
 			}
 		})
 	}
+
+	async updateStatus(id: string, status: any)
+	{
+		return await this.prisma.user.update({
+			where:{
+				id: id,
+			},
+			data: {
+				status: status,
+			}
+		})
+	}
+
 
 	async getSecret(id: string)
 	{

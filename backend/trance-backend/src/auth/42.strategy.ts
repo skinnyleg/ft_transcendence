@@ -21,7 +21,7 @@ export class Strategy42 extends PassportStrategy(Strategy, '42') {
 			intraId: profile._json.id,
 			email: profile._json.email,
 			login: profile._json.login,
-			password: "",
+			password: "123",
 			firstName: profile._json.first_name,
 			lastName: profile._json.last_name,
 			profilePic: profile._json.image.link,
