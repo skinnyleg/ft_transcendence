@@ -51,6 +51,7 @@ model User {
   updatedAt     DateTime   @updatedAt()
   setPass       Boolean    @default(false)
 
+  userRequests Request[]
   channels     Channel[]
   Message      Message[]
   Match        Match[]
@@ -59,15 +60,23 @@ model User {
   achievements Achievement[]
 }
 
+model Request {
+  id       String @id @default(uuid())
+  user     User   @relation(fields: [userId], references: [id])
+  userId   String
+  senderId String
+}
+
 model FriendStatus {
-  id     Int    @id @default(autoincrement())
-  user   User   @relation(fields: [userId], references: [id])
-  status Status
-  userId String
+  id       String @id @default(uuid())
+  user     User   @relation(fields: [userId], references: [id])
+  userId   String
+  status   Status
+  friendId String
 }
 
 model Channel {
-  id       Int       @id @default(autoincrement())
+  id       String    @id @default(uuid())
   type     String
   users    User[]
   messages Message[]
@@ -75,20 +84,20 @@ model Channel {
 }
 
 model Message {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(uuid())
   content   String
   sender    User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   channel   Channel? @relation(fields: [channelId], references: [id])
-  channelId Int?
+  channelId String?
   userId    String
   Chat      Chat?    @relation(fields: [chatId], references: [id])
-  chatId    Int?
+  chatId    String?
 }
 
 // Define an Achievement model (you can further customize this)
 model Achievement {
-  id          Int               @id @default(autoincrement())
+  id          String            @id @default(uuid())
   title       String
   description String
   status      AchievementStatus
@@ -99,7 +108,8 @@ model Achievement {
 
 // Define a Match model
 model Match {
-  id      Int    @id @default(autoincrement())
+  id      String @id @default(uuid())
+  title   String
   wins    Int
   losses  Int
   score   Int
@@ -109,7 +119,7 @@ model Match {
 
 // Define a Chat model
 model Chat {
-  id       Int       @id @default(autoincrement())
+  id       String    @id @default(uuid())
   toUser   User      @relation(fields: [userId], references: [id])
   messages Message[]
   userId   String

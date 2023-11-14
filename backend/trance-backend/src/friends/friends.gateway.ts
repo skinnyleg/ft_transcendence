@@ -2,6 +2,7 @@ import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/web
 import { FriendsService } from './friends.service';
 import { Server, Socket } from 'socket.io';
 import { Body, Req } from '@nestjs/common';
+import { userIdDto } from './Dto/userIdDto';
 
 @WebSocketGateway()
 export class FriendsGateway {
@@ -20,6 +21,18 @@ export class FriendsGateway {
 		await this.friendsService.sendRequest(client, payload.userId)
 	}
 
+
+	@SubscribeMessage('accept-request')
+	async acceptRequest(client: Socket, payload: {userId: string, requestId: string})
+	{
+		await this.friendsService.acceptRequest(client, payload.userId, payload.requestId);
+	}
+
+	@SubscribeMessage('refuse-request')
+	async refuseRequest(client: Socket, payload: {userId: string, requestId: string})
+	{
+		await this.friendsService.refuseRequest(client, payload.userId, payload.requestId);
+	}
 
 
 	async handleDisconnect(client: Socket) {

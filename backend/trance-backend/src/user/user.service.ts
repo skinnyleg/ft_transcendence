@@ -1,9 +1,10 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { authenticator } from 'otplib';
 import { Status, UserStatus } from '@prisma/client';
 import { hashPass } from 'src/utils/bcryptUtils';
 import { generateNickname } from 'src/utils/generateNickname';
+import { backgroundPicMulterOptions } from 'src/upload/multer.config';
 
 @Injectable()
 export class UserService {
@@ -67,17 +68,226 @@ export class UserService {
 	  });
 	}
 
-	async setNewFriend(toSendId: string, senderId: string, friendStatus: any)
+	async setNewFriend(senderId: string, recipientId: string,friendStatus: any)
 	{
-		  const createdFriendStatus = await this.prisma.friendStatus.create({
+		const newFriend = await this.prisma.friendStatus.create({
 			data: {
-			  user: { connect: { id: senderId } },
-			  status: friendStatus,
-				userId: senderId,
-			},
-		  });
+				user: {
+					connect: {
+						id: senderId,
+					}
+				},
+				status: friendStatus,
+				friendId: recipientId,
+			}
+		})
 	}
 
+
+	async updateFriend(recipientId: string,friendStatus: any)
+	{
+		const friendExist = await this.prisma.friendStatus.findFirst({
+			where: {
+				userId: recipientId, // The specific userId you want to target
+			},
+		});
+
+		if (!friendExist)
+			throw new NotFoundException('no instanse found')
+
+		const updatedFriendStatus = await this.prisma.friendStatus.update({
+			where: {
+				id: friendExist.id, // Use the ID of the existing record
+				},
+				data: {
+					status: friendStatus, // Update the 'status' field with the new value
+				},
+		});
+	}
+
+	async deleteFriend(recipientId: string)
+	{
+		const friendExist = await this.prisma.friendStatus.findFirst({
+			where: {
+				userId: recipientId, // The specific userId you want to target
+			},
+		});
+
+		if (!friendExist)
+			throw new NotFoundException('no instanse found')
+
+		const updatedFriendStatus = await this.prisma.friendStatus.delete({
+			where: {
+				id: friendExist.id, // Use the ID of the existing record
+				},
+		});
+	}
+
+	async saveRequest(senderId: string, recipientId: string)
+	{
+		if (senderId === recipientId)
+			throw new BadRequestException('Can\'t add yourself as a friend')
+
+		const user = await this.prisma.user.findUnique({
+			where: {
+				id: recipientId,
+			}
+		})
+		if (!user)
+			throw new NotFoundException('user Doesn\'t exist')
+		const requestExist = await this.prisma.request.findFirst({
+		  where: {
+			senderId: senderId,
+		  },
+		});
+
+		if (requestExist)
+			throw new BadRequestException('you have already sent a request')
+
+		const friendStatus = await this.prisma.friendStatus.findFirst({
+		  where: {
+			OR: [
+			  {
+				userId: senderId,
+				friendId: recipientId,
+				status: {
+				  in: [Status.FRIEND, Status.PENDING], // Check for FRIEND or PENDING status
+				},
+			  },
+			  {
+				userId: recipientId,
+				friendId: senderId,
+				status: {
+				  in: [Status.FRIEND, Status.PENDING], // Check for FRIEND or PENDING status
+				},
+			  },
+			],
+		  },
+		});
+		
+		if (friendStatus)
+			throw new BadRequestException('you are already friends or already got a request from this user')
+			
+		const request = await this.prisma.request.create({
+		  data: {
+			user: { connect: { id: recipientId } }, // Assuming you have the `userId` available
+			senderId: senderId, // Assuming you have the `senderId` available
+		  },
+		});
+		await this.setNewFriend(senderId, recipientId, Status.PENDING)
+		return request.id;
+	}
+
+	async getNickById(id: string)
+	{
+		const nick = await this.prisma.user.findUnique({
+			where: {
+				id : id,
+			},
+			select: {
+				nickname: true,
+			}
+		})
+		if (!nick)
+			throw new NotFoundException('user Doesn\'t exist')
+		return nick.nickname;
+	}
+
+	async acceptRequest(senderId: string, recipientId: string, requestId: string)
+	{
+
+		const request = await this.prisma.request.findUnique({
+			where: {
+				id: requestId,
+				senderId: recipientId,
+			}
+		});
+
+		if (!request)
+			throw new NotFoundException('request Doesn\'t exist')
+
+		const user = await this.prisma.user.findUnique({
+			where: {
+				id: recipientId,
+			}
+		})
+		if (!user)
+			throw new NotFoundException('user Doesn\'t exist')
+	
+		await this.updateFriend(recipientId, Status.FRIEND)
+		await this.setNewFriend(senderId, recipientId, Status.FRIEND)
+		await this.prisma.request.delete({
+			where: {
+				id: requestId
+			},
+		  });
+		
+	}
+
+	async refuseRequest(senderId: string, recipientId: string, requestId: string)
+	{
+
+		const request = await this.prisma.request.findUnique({
+			where: {
+				id: requestId,
+				senderId: recipientId,
+			}
+		});
+
+		if (!request)
+			throw new NotFoundException('request Doesn\'t exist')
+
+		const user = await this.prisma.user.findUnique({
+			where: {
+				id: recipientId,
+			}
+		})
+		if (!user)
+			throw new NotFoundException('user Doesn\'t exist')
+	
+		await this.deleteFriend(recipientId)
+		await this.prisma.request.delete({
+			where: {
+				id: requestId
+			},
+		  });
+		
+	}
+	async getNotifData(id: string, requestId: string)
+	{
+		  const notifData = await this.prisma.request.findUnique({
+			where: {
+			  id: requestId,
+			},
+			select: {
+			  id: true,
+				senderId: true,
+			},
+		  });
+
+		if (!notifData)
+			throw new NotFoundException('request not found')
+
+
+		const userData = await this.prisma.user.findUnique({
+			where: {
+				id: notifData.senderId,
+			},
+			select: {
+				id: true,
+				nickname: true,
+				profilePic: true,
+			}
+		})
+	
+		if (!userData)
+			throw new NotFoundException('user not found')
+		const combinedData = {
+			requestId: notifData.id,
+			userData: userData,
+		}
+		return combinedData;
+	}
 
 	async create(userData: any)
 	{
