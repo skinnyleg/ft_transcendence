@@ -16,7 +16,7 @@ error : when an error occurs with web socket i send a string displying the error
 
 request-sent: sent to the sender socket to inform that the request has been sent sucffeuly
 
-friend-notif: sent to the user if online to notify him of a friend request
+notification: sent to the user if online to notify him of any type of request
 
 request-accepted: sent to the sender to notify him of the friend accepting the request
 

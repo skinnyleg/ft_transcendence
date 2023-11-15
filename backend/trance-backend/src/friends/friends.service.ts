@@ -4,8 +4,7 @@ import { gatewayUser } from 'src/classes/classes';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserService } from 'src/user/user.service';
 import { Socket , Server} from 'socket.io';
-import { Status, UserStatus } from '@prisma/client';
-import { request } from 'http';
+import { RequestType, UserStatus } from '@prisma/client';
 
 @Injectable()
 export class FriendsService {
@@ -22,33 +21,64 @@ export class FriendsService {
 			client.disconnect();
 	}
 
-	async saveUser(client: Socket, server: Server) {
+	async saveUser(client: Socket) {
 		
+		let user;
 		try {
 			const token: string = client.handshake.headers.token as string;
 			const payload = await this.jwtService.verifyAsync(token, { secret: process.env.jwtsecret })
-			const user = await this.userService.findOneById(payload.sub);
+			user = await this.userService.findOneById(payload.sub);
 			await this.userService.updateStatus(user.id, UserStatus.ONLINE)
 			this.Users.push({ id: user.id, socket: client });
-			// const friends = await this.userService.getFriends(user.id)
-			// console.log("friends == ", friends)
-			server.emit('statusChange', { id: user.id, status: "online" });
+			await this.emitToFriendsStatus(user.id);
 		}
 		catch (error)
 		{
 			this.sendWebSocketError(client, "User not found", true)
+			return;
+		}
+		try {
+			await this.emitNotifications(client, user.id);
+		}
+		catch(error)
+		{
+			this.sendWebSocketError(client, error.message, false)
+		}
+	}
+
+	async emitNotifications(client: Socket, id: string)
+	{
+		const notifications = await this.userService.getNotifications(id);
+	
+		for (const notif of notifications) {
+			client.emit('notification', notif);
+		}
+	}
+
+	async emitToFriendsStatus(id: string)
+	{
+
+		const friends = await this.userService.getFriends(id);
+
+		for (const friend of friends) {
+		  const friendUser = this.getUserById(friend.friendId);
+
+		  if (friendUser) {
+			friendUser.socket.emit('statusChange', { id: friendUser.id, status: "ONLINE" });
+		  }
 		}
 	}
 
 
-	async deleteUser(client: Socket, server: Server) {
+
+	async deleteUser(client: Socket) {
 		
 		try {
 			
 			const user = this.getUserBySocketId(client.id);
 			await this.userService.updateStatus(user.id, UserStatus.OFFLINE)
 			this.Users = this.Users.filter((u) => u.socket.id !== client.id);
-			server.emit('statusChange', { id: user.id, status: "offline" });
+			await this.emitToFriendsStatus(user.id);
 		}
 		catch (error)
 		{
@@ -66,8 +96,8 @@ export class FriendsService {
 			const requestId = await this.userService.saveRequest(sender.id, userId);
 			if (toSend !== undefined)
 			{
-				const notif = await this.userService.getNotifData(sender.id, requestId);
-				toSend.socket.emit('friend-notif', notif);
+				const notif = await this.userService.generateNotifData(requestId);
+				toSend.socket.emit('notification', notif);
 			}
 			client.emit('request-sent', 'Friend request sent successfully');
 		}
@@ -125,18 +155,5 @@ export class FriendsService {
 	getUserById(userId: string): gatewayUser | undefined {
 	  return this.Users.find((user) => user.id === userId);
 	}
-
-	async resolveRequest(sender: gatewayUser, toSendId: string, requestId: string)
-	{
-		try {
-			await this.userService.acceptRequest(sender.id, toSendId, requestId);
-
-		}
-		catch(error)
-		{
-			this.sendWebSocketError(sender.socket, error.message, false);
-		}
-	}
-
 
 }

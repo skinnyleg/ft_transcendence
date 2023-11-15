@@ -2,7 +2,6 @@ import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/web
 import { FriendsService } from './friends.service';
 import { Server, Socket } from 'socket.io';
 import { Body, Req } from '@nestjs/common';
-import { userIdDto } from './Dto/userIdDto';
 
 @WebSocketGateway()
 export class FriendsGateway {
@@ -12,7 +11,7 @@ export class FriendsGateway {
 
 
 	async handleConnection(client: Socket) {
-		await this.friendsService.saveUser(client, this.server)
+		await this.friendsService.saveUser(client)
 	}
 
 	@SubscribeMessage('send-request')
@@ -36,7 +35,7 @@ export class FriendsGateway {
 
 
 	async handleDisconnect(client: Socket) {
-		await this.friendsService.deleteUser(client, this.server)
+		await this.friendsService.deleteUser(client)
 	}
 
 }

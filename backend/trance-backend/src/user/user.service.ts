@@ -1,10 +1,10 @@
 import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { authenticator } from 'otplib';
-import { Status, UserStatus } from '@prisma/client';
+import { RequestType, Status, UserStatus } from '@prisma/client';
 import { hashPass } from 'src/utils/bcryptUtils';
 import { generateNickname } from 'src/utils/generateNickname';
-import { backgroundPicMulterOptions } from 'src/upload/multer.config';
+import { request } from 'http';
 
 @Injectable()
 export class UserService {
@@ -63,7 +63,7 @@ export class UserService {
 		  status: Status.FRIEND,
 		},
 		select: {
-		  user: true,
+			friendId: true
 		},
 	  });
 	}
@@ -138,6 +138,7 @@ export class UserService {
 		const requestExist = await this.prisma.request.findFirst({
 		  where: {
 			senderId: senderId,
+			typeOfRequest: RequestType.FRIEND,
 		  },
 		});
 
@@ -168,14 +169,36 @@ export class UserService {
 		if (friendStatus)
 			throw new BadRequestException('you are already friends or already got a request from this user')
 			
+
+		const id = await this.generateRequest(senderId, recipientId, RequestType.FRIEND);
+		await this.setNewFriend(senderId, recipientId, Status.PENDING)
+		return id;
+	}
+
+
+
+	async generateRequest(senderId: string, recipientId: string, typeOfRequest: RequestType)
+	{
+		let description;
+		if (typeOfRequest === RequestType.FRIEND)
+			description = "sent you a friend request";
+		else if (typeOfRequest === RequestType.CHALLENGE)
+			description = "has challenged you";
+		else if (typeOfRequest === RequestType.MESSAGE)
+			description = "sent you a message"
+
 		const request = await this.prisma.request.create({
 		  data: {
 			user: { connect: { id: recipientId } }, // Assuming you have the `userId` available
 			senderId: senderId, // Assuming you have the `senderId` available
+			typeOfRequest: typeOfRequest,
+			descriptionOfRequest: description,
 		  },
 		});
-		await this.setNewFriend(senderId, recipientId, Status.PENDING)
-		return request.id;
+		if (!request)
+			throw new BadRequestException('Can\'t generate a request');
+		return (request.id)
+
 	}
 
 	async getNickById(id: string)
@@ -195,6 +218,8 @@ export class UserService {
 
 	async acceptRequest(senderId: string, recipientId: string, requestId: string)
 	{
+		if (senderId === recipientId)
+			throw new BadRequestException('can\'t accept a request from yourself')
 
 		const request = await this.prisma.request.findUnique({
 			where: {
@@ -226,6 +251,8 @@ export class UserService {
 
 	async refuseRequest(senderId: string, recipientId: string, requestId: string)
 	{
+		if (senderId === recipientId)
+			throw new BadRequestException('can\'t refuse a request from yourself')
 
 		const request = await this.prisma.request.findUnique({
 			where: {
@@ -253,21 +280,31 @@ export class UserService {
 		  });
 		
 	}
-	async getNotifData(id: string, requestId: string)
+	async generateNotifData(requestId: string)
 	{
 		  const notifData = await this.prisma.request.findUnique({
 			where: {
 			  id: requestId,
 			},
 			select: {
-			  id: true,
+				id: true,
 				senderId: true,
+				descriptionOfRequest: true,
+				typeOfRequest: true,
 			},
 		  });
 
 		if (!notifData)
 			throw new NotFoundException('request not found')
 
+		await this.prisma.request.update({
+			where: {
+			  id: requestId,
+			},
+			data: {
+				emitted: true,
+			}
+		  });
 
 		const userData = await this.prisma.user.findUnique({
 			where: {
@@ -284,7 +321,12 @@ export class UserService {
 			throw new NotFoundException('user not found')
 		const combinedData = {
 			requestId: notifData.id,
-			userData: userData,
+			notifData: {
+				userId: userData.id,
+				userProfilePic: userData.profilePic,
+				description: `${userData.nickname}` + " " + notifData.descriptionOfRequest,
+				typeOfRequest: notifData.typeOfRequest,
+			},
 		}
 		return combinedData;
 	}
@@ -313,6 +355,36 @@ export class UserService {
 		})
 	}
 
+	async getNotifications(id: string)
+	{
+		let notifications = [];
+		const requests = await this.prisma.user.findMany({
+			where: {
+				id: id,
+			},
+			select: {
+				userRequests:{
+					where: {
+						emitted: false,
+					},
+					select: {
+						id: true,
+					}
+				}
+			}
+		})
+
+		const requestIds = requests.flatMap((user) => user.userRequests.map((req) => ({ id: req.id })));
+		if (requestIds.length === 0)
+			throw new NotFoundException('no new notification')
+	
+		for (const req of requestIds)
+		{
+			const notif = await this.generateNotifData(req.id);
+			notifications.push(notif)
+		}
+		return notifications;
+	}
 
 	async updateToken(id: string, token: string)
 	{
@@ -432,7 +504,9 @@ export class UserService {
   }
 
 
-	async publicProfile(nick: string) {
+	async publicProfile(nick: string, id: string) {
+		let isfriend = false;
+		let userProfile = false;
     	const user = await this.prisma.user.findUnique({
 			where: {
 				nickname: nick,
@@ -451,7 +525,18 @@ export class UserService {
 		})
 		if (!user)
 			throw new BadRequestException('user not found')
-		return user;
+		const friendStatus = await this.prisma.friendStatus.findFirst({
+		  where: {
+			userId: id, // Specify the ID of the user making the request
+			friendId: user.id, // The ID of the user whose profile is being requested
+			status: Status.FRIEND, // Adjust this based on your enum or string values for friendship status
+		  },
+		});
+		if (friendStatus)
+			isfriend = true;
+		if (user.id === id)
+			userProfile = true;
+		return {userData: user, isfriend, userProfile};
   }
 
 	async getProfiles() {

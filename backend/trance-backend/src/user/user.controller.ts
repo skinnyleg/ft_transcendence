@@ -35,8 +35,9 @@ export class UserController {
 
 	@UseGuards(JwtAuthGuard)
  	@Post('PublicProfile')
- 	getPublicProfile(@Body() payload: publicProfileDto) {
-		return this.userService.publicProfile(payload.nick);
+ 	getPublicProfile(@Body() payload: publicProfileDto, @Req() req) {
+		const id = getId(req);
+		return this.userService.publicProfile(payload.nick, id);
   }
 	@UseGuards(JwtAuthGuard)
 	@Post('2FA')
