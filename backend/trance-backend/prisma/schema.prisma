@@ -20,6 +20,7 @@ enum RequestType {
   FRIEND
   CHALLENGE
   MESSAGE
+  UNFRIEND
 }
 
 enum Status {
@@ -74,6 +75,18 @@ model Request {
   typeOfRequest        RequestType
   descriptionOfRequest String
   emitted              Boolean     @default(false)
+  responded            Boolean     @default(false)
+}
+
+model Achievement {
+  id          String            @id @default(uuid())
+  title       String
+  description String
+  status      AchievementStatus
+  userScore   Int               @default(0)
+  totalScore  Int
+  User        User?             @relation(fields: [userId], references: [id])
+  userId      String
 }
 
 model FriendStatus {
@@ -105,15 +118,6 @@ model Message {
 }
 
 // Define an Achievement model (you can further customize this)
-model Achievement {
-  id          String            @id @default(uuid())
-  title       String
-  description String
-  status      AchievementStatus
-  score       Int
-  User        User?             @relation(fields: [userId], references: [id])
-  userId      String
-}
 
 // Define a Match model
 model Match {

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { gatewayUser } from 'src/classes/classes';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -49,6 +49,8 @@ export class FriendsService {
 	async emitNotifications(client: Socket, id: string)
 	{
 		const notifications = await this.userService.getNotifications(id);
+		if (notifications.length === 0)
+			throw new NotFoundException('no new notification')
 	
 		for (const notif of notifications) {
 			client.emit('notification', notif);
@@ -57,12 +59,9 @@ export class FriendsService {
 
 	async emitToFriendsStatus(id: string)
 	{
-
 		const friends = await this.userService.getFriends(id);
-
 		for (const friend of friends) {
 		  const friendUser = this.getUserById(friend.friendId);
-
 		  if (friendUser) {
 			friendUser.socket.emit('statusChange', { id: friendUser.id, status: "ONLINE" });
 		  }
@@ -72,9 +71,7 @@ export class FriendsService {
 
 
 	async deleteUser(client: Socket) {
-		
 		try {
-			
 			const user = this.getUserBySocketId(client.id);
 			await this.userService.updateStatus(user.id, UserStatus.OFFLINE)
 			this.Users = this.Users.filter((u) => u.socket.id !== client.id);
@@ -108,6 +105,27 @@ export class FriendsService {
 
 	}
 
+	async deleteRequest(client: Socket, userId: string)
+	{
+		const toSend = this.getUserById(userId);
+		const sender = this.getUserBySocketId(client.id);
+		try {
+			const requestId = await this.userService.deleteRequest(sender.id, userId);
+			if (toSend !== undefined)
+			{
+				const notif = await this.userService.generateNotifData(requestId);
+				toSend.socket.emit('notification', notif);
+			}
+			client.emit('request-sent', 'Unfriend request sent successfully');
+		}
+		catch(error)
+		{
+			this.sendWebSocketError(sender.socket, error.message, false);
+		}
+	}
+
+
+
 	async refuseRequest(client: Socket, userId: string, requestId: string)
 	{
 		const toSend = this.getUserById(userId);
@@ -122,7 +140,6 @@ export class FriendsService {
 		}
 		catch(error)
 		{
-			console.log("eroor ", error)
 			this.sendWebSocketError(sender.socket, error.message, false);
 		}
 	}
@@ -143,7 +160,6 @@ export class FriendsService {
 		}
 		catch(error)
 		{
-			console.log("eroor ", error)
 			this.sendWebSocketError(sender.socket, error.message, false);
 		}
 	}

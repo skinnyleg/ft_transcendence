@@ -1,10 +1,11 @@
 import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { authenticator } from 'otplib';
-import { RequestType, Status, UserStatus } from '@prisma/client';
+import { AchievementStatus, RequestType, Status, UserStatus } from '@prisma/client';
 import { hashPass } from 'src/utils/bcryptUtils';
 import { generateNickname } from 'src/utils/generateNickname';
-import { request } from 'http';
+import * as fs from 'fs';
+import * as path from 'path';
 
 @Injectable()
 export class UserService {
@@ -68,6 +69,80 @@ export class UserService {
 	  });
 	}
 
+	async getDoneAchievements(id: string)
+	{
+		const doneAchievements = await this.prisma.achievement.findMany({
+			where: {
+				userId: id,
+				status: AchievementStatus.DONE,
+			},
+			select: {
+				id: true,
+				title: true,
+				description: true,
+				userScore: true,
+				totalScore: true,
+			},
+		});
+
+		return (doneAchievements);
+	}
+
+	async getNotDoneAchievements(id: string)
+	{
+		const notDoneAchievements = await this.prisma.achievement.findMany({
+			where: {
+				userId: id,
+				status: AchievementStatus.NOTDONE,
+			},
+			select: {
+				id: true,
+				title: true,
+				description: true,
+				userScore: true,
+				totalScore: true,
+			},
+		});
+
+		
+		return (notDoneAchievements);
+	}
+
+
+	async getFriendsCards(id: string)
+	{
+		let friendsData = [];
+		const friendsIds = await this.prisma.friendStatus.findMany({
+			where: {
+				userId: id,
+				status: Status.FRIEND,
+			},
+			select: {
+				friendId: true,
+			},
+		});
+
+
+		for (const friendId of friendsIds)
+		{
+			const friendData = await this.prisma.user.findUnique({
+				where: {
+					id: friendId.friendId,
+				},
+				select: {
+					id: true,
+					profilePic: true,
+					nickname: true,
+					status: true,
+				}
+			})
+			friendsData.push(friendData)
+		}
+		return (friendsData);
+	}
+
+
+
 	async setNewFriend(senderId: string, recipientId: string,friendStatus: any)
 	{
 		const newFriend = await this.prisma.friendStatus.create({
@@ -82,7 +157,6 @@ export class UserService {
 			}
 		})
 	}
-
 
 	async updateFriend(recipientId: string,friendStatus: any)
 	{
@@ -176,8 +250,51 @@ export class UserService {
 	}
 
 
+	async deleteRequest(senderId: string, recipientId: string)
+	{
+		if (senderId === recipientId)
+			throw new BadRequestException('Can\'t unfriend yourself')
 
-	async generateRequest(senderId: string, recipientId: string, typeOfRequest: RequestType)
+		const user = await this.prisma.user.findUnique({
+			where: {
+				id: recipientId,
+			}
+		})
+		if (!user)
+			throw new NotFoundException('user Doesn\'t exist')
+
+		const friendStatus = await this.prisma.friendStatus.findFirst({
+		  where: {
+			OR: [
+			  {
+				userId: senderId,
+				friendId: recipientId,
+				status: {
+				  in: [Status.FRIEND], // Check for FRIEND or PENDING status
+				},
+			  },
+			  {
+				userId: recipientId,
+				friendId: senderId,
+				status: {
+				  in: [Status.FRIEND], // Check for FRIEND or PENDING status
+				},
+			  },
+			],
+		  },
+		});
+		
+		if (!friendStatus)
+			throw new BadRequestException('you need to be friends to unfriend')
+			
+		await this.deleteFriend(senderId)
+		await this.deleteFriend(recipientId)
+
+		const id = await this.generateRequest(senderId, recipientId, RequestType.UNFRIEND, true);
+		return id;
+	}
+
+	async generateRequest(senderId: string, recipientId: string, typeOfRequest: RequestType, respond: boolean = false)
 	{
 		let description;
 		if (typeOfRequest === RequestType.FRIEND)
@@ -186,6 +303,8 @@ export class UserService {
 			description = "has challenged you";
 		else if (typeOfRequest === RequestType.MESSAGE)
 			description = "sent you a message"
+		else if (typeOfRequest === RequestType.UNFRIEND)
+			description = "has unfriended you"
 
 		const request = await this.prisma.request.create({
 		  data: {
@@ -193,6 +312,7 @@ export class UserService {
 			senderId: senderId, // Assuming you have the `senderId` available
 			typeOfRequest: typeOfRequest,
 			descriptionOfRequest: description,
+			responded: respond,
 		  },
 		});
 		if (!request)
@@ -241,10 +361,14 @@ export class UserService {
 	
 		await this.updateFriend(recipientId, Status.FRIEND)
 		await this.setNewFriend(senderId, recipientId, Status.FRIEND)
-		await this.prisma.request.delete({
+		await this.prisma.request.update({
 			where: {
 				id: requestId
 			},
+			data: {
+				emitted: true,
+				responded: true,
+			}
 		  });
 		
 	}
@@ -273,10 +397,14 @@ export class UserService {
 			throw new NotFoundException('user Doesn\'t exist')
 	
 		await this.deleteFriend(recipientId)
-		await this.prisma.request.delete({
+		await this.prisma.request.update({
 			where: {
 				id: requestId
 			},
+			data: {
+				emitted: true,
+				responded: true,
+			}
 		  });
 		
 	}
@@ -291,6 +419,7 @@ export class UserService {
 				senderId: true,
 				descriptionOfRequest: true,
 				typeOfRequest: true,
+				responded:true,
 			},
 		  });
 
@@ -326,16 +455,29 @@ export class UserService {
 				userProfilePic: userData.profilePic,
 				description: `${userData.nickname}` + " " + notifData.descriptionOfRequest,
 				typeOfRequest: notifData.typeOfRequest,
+				responded: notifData.responded,
 			},
 		}
 		return combinedData;
+	}
+
+
+
+	async getDashboard(id: string)
+	{
+		const friends = await this.getFriendsCards(id);
+		const doneAchievements = await this.getDoneAchievements(id);
+		const notDoneAchievements = await this.getNotDoneAchievements(id);
+		const notifications = await this.getNotificationsHistory(id);
+		
+		return ({friends, doneAchievements, notDoneAchievements, notifications})
 	}
 
 	async create(userData: any)
 	{
 		const nick = await generateNickname(userData.login);
 		const hashedPass : string = await hashPass(userData.password);
-		return await this.prisma.user.create({
+		const user = await this.prisma.user.create({
 			data: {
 			intraId: userData.intraId,
 			email: userData.email,
@@ -353,6 +495,62 @@ export class UserService {
 			token: "",
 			}
 		})
+		await this.linkAchievements(user.id);
+		return user;
+	}
+
+
+	async linkAchievements(id: string)
+	{
+		const jsonDataPath = path.resolve(__dirname, '..' ,'..' , 'src', 'Achievements', 'data.json');
+
+		const rawData = fs.readFileSync(jsonDataPath, 'utf-8');
+		const achievementData = JSON.parse(rawData);
+
+		console.log(achievementData);
+
+		for (const data of achievementData) {
+			const { title, description, userScore, totalScore } = data;
+
+			await this.prisma.achievement.create({
+				data: {
+					title,
+					description,
+					userScore,
+					totalScore,
+					status: AchievementStatus.NOTDONE,
+					User: { connect: { id: id } },
+				},
+			});
+		}
+	}
+
+	async getNotificationsHistory(id: string)
+	{
+		let notifications = [];
+		const requests = await this.prisma.user.findMany({
+			where: {
+				id: id,
+			},
+			select: {
+				userRequests:{
+					select: {
+						id: true,
+					}
+				}
+			}
+		})
+
+		const requestIds = requests.flatMap((user) => user.userRequests.map((req) => ({ id: req.id })));
+		// if (requestIds.length === 0)
+		// 	throw new NotFoundException('no new notification')
+	
+		for (const req of requestIds)
+		{
+			const notif = await this.generateNotifData(req.id);
+			notifications.push(notif)
+		}
+		return notifications;
 	}
 
 	async getNotifications(id: string)
@@ -375,8 +573,8 @@ export class UserService {
 		})
 
 		const requestIds = requests.flatMap((user) => user.userRequests.map((req) => ({ id: req.id })));
-		if (requestIds.length === 0)
-			throw new NotFoundException('no new notification')
+		// if (requestIds.length === 0)
+		// 	throw new NotFoundException('no new notification')
 	
 		for (const req of requestIds)
 		{

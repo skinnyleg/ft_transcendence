@@ -42,18 +42,23 @@ export class UserController {
 	@UseGuards(JwtAuthGuard)
 	@Post('2FA')
 	handleTwoFA(@Req() req) {
-
 		const id = getId(req);
 		return this.userService.TwoFA(id)
 	}
-
 
 
 	@Get('profiles')
 	@UseGuards(JwtAuthGuard)
  	getProfiles() {
 		return this.userService.getProfiles();
-  }
+	}
+
+	@Get('Dashboard')
+	@UseGuards(JwtAuthGuard)
+ 	getFriends(@Req() req) {
+		const id = getId(req);
+		return this.userService.getDashboard(id);
+	}
 
 }
 
