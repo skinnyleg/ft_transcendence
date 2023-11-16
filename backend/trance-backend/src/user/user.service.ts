@@ -88,6 +88,38 @@ export class UserService {
 		return (doneAchievements);
 	}
 
+	async getLeaderboard(id: string)
+	{
+		const users = await this.prisma.user.findMany({
+			select: {
+				id: true,
+				nickname: true,
+				profilePic: true,
+				Wins: true,
+				Losses: true,
+			},
+		});
+
+
+		const usersWithWinrates = users.map((user) => {
+		const totalGames = user.Wins + user.Losses;
+		const winrate = totalGames > 0 ? (user.Wins / totalGames) * 100 : 0;
+
+		return {
+				id: user.id,
+				nickname: user.nickname,
+				profilePic: user.profilePic,
+				Wins: user.Wins,
+				Losses: user.Losses,
+				winrate,
+			};
+		});
+
+		const sortedUsers = usersWithWinrates.sort((a, b) => b.winrate - a.winrate);
+
+		return (sortedUsers)
+	}
+
 	async getNotDoneAchievements(id: string)
 	{
 		const notDoneAchievements = await this.prisma.achievement.findMany({
@@ -506,8 +538,6 @@ export class UserService {
 
 		const rawData = fs.readFileSync(jsonDataPath, 'utf-8');
 		const achievementData = JSON.parse(rawData);
-
-		console.log(achievementData);
 
 		for (const data of achievementData) {
 			const { title, description, userScore, totalScore } = data;

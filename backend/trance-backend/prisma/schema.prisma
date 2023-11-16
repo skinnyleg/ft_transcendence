@@ -57,6 +57,8 @@ model User {
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt()
   setPass       Boolean    @default(false)
+  Wins          Int        @default(0)
+  Losses        Int        @default(0)
 
   userRequests Request[]
   channels     Channel[]

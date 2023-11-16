@@ -60,5 +60,11 @@ export class UserController {
 		return this.userService.getDashboard(id);
 	}
 
+	@Get('Leaderboard')
+	@UseGuards(JwtAuthGuard)
+ 	getLeaderboard(@Req() req) {
+		const id = getId(req);
+		return this.userService.getLeaderboard(id);
+	}
 }
 

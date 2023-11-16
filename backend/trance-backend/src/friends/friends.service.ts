@@ -51,10 +51,8 @@ export class FriendsService {
 		const notifications = await this.userService.getNotifications(id);
 		if (notifications.length === 0)
 			throw new NotFoundException('no new notification')
-	
-		for (const notif of notifications) {
-			client.emit('notification', notif);
-		}
+
+		client.emit('notification', `You have ${notifications.length} new notifications`)
 	}
 
 	async emitToFriendsStatus(id: string)
