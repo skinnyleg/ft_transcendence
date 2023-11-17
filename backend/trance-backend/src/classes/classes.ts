@@ -1,6 +1,8 @@
 
-export enum UserStatus {
-	ONLINE,
-	OFFLINE,
-	INGAME,
+import { Socket } from 'socket.io'
+
+
+export class gatewayUser {
+	id: string;
+	socket: Socket;
 }

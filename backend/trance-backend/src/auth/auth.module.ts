@@ -12,7 +12,7 @@ import { UserService } from 'src/user/user.service';
 	imports: [JwtModule.register({
       global: true,
       secret: process.env.jwtsecret,
-      signOptions: { expiresIn: '1h' },
+      signOptions: { expiresIn: '12h' },
     }), PassportModule],
   controllers: [AuthController],
   providers: [AuthService, PrismaService,Strategy42, JwtStrategy, UserService],
