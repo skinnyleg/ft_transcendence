@@ -1,17 +1,11 @@
 import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-<<<<<<< HEAD
-import * as bcrypt from 'bcrypt';
-import { authenticator } from 'otplib';
-import { User, UserStatus } from '@prisma/client';
-=======
 import { authenticator } from 'otplib';
 import { AchievementStatus, RequestType, Status, UserStatus } from '@prisma/client';
 import { hashPass } from 'src/utils/bcryptUtils';
 import { generateNickname } from 'src/utils/generateNickname';
 import * as fs from 'fs';
 import * as path from 'path';
->>>>>>> origin/profileBackend
 
 @Injectable()
 export class UserService {
@@ -186,20 +180,6 @@ export class UserService {
 	{
 		const newFriend = await this.prisma.friendStatus.create({
 			data: {
-<<<<<<< HEAD
-			intraId: userData.intraId,
-			email: userData.email,
-			login: userData.login,
-			// password: hashedPass,
-			firstName: userData.firstName,
-			lastName: userData.lastName,
-			profilePic: userData.profilePic,
-			wallet: userData.wallet,
-			level: userData.level,
-			grade: userData.grade,
-			token: token,
-			status: UserStatus.ONLINE,
-=======
 				user: {
 					connect: {
 						id: senderId,
@@ -207,7 +187,6 @@ export class UserService {
 				},
 				status: friendStatus,
 				friendId: recipientId,
->>>>>>> origin/profileBackend
 			}
 		})
 	}
