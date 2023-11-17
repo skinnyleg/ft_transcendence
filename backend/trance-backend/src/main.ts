@@ -10,7 +10,8 @@ async function bootstrap() {
 		credentials: true
 	});
 	app.useGlobalPipes(new ValidationPipe({
-		whitelist: true
+		whitelist: true,
+		forbidNonWhitelisted:true,
 	}));
 	app.use(cookieParser(process.env.cookie_secret));
 	await app.listen(8000);
