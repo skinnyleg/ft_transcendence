@@ -112,6 +112,7 @@ export class UserService {
 				Wins: user.Wins,
 				Losses: user.Losses,
 				winrate,
+				self: user.id === id,
 			};
 		});
 
@@ -241,10 +242,12 @@ export class UserService {
 		})
 		if (!user)
 			throw new NotFoundException('user Doesn\'t exist')
+
 		const requestExist = await this.prisma.request.findFirst({
 		  where: {
 			senderId: senderId,
 			typeOfRequest: RequestType.FRIEND,
+			responded: false,
 		  },
 		});
 
@@ -274,6 +277,8 @@ export class UserService {
 		
 		if (friendStatus)
 			throw new BadRequestException('you are already friends or already got a request from this user')
+
+
 			
 
 		const id = await this.generateRequest(senderId, recipientId, RequestType.FRIEND);
@@ -377,11 +382,12 @@ export class UserService {
 			where: {
 				id: requestId,
 				senderId: recipientId,
+				responded: false,
 			}
 		});
 
 		if (!request)
-			throw new NotFoundException('request Doesn\'t exist')
+			throw new NotFoundException('request Doesn\'t exist or already responded')
 
 		const user = await this.prisma.user.findUnique({
 			where: {
@@ -414,11 +420,12 @@ export class UserService {
 			where: {
 				id: requestId,
 				senderId: recipientId,
+				responded:false,
 			}
 		});
 
 		if (!request)
-			throw new NotFoundException('request Doesn\'t exist')
+			throw new NotFoundException('request Doesn\'t exist or already responded')
 
 		const user = await this.prisma.user.findUnique({
 			where: {

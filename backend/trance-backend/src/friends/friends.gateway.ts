@@ -6,6 +6,7 @@ import { validate } from 'class-validator';
 import { FriendRequestDto } from './Dto/userIdDto';
 import { Record } from '@prisma/client/runtime/library';
 import { RequestActionDto } from './Dto/requestDto';
+import { validateAndSendError } from 'src/utils/validateInputWebsocket';
 
 @WebSocketGateway()
 export class FriendsGateway {
@@ -21,53 +22,41 @@ export class FriendsGateway {
 	@SubscribeMessage('add-friend')
 	async sendFriendReq(client: Socket, payload: Record<string, any>)
 	{
-		const friendRequestDto = plainToClass(FriendRequestDto, payload);
-		const errors = await validate(friendRequestDto);
-		if (errors.length > 0) {
-			const errorMessage = Object.values(errors[0].constraints).join(', ');
-			this.friendsService.sendWebSocketError(client, errorMessage, false);
-			return;
-		}
-		await this.friendsService.sendRequest(client, friendRequestDto.userId)
+		const verify = await validateAndSendError(payload, FriendRequestDto);
+		if (verify.valid == true)
+			this.friendsService.sendWebSocketError(client, verify.error, false);
+		else
+			await this.friendsService.sendRequest(client, verify.input.userId)
 	}
 
 	@SubscribeMessage('remove-friend')
 	async deleteFriendReq(client: Socket, payload: Record<string, any>)
 	{
-		const deleteRequestDto = plainToClass(FriendRequestDto, payload);
-		const errors = await validate(deleteRequestDto);
-		if (errors.length > 0) {
-			const errorMessage = Object.values(errors[0].constraints).join(', ');
-			this.friendsService.sendWebSocketError(client, errorMessage, false);
-			return;
-		}
-		await this.friendsService.deleteRequest(client, deleteRequestDto.userId)
+		const verify = await validateAndSendError(payload, FriendRequestDto);
+		if (verify.valid == true)
+			this.friendsService.sendWebSocketError(client, verify.error, false);
+		else
+			await this.friendsService.deleteRequest(client, verify.input.userId)
 	}
 
 	@SubscribeMessage('accept-request')
 	async acceptRequest(client: Socket, payload: Record<string, any>)
 	{
-		const RequestDto = plainToClass(RequestActionDto, payload);
-		const errors = await validate(RequestDto);
-		if (errors.length > 0) {
-			const errorMessage = Object.values(errors[0].constraints).join(', ');
-			this.friendsService.sendWebSocketError(client, errorMessage, false);
-			return;
-		}
-		await this.friendsService.acceptRequest(client, RequestDto.userId, RequestDto.requestId);
+		const verify = await validateAndSendError(payload, RequestActionDto);
+		if (verify.valid == true)
+			this.friendsService.sendWebSocketError(client, verify.error, false);
+		else
+			await this.friendsService.acceptRequest(client, verify.input.userId, verify.input.requestId);
 	}
 
 	@SubscribeMessage('refuse-request')
 	async refuseRequest(client: Socket, payload: Record<string, any>)
 	{
-		const RequestDto = plainToClass(RequestActionDto, payload);
-		const errors = await validate(RequestDto);
-		if (errors.length > 0) {
-			const errorMessage = Object.values(errors[0].constraints).join(', ');
-			this.friendsService.sendWebSocketError(client, errorMessage, false);
-			return;
-		}
-		await this.friendsService.refuseRequest(client, RequestDto.userId, RequestDto.requestId);
+		const verify = await validateAndSendError(payload, RequestActionDto);
+		if (verify.valid == true)
+			this.friendsService.sendWebSocketError(client, verify.error, false);
+		else
+			await this.friendsService.refuseRequest(client, verify.input.userId, verify.input.requestId);
 	}
 
 	async handleDisconnect(client: Socket) {
