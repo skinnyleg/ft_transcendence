@@ -91,8 +91,4 @@ function LoginButton() {
       <ArrowRightIcon className="h-4 w-4 text-white" />
     </button>
  );
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> origin/profileBackend
