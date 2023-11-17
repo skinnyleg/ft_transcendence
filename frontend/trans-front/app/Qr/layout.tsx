@@ -1,15 +1,13 @@
-import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
-import './globals.css'
-import { RouterProvider } from 'react-router-dom'
-import Providers from './ui/provider'
+import { Metadata } from "next"
+import { Inter } from "next/font/google"
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Login',
-  description: 'Pong Platform Login Page',
+  title: '2FA',
+  description: 'Pong Platform 2FA Page',
   viewport: 'width=device-width, initial-scale=1',
+
 }
 
 export default function RootLayout({
@@ -19,9 +17,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head >
-        <link rel='icon' href='/logo.png' />
-      </head>
       <body className={inter.className}>
         {/* <Providers> */}
           {children}

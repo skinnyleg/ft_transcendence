@@ -1,8 +1,8 @@
 import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { UserStatus } from 'src/classes/classes';
 import * as bcrypt from 'bcrypt';
 import { authenticator } from 'otplib';
+import { User, UserStatus } from '@prisma/client';
 
 @Injectable()
 export class UserService {
@@ -45,7 +45,7 @@ export class UserService {
 			level: userData.level,
 			grade: userData.grade,
 			token: token,
-			status: userData.status,
+			status: UserStatus.ONLINE,
 			}
 		})
 	}

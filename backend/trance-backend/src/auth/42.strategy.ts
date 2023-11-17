@@ -37,7 +37,6 @@ export class Strategy42 extends PassportStrategy(Strategy, '42') {
     wallet: profile._json.wallet,
     level: profile._json.cursus_users[1].level,
     grade: profile._json.cursus_users[1].grade,
-	status: UserStatus.ONLINE,
 	// isEnabled: false,
 	// Secret: null,
 	// otpauth_url: null,
