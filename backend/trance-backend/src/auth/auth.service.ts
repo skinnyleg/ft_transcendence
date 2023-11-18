@@ -31,7 +31,7 @@ export class AuthService {
 			throw new UnauthorizedException('Wrong Crendentiels')
 		res.cookie('id', user.id, {signed: true})
 		if (user.isEnabled == true)
-			res.redirect(`${process.env.FrontendHost}/qrLogin`);
+			res.redirect(`${process.env.FrontendHost}/Qr`);
 		const token = await this.createToken(user.id, user.login)
 		res.cookie('token', token, {signed: true});
 		console.log("token == ", token)

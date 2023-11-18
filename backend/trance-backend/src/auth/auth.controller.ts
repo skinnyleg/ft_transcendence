@@ -26,7 +26,7 @@ export class AuthController {
 		response.cookie('id', request.user.id, {signed: true})
 		if (request.user.isEnabled === true)
 		{
-			response.redirect(`${process.env.FrontendHost}/qrLogin`);
+			response.redirect(`${process.env.FrontendHost}/Qr`);
 			return;
 		}
 		const token = await this.authService.createToken(request.user.id, request.user.login)
