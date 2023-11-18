@@ -3,6 +3,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { Request, Response } from 'express';
 import { compareHash } from 'src/utils/bcryptUtils';
+import { HttpStatusCode } from 'axios';
 
 @Injectable()
 export class AuthService {
@@ -35,7 +36,11 @@ export class AuthService {
 		res.cookie('token', token, {signed: true});
 		console.log("token == ", token)
 		// res.redirect(`${process.env.FrontendHost}/Dashboard`);
-		return ({token: token})
+		
+		return res.status(HttpStatusCode.Ok).json({
+			token,
+			message: 'Sign-in successful',
+		  });
 	}
 
 	async signOut(req: Request, res: Response) {

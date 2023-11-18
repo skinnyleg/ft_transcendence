@@ -2,9 +2,10 @@
 import Image from 'next/image'
 // import { Pong } from 'react-pong';
 import LoginForm from '@/app/ui/login-form';
+import isAuth from './isAuth';
 
 
-export default function LoginPage() {
+function LoginPage() {
     return (
         <main className="flex items-center justify-center overflow-hidden bg-lightblue">
             <Image src={'/yo.jpg'} alt="yo" layout="fill" objectFit="cover" className="h-full w-full object-cover" quality={100} />
@@ -13,4 +14,6 @@ export default function LoginPage() {
                 {/* <Pong/> */}
             </div>
       </main>);
-  }
+}
+
+export default LoginPage;

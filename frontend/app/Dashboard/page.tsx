@@ -11,8 +11,9 @@ import Themes from '../ui/Themes';
 import React, { useState } from 'react';
 import PowerUps from '../ui/PowerUps';
 import PlayButton from '../ui/PlayButton';
+import isAuth from '../isAuth';
 
-export default function Dashboard() {
+function Dashboard() {
   
   const [theme, setThem] = useState('yo1.jpg');
   const [powerup, setPowerup] = useState('FireBall');
@@ -50,3 +51,5 @@ export default function Dashboard() {
     </main>
   );
 }
+
+export default Dashboard;

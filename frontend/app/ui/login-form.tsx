@@ -10,44 +10,52 @@ import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { useFormState, useFormStatus } from 'react-dom';
 import Link  from 'next/link';
 import { useState } from 'react';
+import { Router } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
  
 export default function LoginForm() {
   const [error, setError] = useState('');
   const [isErrorVisible, setIsErrorVisible] = useState(true);
+  const router = useRouter();
 
-  const  handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     setIsErrorVisible(true);
     event.preventDefault();
+  
     const username = event.currentTarget.username.value;
     const password = event.currentTarget.password.value;
-    try
-    {
+  
+    try {
       const response = await fetch('http://localhost:8000/auth/signin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
       });
+
+      
       if (response.ok) {
-        // const { token } = await response.json();
-        // localStorage.setItem('token', token);
-        // console.log('token', token);
-      }
-      if (response.status === 400) {
+        const { token } = await response.json();
+        console.log('Token:', token);
+        localStorage.setItem('token', token);
+        router.push('/Dashboard', undefined);
+      } else if (response.status === 401) {
+        setError('Invalid credentials. Please check your username and password.');
+      } else if (response.status === 400) {
         setError('User not found. Please check your credentials.');
-        setTimeout(() => {
-          setError('');
-          setIsErrorVisible(false);
-        }, 3000);
+      } else {
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
-      else {
-        throw new Error(await response.text());
-      }
+    } catch (error) {
+      console.error('Error during login:', error);
+      setError('An unexpected error occurred. Please try again later.');
+    } finally {
+      setTimeout(() => {
+        setError('');
+        setIsErrorVisible(false);
+      }, 3000);
     }
-    catch (error)
-    {
-      console.error(error);
-    }
-  };
+    };
+  
   
   return (
     <form className="space-y-3" onSubmit={handleSubmit}>
