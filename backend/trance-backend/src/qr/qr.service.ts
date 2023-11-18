@@ -27,7 +27,7 @@ export class QrService {
 		{
 			const token = await this.authService.createToken(user.id, user.login)
 			res.cookie('token', token);
-		   return { valid: true };
+		   return { valid: true, token: token };
 		 } else {
 		   return { valid: false };
 		 }
