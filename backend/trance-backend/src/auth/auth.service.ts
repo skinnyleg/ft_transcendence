@@ -36,11 +36,8 @@ export class AuthService {
 		res.cookie('token', token, {signed: true});
 		console.log("token == ", token)
 		// res.redirect(`${process.env.FrontendHost}/Dashboard`);
-		
-		return res.status(HttpStatusCode.Ok).json({
-			token,
-			message: 'Sign-in successful',
-		  });
+		res.status(200).json(token);
+		// return ({token: token})
 	}
 
 	async signOut(req: Request, res: Response) {

@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 import { authenticator } from 'otplib';
@@ -27,9 +27,10 @@ export class QrService {
 		{
 			const token = await this.authService.createToken(user.id, user.login)
 			res.cookie('token', token);
-		   return { valid: true, token: token };
+			res.status(200).json(token);
+		   // return { valid: true, token: token };
 		 } else {
-		   return { valid: false };
+			throw new UnauthorizedException('not allowed')
 		 }
 	}
 

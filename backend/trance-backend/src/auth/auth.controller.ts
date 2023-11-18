@@ -1,7 +1,9 @@
-import { Body, Controller, Get, Logger, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Post, Req, Res, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { intraAuthGuard } from './42.guard';
 import { authDto } from './Dto/authDto';
+import { JwtAuthGuard } from './jwt.guard';
+import { tokenDto } from './Dto/tokenDto';
 
 @Controller('auth')
 export class AuthController {
@@ -32,7 +34,8 @@ export class AuthController {
 		const token = await this.authService.createToken(request.user.id, request.user.login)
 		response.cookie('token', token, {signed: true})
 		// response.redirect(`${process.env.FrontendHost}/Dashboard`);
-		return ({token : token})
+		response.status(200).json(token);
+		// return ({token : token})
 	}
 
 	@Get('signout')
@@ -41,6 +44,18 @@ export class AuthController {
 		return this.authService.signOut(req,res)
 	}
 
+
+	@Post('CheckToken')
+	CheckToken(@Body() payload: tokenDto, @Req() req, @Res() res)
+	{
+		if (req.signedCookies && 'token' in req.signedCookies) {
+		  if (req.signedCookies.token.length > 0) {
+				if (req.signedCookies.token === payload.token)
+					res.status(200).json(payload.token);
+		  }
+		}
+		throw new UnauthorizedException('not allowed')
+	}
 
 
 
