@@ -31,7 +31,8 @@ export class AuthController {
 		}
 		const token = await this.authService.createToken(request.user.id, request.user.login)
 		response.cookie('token', token, {signed: true})
-		response.redirect(`${process.env.FrontendHost}/Dashboard`);
+		// response.redirect(`${process.env.FrontendHost}/Dashboard`);
+		return ({token : token})
 	}
 
 	@Get('signout')
