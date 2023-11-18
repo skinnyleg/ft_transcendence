@@ -9,10 +9,48 @@ import Image from 'next/image';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { useFormState, useFormStatus } from 'react-dom';
 import Link  from 'next/link';
+import { useState } from 'react';
  
 export default function LoginForm() {
+  const [error, setError] = useState('');
+  const [isErrorVisible, setIsErrorVisible] = useState(true);
+
+  const  handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    setIsErrorVisible(true);
+    event.preventDefault();
+    const username = event.currentTarget.username.value;
+    const password = event.currentTarget.password.value;
+    try
+    {
+      const response = await fetch('http://localhost:8000/auth/signin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+      if (response.ok) {
+        // const { token } = await response.json();
+        // localStorage.setItem('token', token);
+        // console.log('token', token);
+      }
+      if (response.status === 400) {
+        setError('User not found. Please check your credentials.');
+        setTimeout(() => {
+          setError('');
+          setIsErrorVisible(false);
+        }, 3000);
+      }
+      else {
+        throw new Error(await response.text());
+      }
+    }
+    catch (error)
+    {
+      console.error(error);
+    }
+  };
+  
   return (
-    <form className="space-y-3">
+    <form className="space-y-3" onSubmit={handleSubmit}>
       <div className="flex-1 rounded-lg backdrop-blur border border-gray-300 bg-opacity-80  px-6 pb-4 pt-8">
         <h1 className={`${lusitana.className} mb-3 lg:text-2xl md:text-xl`}>
           Please log in to continue.
@@ -33,6 +71,7 @@ export default function LoginForm() {
                 name="username"
                 placeholder="Enter your username"
                 required
+                
               />
               <UserIcon className="md:ml-6 pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
             </div>
@@ -52,13 +91,13 @@ export default function LoginForm() {
                 name="password"
                 placeholder="Enter password"
                 required
-                minLength={6}
               />
               <KeyIcon className="md:ml-6 pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
             </div>
           </div>
         </div>
         <LoginButton />
+        {error && isErrorVisible &&  <p className="text-red-500 bg-white rounded-md mt-2 p-2 time-300">{error}</p>}
         <div className="text-center mt-5">
           <div className="flex items-center justify-center">
             <div className="border-t border-black w-1/2"></div>
