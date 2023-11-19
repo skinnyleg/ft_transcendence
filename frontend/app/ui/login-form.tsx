@@ -31,12 +31,11 @@ export default function LoginForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
       });
-
       
       if (response.ok) {
-        const { token } = await response.json();
-        console.log('Token:', token);
-        localStorage.setItem('token', token);
+        const res = await response.json();
+        localStorage.setItem('token', res.token);
+        console.log('re 1 :', res.token);
         router.push('/Dashboard', undefined);
       } else if (response.status === 401) {
         setError('Invalid credentials. Please check your username and password.');
@@ -59,7 +58,7 @@ export default function LoginForm() {
   
   return (
     <form className="space-y-3" onSubmit={handleSubmit}>
-      <div className="flex-1 rounded-lg backdrop-blur border border-gray-300 bg-opacity-80  px-6 pb-4 pt-8">
+      <div className="flex-1 rounded-lg backdrop-blur border border-gray-300 bg-opacity-80 px-6 pb-4 pt-8">
         <h1 className={`${lusitana.className} mb-3 lg:text-2xl md:text-xl`}>
           Please log in to continue.
         </h1>

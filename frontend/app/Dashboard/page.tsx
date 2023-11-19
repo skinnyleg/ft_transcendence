@@ -8,25 +8,85 @@ import { MagnifyingGlassIcon } from '@heroicons/react/20/solid';
 import TopBar from '../ui/top';
 import Achievements from '../ui/Achievements';
 import Themes from '../ui/Themes';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PowerUps from '../ui/PowerUps';
 import PlayButton from '../ui/PlayButton';
-import isAuth from '../isAuth';
+// import withAuth from '../withAuth';
+import useSWR from 'swr';
+
+import axios from 'axios';
+
+interface dashboardData {
+  friends: FriendsData[];
+  doneAchievements: AchievementsData[];
+  notDoneAchievements: AchievementsData[];
+  notifications: NotificationsData[];
+}
+
+interface FriendsData {
+  id: string;
+  profilePic: string;
+  nickname: string;
+  status: any;
+}
+
+interface AchievementsData {
+  id: string;
+  title: string;
+  description: string;
+  userScore: number;
+  totalScore: number;
+}
+
+interface NotificationsData {
+  userId: string;
+  userProfilePic: string;
+  description: string;
+  typeOfRequest: any;
+  responded: boolean;
+}
+
 
 function Dashboard() {
-  
-  const [theme, setThem] = useState('yo1.jpg');
+
+  const [dashboardData, setDashboardData] = useState<dashboardData | undefined>(undefined);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://localhost:8000/user/Dashboard', { withCredentials: true});
+        // const data = await response.json();
+        console.log("data", response.data);
+        setDashboardData(response.data);
+      } catch (error) {
+        setError('Error fetching data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+  console.log("hello", dashboardData);
+  const doneAchievements = dashboardData?.doneAchievements || [];
+  const notDoneAchievements = dashboardData?.notDoneAchievements || [];
+  const friends = dashboardData?.friends || [];
+  const notifications = dashboardData?.notifications || [];
+
+  const [theme, setTheme] = useState('yo1.jpg');
   const [powerup, setPowerup] = useState('FireBall');
 
   const handleThemeChange = (newtheme: string) => {
-    setThem(newtheme);
+    setTheme(newtheme);
   }
   const handlePowerUpChange = (newpowerup: string) => {
     setPowerup(newpowerup);
   }
 
   return (
-    <main className="flex flex-col md:overflow-hidden">
+    <main className="flex flex-col md:overflow-hidden font-white">
       <TopBar />
       <div className="flex flex-col lg:mt-10 md:mt-10">
         <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-5 grid-rows-5 lg:grid-rows-3 gap-4 w-full h-full mt-4">
@@ -35,7 +95,9 @@ function Dashboard() {
             <PlayButton theme = {theme} PowerUp={powerup}/>
           </div>
 
-          <Achievements />
+          <Achievements 
+          doneAchievements={doneAchievements}
+          notDoneAchievements={notDoneAchievements} />
 
           <Themes handleThemeChange={handleThemeChange} />
 

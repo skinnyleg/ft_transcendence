@@ -9,12 +9,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import withAuth from "../withAuth";
 
 const inter = Inter({ subsets: ['latin'] })
 
-
-
-export default function NavBar ()
+function NavBar ()
 {
     const [show, setShow] = useState(false);
     var currentPath = usePathname();
@@ -117,3 +116,5 @@ export default function NavBar ()
         </div>
     );
 }
+
+export default (NavBar);

@@ -2,7 +2,6 @@
 import Image from 'next/image'
 // import { Pong } from 'react-pong';
 import LoginForm from '@/app/ui/login-form';
-import isAuth from './isAuth';
 
 
 function LoginPage() {
