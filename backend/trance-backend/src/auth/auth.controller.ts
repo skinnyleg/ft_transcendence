@@ -25,14 +25,14 @@ export class AuthController {
 	@UseGuards(intraAuthGuard)
 	async intra42AuthRedirect(@Req() request, @Res() response)
 	{
-		response.cookie('id', request.user.id, {signed: true});
+		response.cookie('id', request.user.id, {signed: true, sameSite: 'none'})
 		if (request.user.isEnabled === true)
 		{
 			response.redirect(`${process.env.FrontendHost}/Qr`);
 			return;
 		}
-		const token = await this.authService.createToken(request.user.id, request.user.login);
-		response.cookie('token', token, {signed: true});
+		const token = await this.authService.createToken(request.user.id, request.user.login)
+		response.cookie('token', token, {signed: true, sameSite: 'none'})
 		// response.redirect(`${process.env.FrontendHost}/Dashboard`);
 		response.status(200).json(token);
 		// return ({token : token})
@@ -58,9 +58,6 @@ export class AuthController {
 		}
 		throw new UnauthorizedException('not allowed');
 	}
-
-
-
 
 
 }
