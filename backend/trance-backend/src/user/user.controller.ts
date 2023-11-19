@@ -55,7 +55,8 @@ export class UserController {
 
 	@Get('Dashboard')
 	@UseGuards(JwtAuthGuard)
- 	getFriends(@Req() req) {
+	getDashboard(@Req() req) {
+		console.log("getFriends");
 		const id = getId(req);
 		return this.userService.getDashboard(id);
 	}

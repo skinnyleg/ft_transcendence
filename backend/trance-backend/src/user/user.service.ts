@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ConsoleLogger, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { authenticator } from 'otplib';
 import { AchievementStatus, RequestType, Status, UserStatus } from '@prisma/client';
@@ -118,7 +118,7 @@ export class UserService {
 
 		const sortedUsers = usersWithWinrates.sort((a, b) => b.winrate - a.winrate);
 
-		return (sortedUsers)
+		return (sortedUsers);
 	}
 
 	async getNotDoneAchievements(id: string)
@@ -169,7 +169,7 @@ export class UserService {
 					status: true,
 				}
 			})
-			friendsData.push(friendData)
+			friendsData.push(friendData);
 		}
 		return (friendsData);
 	}
@@ -188,7 +188,7 @@ export class UserService {
 				status: friendStatus,
 				friendId: recipientId,
 			}
-		})
+		});
 	}
 
 	async updateFriend(recipientId: string,friendStatus: any)
@@ -504,12 +504,12 @@ export class UserService {
 
 	async getDashboard(id: string)
 	{
+		console.log("id == ", id);
 		const friends = await this.getFriendsCards(id);
 		const doneAchievements = await this.getDoneAchievements(id);
 		const notDoneAchievements = await this.getNotDoneAchievements(id);
 		const notifications = await this.getNotificationsHistory(id);
-		
-		return ({friends, doneAchievements, notDoneAchievements, notifications})
+		return ({friends, doneAchievements, notDoneAchievements, notifications});
 	}
 
 	async create(userData: any)
@@ -576,7 +576,7 @@ export class UserService {
 					}
 				}
 			}
-		})
+		});
 
 		const requestIds = requests.flatMap((user) => user.userRequests.map((req) => ({ id: req.id })));
 		// if (requestIds.length === 0)
@@ -585,7 +585,7 @@ export class UserService {
 		for (const req of requestIds)
 		{
 			const notif = await this.generateNotifData(req.id);
-			notifications.push(notif)
+			notifications.push(notif);
 		}
 		return notifications;
 	}
@@ -616,7 +616,7 @@ export class UserService {
 		for (const req of requestIds)
 		{
 			const notif = await this.generateNotifData(req.id);
-			notifications.push(notif)
+			notifications.push(notif);
 		}
 		return notifications;
 	}

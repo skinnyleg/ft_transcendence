@@ -28,16 +28,18 @@ export class AuthService {
 
 		const isMatch = await compareHash(password, user.password);
 		if (isMatch == false)
-			throw new UnauthorizedException('Wrong Crendentiels')
+			throw new UnauthorizedException('Wrong Crendentiels');
 		res.cookie('id', user.id, {signed: true})
 		if (user.isEnabled == true)
 			res.redirect(`${process.env.FrontendHost}/Qr`);
-		const token = await this.createToken(user.id, user.login)
+		const token = await this.createToken(user.id, user.login);
 		res.cookie('token', token, {signed: true});
-		console.log("token == ", token)
+		console.log("token == ", token);
+		console.log("user.id == ");
 		// res.redirect(`${process.env.FrontendHost}/Dashboard`);
-		res.status(200).json(token);
-		// return ({token: token})
+		return res.status(HttpStatusCode.Ok).json({
+			token
+		  });
 	}
 
 	async signOut(req: Request, res: Response) {
