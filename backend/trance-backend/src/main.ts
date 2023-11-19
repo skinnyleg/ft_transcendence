@@ -13,8 +13,7 @@ async function bootstrap() {
 		whitelist: true,
 		forbidNonWhitelisted:true,
 	}));
-	// app.use(cookieParser(process.env.cookie_secret));
-	app.use(cookieParser());
+	app.use(cookieParser(process.env.cookie_secret));
 	await app.listen(8000);
 }
 bootstrap();
