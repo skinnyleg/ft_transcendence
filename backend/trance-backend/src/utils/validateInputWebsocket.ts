@@ -9,7 +9,6 @@ export async function validateAndSendError(payload: Record<string, any>, dtoClas
 
   if (errors.length > 0) {
     const errorMessage = Object.values(errors[0].constraints).join(', ');
-    // this.friendsService.sendWebSocketError(client, errorMessage, false);
     return {valid: true, error: errorMessage};
   }
 

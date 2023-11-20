@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { authenticator } from 'otplib';
 import { AchievementStatus, RequestType, Status, UserStatus } from '@prisma/client';
@@ -47,12 +47,22 @@ export class UserService {
 
 	async findOneByNickname(nick: string)
 	{
-		const user = await this.prisma.user.findUnique({
+		const users = await this.prisma.user.findMany({
 			where: {
-				nickname: nick,
-			}
-		})
-		return user;
+				nickname: {
+					contains: nick,
+					mode: 'insensitive',
+				},
+			},
+			select: {
+				id: true,
+			},
+		});
+
+
+		if (users.length === 0)
+			return null;
+		return users;
 	}
 
 
@@ -233,7 +243,7 @@ export class UserService {
 	async saveRequest(senderId: string, recipientId: string)
 	{
 		if (senderId === recipientId)
-			throw new BadRequestException('Can\'t add yourself as a friend')
+			throw new ConflictException('Can\'t add yourself as a friend')
 
 		const user = await this.prisma.user.findUnique({
 			where: {
@@ -252,7 +262,7 @@ export class UserService {
 		});
 
 		if (requestExist)
-			throw new BadRequestException('you have already sent a request')
+			throw new ConflictException('you have already sent a request')
 
 		const friendStatus = await this.prisma.friendStatus.findFirst({
 		  where: {
@@ -276,7 +286,7 @@ export class UserService {
 		});
 		
 		if (friendStatus)
-			throw new BadRequestException('you are already friends or already got a request from this user')
+			throw new ConflictException('you are already friends or already got a request from this user')
 
 
 			
@@ -290,7 +300,7 @@ export class UserService {
 	async deleteRequest(senderId: string, recipientId: string)
 	{
 		if (senderId === recipientId)
-			throw new BadRequestException('Can\'t unfriend yourself')
+			throw new ConflictException('Can\'t unfriend yourself')
 
 		const user = await this.prisma.user.findUnique({
 			where: {
@@ -322,7 +332,7 @@ export class UserService {
 		});
 		
 		if (!friendStatus)
-			throw new BadRequestException('you need to be friends to unfriend')
+			throw new ConflictException('you need to be friends to unfriend')
 			
 		await this.deleteFriend(senderId)
 		await this.deleteFriend(recipientId)
@@ -353,7 +363,7 @@ export class UserService {
 		  },
 		});
 		if (!request)
-			throw new BadRequestException('Can\'t generate a request');
+			throw new InternalServerErrorException('Can\'t generate a request');
 		return (request.id)
 
 	}
@@ -376,7 +386,7 @@ export class UserService {
 	async acceptRequest(senderId: string, recipientId: string, requestId: string)
 	{
 		if (senderId === recipientId)
-			throw new BadRequestException('can\'t accept a request from yourself')
+			throw new ConflictException('can\'t accept a request from yourself')
 
 		const request = await this.prisma.request.findUnique({
 			where: {
@@ -414,7 +424,7 @@ export class UserService {
 	async refuseRequest(senderId: string, recipientId: string, requestId: string)
 	{
 		if (senderId === recipientId)
-			throw new BadRequestException('can\'t refuse a request from yourself')
+			throw new ConflictException('can\'t refuse a request from yourself')
 
 		const request = await this.prisma.request.findUnique({
 			where: {
@@ -579,8 +589,6 @@ export class UserService {
 		})
 
 		const requestIds = requests.flatMap((user) => user.userRequests.map((req) => ({ id: req.id })));
-		// if (requestIds.length === 0)
-		// 	throw new NotFoundException('no new notification')
 	
 		for (const req of requestIds)
 		{
@@ -610,8 +618,6 @@ export class UserService {
 		})
 
 		const requestIds = requests.flatMap((user) => user.userRequests.map((req) => ({ id: req.id })));
-		// if (requestIds.length === 0)
-		// 	throw new NotFoundException('no new notification')
 	
 		for (const req of requestIds)
 		{
@@ -657,24 +663,18 @@ export class UserService {
 			}
 		})
 		if (!secret)
-			throw new BadRequestException('User hasn\'t enable 2FA')
+			throw new ConflictException('User hasn\'t enable 2FA')
 		return secret.Secret;
 	}
 
 
 		async changePassword(newPass : string, id : string) {
 
-		// if (!isStrongPassword(newPass))
-		// 	throw new BadRequestException('Password does not meet strength requirements');
 		const user = await this.findOneById(id);
 
 		if (!user)
-			throw new UnauthorizedException("No User Found")
+			throw new NotFoundException("No User Found")
 	
-		// const isMatch = await compareHash(oldPass,user.password);
-		// if (isMatch == false)
-		// 	throw new UnauthorizedException('Wrong Crendentiels')
-
 		const hashedPass = await hashPass(newPass);
 		await this.prisma.user.update({
 			where: {
@@ -695,12 +695,12 @@ export class UserService {
 
 		const isunique = await this.findOneByNickname(newNick);
 		if (isunique)
-			throw new BadRequestException('nickname already taken')
+			throw new ConflictException('nickname already taken')
 	
 		const user = await this.findOneById(id)
 
 		if (!user)
-			throw new BadRequestException("user doesn't exist")
+			throw new NotFoundException("user doesn't exist")
 
 		await this.prisma.user.update({
 			where: {
@@ -734,7 +734,7 @@ export class UserService {
 			},
 		})
 		if (!user)
-			throw new BadRequestException('user not found')
+			throw new NotFoundException('user not found')
 		return user;
   }
 
@@ -759,7 +759,7 @@ export class UserService {
 			},
 		})
 		if (!user)
-			throw new BadRequestException('user not found')
+			throw new NotFoundException('user not found')
 		const friendStatus = await this.prisma.friendStatus.findFirst({
 		  where: {
 			userId: id, // Specify the ID of the user making the request
@@ -774,16 +774,20 @@ export class UserService {
 		return {userData: user, isfriend, userProfile};
   }
 
-	async getProfiles() {
-    	const users = await this.prisma.user.findMany({
-			select: {
-			id: true,
-			nickname: true,
-			login:true,
-			profilePic: true,
-			status: true,
+	async getProfiles(searchInput: string) {
+		const users = await this.prisma.user.findMany({
+			where: {
+				nickname: {
+					contains: searchInput,
+					mode: 'insensitive',
+				},
 			},
-		})
+			select: {
+				id: true,
+				nickname: true,
+				profilePic: true,
+			},
+		});
 		return users;
   }
 
@@ -822,7 +826,7 @@ export class UserService {
 	{
 		const user = await this.findOneById(id);
 		if (!user)
-			throw new BadRequestException('user not found')
+			throw new NotFoundException('user not found')
 
 		if (user.isEnabled == false)
 		{
