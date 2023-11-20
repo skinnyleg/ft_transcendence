@@ -92,9 +92,9 @@ export class FriendsService {
 			if (toSend !== undefined)
 			{
 				const notif = await this.userService.generateNotifData(requestId);
-				toSend.socket.emit('notification', notif);
+				toSend.socket.emit('notifHistory', notif);
 			}
-			client.emit('request-sent', 'Friend request sent successfully');
+			client.emit('notification', 'Friend request sent successfully');
 		}
 		catch(error)
 		{
@@ -112,9 +112,9 @@ export class FriendsService {
 			if (toSend !== undefined)
 			{
 				const notif = await this.userService.generateNotifData(requestId);
-				toSend.socket.emit('notification', notif);
+				toSend.socket.emit('notifHistory', notif);
 			}
-			client.emit('request-sent', 'Unfriend request sent successfully');
+			client.emit('notification', 'Unfriend request sent successfully');
 		}
 		catch(error)
 		{
@@ -133,7 +133,7 @@ export class FriendsService {
 			if (toSend !== undefined)
 			{
 				const nick = await this.userService.getNickById(sender.id)
-				toSend.socket.emit('request-refused', `${nick} refused your request`);
+				toSend.socket.emit('notification', `${nick} refused your request`);
 			}
 		}
 		catch(error)
@@ -153,7 +153,7 @@ export class FriendsService {
 			if (toSend !== undefined)
 			{
 				const nick = await this.userService.getNickById(sender.id)
-				toSend.socket.emit('request-accepted', `${nick} accepted your request`);
+				toSend.socket.emit('notification', `${nick} accepted your request`);
 			}
 		}
 		catch(error)
