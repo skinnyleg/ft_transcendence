@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 import { authenticator } from 'otplib';
@@ -16,11 +16,11 @@ export class QrService {
 	{
 		const secret = await this.userservice.getSecret(id);
 		if (!secret)
-			throw new BadRequestException('user hasn\'t enabled 2FA')
+			throw new ConflictException('user hasn\'t enabled 2FA')
 
 		const user = await this.userservice.findOneById(id);
 		if (!user)
-			throw new BadRequestException('User Doesn\'t exist')
+			throw new NotFoundException('User Doesn\'t exist')
 
 		const isValid = authenticator.check(QrCode, secret);
 		 if (isValid)

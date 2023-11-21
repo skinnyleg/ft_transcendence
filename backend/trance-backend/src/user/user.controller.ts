@@ -5,6 +5,7 @@ import { getId } from 'src/utils/getId';
 import { ChangeNicknameDto } from './Dto/nicknameDto';
 import { ChangePasswordDto } from './Dto/passwordDto';
 import { publicProfileDto } from './Dto/publicProfileDto';
+import { searchBarDto } from './Dto/searchBarDto';
 
 @Controller('user')
 export class UserController {
@@ -47,10 +48,14 @@ export class UserController {
 	}
 
 
-	@Get('profiles')
+	@Post('search')
 	@UseGuards(JwtAuthGuard)
- 	getProfiles() {
-		return this.userService.getProfiles();
+ 	getProfiles(@Body() payload: searchBarDto) {
+		if (payload.searchInput === "")
+			return;
+		if (Object.keys(payload).length === 0)
+			throw new BadRequestException('Payload Is Empty')
+		return this.userService.getProfiles(payload.searchInput);
 	}
 
 	@Get('Dashboard')

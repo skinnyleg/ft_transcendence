@@ -2,7 +2,9 @@
 
 requested Events:
 
-send-request : send a request to a user. (done ...)
+add-friend : send a friend request to a user. (done ...)
+
+remove-friend : send a Unfriend request to a user. (done ...)
 
 accept-request: when a user accept a friend request
 
@@ -14,12 +16,8 @@ statusChange : when a user status change to something else
 
 error : when an error occurs with web socket i send a string displying the error
 
-request-sent: sent to the sender socket to inform that the request has been sent sucffeuly
-
 notification: sent to the user if online to notify him of any type of request
 
-request-accepted: sent to the sender to notify him of the friend accepting the request
-
-request-refused: sent to the sender to notify him of the friend refusing the request
+notifHistory: update the notofication history on the frontend
 
 

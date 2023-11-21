@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { Request, Response } from 'express';
@@ -21,7 +21,7 @@ export class AuthService {
 		})
 
 		if (!user)
-			throw new BadRequestException("User Doesn't Exits")
+			throw new NotFoundException("User Doesn't Exits")
 	
 		// if (user.setPass == false)
 		// 	throw new BadRequestException('you need to set up a password')
@@ -57,7 +57,7 @@ export class AuthService {
 		const token = await this.jwtservice.signAsync(payload);
 		
 		if (!token)
-			throw new ForbiddenException();
+			throw new InternalServerErrorException();
 		await this.prisma.user.update({
 			where:{
 				id: id,
