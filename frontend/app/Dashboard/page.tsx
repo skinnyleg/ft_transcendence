@@ -15,20 +15,27 @@ import PlayButton from '../ui/PlayButton';
 import useSWR from 'swr';
 
 import axios from 'axios';
+import withAuth from '../withAuth';
+import FriendsList from '../ui/FriendList';
+export enum UserStatus {
+    online = 'ONLINE',
+    offline =  'OFFLINE',
+    IN_GAME = 'IN_GAME'
+}
 
 interface dashboardData {
   friends: FriendsData[];
   doneAchievements: AchievementsData[];
   notDoneAchievements: AchievementsData[];
   notifications: NotificationsData[];
-}
+}[];
 
 interface FriendsData {
   id: string;
   profilePic: string;
   nickname: string;
-  status: any;
-}
+  status: UserStatus;
+}[];
 
 interface AchievementsData {
   id: string;
@@ -36,7 +43,7 @@ interface AchievementsData {
   description: string;
   userScore: number;
   totalScore: number;
-}
+}[];
 
 interface NotificationsData {
   userId: string;
@@ -44,7 +51,7 @@ interface NotificationsData {
   description: string;
   typeOfRequest: any;
   responded: boolean;
-}
+}[];
 
 
 function Dashboard() {
@@ -86,12 +93,12 @@ function Dashboard() {
   }
 
   return (
-    <main className="flex flex-col md:overflow-hidden font-white">
+    <main className="flex flex-col font-white">
       <TopBar />
       <div className="flex flex-col lg:mt-10 md:mt-10">
-        <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-5 grid-rows-5 lg:grid-rows-3 gap-4 w-full h-full mt-4">
+        <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-5 lg:grid-rows-3 gap-4 w-full h-full mt-4 md:grid-row-5 grid-row-5">
           
-          <div className="relative p-20 rounded-md col-span-1 lg:col-span-3 h-[300px] lg:w-full shadow-md" style={{backgroundImage: `url(${theme})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+          <div className="relative p-20 rounded-md col-span-1 lg:col-span-3 h-[200px] md:h-[300px] lg:w-full shadow-md" style={{backgroundImage: `url(${theme})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
             <PlayButton theme = {theme} PowerUp={powerup}/>
           </div>
 
@@ -100,12 +107,8 @@ function Dashboard() {
           notDoneAchievements={notDoneAchievements} />
 
           <Themes handleThemeChange={handleThemeChange} />
-
-          <div className="bg-white p-4 rounded-md col-span-1 lg:col-span-2 lg:col-start-4 lg:col-end-6  
-          row-start-4 row-end-5 lg:row-start-2 lg:row-end-4
-          lg:w-full shadow-md">
-              friend list
-          </div>
+          
+          <FriendsList friends={friends} />
 
           <PowerUps handlePowerUpChange={handlePowerUpChange}/>
         </div>
@@ -114,4 +117,4 @@ function Dashboard() {
   );
 }
 
-export default Dashboard;
+export default withAuth(Dashboard);

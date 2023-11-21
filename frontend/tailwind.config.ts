@@ -11,12 +11,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      
       gridTemplateRows: {
-        // Simple 8 row grid
-        '8': 'repeat(8, minmax(0, 1fr))',
-
-        // Complex site-specific row configuration
-        'layout': '200px minmax(900px, 1fr) 100px',
+        '5' : 'repeat(5, minmax(0, 1fr))',
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
@@ -32,7 +29,8 @@ const config: Config = {
         lightblue: '#B0D6F5',
       },
       screens: {
-        'lg': '930px',
+        'lg': '980px',
+        'xs': '360px',
       },
     },
   },

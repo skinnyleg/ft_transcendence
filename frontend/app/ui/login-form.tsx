@@ -28,6 +28,7 @@ export default function LoginForm() {
     try {
       const response = await fetch('http://localhost:8000/auth/signin', {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
       });
@@ -59,7 +60,7 @@ export default function LoginForm() {
   return (
     <form className="space-y-3" onSubmit={handleSubmit}>
       <div className="flex-1 rounded-lg backdrop-blur border border-gray-300 bg-opacity-80 px-6 pb-4 pt-8">
-        <h1 className={`${lusitana.className} mb-3 lg:text-2xl md:text-xl`}>
+        <h1 className={`${lusitana.className} mb-3 lg:text-2xl md:text-xl text-xl`}>
           Please log in to continue.
         </h1>
         <div className="w-4/5">
@@ -72,7 +73,7 @@ export default function LoginForm() {
             </label>
             <div className="relative">
               <input
-                className="peer md:ml-6 md:mt-2 sm:mt-10 block md:w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
+                className="peer md:ml-6 md:mt-2 text-gray-700 block md:w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
                 id="username" 
                 type="username"
                 name="username"
@@ -80,7 +81,7 @@ export default function LoginForm() {
                 required
                 
               />
-              <UserIcon className="md:ml-6 pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+              <UserIcon className="md:ml-6 absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
             </div>
           </div>
           <div className="mt-10">
@@ -92,7 +93,7 @@ export default function LoginForm() {
             </label>
             <div className="relative">
               <input
-                className="md:ml-6 peer block md:w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
+                className="md:ml-6 text-gray-700 peer block md:w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
                 id="password"
                 type="password"
                 name="password"

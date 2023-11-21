@@ -24,7 +24,8 @@
     "react-dom": "^18",
     "react-hooks": "^1.0.1",
     "swiper": "^11.0.4",
-    "swr": "^2.2.4"
+    "swr": "^2.2.4",
+    "use-debounce": "^10.0.0"
   },
   "devDependencies": {
     "@types/node": "20.9.0",
