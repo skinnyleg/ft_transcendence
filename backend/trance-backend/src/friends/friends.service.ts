@@ -1,10 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { gatewayUser } from 'src/classes/classes';
-import { PrismaService } from 'src/prisma/prisma.service';
 import { UserService } from 'src/user/user.service';
-import { Socket , Server} from 'socket.io';
-import { RequestType, UserStatus } from '@prisma/client';
+import { Socket } from 'socket.io';
+import { User, UserStatus } from '@prisma/client';
 
 @Injectable()
 export class FriendsService {
@@ -23,7 +22,7 @@ export class FriendsService {
 
 	async saveUser(client: Socket) {
 		
-		let user;
+		let user: User;
 		try {
 			const token: string = client.handshake.headers.token as string;
 			const payload = await this.jwtService.verifyAsync(token, { secret: process.env.jwtsecret })

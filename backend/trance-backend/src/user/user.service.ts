@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { authenticator } from 'otplib';
 import { AchievementStatus, RequestType, Status, UserStatus } from '@prisma/client';
@@ -188,7 +188,7 @@ export class UserService {
 
 	async setNewFriend(senderId: string, recipientId: string,friendStatus: any)
 	{
-		const newFriend = await this.prisma.friendStatus.create({
+		await this.prisma.friendStatus.create({
 			data: {
 				user: {
 					connect: {
@@ -205,14 +205,14 @@ export class UserService {
 	{
 		const friendExist = await this.prisma.friendStatus.findFirst({
 			where: {
-				userId: recipientId, // The specific userId you want to target
+				userId: recipientId,
 			},
 		});
 
 		if (!friendExist)
 			throw new NotFoundException('no instanse found')
 
-		const updatedFriendStatus = await this.prisma.friendStatus.update({
+		await this.prisma.friendStatus.update({
 			where: {
 				id: friendExist.id, // Use the ID of the existing record
 				},
@@ -233,7 +233,7 @@ export class UserService {
 		if (!friendExist)
 			throw new NotFoundException('no instanse found')
 
-		const updatedFriendStatus = await this.prisma.friendStatus.delete({
+		await this.prisma.friendStatus.delete({
 			where: {
 				id: friendExist.id, // Use the ID of the existing record
 				},
@@ -288,9 +288,6 @@ export class UserService {
 		if (friendStatus)
 			throw new ConflictException('you are already friends or already got a request from this user')
 
-
-			
-
 		const id = await this.generateRequest(senderId, recipientId, RequestType.FRIEND);
 		await this.setNewFriend(senderId, recipientId, Status.PENDING)
 		return id;
@@ -343,7 +340,7 @@ export class UserService {
 
 	async generateRequest(senderId: string, recipientId: string, typeOfRequest: RequestType, respond: boolean = false)
 	{
-		let description;
+		let description: string;
 		if (typeOfRequest === RequestType.FRIEND)
 			description = "sent you a friend request";
 		else if (typeOfRequest === RequestType.CHALLENGE)
@@ -793,6 +790,17 @@ export class UserService {
 
 	async enable2FA(id: string, login: string)
 	{
+		const isEnabled = await this.prisma.user.findUnique({
+			where: {
+				id: id,
+			},
+			select: {
+				isEnabled: true,
+			}
+		})
+		if (isEnabled.isEnabled == true)
+			throw new ConflictException('2FA already enabled')
+
 		const secret = authenticator.generateSecret();
 		const url = authenticator.keyuri(login,'Pong',secret);
 		await this.prisma.user.update({
@@ -810,6 +818,17 @@ export class UserService {
 
 	async disable2FA(id: string)
 	{
+		const isEnabled = await this.prisma.user.findUnique({
+			where: {
+				id: id,
+			},
+			select: {
+				isEnabled: true,
+			}
+		})
+		if (isEnabled.isEnabled == false)
+			throw new ConflictException('2FA already disabled')
+
 		await this.prisma.user.update({
 			where: {
 				id: id,
@@ -822,13 +841,13 @@ export class UserService {
 		})
 	}
 
-	async TwoFA(id: string)
+	async TwoFA(id: string, Enabled: boolean)
 	{
 		const user = await this.findOneById(id);
 		if (!user)
 			throw new NotFoundException('user not found')
 
-		if (user.isEnabled == false)
+		if (Enabled == true)
 		{
 			const url = await this.enable2FA(id, user.login)
 			return {valid:true, img: url}

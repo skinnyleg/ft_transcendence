@@ -1,14 +1,12 @@
 import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { FriendsService } from './friends.service';
 import { Server, Socket } from 'socket.io';
-import { plainToClass } from 'class-transformer';
-import { validate } from 'class-validator';
 import { FriendRequestDto } from './Dto/userIdDto';
 import { Record } from '@prisma/client/runtime/library';
 import { RequestActionDto } from './Dto/requestDto';
 import { validateAndSendError } from 'src/utils/validateInputWebsocket';
 
-@WebSocketGateway()
+@WebSocketGateway({ namespace: 'friendsGateway' })
 export class FriendsGateway {
   constructor(private readonly friendsService: FriendsService) {}
   @WebSocketServer()
@@ -61,6 +59,7 @@ export class FriendsGateway {
 
 	async handleDisconnect(client: Socket) {
 		await this.friendsService.deleteUser(client)
+		client.disconnect();
 	}
 
 }

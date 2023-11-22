@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, Post, Query, Req, UseGuards, ValidationPipe } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { JwtAuthGuard } from 'src/auth/jwt.guard';
 import { getId } from 'src/utils/getId';
@@ -6,6 +6,7 @@ import { ChangeNicknameDto } from './Dto/nicknameDto';
 import { ChangePasswordDto } from './Dto/passwordDto';
 import { publicProfileDto } from './Dto/publicProfileDto';
 import { searchBarDto } from './Dto/searchBarDto';
+import { Enable2FADto } from './Dto/enable2FADto';
 
 @Controller('user')
 export class UserController {
@@ -42,9 +43,9 @@ export class UserController {
   }
 	@UseGuards(JwtAuthGuard)
 	@Post('2FA')
-	handleTwoFA(@Req() req) {
+	handleTwoFA(@Body() payload: Enable2FADto, @Req() req) {
 		const id = getId(req);
-		return this.userService.TwoFA(id)
+		return this.userService.TwoFA(id, payload.Enabled)
 	}
 
 
@@ -53,8 +54,6 @@ export class UserController {
  	getProfiles(@Body() payload: searchBarDto) {
 		if (payload.searchInput === "")
 			return;
-		if (Object.keys(payload).length === 0)
-			throw new BadRequestException('Payload Is Empty')
 		return this.userService.getProfiles(payload.searchInput);
 	}
 
