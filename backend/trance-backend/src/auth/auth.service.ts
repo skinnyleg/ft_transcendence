@@ -41,7 +41,7 @@ export class AuthService {
 		// return ({token: token})
 	}
 
-	async signOut(req: Request, res: Response) {
+	async signOut(res: Response) {
 		res.clearCookie('token');
 		res.clearCookie('id');
 		return res.send({message: "signOut was succefull"})
@@ -56,14 +56,14 @@ export class AuthService {
 		
 		if (!token)
 			throw new InternalServerErrorException();
-		await this.prisma.user.update({
-			where:{
-				id: id,
-			},
-			data: {
-				token: token,
-			}
-		})
+		// await this.prisma.user.update({
+		// 	where:{
+		// 		id: id,
+		// 	},
+		// 	data: {
+		// 		token: token,
+		// 	}
+		// })
 
 		return token;
 	}

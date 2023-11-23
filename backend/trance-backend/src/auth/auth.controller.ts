@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { intraAuthGuard } from './42.guard';
 import { authDto } from './Dto/authDto';
 import { tokenDto } from './Dto/tokenDto';
+import { JwtAuthGuard } from './jwt.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -39,10 +40,11 @@ export class AuthController {
 		// return ({token : token})
 	}
 
+	@UseGuards(JwtAuthGuard)
 	@Get('signout')
-	signOut(@Req() req, @Res() res)
+	signOut(@Res() res)
 	{
-		return this.authService.signOut(req,res)
+		return this.authService.signOut(res)
 	}
 
 

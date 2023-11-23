@@ -526,19 +526,15 @@ export class UserService {
 		const user = await this.prisma.user.create({
 			data: {
 			intraId: userData.intraId,
-			email: userData.email,
 			login: userData.login,
 			password: hashedPass,
-			firstName: userData.firstName,
-			lastName: userData.lastName,
 			profilePic: userData.profilePic,
 			BackgroundPic: userData.BackgroundPic,
 			wallet: userData.wallet,
 			level: userData.level,
-			grade: userData.grade,
+			Rank: userData.Rank,
 			status: UserStatus.ONLINE,
 			nickname: nick,
-			token: "",
 			}
 		})
 		await this.linkAchievements(user.id);
@@ -622,18 +618,6 @@ export class UserService {
 			notifications.push(notif)
 		}
 		return notifications;
-	}
-
-	async updateToken(id: string, token: string)
-	{
-		return await this.prisma.user.update({
-			where:{
-				id: id,
-			},
-			data: {
-				token: token,
-			}
-		})
 	}
 
 	async updateStatus(id: string, status: any)
@@ -722,7 +706,7 @@ export class UserService {
 			nickname: true,
 			login:true,
 			wallet: true,
-			grade:true,
+			Rank:true,
 			profilePic: true,
 			BackgroundPic: true,
 			level: true,
@@ -748,7 +732,7 @@ export class UserService {
 			nickname: true,
 			login:true,
 			wallet: true,
-			grade:true,
+			Rank:true,
 			profilePic: true,
 			BackgroundPic: true,
 			level: true,
