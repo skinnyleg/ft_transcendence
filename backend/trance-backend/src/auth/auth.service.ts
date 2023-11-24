@@ -3,6 +3,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { Request, Response } from 'express';
 import { compareHash } from 'src/utils/bcryptUtils';
+import { REFRESHEXP, REFRESHSECRET, TOKENEXP, TOKENSECRET } from 'src/classes/classes';
+import { getId } from 'src/utils/getId';
 
 @Injectable()
 export class AuthService {
@@ -28,43 +30,57 @@ export class AuthService {
 		const isMatch = await compareHash(password, user.password);
 		if (isMatch == false)
 			throw new UnauthorizedException('Wrong Crendentiels')
-		// res.cookie('id', user.id, {signed: true, sameSite: 'none'})
 		res.cookie('id', user.id, {signed: true})
 		if (user.isEnabled == true)
 			res.redirect(`${process.env.FrontendHost}/Qr`);
-		const token = await this.createToken(user.id, user.login)
+		const token = await this.createToken(user.id, user.login, TOKENEXP, TOKENSECRET)
 		res.cookie('token', token, {signed: true});
-		// res.cookie('token', token);
+		const refresh = await this.createToken(user.id, user.login, REFRESHEXP, REFRESHSECRET)
+		res.cookie('refresh', refresh, {signed: true})
 		console.log("token == ", token)
-		// res.redirect(`${process.env.FrontendHost}/Dashboard`);
 		res.status(200).json(token);
-		// return ({token: token})
 	}
 
 	async signOut(res: Response) {
 		res.clearCookie('token');
+		res.clearCookie('refresh');
 		res.clearCookie('id');
 		return res.send({message: "signOut was succefull"})
 	}
 
 
-	async createToken(id: string, login: string)
+	async createToken(id: string, login: string, expiresIn: number, secret: string)
 	{
 		const payload = {sub: id, username: login}
 
-		const token = await this.jwtservice.signAsync(payload);
+		const token = await this.jwtservice.signAsync(payload, {
+			expiresIn,
+			secret,
+		});
 		
 		if (!token)
 			throw new InternalServerErrorException();
-		// await this.prisma.user.update({
-		// 	where:{
-		// 		id: id,
-		// 	},
-		// 	data: {
-		// 		token: token,
-		// 	}
-		// })
-
 		return token;
+	}
+
+
+	async refreshTokens(req: Request, res: Response)
+	{
+		const id = getId(req);
+		const user = await this.prisma.user.findUnique({
+			where: {
+				id,
+			}
+		})
+
+		if (!user)
+			throw new NotFoundException("User Doesn't Exits")
+		res.clearCookie('token');
+		res.clearCookie('refresh');
+		const token = await this.createToken(user.id, user.login, TOKENEXP, TOKENSECRET)
+		res.cookie('token', token, {signed: true});
+		const refresh = await this.createToken(user.id, user.login, REFRESHEXP, REFRESHSECRET)
+		res.cookie('refresh', refresh, {signed: true})
+		res.status(200).json(token);
 	}
 }

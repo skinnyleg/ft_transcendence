@@ -7,6 +7,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtStrategy } from './jwt.strategy';
 import { Strategy42 } from './42.strategy';
 import { UserService } from 'src/user/user.service';
+import { RefreshJwtAuthGuard } from './refresh.guard';
+import { RefreshJwtStrategy } from './refresh.strategy';
 
 @Module({
 	imports: [JwtModule.register({
@@ -15,6 +17,6 @@ import { UserService } from 'src/user/user.service';
       signOptions: { expiresIn: '12h' },
     }), PassportModule],
   controllers: [AuthController],
-  providers: [AuthService, PrismaService,Strategy42, JwtStrategy, UserService],
+  providers: [AuthService, PrismaService,Strategy42, JwtStrategy, RefreshJwtStrategy,UserService],
 })
 export class AuthModule {}

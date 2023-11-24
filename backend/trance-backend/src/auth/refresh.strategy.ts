@@ -4,21 +4,21 @@ import { Injectable } from '@nestjs/common';
 import { Request } from 'express';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {;
+export class RefreshJwtStrategy extends PassportStrategy(Strategy,'refresh') {
   constructor() {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
-        JwtStrategy.extractJWT,
+        RefreshJwtStrategy.extractJWT,
         ExtractJwt.fromAuthHeaderAsBearerToken(),
       ]),
-      secretOrKey: process.env.jwtsecret,
+      secretOrKey: process.env.refreshjwtsecret,
     });
   }
 
   private static extractJWT(req: Request): string | null {
-    if (req.signedCookies && 'token' in req.signedCookies) {
-      if (req.signedCookies.token.length > 0) {
-        return req.signedCookies.token;
+    if (req.signedCookies && 'refresh' in req.signedCookies) {
+      if (req.signedCookies.refresh.length > 0) {
+        return req.signedCookies.refresh;
       }
     }
     return null;
@@ -28,3 +28,4 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {;
     return payload;
   }
 }
+
