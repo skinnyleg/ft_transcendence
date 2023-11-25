@@ -34,7 +34,7 @@ const withAuth = (WrappedComponent: any) => {
         } finally {
           setTimeout(() => {
             setLoading(false);
-          }, 1000);
+          }, 500);
         }
       };
 

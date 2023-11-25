@@ -45,12 +45,12 @@ interface AchievementsData {
   totalScore: number;
 }[];
 
-interface NotificationsData {
+export interface NotificationsData {
   userId: string;
   userProfilePic: string;
   description: string;
   typeOfRequest: any;
-  responded: boolean;
+  responded: boolean; 
 }[];
 
 
