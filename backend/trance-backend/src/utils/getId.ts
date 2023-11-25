@@ -2,7 +2,6 @@ import { BadRequestException, UnauthorizedException } from "@nestjs/common"
 import { Request } from "express"
 
 export const getId = (req: Request) => {
-
 	if (!req || !req.signedCookies)
 		throw new BadRequestException('Error Cookies')
 	const id = req.signedCookies.id;

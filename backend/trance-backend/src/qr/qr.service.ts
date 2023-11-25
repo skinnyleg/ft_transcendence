@@ -1,9 +1,8 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
+import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { Response } from 'express';
 import { authenticator } from 'otplib';
 import { AuthService } from 'src/auth/auth.service';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { REFRESHEXP, REFRESHSECRET, TOKENEXP, TOKENSECRET } from 'src/classes/classes';
 import { UserService } from 'src/user/user.service';
 
 @Injectable()
@@ -25,11 +24,11 @@ export class QrService {
 		const isValid = authenticator.check(QrCode, secret);
 		 if (isValid)
 		{
-			const token = await this.authService.createToken(user.id, user.login)
+			const token = await this.authService.createToken(user.id, user.login, TOKENEXP, TOKENSECRET)
 			res.cookie('token', token, {signed: true});
-			// res.cookie('token', token);
+			const refresh = await this.authService.createToken(user.id, user.login, REFRESHEXP, REFRESHSECRET)
+			res.cookie('refresh', refresh, {signed: true})
 			res.status(200).json(token);
-		   // return { valid: true, token: token };
 		 } else {
 			throw new UnauthorizedException('not allowed')
 		 }

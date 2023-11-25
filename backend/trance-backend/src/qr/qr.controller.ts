@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Post, Req, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Post, Req } from '@nestjs/common';
 import { QrService } from './qr.service';
 import { getId } from 'src/utils/getId';
 import { VerifyQrCodeDto } from './Dto/qrCodeDto';

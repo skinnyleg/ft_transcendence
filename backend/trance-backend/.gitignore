@@ -36,4 +36,5 @@ lerna-debug.log*
 
 # webSocketEvent.txt
 
-
+# migrations folder
+migrations/

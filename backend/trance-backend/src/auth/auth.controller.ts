@@ -1,9 +1,11 @@
-import { Body, Controller, Get, Logger, Post, Req, Res, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, Res, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { intraAuthGuard } from './42.guard';
 import { authDto } from './Dto/authDto';
-import { JwtAuthGuard } from './jwt.guard';
 import { tokenDto } from './Dto/tokenDto';
+import { JwtAuthGuard } from './jwt.guard';
+import { REFRESHEXP, REFRESHSECRET, TOKENEXP, TOKENSECRET } from 'src/classes/classes';
+import { RefreshJwtAuthGuard } from './refresh.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -26,24 +28,24 @@ export class AuthController {
 	async intra42AuthRedirect(@Req() request, @Res() response)
 	{
 		response.cookie('id', request.user.id, {signed: true})
-		// response.cookie('id', request.user.id)
 		if (request.user.isEnabled === true)
 		{
 			response.redirect(`${process.env.FrontendHost}/Qr`);
 			return;
 		}
-		const token = await this.authService.createToken(request.user.id, request.user.login)
+		const token = await this.authService.createToken(request.user.id, request.user.login, TOKENEXP, TOKENSECRET)
 		response.cookie('token', token, {signed: true})
-		// response.cookie('token', token)
+		const refresh = await this.authService.createToken(request.user.id, request.user.login, REFRESHEXP, REFRESHSECRET)
+		response.cookie('refresh', refresh, {signed: true})
 		// response.redirect(`${process.env.FrontendHost}/Dashboard`);
 		response.status(200).json(token);
-		// return ({token : token})
 	}
 
+	@UseGuards(JwtAuthGuard)
 	@Get('signout')
-	signOut(@Req() req, @Res() res)
+	signOut(@Res() res)
 	{
-		return this.authService.signOut(req,res);
+		return this.authService.signOut(res)
 	}
 
 
@@ -59,6 +61,15 @@ export class AuthController {
 		  }
 		}
 		throw new UnauthorizedException('not allowed');
+	}
+
+
+
+	@UseGuards(RefreshJwtAuthGuard)
+	@Get('refresh')
+	refreshTokens(@Req() req, @Res() res)
+	{
+		return this.authService.refreshTokens(req, res);
 	}
 
 
