@@ -511,12 +511,10 @@ export class UserService {
 
 	async getDashboard(id: string)
 	{
-		const friends = await this.getFriendsCards(id);
 		const doneAchievements = await this.getDoneAchievements(id);
 		const notDoneAchievements = await this.getNotDoneAchievements(id);
-		const notifications = await this.getNotificationsHistory(id);
 		
-		return ({friends, doneAchievements, notDoneAchievements, notifications})
+		return ({doneAchievements, notDoneAchievements})
 	}
 
 	async create(userData: any)

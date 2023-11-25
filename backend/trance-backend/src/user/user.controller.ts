@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { JwtAuthGuard } from 'src/auth/jwt.guard';
 import { getId } from 'src/utils/getId';
@@ -63,6 +63,21 @@ export class UserController {
 		const id = getId(req);
 		return this.userService.getDashboard(id);
 	}
+
+	@Get('Friends')
+	@UseGuards(JwtAuthGuard)
+ 	getFriends(@Req() req) {
+		const id = getId(req);
+		return this.userService.getFriendsCards(id);
+	}
+
+	@Get('Notifications')
+	@UseGuards(JwtAuthGuard)
+ 	getNotificationsHistory(@Req() req) {
+		const id = getId(req);
+		return this.userService.getNotificationsHistory(id);
+	}
+
 
 	@Get('Leaderboard')
 	@UseGuards(JwtAuthGuard)
