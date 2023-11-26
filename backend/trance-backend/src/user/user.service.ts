@@ -56,13 +56,17 @@ export class UserService {
 			},
 			select: {
 				id: true,
+				nickname: true,
 			},
 		});
 
+		for (const user of users)
+		{
+			if (user.nickname.toLowerCase() === nick.toLowerCase())
+				return (user)
+		}
 
-		if (users.length === 0)
-			return null;
-		return users;
+		return null;
 	}
 
 
@@ -673,7 +677,7 @@ export class UserService {
 		async changeNickname(newNick : string, id: string) {
 
 		const isunique = await this.findOneByNickname(newNick);
-		if (isunique)
+		if (isunique && isunique.id !== id)
 			throw new ConflictException('nickname already taken')
 	
 		const user = await this.findOneById(id)
@@ -717,6 +721,26 @@ export class UserService {
 		return user;
   }
 
+	async getProfile(id: string, nickname: string)
+	{
+		const currentUser = await this.prisma.user.findUnique({
+			where: {
+				id: id,
+			},
+			select: {
+				nickname: true,
+			}
+		})
+		if (!currentUser)
+			throw new NotFoundException('user not found')
+
+		if (currentUser.nickname === nickname)
+			return {userData: await this.privateProfile(id), isfriend: false, userProfile: true};
+		else
+			return await this.publicProfile(nickname, id);
+	}
+
+
 
 	async publicProfile(nick: string, id: string) {
 		let isfriend = false;
@@ -748,8 +772,8 @@ export class UserService {
 		});
 		if (friendStatus)
 			isfriend = true;
-		if (user.id === id)
-			userProfile = true;
+		// if (user.id === id)
+		// 	userProfile = true;
 		return {userData: user, isfriend, userProfile};
   }
 
