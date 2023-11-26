@@ -37,8 +37,8 @@ export class AuthController {
 		response.cookie('token', token, {signed: true})
 		const refresh = await this.authService.createToken(request.user.id, request.user.login, REFRESHEXP, REFRESHSECRET)
 		response.cookie('refresh', refresh, {signed: true})
-		// response.redirect(`${process.env.FrontendHost}/Dashboard`);
-		response.status(200).json(token);
+		response.redirect(`${process.env.FrontendHost}/Dashboard`);
+		// response.status(200).json(token);
 	}
 
 	@UseGuards(JwtAuthGuard)

@@ -7,7 +7,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtStrategy } from './jwt.strategy';
 import { Strategy42 } from './42.strategy';
 import { UserService } from 'src/user/user.service';
-import { RefreshJwtAuthGuard } from './refresh.guard';
 import { RefreshJwtStrategy } from './refresh.strategy';
 
 @Module({
