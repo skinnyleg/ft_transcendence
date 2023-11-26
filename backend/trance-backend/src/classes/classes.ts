@@ -13,3 +13,15 @@ export class gatewayUser {
 	id: string;
 	socket: Socket;
 }
+
+
+export class NotificationData {
+	requestId: string;
+	notifData: {
+		userId: string;
+		userProfilePic: string;
+		description: string;
+		typeOfRequest: string;
+		responded: boolean;
+	};
+}

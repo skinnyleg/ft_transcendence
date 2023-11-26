@@ -6,6 +6,7 @@ import { hashPass } from 'src/utils/bcryptUtils';
 import { generateNickname } from 'src/utils/generateNickname';
 import * as fs from 'fs';
 import * as path from 'path';
+import { NotificationData } from 'src/classes/classes';
 
 @Injectable()
 export class UserService {
@@ -498,7 +499,7 @@ export class UserService {
 	
 		if (!userData)
 			throw new NotFoundException('user not found')
-		const combinedData = {
+		const combinedData: NotificationData = {
 			requestId: notifData.id,
 			notifData: {
 				userId: userData.id,
@@ -569,7 +570,7 @@ export class UserService {
 
 	async getNotificationsHistory(id: string)
 	{
-		let notifications = [];
+		let notifications: NotificationData[] = [];
 		const requests = await this.prisma.user.findMany({
 			where: {
 				id: id,
@@ -587,7 +588,7 @@ export class UserService {
 	
 		for (const req of requestIds)
 		{
-			const notif = await this.generateNotifData(req.id);
+			const notif: NotificationData = await this.generateNotifData(req.id);
 			notifications.push(notif)
 		}
 		return notifications;
