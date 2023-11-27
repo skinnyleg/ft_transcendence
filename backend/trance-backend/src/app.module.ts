@@ -3,9 +3,10 @@ import { AuthModule } from './auth/auth.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { UserModule } from './user/user.module';
 import { QrModule } from './qr/qr.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
-  imports: [AuthModule, PrismaModule, UserModule, QrModule],
+  imports: [AuthModule, PrismaModule, UserModule, QrModule, ChatModule],
   controllers: [],
   providers: [],
 })
