@@ -28,6 +28,20 @@ enum AchievementStatus {
   NOTDONE
 }
 
+enum Membership {
+  BLOCKED
+  MUTED
+  KICK
+  BAN
+  ACTIVE
+}
+
+enum  Role {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
 model User {
   id          Int        @id @default(autoincrement())
   intraId     String     @unique
@@ -49,6 +63,8 @@ model User {
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt()
 
+  adminIn     Channel[] @relation("Admins")
+
   channels     Channel[]
   Message      Message[]
   Match        Match[]
@@ -65,11 +81,26 @@ model FriendStatus {
 }
 
 model Channel {
-  id       Int       @id @default(autoincrement())
-  type     String
-  users    User[]
-  messages Message[]
-  // Define other fields for the channel as needed
+  id          String    @id @default(uuid())
+  name        String    @unique
+  owner       String
+  type        String
+  password    String?
+  users       User[]
+  admins      User[]    @relation("Admins")
+  blacklist   Blacklist[]
+  messages    Message[]
+  updatedAt   DateTime  @updatedAt   @default(now())
+}
+
+model Blacklist {
+  id          String  @id @default(uuid())   
+  nickname    String  @unique
+  role        Role
+  status      Membership
+  expiredAt   DateTime
+  channelName String
+  channel     Channel @relation(fields: [channelName], references: [name])
 }
 
 model Message {
@@ -78,7 +109,7 @@ model Message {
   sender    User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   channel   Channel? @relation(fields: [channelId], references: [id])
-  channelId Int?
+  channelId String?
   userId    Int
   Chat      Chat?    @relation(fields: [chatId], references: [id])
   chatId    Int?
