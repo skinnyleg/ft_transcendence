@@ -29,7 +29,7 @@ export class FriendsService {
 			user = await this.userService.findOneById(payload.sub);
 			await this.userService.updateStatus(user.id, UserStatus.ONLINE)
 			this.Users.push({ id: user.id, socket: client });
-			await this.emitToFriendsStatus(user.id);
+			await this.emitToFriendsStatus(user.id, "ONLINE");
 		}
 		catch (error)
 		{
@@ -54,13 +54,13 @@ export class FriendsService {
 		client.emit('notification', `You have ${notifications.length} new notifications`)
 	}
 
-	async emitToFriendsStatus(id: string)
+	async emitToFriendsStatus(id: string, status: string)
 	{
 		const friends = await this.userService.getFriends(id);
 		for (const friend of friends) {
 		  const friendUser = this.getUserById(friend.friendId);
 		  if (friendUser) {
-			friendUser.socket.emit('statusChange', { id: friendUser.id, status: "ONLINE" });
+			friendUser.socket.emit('statusChange', { id: friendUser.id, status });
 		  }
 		}
 	}
@@ -72,7 +72,7 @@ export class FriendsService {
 			const user = this.getUserBySocketId(client.id);
 			await this.userService.updateStatus(user.id, UserStatus.OFFLINE)
 			this.Users = this.Users.filter((u) => u.socket.id !== client.id);
-			await this.emitToFriendsStatus(user.id);
+			await this.emitToFriendsStatus(user.id, "OFFLINE");
 		}
 		catch (error)
 		{

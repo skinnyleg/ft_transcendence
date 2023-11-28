@@ -44,7 +44,7 @@ model User {
   BackgroundPic String
   wallet        Int
   level         Int
-  Rank          Int
+  Rank          Int        @default(0)
   nickname      String     @unique
   status        UserStatus
   isEnabled     Boolean    @default(false)
