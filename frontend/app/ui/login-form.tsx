@@ -35,8 +35,8 @@ export default function LoginForm() {
       
       if (response.ok) {
         const res = await response.json();
-        localStorage.setItem('token', res.token);
-        console.log('re 1 :', res.token);
+        console.log('re 1 :', res);
+        localStorage.setItem('token', res);
         router.push('/Dashboard', undefined);
       } else if (response.status === 401) {
         setError('Invalid credentials. Please check your username and password.');
@@ -57,6 +57,33 @@ export default function LoginForm() {
     };
   
   
+  const handle42Api = async() => {
+    try {
+      const response = await fetch('http://localhost:8000/auth/42', {
+        method: 'GET',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      if (response.ok) {
+        
+      } else if (response.status === 401) {
+        setError('Invalid credentials. Please check your username and password.');
+      } else if (response.status === 400) {
+        setError('User not found. Please check your credentials.');
+      } else {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+    } catch (error) {
+      console.error('Error during login:', error);
+      setError('An unexpected error occurred. Please try again later.');
+    } finally {
+      setTimeout(() => {
+        setError('');
+        setIsErrorVisible(false);
+      }, 3000);
+    }
+  }
+
   return (
     <form className="space-y-3" onSubmit={handleSubmit}>
       <div className="flex-1 rounded-lg backdrop-blur border border-gray-300 bg-opacity-80 px-6 pb-4 pt-8">
@@ -85,10 +112,7 @@ export default function LoginForm() {
             </div>
           </div>
           <div className="mt-10">
-            <label
-              className="md:ml-6 mb-3 mt-5 hidden lg:block md:block text-xs font-medium text-gray-1000"
-              htmlFor="password"
-            >
+            <label className="md:ml-6 mb-3 mt-5 hidden lg:block md:block text-xs font-medium text-gray-1000" htmlFor="password">
               Password
             </label>
             <div className="relative">
@@ -113,15 +137,14 @@ export default function LoginForm() {
             <div className="border-t border-black w-1/2"></div>
           </div>
           <div className="mt-2 mb-5 flex items-center justify-center">
-            <Link href="http://localhost:8000/auth/42">
             <Image
+              onClick={handle42Api}
               className="pointer-events-hover rounded-md hover:opacity-80"
               src="/42.jpg"
               width={40}
               height={40}
               alt="42 Authentication API"
             />
-            </Link>
           </div>
         </div>
       </div>

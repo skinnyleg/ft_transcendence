@@ -88,4 +88,4 @@ function NavBar ({handleShowMenu}: NavBarProps)
   );
 }
 
-export default withAuth(NavBar);
+export default (NavBar);
