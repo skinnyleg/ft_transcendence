@@ -674,11 +674,11 @@ export class UserService {
 		})
 		if (!user)
 			throw new NotFoundException("User not found")
-		return user.nickname;
+		return user;
 	}
 
 
-		async changeNickname(newNick : string, id: string) {
+	async changeNickname(newNick : string, id: string) {
 
 		const isunique = await this.findOneByNickname(newNick);
 		if (isunique && isunique.id !== id)
