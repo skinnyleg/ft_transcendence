@@ -33,9 +33,9 @@ export class AuthService {
 		res.cookie('id', user.id, {signed: true})
 		if (user.isEnabled == true)
 			res.redirect(`${process.env.FrontendHost}/Qr`);
-		const token = await this.createToken(user.id, user.login, TOKENEXP, TOKENSECRET)
+		const token = await this.createToken(user.id, user.nickname, TOKENEXP, TOKENSECRET)
 		res.cookie('token', token, {signed: true});
-		const refresh = await this.createToken(user.id, user.login, REFRESHEXP, REFRESHSECRET)
+		const refresh = await this.createToken(user.id, user.nickname, REFRESHEXP, REFRESHSECRET)
 		res.cookie('refresh', refresh, {signed: true})
 		console.log("token == ", token)
 		res.status(200).json(token);
@@ -77,9 +77,9 @@ export class AuthService {
 			throw new NotFoundException("User Doesn't Exits")
 		res.clearCookie('token');
 		res.clearCookie('refresh');
-		const token = await this.createToken(user.id, user.login, TOKENEXP, TOKENSECRET)
+		const token = await this.createToken(user.id, user.nickname, TOKENEXP, TOKENSECRET)
 		res.cookie('token', token, {signed: true});
-		const refresh = await this.createToken(user.id, user.login, REFRESHEXP, REFRESHSECRET)
+		const refresh = await this.createToken(user.id, user.nickname, REFRESHEXP, REFRESHSECRET)
 		res.cookie('refresh', refresh, {signed: true})
 		res.status(200).json(token);
 	}

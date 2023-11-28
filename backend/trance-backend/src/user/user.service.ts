@@ -13,16 +13,6 @@ export class UserService {
 
 	constructor(private readonly prisma: PrismaService){}
 
-  	async findOneByLogin(login: string) {
-    const user = await this.prisma.user.findUnique({
-			where: {
-				login,
-			},
-		})
-		return user;
-  }
-
-
 
 	async findOneByIntraId(intraId: number)
 	{
@@ -524,12 +514,11 @@ export class UserService {
 
 	async create(userData: any)
 	{
-		const nick = await generateNickname(userData.login);
+		const nick = await generateNickname(userData.nickname);
 		const hashedPass : string = await hashPass(userData.password);
 		const user = await this.prisma.user.create({
 			data: {
 			intraId: userData.intraId,
-			login: userData.login,
 			password: hashedPass,
 			profilePic: userData.profilePic,
 			BackgroundPic: userData.BackgroundPic,
@@ -673,6 +662,20 @@ export class UserService {
 	}
 
 
+	async getNickname(id: string)
+	{
+		const user = await this.prisma.user.findUnique({
+			where: {
+				id,
+			},
+			select: {
+				nickname: true,
+			}
+		})
+		if (!user)
+			throw new NotFoundException("User not found")
+		return user.nickname;
+	}
 
 
 		async changeNickname(newNick : string, id: string) {
@@ -707,7 +710,6 @@ export class UserService {
 			select: {
 			id: true,
 			nickname: true,
-			login:true,
 			wallet: true,
 			Rank:true,
 			profilePic: true,
@@ -736,7 +738,7 @@ export class UserService {
 			throw new NotFoundException('user not found')
 
 		if (currentUser.nickname === nickname)
-			return {userData: await this.privateProfile(id), isfriend: false, userProfile: true};
+			return {userData: await this.privateProfile(id), isfriend: false, privateProfile: true};
 		else
 			return await this.publicProfile(nickname, id);
 	}
@@ -753,7 +755,6 @@ export class UserService {
 			select: {
 			id: true,
 			nickname: true,
-			login:true,
 			wallet: true,
 			Rank:true,
 			profilePic: true,
@@ -775,7 +776,7 @@ export class UserService {
 			isfriend = true;
 		// if (user.id === id)
 		// 	userProfile = true;
-		return {userData: user, isfriend, userProfile};
+		return {userData: user, isfriend, privateProfile: userProfile};
   }
 
 	async getProfiles(searchInput: string) {
@@ -856,7 +857,7 @@ export class UserService {
 
 		if (Enabled == true)
 		{
-			const url = await this.enable2FA(id, user.login)
+			const url = await this.enable2FA(id, user.nickname)
 			return {valid:true, img: url}
 		}
 		await this.disable2FA(id)

@@ -72,6 +72,14 @@ export class UserController {
 		return this.userService.getDashboard(id);
 	}
 
+	@Get('Nickname')
+	@UseGuards(JwtAuthGuard)
+ 	getNickname(@Req() req) {
+		const id = getId(req);
+		return this.userService.getNickname(id);
+	}
+
+
 	@Get('Friends')
 	@UseGuards(JwtAuthGuard)
  	getFriends(@Req() req) {
