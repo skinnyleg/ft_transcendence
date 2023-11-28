@@ -23,9 +23,25 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect 
 	   client.emit('userConnection', {msg: `a new user is connected ${client.id}`});
   }
     
-  async handleDisconnect(@ConnectedSocket() client: Socket)
-  {
-    console.log('disconnect');
+	async handleDisconnect(@ConnectedSocket() client: Socket)
+	{
+    	console.log('disconnect');
 		client.disconnect();
+	}
+	
+	@SubscribeMessage('creatChannel')
+  	async	handleChannelCreated(@MessageBody() data:any, @ConnectedSocket() client: Socket)
+	{
+    	try
+		{
+			const newChannel = await this.channelService.creatChannel(data);
+			console.log('from new repo', newChannel);
+			client.emit('channelCreated', newChannel);
+		}
+    	catch (error)
+    	{
+      		console.error('Error creating channel:', error);
+      		throw new Error('Failed to create a new channel.');
+    	}
 	}
 }

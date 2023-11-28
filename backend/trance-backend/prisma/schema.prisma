@@ -44,7 +44,7 @@ enum  Role {
 
 model User {
   id          Int        @id @default(autoincrement())
-  intraId     String     @unique
+  intraId     String?     @unique
   email       String
   login       String     @unique
   password    String?
@@ -55,7 +55,7 @@ model User {
   level       Int
   grade       String
   token       String
-  nickname    String?
+  nickname    String? 
   status      UserStatus
   isEnabled   Boolean    @default(false)
   Secret      String?
