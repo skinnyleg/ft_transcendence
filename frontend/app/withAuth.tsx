@@ -14,7 +14,7 @@ const withAuth = (WrappedComponent: any) => {
             method: "POST",
             credentials: "include",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ token: localStorage.getItem('token') })
+            body: JSON.stringify({ token: (localStorage.getItem('token')) ? localStorage.getItem('token') : ""})
           });
 
           if (res.status === 401) {
@@ -31,10 +31,6 @@ const withAuth = (WrappedComponent: any) => {
         } catch (error) {
           console.error("Error during authentication check:", error);
           router.push("/", undefined);
-        } finally {
-          setTimeout(() => {
-            setLoading(false);
-          }, 500);
         }
       };
 

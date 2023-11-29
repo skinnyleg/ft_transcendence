@@ -12,7 +12,9 @@ interface responseData {
     nickname: string;
 };
 
-export default function TopBar () {
+interface nickprop {nickname : string};
+
+export default function TopBar ({nickname }: nickprop) {
 
   const [search, setSearch] = useState('');
   const [show, setShow] = useState(false);
@@ -40,9 +42,6 @@ export default function TopBar () {
     } finally {
     }
   };
- 
-  console.log('nick :',results[0]?.nickname  );
-  console.log('pic :', results[0]?.profilePic);
 
 
   // Debounce the search function to avoid rapid API calls
@@ -82,8 +81,8 @@ export default function TopBar () {
         </div>
       </div>
       <div className="flex flex-col lg:flex-row pr-2 lg:space-x-4">
-        <Notifications  />
-        <Link href="/user/Profile"> {/* pass user id for profile link */}
+        {/* <Notifications  /> */}
+        <Link href={`http://localhost:3000/profile/` + nickname }> {/* pass nickname for profile link */}
           <img src="/yo.jpg" alt="yo" className="w-10 h-10 rounded-full hidden lg:flex" />
         </Link>
       </div>

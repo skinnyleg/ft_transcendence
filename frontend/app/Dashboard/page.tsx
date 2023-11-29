@@ -11,47 +11,11 @@ import Themes from '../ui/Themes';
 import React, { useState, useEffect } from 'react';
 import PowerUps from '../ui/PowerUps';
 import PlayButton from '../ui/PlayButton';
-// import withAuth from '../withAuth';
-import useSWR from 'swr';
-
 import axios from 'axios';
 import withAuth from '../withAuth';
 import FriendsList from '../ui/FriendList';
-export enum UserStatus {
-    online = 'ONLINE',
-    offline =  'OFFLINE',
-    IN_GAME = 'IN_GAME'
-}
+import {dashboardData} from '../interfaces/interfaces';
 
-interface dashboardData {
-  friends: FriendsData[];
-  doneAchievements: AchievementsData[];
-  notDoneAchievements: AchievementsData[];
-  notifications: NotificationsData[];
-}[];
-
-interface FriendsData {
-  id: string;
-  profilePic: string;
-  nickname: string;
-  status: UserStatus;
-}[];
-
-interface AchievementsData {
-  id: string;
-  title: string;
-  description: string;
-  userScore: number;
-  totalScore: number;
-}[];
-
-export interface NotificationsData {
-  userId: string;
-  userProfilePic: string;
-  description: string;
-  typeOfRequest: any;
-  responded: boolean; 
-}[];
 
 
 function Dashboard() {
@@ -64,7 +28,6 @@ function Dashboard() {
     const fetchData = async () => {
       try {
         const response = await axios.get('http://localhost:8000/user/Dashboard', { withCredentials: true});
-        // const data = await response.json();
         console.log("data", response.data);
         setDashboardData(response.data);
       } catch (error) {
@@ -81,7 +44,7 @@ function Dashboard() {
   const notDoneAchievements = dashboardData?.notDoneAchievements || [];
   const friends = dashboardData?.friends || [];
   const notifications = dashboardData?.notifications || [];
-
+  const nickname  = 'username';
   const [theme, setTheme] = useState('yo1.jpg');
   const [powerup, setPowerup] = useState('FireBall');
 
@@ -94,17 +57,18 @@ function Dashboard() {
 
   return (
     <main className="flex flex-col font-white">
-      <TopBar />
+      <TopBar nickname={nickname}/>
       <div className="flex flex-col lg:mt-10 md:mt-10">
         <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-5 lg:grid-rows-3 gap-4 w-full h-full mt-4 md:grid-row-5 grid-row-5">
-          
+        
           <div className="relative p-20 rounded-md col-span-1 lg:col-span-3 h-[200px] md:h-[300px] lg:w-full shadow-md" style={{backgroundImage: `url(${theme})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+            {/* todo: add Bot/Quee button */}
             <PlayButton theme = {theme} PowerUp={powerup}/>
           </div>
-
-          <Achievements 
-          doneAchievements={doneAchievements}
-          notDoneAchievements={notDoneAchievements} />
+          
+          <Achievements
+            doneAchievements={doneAchievements}
+            notDoneAchievements={notDoneAchievements} />
 
           <Themes handleThemeChange={handleThemeChange} />
           

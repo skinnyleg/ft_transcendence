@@ -1,12 +1,8 @@
 import { ChatBubbleBottomCenterIcon, CogIcon, LightBulbIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { GiPingPongBat } from "react-icons/gi";
+import { UserStatus } from "@/app/interfaces/interfaces";
 
-export enum UserStatus {
-    online = 'ONLINE',
-    offline =  'OFFLINE',
-    IN_GAME = 'IN_GAME'
-}
 
 interface FriendsData {
     friends: {

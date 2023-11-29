@@ -1,17 +1,6 @@
 'use client';
 import React, { useRef, useState } from 'react';
 
-// Sample data
-const achievementsData = [
-  { title: "Achievement 1", description: "Description 1", imageUrl: "../42.jpg" },
-  { title: "Achievement 2", description: "Description 2", imageUrl: "../42.jpg" },
-  { title: "Achievement 2", description: "Description 2", imageUrl: "../42.jpg" },
-  { title: "Achievement 2", description: "Description 2", imageUrl: "../42.jpg" },
-  { title: "Achievement 2", description: "Description 2", imageUrl: "../42.jpg" },
-  { title: "Achievement 5", description: "Description 2", imageUrl: "../42.jpg" },
-  // Add more achievements as needed
-];
-
 interface AchievementsDataProps{
   doneAchievements: {
     id: string;

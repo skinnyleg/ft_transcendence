@@ -48,7 +48,7 @@ const config: Config = {
         '.styled-scrollbar': {
           '&::-webkit-scrollbar': {
             width: '0.4rem',
-            height: '0.4rem',
+            height: '0.2rem',
           },
           '&::-webkit-scrollbar-track': {
             background: 'rgba(0, 0, 0, 0.1)',
