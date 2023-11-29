@@ -12,10 +12,8 @@ import { RefreshJwtStrategy } from './refresh.strategy';
 @Module({
 	imports: [JwtModule.register({
       global: true,
-      secret: process.env.jwtsecret,
-      signOptions: { expiresIn: '12h' },
     }), PassportModule],
   controllers: [AuthController],
-  providers: [AuthService, PrismaService,Strategy42, JwtStrategy, RefreshJwtStrategy,UserService],
+  providers: [AuthService, PrismaService,Strategy42, JwtStrategy, RefreshJwtStrategy, UserService],
 })
 export class AuthModule {}

@@ -55,8 +55,10 @@ export class AuthController {
 	{
 		if (req.signedCookies && 'token' in req.signedCookies) {
 		  if (req.signedCookies.token.length > 0) {
-				if (req.signedCookies.token === payload.token)
-					res.status(200).json(payload.token);
+			if (payload.token === "")
+				res.status(200).json(req.signedCookies.token);
+			else if (req.signedCookies.token === payload.token)
+				res.status(200).json(payload.token);
 		  }
 		}
 		throw new UnauthorizedException('not allowed')
