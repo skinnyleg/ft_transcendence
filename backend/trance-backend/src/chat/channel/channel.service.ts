@@ -20,8 +20,8 @@ export class ChannelService {
                 type,
                 owner,
                 password,
-                users: { connect: [{ login: owner }] },
-                admins: { connect: [{ login: owner }] },
+                users: { connect: [{ nickname: owner }] },
+                admins: { connect: [{ nickname: owner }] },
             },
         });
         return newChannel;

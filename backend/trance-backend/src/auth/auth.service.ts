@@ -1,8 +1,10 @@
-import { BadRequestException, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import * as bcrypt from 'bcrypt'
 import { JwtService } from '@nestjs/jwt';
 import { Request, Response } from 'express';
+import { compareHash } from 'src/utils/bcryptUtils';
+import { REFRESHEXP, REFRESHSECRET, TOKENEXP, TOKENSECRET } from 'src/classes/classes';
+import { getId } from 'src/utils/getId';
 
 @Injectable()
 export class AuthService {
@@ -11,89 +13,74 @@ export class AuthService {
 				private jwtservice: JwtService
 	){}
 
-	async signUp(username: string , password: string) {
-		// const user = await this.prisma.users.findUnique({
-		// 	where: {
-		// 		login : username
-		// 	}
-		// })
-		//
-		//
-		// if (user)
-		// 	throw new BadRequestException("user already exits")
-		//
-		// console.log("username == ",username)
-		// console.log("password == ",password)
-		//
-		// const hashedPassword = await this.hashPass(password);
-		// await this.prisma.users.create({
-		// 	data : {login: username, password: hashedPassword}
-		// })
-		//
-		// return {message: "signUp was succefull"}
-	}
+	async signIn(username: string , password: string,  res: Response) {
 
-
-	async signIn(username: string , password: string, req: Request , res: Response) {
 		const user = await this.prisma.user.findUnique({
 			where: {
-				login : username
+				nickname : username
 			}
 		})
 
 		if (!user)
-			throw new BadRequestException("User Doesn't Exits")
+			throw new NotFoundException("User Doesn't Exits")
 	
-		const isMatch = await this.compareHash(password, user.password);
+		if (user.setPass == false)
+			throw new BadRequestException('you need to set up a password')
+
+		const isMatch = await compareHash(password, user.password);
 		if (isMatch == false)
 			throw new UnauthorizedException('Wrong Crendentiels')
-		
-		// if (password !== user.password)
-		// 	throw new UnauthorizedException('Wrong Crendentiels')
-			
-		const payload = {sub: user.id, username: user.login}
-
-		const token = await this.jwtservice.signAsync(payload);
-		
-		if (!token)
-			throw new ForbiddenException();
-		res.cookie('token', token);
-		return res.send({message: "signIn is succefull", login: user.login})
+		res.cookie('id', user.id, {signed: true})
+		if (user.isEnabled == true)
+			res.redirect(`${process.env.FrontendHost}/Qr`);
+		const token = await this.createToken(user.id, user.login, TOKENEXP, TOKENSECRET)
+		res.cookie('token', token, {signed: true});
+		const refresh = await this.createToken(user.id, user.login, REFRESHEXP, REFRESHSECRET)
+		res.cookie('refresh', refresh, {signed: true})
+		console.log("token == ", token)
+		res.status(200).json(token);
 	}
 
-	async signOut(req: Request ,res: Response) {
+	async signOut(res: Response) {
 		res.clearCookie('token');
-		res.clearCookie('accesstoken');
-		res.clearCookie('login')
-		console.log("signing out")
+		res.clearCookie('refresh');
+		res.clearCookie('id');
 		return res.send({message: "signOut was succefull"})
 	}
 
 
-	async hashPass(password : string)
-	{
-		const SALT_ROUNDS = 10;
-		return await bcrypt.hash(password, SALT_ROUNDS);
-	}
-
-
-	async compareHash(password:string, hashedPassword:string)
-	{
-		return await bcrypt.compare(password,hashedPassword);
-	}
-	
-
-	async createToken(id: string, login: string)
+	async createToken(id: string, login: string, expiresIn: number, secret: string)
 	{
 		const payload = {sub: id, username: login}
 
-		const token = await this.jwtservice.signAsync(payload);
+		const token = await this.jwtservice.signAsync(payload, {
+			expiresIn,
+			secret,
+		});
 		
 		if (!token)
-			throw new ForbiddenException();
+			throw new InternalServerErrorException();
 		return token;
 	}
 
 
+	async refreshTokens(req: Request, res: Response)
+	{
+		const id = getId(req);
+		const user = await this.prisma.user.findUnique({
+			where: {
+				id,
+			}
+		})
 
+		if (!user)
+			throw new NotFoundException("User Doesn't Exits")
+		res.clearCookie('token');
+		res.clearCookie('refresh');
+		const token = await this.createToken(user.id, user.login, TOKENEXP, TOKENSECRET)
+		res.cookie('token', token, {signed: true});
+		const refresh = await this.createToken(user.id, user.login, REFRESHEXP, REFRESHSECRET)
+		res.cookie('refresh', refresh, {signed: true})
+		res.status(200).json(token);
+	}
 }
