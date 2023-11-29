@@ -45,7 +45,7 @@ export class AuthService {
 		res.clearCookie('token');
 		res.clearCookie('refresh');
 		res.clearCookie('id');
-		return res.send({message: "signOut was succefull"})
+		return res.status(200).send({message: "signOut was succefull"})
 	}
 
 
