@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { creatChannelDto } from '../dto/creat-channel.dto';
 import { Channel, User } from '@prisma/client';
+import { Socket } from 'socket.io';
 
 @Injectable()
 export class ChannelService {
@@ -25,5 +26,26 @@ export class ChannelService {
             },
         });
         return newChannel;
+    }
+    
+    async   getUserChannels(nickname: string, client: Socket)
+    {
+        if (nickname !== client.data.user.nickname) {
+            throw new UnauthorizedException('Unauthorized access: you try to get channels of another user.');
+        }
+        const updatedChannels = await this.prisma.user.findUnique({
+            where: { nickname },
+            select: {
+                channels: {
+                    orderBy: {
+                        updatedAt: 'desc',
+                    },
+                },
+            },
+        });
+        if (!updatedChannels) {
+            throw new NotFoundException('Resource not found: in get user channels.');
+        }
+        return updatedChannels;
     }
 }

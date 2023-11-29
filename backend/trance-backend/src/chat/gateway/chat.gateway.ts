@@ -4,6 +4,8 @@ import { Server, Socket } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../../user/user.service';
 import { creatChannelDto } from '../dto/creat-channel.dto';
+import { error } from 'console';
+import { NotFoundException, UnauthorizedException } from '@nestjs/common';
 
 @WebSocketGateway({ namespace: 'chatGateway' })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -63,5 +65,25 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     	}
 	}
 
-	
+	@SubscribeMessage('getUserChannels')
+	async handleGetUserChannels(@MessageBody() nickname: string, @ConnectedSocket() client: Socket)
+	{
+		try
+		{
+			const updatedChannels = await this.channelService.getUserChannels(nickname, client);
+			client.emit('UserChannels', updatedChannels);
+			// console.log('updatedChannels is:', updatedChannels);
+		}
+		catch(error)
+		{
+			if (error instanceof NotFoundException) {
+				console.error('Resource not found.');
+            } else if (error instanceof UnauthorizedException) {
+				console.error('Unauthorized access.');
+            } else {
+				console.error('An unexpected error occurred:', error.message);
+            }
+			client.emit('getUserChannelsFailed', { error: 'Failed to get channels.' });
+		}
+	}
 }
