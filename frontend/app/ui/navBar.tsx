@@ -56,7 +56,7 @@ function NavBar ({handleShowMenu}: NavBarProps)
             })}>
               <HomeIcon className="w-10 ml-3 h-6 mr-4" />
             </Link>
-            <Link href="/chat" className={clsx(`flex items-center mt-15 justify-center mt-10 px-15 font-medium text-gray-400 hover:opacity-50
+            <Link href="/Chat" className={clsx(`flex items-center mt-15 justify-center mt-10 px-15 font-medium text-gray-400 hover:opacity-50
               hover:text-neonpink`, {'text-neonpink'  : currentPath === "/chat",
             })}>
               <ChatBubbleBottomCenterIcon className="w-10 ml-3 h-6 mr-4" />
