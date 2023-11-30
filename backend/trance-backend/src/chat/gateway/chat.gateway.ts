@@ -5,7 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../../user/user.service';
 import { creatChannelDto } from '../dto/creat-channel.dto';
 import { error } from 'console';
-import { NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 
 @WebSocketGateway({ namespace: 'chatGateway' })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -27,12 +27,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	async handleConnection(@ConnectedSocket() client: Socket)
 	{
 		console.log('coonect');
-		// const token: string = client.handshake.headers.token as string;
 		const token: string = client.handshake.headers.token as string;
 		const payload = await this.jwtService.verifyAsync(token, { secret: process.env.jwtsecret })
 		const user = await this.userService.findOneById(payload.sub);
 		client.data.user = user;
-		console.log('this is the client data: ', client.data);
+		// console.log('this is the client data: ', client.data);
 		console.log('this is the token: ', token);
 		client.emit('userConnection', {msg: `a new user is connected ${client.id}`});
 	}
@@ -84,6 +83,34 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				console.error('An unexpected error occurred:', error.message);
             }
 			client.emit('getUserChannelsFailed', { error: 'Failed to get channels.' });
+		}
+	}
+
+	@SubscribeMessage('leaveChannel')
+	async	handleLeaveChannel(@MessageBody() channelName: string, @ConnectedSocket() client: Socket)
+	{
+		try
+		{
+			console.log('channel name befor: ', channelName);
+			console.log('username befor: ', client.data.user.nickname);
+			await this.channelService.leaveChannel(channelName, client.data.user.nickname);
+			client.emit('leaveChannelDone', {msg: 'you are now out of this channel'});
+		}
+		catch(error)
+		{
+			if (error instanceof NotFoundException) {
+				console.error('Resource not found.');
+			}
+			else if (error instanceof BadRequestException) {
+				console.error('owner should set another owner before leave channel');
+            }
+			else if (error instanceof UnauthorizedException) {
+				console.error('Unauthorized access.');
+            }
+			else {
+				console.error('An unexpected error occurred:', error.message);
+            }
+			client.emit('leaveChannelFailed', { error: 'Failed to leave channel.' });
 		}
 	}
 }

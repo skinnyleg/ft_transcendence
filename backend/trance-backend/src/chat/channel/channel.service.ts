@@ -1,19 +1,20 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { creatChannelDto } from '../dto/creat-channel.dto';
 import { Channel, User } from '@prisma/client';
 import { Socket } from 'socket.io';
+import { ChannelOutils } from './outils';
 
 @Injectable()
 export class ChannelService {
 
     constructor(
-        private readonly prisma: PrismaService
+        private readonly prisma: PrismaService,
+        private  outils: ChannelOutils,
     ){}
 
     async creatChannel(creteChannelDto: creatChannelDto)
     {
-        // console.log(`owner is ${cretechanneldto.owner}`);
         const {name, type, owner, password} = creteChannelDto;
         const newChannel = await this.prisma.channel.create({
             data: {
@@ -48,4 +49,39 @@ export class ChannelService {
         }
         return updatedChannels;
     }
+
+    async   leaveChannel(channelName: string, nickname: string)
+    {
+        const isMemberInChannel = await this.outils.isUserInChannel(channelName, nickname);
+        if(!isMemberInChannel) {
+            throw new NotFoundException('Resource not found: the user is not a member of channel.');
+        }
+        const isAdministrator = await this.outils.isUserAdministrator(channelName, nickname);
+        if(isAdministrator) {
+            const isOwner = await this.outils.getChannelOwner(channelName);
+            if(isOwner === nickname) {
+                throw new BadRequestException('Cannot leave as the owner. Set a new owner before leaving.');
+            }
+            else {
+                await this.prisma.channel.update({
+                    where: { name: channelName },
+                    data: {
+                        admins: {
+                            disconnect: [{ nickname:  nickname}],
+                        },
+                    },
+                });
+                console.log('remove from admins');
+            }
+        }
+        await this.prisma.channel.update({
+            where: { name: channelName },
+            data: {
+                users: {
+                    disconnect: [{ nickname }],
+                },
+            },
+        });
+    }
+    //---
 }
