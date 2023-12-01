@@ -50,3 +50,21 @@ export interface profileData {
     isfriend: boolean;
     privateProfile: boolean;
 };
+
+
+
+
+// Chat Interfaces
+
+export interface ChannelInter {
+	id: string,
+	channelName: string,
+	channelPic: string,
+	isJoined: boolean,
+}
+
+export interface DmsInter {
+	id: string,
+	userPic: string,
+	userNick: string,
+}
