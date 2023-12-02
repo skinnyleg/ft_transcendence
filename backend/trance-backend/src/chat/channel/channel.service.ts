@@ -1,9 +1,10 @@
-import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { creatChannelDto } from '../dto/creat-channel.dto';
 import { Channel, User } from '@prisma/client';
 import { Socket } from 'socket.io';
 import { ChannelOutils } from './outils';
+import { DateTime } from 'luxon';
 
 @Injectable()
 export class ChannelService {
@@ -83,5 +84,71 @@ export class ChannelService {
             },
         });
     }
-    //---
+    //-----------------------------------------------------------------------------------
+    async   changeOwnerOfChannel(channelName: string, oldOwner: string, newOwner: string)
+    {
+        const isMemberOld = await this.outils.isUserInChannel(channelName, newOwner);
+        const isMemberNew = await this.outils.isUserInChannel(channelName, newOwner);
+        if (!isMemberOld || !isMemberNew) {
+            throw new NotFoundException('Resource not found: old owner or new owner is not a user in channels.');
+        }
+        await   this.prisma.channel.update({
+            where: { name: channelName },
+            data: {
+                owner: newOwner,
+                admins: { disconnect: [{ nickname: oldOwner}] },
+            },
+        });
+    }
+
+    async   kickUser(channelName: string, client: string, user2kick: string)
+    {
+        const isCientMember = await this.outils.isUserInChannel(channelName, client);
+        if(!isCientMember) {
+            throw new NotFoundException('The channel or the user is not found.');
+        }
+        const isUser2kickMember = await this.outils.isUserInChannel(channelName, user2kick);
+        if(!isUser2kickMember) {
+            throw new NotFoundException('The user to kick is not found.');
+        }
+        const isClientAdmin = await this.outils.isUserAdministrator(channelName, client);
+        if(!isClientAdmin) {
+            throw new ForbiddenException('You are not authorized to perform this action. Only admins can do this.');
+        }
+        if((await this.outils.getChannelOwner(channelName)) === client)
+        {
+            const isAdmin = await this.outils.isUserAdministrator(channelName, user2kick);
+            if(isAdmin) {
+                await this.prisma.channel.update({
+                    where: {name: channelName},
+                    data: {
+                        admins: {disconnect: {nickname: user2kick}},
+                    },
+                });
+            }
+        }
+        else
+        {
+            const isNotAdmin = await this.outils.isUserAdministrator(channelName, user2kick);
+            if(isNotAdmin) {
+                throw new ForbiddenException('You are not authorized to kick admin, only owner can do this.')
+            }
+        }
+        await this.prisma.channel.update({
+            where: {name: channelName},
+            data: {
+                users: {disconnect: {nickname: client}},
+            },
+        });
+    }
+    
+    // async   banUser(channelName: string, admin: string, user2ban: string)
+    // {
+    // }
+        
+    // async   muteUser(channelName: string, admin: string, user2mute: string)
+    // {
+            // expirationTime *= 60;
+            // const expiredAt = DateTime.now().plus({ seconds: expirationTime }).toJSDate();
+    // }
 }

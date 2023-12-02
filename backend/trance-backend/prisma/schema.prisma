@@ -127,9 +127,8 @@ model Channel {
 model Blacklist {
   id          String  @id @default(uuid())   
   nickname    String  @unique
-  role        Role
   status      Membership
-  expiredAt   DateTime
+  expiredAt   DateTime?
   channelName String
   channel     Channel @relation(fields: [channelName], references: [name])
 }

@@ -39,7 +39,6 @@ export class ChannelOutils {
                     select: {
                         id: true,             
                         nickname: true,
-                        role: true,
                         status: true,
                         expiredAt: true,
                         channelName: true,

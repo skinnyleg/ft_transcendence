@@ -6,6 +6,7 @@ import { UserService } from '../../user/user.service';
 import { creatChannelDto } from '../dto/creat-channel.dto';
 import { error } from 'console';
 import { BadRequestException, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { changeOwner } from '../dto/changeOwner.dto';
 
 @WebSocketGateway({ namespace: 'chatGateway' })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -111,6 +112,49 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				console.error('An unexpected error occurred:', error.message);
             }
 			client.emit('leaveChannelFailed', { error: 'Failed to leave channel.' });
+		}
+	}
+
+	@SubscribeMessage('changeOwner')
+	async	handleChangeOwner(@MessageBody() data: changeOwner, @ConnectedSocket() client: Socket)
+	{
+		try
+		{
+			const {channelName, newOwner} = data;
+			await this.channelService.changeOwnerOfChannel(channelName, client.data.user.nickname, newOwner);
+			client.emit('changeOwnerDone', { msg: `the ${newOwner} is the new owner of ${channelName}.`});
+		}
+		catch(error)
+		{
+			if (error instanceof NotFoundException) {
+				console.error('Resource not found.');
+			}
+			else if (error instanceof BadRequestException) {
+				console.error('error in client side from changeOwner event');
+            }
+			else if (error instanceof UnauthorizedException) {
+				console.error('Unauthorized access.');
+            }
+			else {
+				console.error('An unexpected error occurred:', error.message);
+            }
+			client.emit('changeOwnerFailed', { error: 'Failed to change owner of channel.' });
+		}
+	}
+
+	@SubscribeMessage('kickUser')
+	async	handleKickUser(@MessageBody() data: any, @ConnectedSocket() client: Socket)
+	{
+		try
+		{
+			const {channelName, user2kick} = data;
+			await this.channelService.kickUser(channelName, client.data.user.nickname, user2kick);
+			client.emit('kickUserDone', {msg: `the ${user2kick} is kicked from the channel by ${client.data.user.nickname}`});
+		}
+		catch(error)
+		{
+			console.error('error in kick user');
+			client.emit('kickUserFailed', { error: 'Failed to kick that user.' });
 		}
 	}
 }
