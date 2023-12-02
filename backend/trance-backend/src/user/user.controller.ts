@@ -35,20 +35,6 @@ export class UserController {
 		return this.userService.getProfile(id, payload.nickname);
 	}
 
- // 	@Get('PrivateProfile')
-	// @UseGuards(JwtAuthGuard)
- // 	getPrivateProfile(@Req() req) {
-	// 	const id = getId(req);
-	// 	return this.userService.privateProfile(id);
- //  }
-	//
-	// @UseGuards(JwtAuthGuard)
- // 	@Post('PublicProfile')
- // 	getPublicProfile(@Body() payload: publicProfileDto, @Req() req) {
-	// 	const id = getId(req);
-	// 	return this.userService.publicProfile(payload.nick, id);
- //  }
-
 	@UseGuards(JwtAuthGuard)
 	@Post('2FA')
 	handleTwoFA(@Body() payload: Enable2FADto, @Req() req) {
@@ -71,6 +57,14 @@ export class UserController {
 		const id = getId(req);
 		return this.userService.getDashboard(id);
 	}
+
+	@Get('Nickname')
+	@UseGuards(JwtAuthGuard)
+ 	getNickname(@Req() req) {
+		const id = getId(req);
+		return this.userService.getNickname(id);
+	}
+
 
 	@Get('Friends')
 	@UseGuards(JwtAuthGuard)

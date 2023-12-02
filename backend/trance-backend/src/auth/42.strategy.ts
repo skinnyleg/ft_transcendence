@@ -17,12 +17,12 @@ export class Strategy42 extends PassportStrategy(Strategy, '42') {
 	saveJsonData(profile: any) {
 		const user = {
 			intraId: profile._json.id,
-			login: profile._json.login,
 			password: "123",
 			profilePic: profile._json.image.link,
 			BackgroundPic: process.env.BackendHost + "/upload/DefaultBackground.jpg",
 			wallet: profile._json.wallet,
 			level: profile._json.cursus_users[1].level,
+			nickname: profile._json.login,
 			Rank: 0,
 		  };
 		return user;
