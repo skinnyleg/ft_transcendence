@@ -6,6 +6,7 @@ import { profileData } from "@/app/interfaces/interfaces";
 import { ArrowTrendingUpIcon, TrophyIcon } from "@heroicons/react/20/solid";
 import { ArrowTrendingDownIcon, WalletIcon } from "@heroicons/react/24/outline";
 import { Progress } from "@nextui-org/react";
+import withAuth from "@/app/withAuth";
 
 const matchHistory = [{
     id : "25/12/2024",
@@ -79,11 +80,15 @@ const profile = () => {
                         <img src={profileData?.userData.profilePic} alt="profile Picture" className="rounded-full w-20 h-20 rounded-full" />
                     </div>
                 </div>
-                <div className="bg-lightblue col-start-2 col-end-4 row-start-2 h-[20px] w-[750px] row-end-3 flex shadow-md rounded-xl items-center">
-                    <div  role="progressbar" className="w-[75%] bg-[#02cdd1]"></div>
+
+                <div className="bg-lightblue col-start-2 col-end-4 row-start-2 h-[20px] rounded-xl w-[750px] row-end-3 flex shadow-md">
+                    <div className="w-full h-full bg-white rounded-xl">
+                        <div
+                        className={`w-[${(profileData?.userData.level) * 10}%] h-full rounded-xl bg-lightblue`}
+                        >
+                        </div>
+                    </div>
                 </div>
-
-
                 <div className=" relative col-start-4 col-end-5 row-start-2 h-[20px] row-end-3 flex w-full  shadow-md rounded-xl">
                     <button className="bg-green-500 hover:bg-green-700 text-white  py-1/2 px-5 text-sm ml-20 rounded-full" onClick={() => {}}>Add Friend</button>
                     <button className="bg-red-500 hover:bg-red-700 text-white  py-1/2 px-5 text-sm rounded-full ml-6" onClick={() => {}}>chat</button>    
@@ -144,4 +149,4 @@ const profile = () => {
 
 }
 
-export default profile;
+export default withAuth(profile);
