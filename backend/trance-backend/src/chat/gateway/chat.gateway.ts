@@ -157,4 +157,50 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			client.emit('kickUserFailed', { error: 'Failed to kick that user.' });
 		}
 	}
+
+	@SubscribeMessage('banUser')
+	async	handleBanUser(@MessageBody() data: any, @ConnectedSocket() client: Socket)
+	{
+		try
+		{
+			const {channelName, user2kick} = data;
+			await this.channelService.banUser(channelName, client.data.user.nickname, user2kick);
+			client.emit('banUserDone', {msg: `the ${user2kick} is baned from the channel by ${client.data.user.nickname}`});
+		}
+		catch(error)
+		{
+			console.error('error in ban user');
+			client.emit('banUserFailed', { error: 'Failed to ban that user.' });
+		}
+	}
+
+	@SubscribeMessage('muteUser')
+	async	handleMuteUser(@MessageBody() data: any, @ConnectedSocket() client: Socket)
+	{
+		try
+		{
+			const {channelName, user2mute, expirationTime} = data;
+			await this.channelService.muteUser(channelName, client.data.user.nickname, user2mute, expirationTime);
+			client.emit('muteUserDone', {msg: `the ${user2mute} is muteed from the channel by ${client.data.user.nickname}`});
+		}
+		catch(error)
+		{
+			//-----------------------------
+			if (error instanceof NotFoundException) {
+				console.error('Resource not found.');
+			}
+			else if (error instanceof BadRequestException) {
+				console.error('error in client side from mute user event');
+            }
+			else if (error instanceof UnauthorizedException) {
+				console.error('Unauthorized access.');
+            }
+			else {
+				console.error('An unexpected error occurred:', error.message);
+            }
+			//-----------------------------
+			// console.error('error in mute user');
+			client.emit('muteUserFailed', { error: 'Failed to mute that user.' });
+		}
+	}
 }

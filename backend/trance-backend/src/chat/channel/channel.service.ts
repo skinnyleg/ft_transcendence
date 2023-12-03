@@ -142,13 +142,85 @@ export class ChannelService {
         });
     }
     
-    // async   banUser(channelName: string, admin: string, user2ban: string)
-    // {
-    // }
+    async   banUser(channelName: string, client: string, user2ban: string)
+    {
+        //check user to ban if it is baned
+        const isCientMember = await this.outils.isUserInChannel(channelName, client);
+        if(!isCientMember) {
+            throw new NotFoundException('The channel or the user is not found.');
+        }
+        const isUser2banMember = await this.outils.isUserInChannel(channelName, user2ban);
+        if(!isUser2banMember) {
+            throw new NotFoundException('The user to ban is not found.');
+        }
+        const isClientAdmin = await this.outils.isUserAdministrator(channelName, client);
+        if(!isClientAdmin) {
+            throw new ForbiddenException('You are not authorized to perform this action. Only admins can do this.');
+        }
+        if((await this.outils.getChannelOwner(channelName)) === client)
+        {
+            const isAdmin = await this.outils.isUserAdministrator(channelName, user2ban);
+            if(isAdmin) {
+                await this.prisma.channel.update({
+                    where: {name: channelName},
+                    data: {
+                        admins: {disconnect: {nickname: user2ban}},
+                    },
+                });
+            }
+        }
+        else
+        {
+            const isNotAdmin = await this.outils.isUserAdministrator(channelName, user2ban);
+            if(isNotAdmin) {
+                throw new ForbiddenException('You are not authorized to ban admin, only owner can do this.')
+            }
+        }
+        await this.prisma.channel.update({
+            where: {name: channelName},
+            data: {
+                users: {disconnect: {nickname: client}},
+            },
+        });
+        await this.prisma.blacklist.create({
+            data: {
+                nickname: user2ban,
+                status: 'BAN',
+                channel: {connect: {name: channelName}},
+            },
+        });
+    }
         
-    // async   muteUser(channelName: string, admin: string, user2mute: string)
-    // {
-            // expirationTime *= 60;
-            // const expiredAt = DateTime.now().plus({ seconds: expirationTime }).toJSDate();
-    // }
+    async   muteUser(channelName: string, client: string, user2mute: string, expirationTime: number)
+    {
+        //check user to ban if it is baned
+        const isCientMember = await this.outils.isUserInChannel(channelName, client);
+        if(!isCientMember) {
+            throw new NotFoundException('The channel or the user is not found.');
+        }
+        const isUser2muteMember = await this.outils.isUserInChannel(channelName, user2mute);
+        if(!isUser2muteMember) {
+            throw new NotFoundException('The user to mute is not found.');
+        }
+        const isClientAdmin = await this.outils.isUserAdministrator(channelName, client);
+        if(!isClientAdmin) {
+            throw new ForbiddenException('You are not authorized to perform this action. Only admins can do this.');
+        }
+        const isNotAdmin = await this.outils.isUserAdministrator(channelName, user2mute);
+        if(isNotAdmin) {
+            if((await this.outils.getChannelOwner(channelName)) !== client) {
+                throw new ForbiddenException('You are not authorized to mute admin, only owner can do this.')
+            }
+        }
+        expirationTime *= 60;
+        const expiredAt = DateTime.now().plus({ seconds: expirationTime }).toJSDate();
+        await this.prisma.blacklist.create({
+            data: {
+                nickname: user2mute,
+                status: 'MUTED',
+                expiredAt,
+                channel: {connect: {name: channelName}},
+            },
+        });
+    }
 }
