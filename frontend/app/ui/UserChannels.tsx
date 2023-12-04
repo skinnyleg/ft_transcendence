@@ -3,7 +3,8 @@ import type { FC } from 'react';
 import { ChannelInter } from '../interfaces/interfaces';
 import ChannelComponent from './channelComponent';
 
-const Channels: ChannelInter[] = [
+// const channels: ChannelInter[] = []
+const channels: ChannelInter[] = [
   {
     id: '1',
     channelName: 'General',
@@ -49,12 +50,14 @@ const UserChannels: FC<UserChannelsProps> = ({}) => {
 		return (
 			<div className='overflow-y-auto'>
 				{
-					Channels.map((channel) => (
-						<ChannelComponent
-							key={channel.id} // Add a unique key for each child component
-							channel={channel}
-						/>
+				  channels.length > 0 && (
+					channels.map((channel) => (
+					  <ChannelComponent
+						key={channel.id} // Add a unique key for each child component
+						channel={channel}
+					  />
 					))
+				  )
 				}
 			</div>
 	);

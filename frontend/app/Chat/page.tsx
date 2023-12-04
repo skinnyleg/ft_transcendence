@@ -11,9 +11,12 @@ export const metadata: Metadata = {
 
 const chat = () => {
 	return (
-		<div className="h-screen p-2">
-		<ChannelTab />
-		<PersonalTab />
+		<div className='h-screen pt-16 pb-1 pr-2 lg:pb-3 lg:pt-2'>
+			<div className='h-full space-y-1'>
+					<ChannelTab />
+					<PersonalTab />
+				{/* <h1>hello </h1> */}
+			</div>
 		</div>
 	)
 }

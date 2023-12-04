@@ -23,7 +23,7 @@ function NavBar ({handleShowMenu}: NavBarProps)
   var currentPath = usePathname();
   return (
   <div className={inter.className}>
-    <div className="block lg:hidden bg-gray-800 text-white md:w-screen p-4 flex justify-between items-center border-indigo-600 fixed w-full z-10">
+	<div className="block lg:hidden bg-gray-800 top-0 text-white md:w-screen h-[8vh] z-10 p-4 flex justify-between items-center border-indigo-600 fixed w-full ">
       <button className="text-white p-2 focus:outline-none">
           <Bars4Icon onClick={() => {setShow(!show); handleShowMenu(!show)}} className="w-6 h-6"/>
       </button>
@@ -38,8 +38,7 @@ function NavBar ({handleShowMenu}: NavBarProps)
           />
       </div>
     </div>
-    <nav className={`flex flex-col ml-2 lg:mt-2 mb-1 lg:block fixed lg:h-[98vh] h-[88vh] bg-back w-20 lg:top-0 top-20  ${show ? '' : 'hidden'} rounded-xl border border-blackpink 
-      transition-transform duration-300 `}>
+	<nav className={`flex flex-col lg:ml-2 lg:mt-2 lg:block mt-[8vh] fixed lg:h-[98%] h-[92vh] bg-back w-20 ${show ? '' : 'hidden'} lg:rounded-xl border border-blackpink transition-transform duration-300 `}>
       <div className="flex flex-col flex-grow">
         <div className="flex items-center justify-center mt-6 h-16 px-6 font-medium hover:opacity">
           <Image
