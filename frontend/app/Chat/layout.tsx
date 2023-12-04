@@ -15,7 +15,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 			<NavBar handleShowMenu={handleShowMenu} />
 		  </div>
 		  <div className={`flex-grow ${
-			  showMenu  ? 'ml-20 ' : 'ml-3'
+			  showMenu  ? 'ml-[90px] ' : 'ml-3 lg:ml-3'
 			} transition-margin duration-300`}>{children}</div>
 		</div>
 	);

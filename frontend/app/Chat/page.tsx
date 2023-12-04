@@ -2,6 +2,7 @@ import React from 'react'
 import ChannelTab from '../ui/ChannelTab'
 import { Metadata } from 'next'
 import PersonalTab from '../ui/PersonalTab'
+import ChatTab from '../ui/ChatTab'
 
 export const metadata: Metadata = {
   title: 'Chat',
@@ -11,11 +12,13 @@ export const metadata: Metadata = {
 
 const chat = () => {
 	return (
-		<div className='h-screen pt-16 pb-1 pr-2 lg:pb-3 lg:pt-2'>
-			<div className='h-full space-y-1'>
+		<div className='h-screen flex flex-row pt-[70px] pb-1 pr-2 lg:pb-1 lg:pt-2'>
+			<div className='h-full w-full lg:flex-shrink lg:w-fit flex gap-1 flex-col'>
 					<ChannelTab />
 					<PersonalTab />
-				{/* <h1>hello </h1> */}
+			</div>
+			<div className='hidden lg:flex lg:flex-grow w-full h-full pb-1'>
+				<ChatTab />
 			</div>
 		</div>
 	)
