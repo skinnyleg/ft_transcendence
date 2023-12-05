@@ -35,6 +35,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		// console.log('this is the client data: ', client.data);
 		console.log('this is the token: ', token);
 		client.emit('userConnection', {msg: `a new user is connected ${client.id}`});
+		await this.channelService.pushMutedUsers();
 	}
 		
 	async handleDisconnect(@ConnectedSocket() client: Socket)

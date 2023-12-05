@@ -1,18 +1,47 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException, Logger } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { creatChannelDto } from '../dto/creat-channel.dto';
 import { Channel, User } from '@prisma/client';
 import { Socket } from 'socket.io';
 import { ChannelOutils } from './outils';
 import { DateTime } from 'luxon';
+import { Cron, CronExpression } from '@nestjs/schedule';
+
+interface mutedUsers {
+    name: string;
+    users: string[];
+}
 
 @Injectable()
 export class ChannelService {
-
+    
     constructor(
         private readonly prisma: PrismaService,
         private  outils: ChannelOutils,
-    ){}
+        ){}
+        
+    private channels: mutedUsers[] = [];
+
+    async   pushMutedUsers()
+    {
+        console.log('push to pop');
+        const array = await this.outils.getMuteBlacklist()
+        if (array)
+        {
+            for (const entry of array)
+            {
+                const channel = this.channels.find((c) => c.name == entry.channelName);
+                if (channel)
+                {
+                    channel.users.push(entry.nickname);
+                }
+                else {
+                    const ch: mutedUsers = {name: entry.channelName, users: [entry.nickname]};
+                    this.channels.push(ch);
+                }
+            }
+        }
+    }
 
     async creatChannel(creteChannelDto: creatChannelDto)
     {
@@ -27,6 +56,8 @@ export class ChannelService {
                 admins: { connect: [{ nickname: owner }] },
             },
         });
+        const channel_: mutedUsers = {name, users: []};
+        this.channels.push(channel_);
         return newChannel;
     }
     
@@ -222,5 +253,29 @@ export class ChannelService {
                 channel: {connect: {name: channelName}},
             },
         });
+        const channel = this.channels.find((c) => c.name == channelName);
+        if (channel) {
+            channel.users.push(user2mute);
+        }
+    }   
+
+    @Cron(CronExpression.EVERY_10_SECONDS)
+    async MuteExpiration() {
+        console.log(`the channels muted is : ${this.channels[0]}`);
+        try {
+            console.log('enter here');
+            for (const channel of this.channels) {
+                console.log(`the user muted is : ${channel.users}`);
+                for (const mutedUser of channel.users) {
+                    const expiredAt = await this.outils.getExpiredAtOfUser(channel.name, mutedUser);
+                    if (expiredAt && new Date() >= new Date(expiredAt)) {
+                        await this.outils.updateStatusInBlacklist(channel.name, mutedUser);
+                        console.log(`Mute expired for user ${mutedUser} in channel ${channel.name}`);
+                    }
+                }
+            }
+        } catch (error) {
+            console.log('Error processing mute expiration:', error);
+        }
     }
 }

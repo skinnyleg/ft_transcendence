@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
-import { Channel, User } from '@prisma/client';
+import { Blacklist, Channel, Membership, User } from '@prisma/client';
+import { ChannelService } from './channel.service';
 
 @Injectable()
 export class ChannelOutils {
@@ -97,7 +98,84 @@ export class ChannelOutils {
         return channel?.owner || null;
     }
     //-------------------------------------------------------------------------------//
+    async   isUserInBlacklist(channelName: string, nickname: string): Promise<boolean>
+    {
+        const isUserInBlacklist = await this.prisma.blacklist.count({
+            where: {
+                channelName,
+                nickname,
+            },
+        });
+        if(!isUserInBlacklist) {
+            return false;
+        }
+        return true;
+    }
     //-------------------------------------------------------------------------------//
+    async   getChannelIdByName(channelName: string):Promise<string>
+    {
+        const channel = await this.findChannelByName(channelName);
+        return channel.id;
+    }
+    //-------------------------------------------------------------------------------//
+    async   getBlacklist(channelName: string, user: string):Promise<Blacklist | null>
+    {
+        const blacklist = await this.prisma.blacklist.findFirst({
+            where: {
+                nickname: user,
+                channelName,
+            },
+        });
+        return blacklist || null;
+    }
+    //-------------------------------------------------------------------------------//
+    async   getBlacklistId(channelName: string, user: string):Promise<string>
+    {
+        const blacklist = await this.getBlacklist(channelName, user);
+        if(!blacklist) {
+            throw new NotFoundException('blacklist not found.');
+        }
+        return blacklist.id;
+    }
+    //-------------------------------------------------------------------------------//
+    async   getStatusInBlacklist(channelName: string, user: string):Promise<string>
+    {
+        const isUserInBlacklis = await this.isUserInBlacklist(channelName, user);
+        if(!isUserInBlacklis) {
+            throw new NotFoundException('The user is not found in blacklist for this channel.');
+        }
+        const id = await this.getBlacklistId(channelName, user);
+        const blacklist = await this.prisma.blacklist.findUnique({
+            where: { id },
+        });
+        return blacklist.status;
+    } 
+    //-------------------------------------------------------------------------------//
+    async   getExpiredAtOfUser(channelName: string, mutedUser: string)
+    {
+        const blacklist = await this.getBlacklist(channelName, mutedUser);
+        if(!blacklist) {
+            throw new NotFoundException(`The ${mutedUser} is not found in getExpiredAtOfUser.`);
+        }
+        return blacklist.expiredAt;
+    }
+    //-------------------------------------------------------------------------------//
+    async getMuteBlacklist(): Promise<Blacklist[]>
+    {
+        return this.prisma.blacklist.findMany({
+            where: {
+                status: Membership.MUTED,
+            },
+        });
+    }
+    //-------------------------------------------------------------------------------//
+    async   updateStatusInBlacklist(channelName: string, mutedUser: string)
+    {
+        const id = await this.getBlacklistId(channelName, mutedUser);
+        await this.prisma.blacklist.delete({
+            where: {id},
+        });
+    }
     //-------------------------------------------------------------------------------//
     //-------------------------------------------------------------------------------//
     //-------------------------------------------------------------------------------//
