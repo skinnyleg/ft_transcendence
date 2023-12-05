@@ -3,6 +3,7 @@ import ChannelTab from '../ui/ChannelTab'
 import { Metadata } from 'next'
 import PersonalTab from '../ui/PersonalTab'
 import ChatTab from '../ui/ChatTab'
+import ChatSideBar from '../ui/ChatSideBar'
 
 export const metadata: Metadata = {
   title: 'Chat',
@@ -13,12 +14,15 @@ export const metadata: Metadata = {
 const chat = () => {
 	return (
 		<div className='h-screen flex flex-row pt-[70px] pb-1 pr-2 lg:pb-1 lg:pt-2'>
-			<div className='h-full w-full lg:flex-shrink lg:w-fit flex gap-1 flex-col'>
+			<div className='h-full w-full  lg:w-[40%] flex gap-1 flex-col'>
 					<ChannelTab />
 					<PersonalTab />
 			</div>
 			<div className='hidden lg:flex lg:flex-grow w-full h-full pb-1'>
 				<ChatTab />
+			</div>
+			<div className='hidden lg:flex lg:w-[30%] w-full h-full pb-1'>
+				<ChatSideBar />
 			</div>
 		</div>
 	)

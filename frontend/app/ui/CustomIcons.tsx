@@ -1,12 +1,19 @@
 "use client"
 
-import React from 'react';
+import React, { ElementType } from 'react';
 import PropTypes from 'prop-types';
 import { IoMdSettings, /* other icons */ } from 'react-icons/io';  // Import other icons as needed
 import { Tooltip } from 'react-tooltip'
 import { IoMdAddCircleOutline } from "react-icons/io";
 
-export const IconWithTooltip = ({ icon, tooltipId, tooltipContent, styles }) => {
+interface IconWithTooltipProps {
+  icon: ElementType;
+  tooltipId: string;
+  tooltipContent: string;
+  styles: string;
+}
+
+export const IconWithTooltip : React.FC<IconWithTooltipProps> = ({ icon, tooltipId, tooltipContent, styles }) => {
   const IconComponent = icon;  // Dynamically assign the icon component based on the prop
 
   return (
@@ -17,15 +24,18 @@ export const IconWithTooltip = ({ icon, tooltipId, tooltipContent, styles }) => 
   );
 };
 
-IconWithTooltip.propTypes = {
-  icon: PropTypes.elementType.isRequired,  // PropType for a React component type
-  tooltipId: PropTypes.string.isRequired,
-  tooltipContent: PropTypes.string.isRequired,
-  styles: PropTypes.string.isRequired,
-};
+// IconWithTooltip.propTypes = {
+//   icon: PropTypes.elementType.isRequired,  // PropType for a React component type
+//   tooltipId: PropTypes.string.isRequired,
+//   tooltipContent: PropTypes.string.isRequired,
+//   styles: PropTypes.string.isRequired,
+// };
 
+interface CreateChannelIconProps {
+  style: string;
+}
 
-export const CreateChannelIcon = ({style}) => {
+export const CreateChannelIcon : React.FC<CreateChannelIconProps> = ({style}) => {
 	return (
 			<IconWithTooltip
 				icon={IoMdAddCircleOutline}

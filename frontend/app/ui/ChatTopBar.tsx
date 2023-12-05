@@ -5,7 +5,7 @@ import { ChannelInter } from '../interfaces/interfaces';
 import { IoMdSettings } from "react-icons/io";
 import { GoSidebarExpand } from "react-icons/go";
 import { GoSidebarCollapse } from "react-icons/go";
-import CustomIcon, { IconWithTooltip } from './CustomIcons';
+import { IconWithTooltip } from './CustomIcons';
 
 
 interface ChatTopBarProps {
