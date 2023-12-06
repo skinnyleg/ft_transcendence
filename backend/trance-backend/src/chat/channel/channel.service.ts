@@ -301,7 +301,10 @@ export class ChannelService {
             }
             else if (channel2update.type === 'PROTECTED') {
                 await this.prisma.channel.update({
-                    where: {name: channelName},
+                    where: {
+                        name: channelName,
+                        owner,
+                    },
                     data: {
                         password: null,
                     },
@@ -310,14 +313,20 @@ export class ChannelService {
             else if (newType === 'PROTECTED') {
                 console.log('in protected state');
                 await this.prisma.channel.update({
-                    where: {name: channelName},
+                    where: {
+                        name: channelName,
+                        owner,
+                    },
                     data: {
                         password,
                     },
                 });
             }
             await this.prisma.channel.update({
-                where: { name: channelName},
+                where: { 
+                    name: channelName,
+                    owner,
+                },
                 data: {
                     type: newType,
                 },
@@ -330,6 +339,25 @@ export class ChannelService {
         }
     }
 
-    //change name of channel
+    async   changeNameOfChannel(channelName: string, owner: string, newName: string)
+    {
+        const channel2update = await this.outils.findChannelByName(channelName);
+        if (!channel2update) {
+            console.error('error in changeNameOfChannel');
+            throw new error('error in changeNameOfChannel');
+        }
+        const id: string = await this.outils.getChannelIdByName(channelName);
+        await this.prisma.channel.update({
+            where: {
+                id,
+                owner
+            },
+            data: {
+                name: newName
+            },
+        });
+    }
+
     //change password of chanel if it's protected
+
 }

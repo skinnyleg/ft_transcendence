@@ -210,14 +210,29 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	{
 		try
 		{
-			const {channelName, owner, newType, password} = data;
+			const {channelName, newType, password} = data;
 			console.log('pass is :', password);
-			await this.channelService.changeTypeOfChannel(channelName, owner, newType, password);
+			await this.channelService.changeTypeOfChannel(channelName, client.data.user.nickname, newType, password);
 			client.emit('changeTypeDone', `the channel is changed to type: ${newType}.`);
 		}
 		catch (error)
 		{
-			client.emit('changeTypeFailed', `the channel is Failed to change.`);
+			client.emit('changeTypeFailed', `the channel is Failed to change type.`);
+		}
+	}
+
+	@SubscribeMessage('changeNameOfChannel')
+	async	handleChangeNameOfChannel(@MessageBody() data: any, @ConnectedSocket() client: Socket)
+	{
+		try
+		{
+			const {channelName, newName} = data;
+			await this.channelService.changeNameOfChannel(channelName, client.data.user.nickname, newName);
+			client.emit('changeNameDone', `the channel is changed to type: ${newName}.`);
+		}
+		catch (error)
+		{
+			client.emit('changeNameFailed', `the channel is Failed to change name.`);
 		}
 	}
 }
