@@ -670,6 +670,7 @@ export class UserService {
 			},
 			select: {
 				nickname: true,
+				profilePic: true,
 			}
 		})
 		if (!user)
