@@ -155,7 +155,8 @@ export class ChannelOutils {
     {
         const blacklist = await this.getBlacklist(channelName, mutedUser);
         if(!blacklist) {
-            throw new NotFoundException(`The ${mutedUser} is not found in getExpiredAtOfUser.`);
+            // throw new NotFoundException(`The ${mutedUser} is not found in getExpiredAtOfUser.`);
+            return null;
         }
         return blacklist.expiredAt;
     }

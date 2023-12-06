@@ -204,4 +204,20 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			client.emit('muteUserFailed', { error: 'Failed to mute that user.' });
 		}
 	}
+
+	@SubscribeMessage('changeTypeOfChannel')
+	async	handleChangeTypeOfChannel(@MessageBody() data: any, @ConnectedSocket() client: Socket)
+	{
+		try
+		{
+			const {channelName, owner, newType, password} = data;
+			console.log('pass is :', password);
+			await this.channelService.changeTypeOfChannel(channelName, owner, newType, password);
+			client.emit('changeTypeDone', `the channel is changed to type: ${newType}.`);
+		}
+		catch (error)
+		{
+			client.emit('changeTypeFailed', `the channel is Failed to change.`);
+		}
+	}
 }

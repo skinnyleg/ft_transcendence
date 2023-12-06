@@ -1,11 +1,12 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException, Logger } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { creatChannelDto } from '../dto/creat-channel.dto';
-import { Channel, User } from '@prisma/client';
+import { Channel, User, Types } from '@prisma/client';
 import { Socket } from 'socket.io';
 import { ChannelOutils } from './outils';
 import { DateTime } from 'luxon';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { error } from 'console';
 
 interface mutedUsers {
     name: string;
@@ -24,10 +25,10 @@ export class ChannelService {
 
     async   pushMutedUsers()
     {
-        console.log('push to pop');
         const array = await this.outils.getMuteBlacklist()
         if (array)
         {
+            console.log('push to pop');
             for (const entry of array)
             {
                 const channel = this.channels.find((c) => c.name == entry.channelName);
@@ -46,10 +47,11 @@ export class ChannelService {
     async creatChannel(creteChannelDto: creatChannelDto)
     {
         const {name, type, owner, password} = creteChannelDto;
+        const type_: Types = type as Types;
         const newChannel = await this.prisma.channel.create({
             data: {
                 name,
-                type,
+                type: type_,
                 owner,
                 password,
                 users: { connect: [{ nickname: owner }] },
@@ -257,16 +259,20 @@ export class ChannelService {
         if (channel) {
             channel.users.push(user2mute);
         }
+        else {
+            const ch: mutedUsers = {name: channelName, users: [user2mute]};
+            this.channels.push(ch);
+        }
     }   
 
     @Cron(CronExpression.EVERY_10_SECONDS)
     async MuteExpiration() {
-        console.log(`the channels muted is : ${this.channels[0]}`);
+        // console.log(`the channels muted is : ${this.channels[0]}`);
         try {
             console.log('enter here');
             for (const channel of this.channels) {
-                console.log(`the user muted is : ${channel.users}`);
                 for (const mutedUser of channel.users) {
+                    console.log(`the user muted is : ${mutedUser}`);
                     const expiredAt = await this.outils.getExpiredAtOfUser(channel.name, mutedUser);
                     if (expiredAt && new Date() >= new Date(expiredAt)) {
                         await this.outils.updateStatusInBlacklist(channel.name, mutedUser);
@@ -278,4 +284,52 @@ export class ChannelService {
             console.log('Error processing mute expiration:', error);
         }
     }
+
+    //change type of channel
+    async   changeTypeOfChannel(channelName: string, owner: string, newType: Types, password?: string)
+    {
+        const channel2update = await this.outils.findChannelByName(channelName);
+        if (!channel2update) {
+            console.error('error in changeTypeOfChannel');
+            throw new error('error in changeTypeOfChannel');
+        }
+        if (newType === 'PROTECTED' || newType === 'PUBLIC' || newType === 'PRIVATE')
+        {
+            if (channel2update.type === newType) {
+                console.log('the chanel is already with this type.');
+                throw new error('the chanel is already with this type.');
+            }
+            else if (channel2update.type === 'PROTECTED') {
+                await this.prisma.channel.update({
+                    where: {name: channelName},
+                    data: {
+                        password: null,
+                    },
+                });
+            }
+            else if (newType === 'PROTECTED') {
+                console.log('in protected state');
+                await this.prisma.channel.update({
+                    where: {name: channelName},
+                    data: {
+                        password,
+                    },
+                });
+            }
+            await this.prisma.channel.update({
+                where: { name: channelName},
+                data: {
+                    type: newType,
+                },
+            });
+        }
+        else
+        {
+            console.error(`the type ${newType} not exist in types of channel`);
+            throw new error(`the type ${newType} not exist in types of channel`);
+        }
+    }
+
+    //change name of channel
+    //change password of chanel if it's protected
 }

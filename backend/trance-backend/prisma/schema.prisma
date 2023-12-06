@@ -49,6 +49,12 @@ enum  Role {
   MEMBER
 }
 
+enum Types {
+  PRIVATE
+  PUBLIC
+  PROTECTED
+}
+
 model User {
   id            String     @id @default(uuid())
   intraId       Int        @unique
@@ -115,7 +121,7 @@ model Channel {
   id          String    @id @default(uuid())
   name        String    @unique
   owner       String
-  type        String
+  type        Types
   password    String?
   users       User[]
   admins      User[]    @relation("Admins")
