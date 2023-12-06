@@ -68,3 +68,10 @@ export interface DmsInter {
 	userPic: string,
 	userNick: string,
 }
+
+export interface ChannelUser {
+	id: string;
+	userPic: string,
+	userNick: string;
+	userRole: string;
+}

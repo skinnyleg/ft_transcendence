@@ -15,7 +15,7 @@ const ChatTypeBar: FC<ChatTypeBarProps> = ({}) => {
 						className='border-none w-full h-full text-center bg-teal-100 focus:ring-0 text-black rounded-xl'
 					/>
 				</div>
-				<div className='bg-teal-100 w-[4%] rounded-xl h-full flex items-center justify-center hover:cursor-pointer'>
+				<div className='bg-teal-100 w-[10%] rounded-xl h-full flex items-center justify-center hover:cursor-pointer'>
 					<IconWithTooltip
 						icon={IoMdSend}
 						styles='w-8 h-8'
