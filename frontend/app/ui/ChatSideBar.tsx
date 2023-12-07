@@ -3,7 +3,6 @@ import { ChannelUser } from '../interfaces/interfaces';
 import UserCard from './UserCard';
 import { CiSearch } from "react-icons/ci";
 
-interface ChatSideBarProps {}
 
 const channelUsers: ChannelUser[] = [
 	{
@@ -123,8 +122,11 @@ const channelUsers: ChannelUser[] = [
 	},
 ]
 
+interface ChatSideBarProps {
+	channelId: string | undefined;
+}
 
-const ChatSideBar: FC<ChatSideBarProps> = ({}) => {
+const ChatSideBar: FC<ChatSideBarProps> = ({channelId}) => {
 		return (
 		<div className='w-full bg-teal-600 lg:ml-2 rounded-xl flex flex-col p-2 overflow-y-auto'>
 			<div className='flex flex-row rounded-xl bg-teal-200 w-full sticky top-0'>
@@ -133,14 +135,14 @@ const ChatSideBar: FC<ChatSideBarProps> = ({}) => {
 				/>
 				<input type='text'
 					placeholder='Search Users...'
-					className='w-4/5 h-10 bg-teal-200 border-none focus:ring-0 text-black'
+					className='w-4/5 h-10 bg-teal-200 rounded-xl border-none focus:ring-0 text-black'
 				/>
 			</div>
 			{ // Show "OWNERS" div if there are search results for 'ADMIN' role
 				channelUsers.some((user) => user.userRole === 'ADMIN') && (
 					<div className='flex items-center gap-1 h-7 mt-2 p-1'>
 						<h1 className='text-teal-800 font-bold font-sans w-fit text-xs'>ADMINS</h1>
-						<div className="w-[75%] h-1 bg-teal-800 rounded-full"></div>
+						<div className="w-[100%] h-1 bg-teal-800 rounded-full"></div>
 					</div>
 				)
 			}
@@ -155,7 +157,7 @@ const ChatSideBar: FC<ChatSideBarProps> = ({}) => {
 			channelUsers.some((user) => user.userRole === 'MEMBER') && (
 					<div className='flex items-center gap-1 h-7 mt-2 p-1'>
 						<h1 className='text-teal-800 font-bold font-sans w-fit text-xs'>MEMBERS</h1>
-						<div className="w-[75%] h-1 bg-teal-800 rounded-full"></div>
+						<div className="w-[100%] h-1 bg-teal-800 rounded-full"></div>
 					</div>
 				)
 			}

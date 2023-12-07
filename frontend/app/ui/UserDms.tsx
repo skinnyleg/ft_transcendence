@@ -2,6 +2,7 @@ import type { FC } from 'react';
 import { DmsInter } from '../interfaces/interfaces';
 import DmComponent from './DmComponent';
 
+// const Dms: DmsInter[] = []
 const Dms: DmsInter[] = [
   {
     id: '1',
@@ -10,27 +11,27 @@ const Dms: DmsInter[] = [
   },
   {
     id: '2',
-    userNick: 'Random',
+    userNick: 'dom',
     userPic: '/GroupChat.png',
   },
   {
     id: '3',
-    userNick: 'Random',
+    userNick: 'Ran',
     userPic: '/GroupChat.png',
   },
   {
     id: '4',
-    userNick: 'Random',
+    userNick: 'Raom',
     userPic: '/GroupChat.png',
   },
   {
     id: '5',
-    userNick: 'Random',
+    userNick: 'opi',
     userPic: '/GroupChat.png',
   },
   {
     id: '6',
-    userNick: 'Random',
+    userNick: 'haitam',
     userPic: '/GroupChat.png',
   },
   // Add more objects as needed...

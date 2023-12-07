@@ -1,14 +1,21 @@
+"use client"
 import type { FC } from 'react';
 import Image from 'next/image';
 import { DmsInter } from '../interfaces/interfaces';
+import { useRouter } from 'next/navigation';
 
 interface DmComponentProps {
 	Dm : DmsInter
 }
 
 const DmComponent: FC<DmComponentProps> = ({Dm}) => {
+	const router = useRouter();
+
+	const setDmQuery = () => {
+		router.replace(`/Chat?personal=${Dm.id}`);
+	}
 	return (
-		<div className='rounded-xl w-full h-14 mb-0 text-black p-2 flex justify-between items-center'>
+		<div onClick={setDmQuery} className='rounded-xl w-full h-14 mb-0 text-black p-2 flex justify-between items-center hover:cursor-pointer'>
 			<div className='flex gap-2 w-full'>
 				<Image
 					src={Dm.userPic}

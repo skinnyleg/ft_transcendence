@@ -2,12 +2,16 @@
 import type { FC } from 'react';
 import { IconWithTooltip } from './CustomIcons';
 import { IoMdSend } from "react-icons/io";
+import { ChannelInter } from '../interfaces/interfaces';
 
-interface ChatTypeBarProps {}
+interface ChatTypeBarProps {
+	channel: ChannelInter;
+}
 
-const ChatTypeBar: FC<ChatTypeBarProps> = ({}) => {
-		return (
-			<div className=' text-black h-16 rounded-xl p-2 flex flex-row justify-between items-center gap-2'>
+
+const ChatTypeBar: FC<ChatTypeBarProps> = ({channel}) => {
+		const renderJoined = () => (
+			<>
 				<div className='bg-teal-100 w-[97%] rounded-xl h-full'>
 					<input
 						type='text'
@@ -23,7 +27,25 @@ const ChatTypeBar: FC<ChatTypeBarProps> = ({}) => {
 						tooltipContent='Send Message'
 					/>
 				</div>
-			</div>
+			</>
+		)
+
+		const renderNotJoined = () => (
+			<>
+			  <div className={`bg-sky-700 w-[100%] rounded-3xl h-full flex items-center justify-center hover:cursor-pointer animate-pulse`}>
+				<button
+				  className='w-full h-full text-center text-xl font-bold text-teal-200 focus:outline-none'>
+				  Join
+				</button>
+			  </div>
+			</>
+		)
+
+		return (
+		<div className=' text-black h-16 rounded-xl p-2 flex flex-row justify-between items-center gap-2'>
+			{channel.isJoined === true && renderJoined()}
+			{channel.isJoined === false && renderNotJoined()}
+		</div>
 
 	);
 }
