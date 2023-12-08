@@ -452,17 +452,17 @@ export class UserService {
 	async generateNotifData(requestId: string)
 	{
 		  const notifData = await this.prisma.request.findUnique({
-			where: {
-			  id: requestId,
-			},
-			select: {
-				id: true,
-				senderId: true,
-				descriptionOfRequest: true,
-				typeOfRequest: true,
-				responded:true,
-			},
-		  });
+				where: {
+					id: requestId,
+				},
+				select: {
+					id: true,
+					senderId: true,
+					descriptionOfRequest: true,
+					typeOfRequest: true,
+					responded:true,
+				},
+			});
 
 		if (!notifData)
 			throw new NotFoundException('request not found')
@@ -566,6 +566,9 @@ export class UserService {
 			},
 			select: {
 				userRequests:{
+					where: {
+						responded:false,
+					},
 					select: {
 						id: true,
 					}
