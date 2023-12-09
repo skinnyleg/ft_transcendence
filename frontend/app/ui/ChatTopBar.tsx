@@ -17,19 +17,21 @@ const ChatTopBar: FC<ChatTopBarProps> = ({channel}) => {
 		return (
 			<div className='bg-teal-100 text-black h-16 rounded-xl p-2 flex flex-row justify-between items-center gap-0'>
 				<div className='flex gap-4 items-center justify-between'>
-					<IconWithTooltip
-						icon={IoIosArrowBack}
-						styles='w-8 h-8 hover:cursor-pointer lg:hidden'
-						tooltipId="backToolTip"
-						tooltipContent="Go Back"
-					/>
-					<Image
-						src={channel.channelPic}
-						width={45}
-						height={45}
-						alt='channel picture'
-						className='rounded-full border border-teal-600'
-					/>
+					<div className='flex gap-1 flex-row lg:flex-row-reverse items-center'>
+						<IconWithTooltip
+							icon={IoIosArrowBack}
+							styles='w-8 h-8 hover:cursor-pointer block lg:hidden'
+							tooltipId="backToolTip"
+							tooltipContent="Go Back"
+						/>
+						<Image
+							src={channel.channelPic}
+							width={45}
+							height={45}
+							alt='channel picture'
+							className='rounded-full border border-teal-600'
+						/>
+					</div>
 					<div className='flex flex-col'>
 						<h1 className='font-bold text-lg'>{channel?.channelName}</h1>
 						<p className='text-gray-500'>{channel?.channelName}</p>

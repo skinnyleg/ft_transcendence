@@ -30,6 +30,7 @@
     "react-dom": "^18",
     "react-hooks": "^1.0.1",
     "react-tooltip": "^5.25.0",
+    "reactjs-popup": "^2.0.6",
     "socket.io-client": "^4.7.2",
     "swiper": "^11.0.4",
     "swr": "^2.2.4",

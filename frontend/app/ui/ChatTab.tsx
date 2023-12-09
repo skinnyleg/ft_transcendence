@@ -1,4 +1,4 @@
-import type { ChangeEventHandler, FC } from 'react';
+import type { FC } from 'react';
 import ChatTopBar from './ChatTopBar';
 import ChatContent from './ChatContent';
 import ChatTypeBar from './ChatTypeBar';
@@ -58,7 +58,7 @@ const ChatTab: FC<ChatTabProps> = ({channelId}) => {
 		);
 	}
 		return (
-			<div className='w-full bg-teal-600 lg:ml-2 rounded-xl flex flex-col justify-between p-2'>
+			<div className='w-full h-full bg-teal-600 lg:ml-2 rounded-xl flex flex-col justify-between p-2'>
 				<ChatTopBar
 					channel={channel as ChannelInter}
 				/>
