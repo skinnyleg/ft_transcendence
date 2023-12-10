@@ -13,7 +13,7 @@ export class gatewayUser {
 	id: string;
 	socket: Socket;
 }
-
+ 
 
 export class NotificationData {
 	requestId: string;

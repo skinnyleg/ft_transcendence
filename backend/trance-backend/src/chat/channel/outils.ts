@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
-import { Blacklist, Channel, Membership, User } from '@prisma/client';
+import { Blacklist, Channel, Membership, User, Dm } from '@prisma/client';
 import { ChannelService } from './channel.service';
 
 @Injectable()
@@ -118,6 +118,7 @@ export class ChannelOutils {
         return channel.id;
     }
     //-------------------------------------------------------------------------------//
+    //-------------------------------------------------------------------------------//
     async   getBlacklist(channelName: string, user: string):Promise<Blacklist | null>
     {
         const blacklist = await this.prisma.blacklist.findFirst({
@@ -169,6 +170,21 @@ export class ChannelOutils {
             },
         });
     }
+    //-------------------------------------------------------------------------------//
+    async   getUserIdByName(nickname: string): Promise<string | null>
+    {
+        const user= await this.prisma.user.findUnique({
+            where : {
+                nickname,
+            },
+        });
+        return user.id || null;
+    }
+    //-------------------------------------------------------------------------------//
+    // async   getAllChannels(): Promise<Channel[]>
+    // {
+    //     return this.prisma.channel.findMany();
+    // }
     //-------------------------------------------------------------------------------//
     async   updateStatusInBlacklist(channelName: string, mutedUser: string)
     {

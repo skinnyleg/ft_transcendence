@@ -1,7 +1,7 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException, Logger } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { creatChannelDto } from '../dto/creat-channel.dto';
-import { Channel, User, Types } from '@prisma/client';
+import { Channel, User, Types, Message, Dm } from '@prisma/client';
 import { Socket } from 'socket.io';
 import { ChannelOutils } from './outils';
 import { DateTime } from 'luxon';
@@ -46,6 +46,7 @@ export class ChannelService {
 
     async creatChannel(creteChannelDto: creatChannelDto)
     {
+        // befor creat chnnel check if the name exist befor
         const {name, type, owner, password} = creteChannelDto;
         const type_: Types = type as Types;
         const newChannel = await this.prisma.channel.create({
@@ -62,8 +63,35 @@ export class ChannelService {
         this.channels.push(channel_);
         return newChannel;
     }
+
+    async   creatMessageChannel(channelId: string, sender: string, content: string): Promise<Message | null>
+    {
+        // if (forme === 'channel') {
+            // console.log('forme: ',forme);
+            const user = await this.outils.isUserInChannel(channelId, sender);
+            if (!user) {
+                throw new NotFoundException(`the user ${sender} is not exist in  channel ${channelId}`);
+            }
+            const id = await this.outils.getChannelIdByName(channelId);
+            const newMessage = await this.prisma.message.create({
+                data: {
+                    content,
+                    sender: {connect: { nickname: sender }},
+                    channel: {connect: { id, }},
+                },
+            });
+            console.log('inside channel');
+            return newMessage;
+        // }
+        //  {
+        //     console.error(' |||error in send message');
+        //     return null;
+        // }
+    }
     
-    async   getUserChannels(nickname: string, client: Socket)
+    // add function to get all messages of channel 
+    
+    async   getUserChannels(nickname: string, client: Socket): Promise<Channel[]>
     {
         if (nickname !== client.data.user.nickname) {
             throw new UnauthorizedException('Unauthorized access: you try to get channels of another user.');
@@ -81,7 +109,7 @@ export class ChannelService {
         if (!updatedChannels) {
             throw new NotFoundException('Resource not found: in get user channels.');
         }
-        return updatedChannels;
+        return updatedChannels.channels || [];
     }
 
     async   leaveChannel(channelName: string, nickname: string)
@@ -269,7 +297,7 @@ export class ChannelService {
     async MuteExpiration() {
         // console.log(`the channels muted is : ${this.channels[0]}`);
         try {
-            console.log('enter here');
+            // console.log('enter here');
             for (const channel of this.channels) {
                 for (const mutedUser of channel.users) {
                     console.log(`the user muted is : ${mutedUser}`);
@@ -358,6 +386,25 @@ export class ChannelService {
         });
     }
 
-    //change password of chanel if it's protected
+    async   changePassOfChannel(channelName: string, owner: string, newPassword: string)
+    {
+        const channel2update = await this.outils.findChannelByName(channelName);
+        if (!channel2update) {
+            console.error('error in changeNameOfChannel');
+            throw new error('error in changeNameOfChannel');
+        }
+        if (channel2update.type === 'PROTECTED') {
+            await this.prisma.channel.update({
+                where: {
+                    name: channelName,
+                    owner,
+                },
+                data: { password: newPassword },
+            });
+        }
+        else {
+            console.error('error in changePassOfChannel');
+        }
+    }
 
 }

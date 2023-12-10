@@ -4,17 +4,23 @@ import { Server, Socket } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../../user/user.service';
 import { creatChannelDto } from '../dto/creat-channel.dto';
-import { error } from 'console';
 import { BadRequestException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { changeOwner } from '../dto/changeOwner.dto';
+import { DmOutils } from '../dm/dm.outils';
+import { creatMessageCh } from '../dto/creat-message.dto';
+import { ChannelOutils } from '../channel/outils';
+import { DmService } from '../dm/dm.service';
 
 @WebSocketGateway({ namespace: 'chatGateway' })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	constructor(
-		private channelService: ChannelService,
 		private jwtService: JwtService,
 		private userService: UserService,
+		private channelService: ChannelService,
+		private Outils: ChannelOutils,
+		private DmOutils: DmOutils,
+		private DmService: DmService,
 	){}
 
 	@WebSocketServer()
@@ -27,28 +33,83 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	async handleConnection(@ConnectedSocket() client: Socket)
 	{
-		console.log('coonect');
 		const token: string = client.handshake.headers.token as string;
 		const payload = await this.jwtService.verifyAsync(token, { secret: process.env.jwtsecret })
 		const user = await this.userService.findOneById(payload.sub);
 		client.data.user = user;
-		// console.log('this is the client data: ', client.data);
-		console.log('this is the token: ', token);
+		console.log(`------ coonect: ${user.nickname} ------`);
+		console.log(`------ token: ${token} ------`);
 		client.emit('userConnection', {msg: `a new user is connected ${client.id}`});
 		await this.channelService.pushMutedUsers();
+		const channels = await this.channelService.getUserChannels(user.nickname, client);
+		for (const channel of channels) {
+			client.join(channel.id);
+		}
+		// const dm = await this.dmservice.getUserDm();
 	}
 		
 	async handleDisconnect(@ConnectedSocket() client: Socket)
 	{
-		console.log('disconnect');
+		console.log(`------ disconnect: ${client.data.user.nickname} ------`);
 		client.disconnect();
 	}
+
+	@SubscribeMessage('sendMessageCH')
+	async	handleSendMessageCh(@MessageBody() data: creatMessageCh, @ConnectedSocket() client: Socket)
+	{
+		try
+		{
+			const {channelId, content} = data;
+			const message = await this.channelService.creatMessageChannel(channelId, client.data.user.nickname, content);
+			const Id = await this.Outils.getChannelIdByName(channelId);
+			this.server.to(Id).emit('sendMessageDone', message);
+		}
+		catch (error)
+		{
+			console.error('message faild channel');
+			client.emit('sendMessageFaild', 'message faild to send channel');
+		}
+	}
+
+	@SubscribeMessage('sendMessageDM')
+	async	handleSendMessageDm(@MessageBody() data: any, @ConnectedSocket() client: Socket)
+	{
+		// check blocker users
+		try
+		{
+			let dmId = '';
+			const {receiver, content} = data;
+			const user2Id = await this.Outils.getUserIdByName(receiver);
+			dmId = await this.DmOutils.getDmIdby2User(client.data.user.id, user2Id);
+			if (dmId === null) {
+				this.DmService.creatDMchat(client.data.user.id, user2Id);
+				dmId = await this.DmOutils.getDmIdby2User(client.data.user.id, user2Id);
+				client.join(dmId);
+				for (const [socketId, socket] of Object.entries(this.server.sockets.sockets)) {
+					const user = socket.data.user;
+					if (user.id === user2Id) {
+						socket.join(dmId);
+						break;
+					}
+				}
+			}
+			const message = await this.DmService.creatMessageDm(dmId, client.data.user.nickname, content);
+		}
+		catch
+		{
+			console.error('message faild dm');
+			client.emit('sendMessageFaild', 'message faild to send dm');
+		}
+	}
+
+
 	
 	@SubscribeMessage('creatChannel')
   	async	handleChannelCreated(@MessageBody() data: creatChannelDto, @ConnectedSocket() client: Socket)
 	{
     	try
 		{
+			//should i determine the length of channel name
 			// console.log('data owner', data.owner);
 			// console.log('client data user nickname', client.data.user.nickname);
 			if (data.owner !== client.data.user.nickname){
@@ -228,11 +289,26 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		{
 			const {channelName, newName} = data;
 			await this.channelService.changeNameOfChannel(channelName, client.data.user.nickname, newName);
-			client.emit('changeNameDone', `the channel is changed to type: ${newName}.`);
+			client.emit('changeNameDone', `the channel is changed to name: ${newName}.`);
 		}
 		catch (error)
 		{
 			client.emit('changeNameFailed', `the channel is Failed to change name.`);
+		}
+	}
+
+	@SubscribeMessage('changePassOfChannel')
+	async	handleChangePassOfChannel(@MessageBody() data: any, @ConnectedSocket() client: Socket)
+	{
+		try
+		{
+			const {channelName, newPassword} = data;
+			await this.channelService.changePassOfChannel(channelName, client.data.user.nickname, newPassword);
+			client.emit('changePassDone', `the channel is changed the password.`);
+		}
+		catch (error)
+		{
+			client.emit('changePassFailed', `the channel is Failed to change password.`);
 		}
 	}
 }

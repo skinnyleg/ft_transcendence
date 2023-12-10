@@ -43,7 +43,7 @@ enum Membership {
   ACTIVE
 }
 
-enum  Role {
+enum Role {
   OWNER
   ADMIN
   MEMBER
@@ -76,13 +76,13 @@ model User {
   Wins          Int        @default(0)
   Losses        Int        @default(0)
 
-  adminIn     Channel[] @relation("Admins")
+  adminIn Channel[] @relation("Admins")
 
   userRequests Request[]
   channels     Channel[]
   Message      Message[]
   Match        Match[]
-  Chat         Chat[]
+  Dm           Dm[] @relation("directmessage")
   users        FriendStatus[]
   achievements Achievement[]
 }
@@ -118,36 +118,36 @@ model FriendStatus {
 }
 
 model Channel {
-  id          String    @id @default(uuid())
-  name        String    @unique
-  owner       String
-  type        Types
-  password    String?
-  users       User[]
-  admins      User[]    @relation("Admins")
-  blacklist   Blacklist[]
-  messages    Message[]
-  updatedAt   DateTime  @updatedAt   @default(now())
+  id        String      @id @default(uuid())
+  name      String      @unique
+  owner     String
+  type      Types
+  password  String?
+  users     User[]
+  admins    User[]      @relation("Admins")
+  blacklist Blacklist[]
+  messages  Message[]
+  updatedAt DateTime    @default(now()) @updatedAt
 }
 
 model Blacklist {
-  id          String  @id @default(uuid())   
+  id          String     @id @default(uuid())
   nickname    String
   status      Membership
   expiredAt   DateTime?
   channelName String
-  channel     Channel @relation(fields: [channelName], references: [name])
+  channel     Channel    @relation(fields: [channelName], references: [name])
 }
 
 model Message {
   id        String   @id @default(uuid())
   content   String
-  sender    User     @relation(fields: [userId], references: [id])
+  sender    User     @relation(fields: [senderId], references: [id])
+  senderId  String
   createdAt DateTime @default(now())
   channel   Channel? @relation(fields: [channelId], references: [id])
   channelId String?
-  userId    String
-  Chat      Chat?    @relation(fields: [chatId], references: [id])
+  Dm        Dm?      @relation(fields: [chatId], references: [id])
   chatId    String?
 }
 
@@ -165,9 +165,10 @@ model Match {
 }
 
 // Define a Chat model
-model Chat {
-  id       String    @id @default(uuid())
-  toUser   User      @relation(fields: [userId], references: [id])
-  messages Message[]
-  userId   String
+model Dm {
+  id          String    @id @default(uuid())
+  //user1Id     String
+  //user2Id     String
+  members     User[]     @relation("directmessage")
+  messages    Message[]
 }
