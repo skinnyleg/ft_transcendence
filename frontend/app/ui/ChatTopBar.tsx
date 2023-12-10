@@ -6,6 +6,7 @@ import { IoMdSettings } from "react-icons/io";
 import { GoSidebarExpand } from "react-icons/go";
 import { IoIosArrowBack } from "react-icons/io";
 import { GoSidebarCollapse } from "react-icons/go";
+import { RiLogoutCircleRLine } from "react-icons/ri";
 import { IconWithTooltip } from './CustomIcons';
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -53,7 +54,17 @@ const ChatTopBar: FC<ChatTopBarProps> = ({channel}) => {
 			</div>
 			{
 				channel.isJoined === true && (
-					<div className='flex flex-row items-center justify-between w-20'>
+					<div className='flex flex-row items-center justify-end gap-3 p-2 w-36'>
+						{
+							channel.userRole === 'OWNER' && (
+								<IconWithTooltip
+									icon={IoMdSettings}
+									styles='w-8 h-8 hover:cursor-pointer'
+									tooltipId="settingsToolTip"
+									tooltipContent="Channel Settings"
+								/>
+							)
+						}
 						<IconWithTooltip
 							icon={GoSidebarExpand}
 							styles='w-8 h-8 hover:cursor-pointer lg:hidden'
@@ -62,10 +73,10 @@ const ChatTopBar: FC<ChatTopBarProps> = ({channel}) => {
 							clickBehavior={showSideBar}
 						/>
 						<IconWithTooltip
-							icon={IoMdSettings}
+							icon={RiLogoutCircleRLine}
 							styles='w-8 h-8 hover:cursor-pointer'
-							tooltipId="settingsToolTip"
-							tooltipContent="Channel Settings"
+						tooltipContent="Leave Channel"
+							tooltipId="OpenToolTip"
 						/>
 					</div>
 				)

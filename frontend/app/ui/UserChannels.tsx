@@ -15,13 +15,13 @@ const channels: ChannelInter[] = [
     id: '2',
     channelName: 'Random',
     channelPic: '/GroupChat.png',
-    isJoined: false,
+    isJoined: true,
   },
   {
     id: '3',
     channelName: 'Ran',
     channelPic: '/GroupChat.png',
-    isJoined: false,
+    isJoined: true,
   },
   {
     id: '4',

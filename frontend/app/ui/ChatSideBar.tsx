@@ -173,7 +173,7 @@ const ChatSideBar: FC<ChatSideBarProps> = ({channelId}) => {
 				))
 			}
 			{ // Show "MEMBERS" div if there are search results for 'MEMBER' role
-			channelUsers.some((user) => user.userRole === 'MEMBER') && (
+				channelUsers.some((user) => user.userRole === 'MEMBER') && (
 					<div className='flex items-center gap-1 h-7 mt-2 p-1'>
 						<h1 className='text-teal-800 font-bold font-sans w-fit text-xs'>MEMBERS</h1>
 						<div className="w-[100%] h-1 bg-teal-800 rounded-full"></div>

@@ -31,18 +31,16 @@ const ChatTypeBar: FC<ChatTypeBarProps> = ({channel}) => {
 		)
 
 		const renderNotJoined = () => (
-			<>
 			  <div className={`bg-sky-700 w-[100%] rounded-3xl h-full flex items-center justify-center hover:cursor-pointer animate-pulse`}>
 				<button
 				  className='w-full h-full text-center text-xl font-bold text-teal-200 focus:outline-none'>
 				  Join
 				</button>
 			  </div>
-			</>
 		)
 
 		return (
-		<div className=' text-black h-16 rounded-xl p-2 flex flex-row justify-between items-center gap-2'>
+		<div className='text-black h-9 rounded-xl p-0 flex flex-row justify-between items-center gap-2'>
 			{channel.isJoined === true && renderJoined()}
 			{channel.isJoined === false && renderNotJoined()}
 		</div>

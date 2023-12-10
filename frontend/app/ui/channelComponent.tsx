@@ -12,7 +12,6 @@ const ChannelComponent: FC<channelComponentProps> = ({channel}) => {
 	const router = useRouter();
 
 	const setChannelQuery = () => {
-		console.log("here")
 		router.replace(`/Chat?channel=${channel.id}`);
 	}
 

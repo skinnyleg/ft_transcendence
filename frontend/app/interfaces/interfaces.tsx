@@ -61,6 +61,7 @@ export interface ChannelInter {
 	channelName: string,
 	channelPic: string,
 	isJoined: boolean,
+	userRole?: string;
 }
 
 export interface DmsInter {
