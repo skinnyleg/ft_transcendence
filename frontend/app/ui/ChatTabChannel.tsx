@@ -4,9 +4,6 @@ import ChatContent from './ChatContent';
 import ChatTypeBar from './ChatTypeBar';
 import { ChannelInter } from '../interfaces/interfaces';
 
-interface ChatTabProps {
-	channelId: string | undefined;
-}
 
 const channels: ChannelInter[] = [
   {
@@ -48,7 +45,10 @@ const channels: ChannelInter[] = [
   // Add more objects as needed...
 ];
 
-const ChatTab: FC<ChatTabProps> = ({channelId}) => {
+interface ChatTabProps {
+	channelId: string | null;
+}
+const ChatTabChannel: FC<ChatTabProps> = ({channelId}) => {
 	const channel = channels.find((c) => c.id === channelId);
 
 	if (channel === undefined)
@@ -58,7 +58,7 @@ const ChatTab: FC<ChatTabProps> = ({channelId}) => {
 		);
 	}
 		return (
-			<div className='w-full h-full bg-teal-600 lg:ml-2 rounded-xl flex flex-col justify-between p-2'>
+			<div className='w-full h-full bg-teal-600 lg:ml-2 rounded-xl flex flex-col justify-between p-3'>
 				<ChatTopBar
 					channel={channel as ChannelInter}
 				/>
@@ -71,4 +71,4 @@ const ChatTab: FC<ChatTabProps> = ({channelId}) => {
 			</div>
 		);
 }
-export default ChatTab;
+export default ChatTabChannel;

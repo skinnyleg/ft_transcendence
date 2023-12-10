@@ -1,7 +1,11 @@
+"use client"
 import type { FC } from 'react';
 import { ChannelUser } from '../interfaces/interfaces';
 import UserCard from './UserCard';
 import { CiSearch } from "react-icons/ci";
+import { useRouter, useSearchParams } from 'next/navigation';
+import { IoIosArrowBack } from "react-icons/io";
+import { IconWithTooltip } from './CustomIcons';
 
 
 const channelUsers: ChannelUser[] = [
@@ -123,13 +127,28 @@ const channelUsers: ChannelUser[] = [
 ]
 
 interface ChatSideBarProps {
-	channelId: string | undefined;
+	channelId: string | null;
 }
 
 const ChatSideBar: FC<ChatSideBarProps> = ({channelId}) => {
+
+	const searchParams = useSearchParams()
+	const router = useRouter();
+
+	const handleCloseSideBar = () => {
+		const channelId = searchParams.get('channel')
+		router.replace(`/Chat?channel=${channelId}`);
+	}
 		return (
-		<div className='w-full bg-teal-600 lg:ml-2 rounded-xl flex flex-col p-2 overflow-y-auto'>
-			<div className='flex flex-row rounded-xl bg-teal-200 w-full sticky top-0'>
+		<div className='w-full bg-teal-600 lg:ml-2 rounded-xl flex flex-col p-2 h-full overflow-y-auto'>
+			<div className='flex flex-row rounded-xl bg-teal-200 w-full items-center sticky top-0'>
+				<IconWithTooltip
+					icon={IoIosArrowBack}
+					styles='w-8 h-8 hover:cursor-pointer block lg:hidden text-black'
+					tooltipId="backToolTip"
+					tooltipContent="Go Back"
+					clickBehavior={handleCloseSideBar}
+				/>
 				<CiSearch
 					className='w-8 h-10 bg-teal-200 rounded-xl pl-2 text-black'
 				/>

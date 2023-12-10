@@ -12,14 +12,14 @@ interface ChatTypeBarProps {
 const ChatTypeBar: FC<ChatTypeBarProps> = ({channel}) => {
 		const renderJoined = () => (
 			<>
-				<div className='bg-teal-100 w-[97%] rounded-xl h-full'>
+				<div className='bg-teal-100 w-full lg:w-[97%] rounded-xl h-full'>
 					<input
 						type='text'
 						placeholder='Enter Your Message'
 						className='border-none w-full h-full text-center bg-teal-100 focus:ring-0 text-black rounded-xl'
 					/>
 				</div>
-				<div className='bg-teal-100 w-[10%] rounded-xl h-full flex items-center justify-center hover:cursor-pointer'>
+				<div className='bg-teal-100 w-1/5 lg:w-[15%] rounded-xl h-full flex items-center justify-center hover:cursor-pointer'>
 					<IconWithTooltip
 						icon={IoMdSend}
 						styles='w-8 h-8'

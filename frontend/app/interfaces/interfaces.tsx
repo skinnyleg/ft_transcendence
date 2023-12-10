@@ -75,3 +75,12 @@ export interface ChannelUser {
 	userNick: string;
 	userRole: string;
 }
+
+
+export interface MessageInter {
+	id: string;
+	senderPic: string,
+	senderNick: string;
+	content: string;
+	timeStamp: string;
+}

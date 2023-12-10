@@ -34,3 +34,7 @@ body {
   background-color: #888;
   border-radius: 6px;
 }
+
+/* .top-left-stretch { */
+/*   clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 50%); */
+/* } */

@@ -7,17 +7,18 @@ import { Tooltip } from 'react-tooltip'
 import { IoMdAddCircleOutline } from "react-icons/io";
 
 interface IconWithTooltipProps {
-  icon: ElementType;
-  tooltipId: string;
-  tooltipContent: string;
-  styles: string;
+	icon: ElementType;
+	tooltipId: string;
+	tooltipContent: string;
+	styles: string;
+	clickBehavior?: () => void;
 }
 
-export const IconWithTooltip : React.FC<IconWithTooltipProps> = ({ icon, tooltipId, tooltipContent, styles }) => {
-  const IconComponent = icon;  // Dynamically assign the icon component based on the prop
+export const IconWithTooltip : React.FC<IconWithTooltipProps> = ({ icon, tooltipId, tooltipContent, styles, clickBehavior }) => {
+	const IconComponent = icon;  // Dynamically assign the icon component based on the prop
 
   return (
-    <div data-tip data-for={tooltipId}>
+    <div data-tip data-for={tooltipId} onClick={clickBehavior}>
       <IconComponent className={styles} data-tooltip-id={tooltipId} data-tooltip-content={tooltipContent}/>
       <Tooltip id={tooltipId} />
     </div>
