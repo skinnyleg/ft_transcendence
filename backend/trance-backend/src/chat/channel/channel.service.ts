@@ -86,17 +86,16 @@ export class ChannelService {
                 channel: {connect: { id, }},
             },
         });
-        console.log('inside channel');
         return newMessage;
     }
     
     // add function to get all messages of channel 
     
-    async   getUserChannels(nickname: string, client: Socket): Promise<Channel[]>
+    async   getUserChannels(nickname: string): Promise<Channel[]>
     {
-        if (nickname !== client.data.user.nickname) {
-            throw new UnauthorizedException('Unauthorized access: you try to get channels of another user.');
-        }
+        // if (nickname !== client.data.user.nickname) {
+        //     throw new UnauthorizedException('Unauthorized access: you try to get channels of another user.');
+        // }
         const updatedChannels = await this.prisma.user.findUnique({
             where: { nickname },
             select: {

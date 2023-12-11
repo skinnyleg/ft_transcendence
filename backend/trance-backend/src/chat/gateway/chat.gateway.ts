@@ -39,10 +39,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		this.usersSockets.push({userId: user.id, socket: client});
 		client.emit('userConnection', {msg: `${client.data.user.nickname} is connected`});
 		await this.channelService.pushMutedUsers();
-		const channels = await this.channelService.getUserChannels(user.nickname, client);
-		for (const channel of channels) {
-			client.join(channel.id);
-		}
 	}
 		
 	async handleDisconnect(@ConnectedSocket() client: Socket)
@@ -57,14 +53,27 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		try
 		{
 			const {channelId, content} = data;
+			const isUserInBlacklist = await this.Outils.isUserInBlacklist(channelId, client.data.user.nickname);
+			if (isUserInBlacklist) {
+				throw new UnauthorizedException(`you are not allowed to send message`);
+			}
+			const channels = await this.channelService.getUserChannels(client.data.user.nickname);
 			const message = await this.channelService.creatMessageChannel(channelId, client.data.user.nickname, content);
 			const Id = await this.Outils.getChannelIdByName(channelId);
+			for (const channel of channels) {
+				// check blocked and bane users and don't join theme into the room
+				client.join(channel.id);
+			}
 			this.server.to(Id).emit('sendMessageDone', message);
+			for (const channel of channels) {
+				// check blocked and bane users and don't join theme into the room
+				client.leave(channel.id);
+			}
 		}
 		catch (error)
 		{
 			console.error('message faild channel');
-			client.emit('Faild', 'message faild to send channel');
+			client.emit('Faild', error.message);
 		}
 	}
 
@@ -104,9 +113,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	{
     	try
 		{
-			//should i determine the length of channel name
 			const owner = client.data.user.nickname;
 			data.type = data.type.toUpperCase();
+			if (data.name.length > 10) {
+				throw new BadRequestException(`The name of channel should be less than or equal 10`);
+			}
 			if (data.type !== 'PROTECTED' && data.type !== 'PUBLIC' && data.type !== 'PRIVATE') {
 				throw new BadRequestException(`Channel type : ${data.type} unknow.`);
 			}
@@ -126,17 +137,18 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	{
 		try
 		{
-			const updatedChannels = await this.channelService.getUserChannels(nickname, client);
+			const updatedChannels = await this.channelService.getUserChannels(client.data.user.nickname);
 			client.emit('UserChannels', updatedChannels);
-			// console.log('updatedChannels is:', updatedChannels);
 		}
 		catch(error)
 		{
 			if (error instanceof NotFoundException) {
 				console.error('Resource not found.');
-            } else if (error instanceof UnauthorizedException) {
+            }
+			else if (error instanceof UnauthorizedException) {
 				console.error('Unauthorized access.');
-            } else {
+            }
+			else {
 				console.error('An unexpected error occurred:', error.message);
             }
 			client.emit('Failed', { error: 'Failed to get channels.' });
