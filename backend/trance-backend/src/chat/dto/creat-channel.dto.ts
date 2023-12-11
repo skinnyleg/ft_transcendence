@@ -15,10 +15,6 @@ export class creatChannelDto {
     @IsEnum(channelType)
     type: string;
   
-    @IsString()
-    @IsNotEmpty()
-    owner: string;
-  
     @IsOptional()
     @IsNotEmpty()
     @IsString()

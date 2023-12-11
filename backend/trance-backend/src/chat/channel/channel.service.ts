@@ -28,7 +28,6 @@ export class ChannelService {
         const array = await this.outils.getMuteBlacklist()
         if (array)
         {
-            console.log('push to pop');
             for (const entry of array)
             {
                 const channel = this.channels.find((c) => c.name == entry.channelName);
@@ -44,11 +43,20 @@ export class ChannelService {
         }
     }
 
-    async creatChannel(creteChannelDto: creatChannelDto)
+    async creatChannel(creteChannelDto: creatChannelDto, owner: string): Promise<Channel>
     {
         // befor creat chnnel check if the name exist befor
-        const {name, type, owner, password} = creteChannelDto;
+        const {name, type, password} = creteChannelDto;
         const type_: Types = type as Types;
+        // console.log('type: ', type);
+        // console.log('password: ', password);
+        // console.log('password length: ', password.length);
+        if (type === 'PROTECTED' && (!password || password.length === 0)) {
+            throw new BadRequestException('A password must be set for protected channel.');
+        }
+        else if ((type === 'PUBLIC' || type === 'PRIVATE') && password) {
+            throw new BadRequestException('Private or public channels don\'t require password.');
+        }
         const newChannel = await this.prisma.channel.create({
             data: {
                 name,
@@ -66,27 +74,20 @@ export class ChannelService {
 
     async   creatMessageChannel(channelId: string, sender: string, content: string): Promise<Message | null>
     {
-        // if (forme === 'channel') {
-            // console.log('forme: ',forme);
-            const user = await this.outils.isUserInChannel(channelId, sender);
-            if (!user) {
-                throw new NotFoundException(`the user ${sender} is not exist in  channel ${channelId}`);
-            }
-            const id = await this.outils.getChannelIdByName(channelId);
-            const newMessage = await this.prisma.message.create({
-                data: {
-                    content,
-                    sender: {connect: { nickname: sender }},
-                    channel: {connect: { id, }},
-                },
-            });
-            console.log('inside channel');
-            return newMessage;
-        // }
-        //  {
-        //     console.error(' |||error in send message');
-        //     return null;
-        // }
+        const user = await this.outils.isUserInChannel(channelId, sender);
+        if (!user) {
+            throw new NotFoundException(`the user ${sender} is not exist in  channel ${channelId}`);
+        }
+        const id = await this.outils.getChannelIdByName(channelId);
+        const newMessage = await this.prisma.message.create({
+            data: {
+                content,
+                sender: {connect: { nickname: sender }},
+                channel: {connect: { id, }},
+            },
+        });
+        console.log('inside channel');
+        return newMessage;
     }
     
     // add function to get all messages of channel 

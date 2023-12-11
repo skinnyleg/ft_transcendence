@@ -11,6 +11,7 @@ import { creatMessageCh } from '../dto/creat-message.dto';
 import { ChannelOutils } from '../channel/outils';
 import { DmService } from '../dm/dm.service';
 
+
 @WebSocketGateway({ namespace: 'chatGateway' })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
@@ -26,10 +27,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer()
 	server: Server;
 
-	@SubscribeMessage('message')
-	handleMessage(client: any, payload: any): string {
-		return 'Hello world!';
-	}
+	private readonly usersSockets: {userId: string, socket: any}[] = [];
 
 	async handleConnection(@ConnectedSocket() client: Socket)
 	{
@@ -38,14 +36,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		const user = await this.userService.findOneById(payload.sub);
 		client.data.user = user;
 		console.log(`------ coonect: ${user.nickname} ------`);
-		console.log(`------ token: ${token} ------`);
-		client.emit('userConnection', {msg: `a new user is connected ${client.id}`});
+		this.usersSockets.push({userId: user.id, socket: client});
+		client.emit('userConnection', {msg: `${client.data.user.nickname} is connected`});
 		await this.channelService.pushMutedUsers();
 		const channels = await this.channelService.getUserChannels(user.nickname, client);
 		for (const channel of channels) {
 			client.join(channel.id);
 		}
-		// const dm = await this.dmservice.getUserDm();
 	}
 		
 	async handleDisconnect(@ConnectedSocket() client: Socket)
@@ -67,7 +64,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		catch (error)
 		{
 			console.error('message faild channel');
-			client.emit('sendMessageFaild', 'message faild to send channel');
+			client.emit('Faild', 'message faild to send channel');
 		}
 	}
 
@@ -82,23 +79,21 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			const user2Id = await this.Outils.getUserIdByName(receiver);
 			dmId = await this.DmOutils.getDmIdby2User(client.data.user.id, user2Id);
 			if (dmId === null) {
-				this.DmService.creatDMchat(client.data.user.id, user2Id);
+				await this.DmService.creatDMchat(client.data.user.id, user2Id);
 				dmId = await this.DmOutils.getDmIdby2User(client.data.user.id, user2Id);
-				client.join(dmId);
-				for (const [socketId, socket] of Object.entries(this.server.sockets.sockets)) {
-					const user = socket.data.user;
-					if (user.id === user2Id) {
-						socket.join(dmId);
-						break;
-					}
-				}
 			}
+			const receiverSocket = this.usersSockets.find(user => user.userId === user2Id);
+			client.join(dmId);
+			receiverSocket.socket.join(dmId);
 			const message = await this.DmService.creatMessageDm(dmId, client.data.user.nickname, content);
+			this.server.to(dmId).emit('sendMessageDone', message);
+			client.leave(dmId);
+			receiverSocket.socket.leave(dmId);
 		}
-		catch
+		catch (error)
 		{
-			console.error('message faild dm');
-			client.emit('sendMessageFaild', 'message faild to send dm');
+			console.error('message faild dm', error.message);
+			client.emit('Faild', 'message faild to send dm');
 		}
 	}
 
@@ -110,20 +105,19 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     	try
 		{
 			//should i determine the length of channel name
-			// console.log('data owner', data.owner);
-			// console.log('client data user nickname', client.data.user.nickname);
-			if (data.owner !== client.data.user.nickname){
-				throw new Error('The client should be the owner of this channel.');
+			const owner = client.data.user.nickname;
+			data.type = data.type.toUpperCase();
+			if (data.type !== 'PROTECTED' && data.type !== 'PUBLIC' && data.type !== 'PRIVATE') {
+				throw new BadRequestException(`Channel type : ${data.type} unknow.`);
 			}
-			const newChannel = await this.channelService.creatChannel(data);
-			console.log(`${data.owner} creat new channel: `, newChannel);
+			const newChannel = await this.channelService.creatChannel(data, owner);
+			console.log(`${owner} creat new channel: `, newChannel);
 			client.emit('channelCreated', newChannel);
 		}
     	catch (error)
     	{
-      		console.error('Error creating channel:', error);
-			client.emit('channelCreationFailed', { error: 'Failed to create a new channel.' });
-      		// throw new Error('Failed to create a new channel.');
+      		console.error('Error creating channel:', error.message);
+			client.emit('Failed', { error: 'Failed to create a new channel.' });
     	}
 	}
 
@@ -145,7 +139,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             } else {
 				console.error('An unexpected error occurred:', error.message);
             }
-			client.emit('getUserChannelsFailed', { error: 'Failed to get channels.' });
+			client.emit('Failed', { error: 'Failed to get channels.' });
 		}
 	}
 
@@ -173,7 +167,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			else {
 				console.error('An unexpected error occurred:', error.message);
             }
-			client.emit('leaveChannelFailed', { error: 'Failed to leave channel.' });
+			client.emit('Failed', { error: 'Failed to leave channel.' });
 		}
 	}
 
@@ -200,7 +194,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			else {
 				console.error('An unexpected error occurred:', error.message);
             }
-			client.emit('changeOwnerFailed', { error: 'Failed to change owner of channel.' });
+			client.emit('Failed', { error: 'Failed to change owner of channel.' });
 		}
 	}
 
@@ -216,7 +210,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		catch(error)
 		{
 			console.error('error in kick user');
-			client.emit('kickUserFailed', { error: 'Failed to kick that user.' });
+			client.emit('Failed', { error: 'Failed to kick that user.' });
 		}
 	}
 
@@ -232,7 +226,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		catch(error)
 		{
 			console.error('error in ban user');
-			client.emit('banUserFailed', { error: 'Failed to ban that user.' });
+			client.emit('Failed', { error: 'Failed to ban that user.' });
 		}
 	}
 
@@ -262,7 +256,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             }
 			//-----------------------------
 			// console.error('error in mute user');
-			client.emit('muteUserFailed', { error: 'Failed to mute that user.' });
+			client.emit('Failed', { error: 'Failed to mute that user.' });
 		}
 	}
 
@@ -278,7 +272,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		}
 		catch (error)
 		{
-			client.emit('changeTypeFailed', `the channel is Failed to change type.`);
+			client.emit('Failed', `the channel is Failed to change type.`);
 		}
 	}
 
@@ -293,7 +287,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		}
 		catch (error)
 		{
-			client.emit('changeNameFailed', `the channel is Failed to change name.`);
+			client.emit('Failed', `the channel is Failed to change name.`);
 		}
 	}
 
@@ -308,7 +302,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		}
 		catch (error)
 		{
-			client.emit('changePassFailed', `the channel is Failed to change password.`);
+			client.emit('Failed', `the channel is Failed to change password.`);
 		}
 	}
 }

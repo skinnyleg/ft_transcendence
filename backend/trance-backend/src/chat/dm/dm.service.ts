@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { DmOutils } from './dm.outils';
 import { User, Types, Message, Dm } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -29,6 +29,9 @@ export class DmService {
 
     async   creatMessageDm(dmId: string, sender: string, content: string): Promise<Message | null>
     {
+        if(!dmId) {
+            throw new BadRequestException('the dm id is indefined');
+        }
         const newMessage = await this.prisma.message.create({
             data: {
                 content,

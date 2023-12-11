@@ -178,6 +178,7 @@ export class ChannelOutils {
                 nickname,
             },
         });
+        console.log('user id: ', user.id);
         return user.id || null;
     }
     //-------------------------------------------------------------------------------//
