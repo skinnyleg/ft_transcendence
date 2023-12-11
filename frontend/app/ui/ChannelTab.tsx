@@ -1,10 +1,9 @@
-"use client"
+// "use client"
 import React from 'react'
 import UserChannels from './UserChannels';
 import { CiSearch } from "react-icons/ci";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { CreateChannelIcon } from './CustomIcons';
-import Popup from 'reactjs-popup';
 import CreateChannelComponent from './CreateChannelComponent';
 
 const ChannelTab = () => {
@@ -21,14 +20,14 @@ const ChannelTab = () => {
 						className='w-4/5 h-10 bg-teal-200 border-none focus:ring-0 text-black'
 					/>
 				</div>
-				<Popup trigger={
-				<button className='text-black bg-teal-200 text-center w-1/6 rounded-e-xl'>
-					<CreateChannelIcon
-						style='w-full h-6 focus:ring-0 focus:outline-none'
-					/>
-				</button>} modal>
-						<CreateChannelComponent />
-				</Popup>
+				{/* <Popup trigger={ */}
+				{/* <button className='text-black bg-teal-200 text-center w-1/6 rounded-e-xl'> */}
+				{/* 	<CreateChannelIcon */}
+				{/* 		style='w-full h-6 focus:ring-0 focus:outline-none' */}
+				{/* 	/> */}
+				{/* </button>} modal> */}
+				{/* 		<CreateChannelComponent /> */}
+				{/* </Popup> */}
 				{/* <button className='text-black bg-teal-200 text-center w-1/6 rounded-e-xl'> */}
 				{/* 	<CreateChannelIcon */}
 				{/* 		style='w-full h-6 focus:ring-0 focus:outline-none' */}

@@ -19,8 +19,11 @@ export const IconWithTooltip : React.FC<IconWithTooltipProps> = ({ icon, tooltip
 
   return (
     <div data-tip data-for={tooltipId} onClick={clickBehavior}>
-      <IconComponent className={styles} data-tooltip-id={tooltipId} data-tooltip-content={tooltipContent}/>
-      <Tooltip id={tooltipId} />
+      <IconComponent className={styles} data-tooltip-id={tooltipId} data-tooltip-content={tooltipContent}
+			data-tooltip-place="bottom"
+			data-tooltip-class-name='z-10'
+		/>
+      <Tooltip id={tooltipId} place="bottom" />
     </div>
   );
 };

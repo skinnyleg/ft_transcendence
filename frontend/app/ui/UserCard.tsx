@@ -4,12 +4,14 @@ import Image from 'next/image'
 import { ChannelUser } from '../interfaces/interfaces';
 import { IconWithTooltip } from './CustomIcons';
 import { HiDotsVertical } from "react-icons/hi";
+import UserDropDown from './UserDropDown';
 
 interface UserCardProps {
 	user: ChannelUser;
+	userRole: string | undefined;
 }
 
-const UserCard: FC<UserCardProps> = ({user}) => {
+const UserCard: FC<UserCardProps> = ({user, userRole}) => {
 		return (
 		<div className='w-full h-11 mb-1 text-black flex gap-2 justify-between items-center'>
 			<Image
@@ -23,11 +25,8 @@ const UserCard: FC<UserCardProps> = ({user}) => {
 				<h1 className='font-bold text-xl'>
 					{user.userNick}
 				</h1>
-				<IconWithTooltip
-					icon={HiDotsVertical}
-					tooltipId='User setting'
-					tooltipContent='User Setting'
-					styles='w-8 h-8 hover:cursor-pointer'
+				<UserDropDown 
+					userRole={userRole}
 				/>
 			</div>
 		</div>

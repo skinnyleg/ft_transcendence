@@ -8,7 +8,10 @@ import { IoIosArrowBack } from "react-icons/io";
 import { GoSidebarCollapse } from "react-icons/go";
 import { RiLogoutCircleRLine } from "react-icons/ri";
 import { IconWithTooltip } from './CustomIcons';
+import { HiLogout } from "react-icons/hi";
+import { HiDotsVertical } from "react-icons/hi";
 import { useRouter, useSearchParams } from 'next/navigation';
+import ChannelDropDown from './ChannelDropDown';
 
 
 interface ChatTopBarProps {
@@ -24,6 +27,7 @@ const ChatTopBar: FC<ChatTopBarProps> = ({channel}) => {
 		router.replace('/Chat');
 	}
 	const showSideBar = () => {
+		console.log("hehehehe")
 		const channelId = searchParams.get('channel');
 		router.replace(`/Chat?channel=${channelId}&bar=open`);
 	}
@@ -54,30 +58,41 @@ const ChatTopBar: FC<ChatTopBarProps> = ({channel}) => {
 			</div>
 			{
 				channel.isJoined === true && (
-					<div className='flex flex-row items-center justify-end gap-3 p-2 w-36'>
-						{
-							channel.userRole === 'OWNER' && (
-								<IconWithTooltip
-									icon={IoMdSettings}
-									styles='w-8 h-8 hover:cursor-pointer'
-									tooltipId="settingsToolTip"
-									tooltipContent="Channel Settings"
-								/>
-							)
-						}
-						<IconWithTooltip
-							icon={GoSidebarExpand}
-							styles='w-8 h-8 hover:cursor-pointer lg:hidden'
-							tooltipId="OpenToolTip"
-							tooltipContent="See Members"
-							clickBehavior={showSideBar}
+					<div className='flex flex-row items-center justify-end gap-3 p-2 w-fit'>
+						<ChannelDropDown
+							userRole={channel.userRole}
+							showSideBar={showSideBar}
 						/>
-						<IconWithTooltip
-							icon={RiLogoutCircleRLine}
-							styles='w-8 h-8 hover:cursor-pointer'
-						tooltipContent="Leave Channel"
-							tooltipId="OpenToolTip"
-						/>
+						{/* <IconWithTooltip */}
+						{/* 	icon={HiDotsVertical} */}
+						{/* 	styles='w-8 h-8 hover:cursor-pointer' */}
+						{/* 	tooltipId="OpenToolTip" */}
+						{/* 	tooltipContent="See Options" */}
+						{/* 	// clickBehavior={showSideBar} */}
+						{/* /> */}
+						{/* { */}
+						{/* 	channel.userRole === 'OWNER' && ( */}
+						{/* 		<IconWithTooltip */}
+						{/* 			icon={IoMdSettings} */}
+						{/* 			styles='w-8 h-8 hover:cursor-pointer' */}
+						{/* 			tooltipId="settingsToolTip" */}
+						{/* 			tooltipContent="Channel Settings" */}
+						{/* 		/> */}
+						{/* 	) */}
+						{/* } */}
+						{/* <IconWithTooltip */}
+						{/* 	icon={GoSidebarExpand} */}
+						{/* 	styles='w-8 h-8 hover:cursor-pointer lg:hidden' */}
+						{/* 	tooltipId="OpenToolTip" */}
+						{/* 	tooltipContent="See Members" */}
+						{/* 	clickBehavior={showSideBar} */}
+						{/* /> */}
+						{/* <IconWithTooltip */}
+						{/* 	icon={HiLogout} */}
+						{/* 	styles='w-8 h-8 hover:cursor-pointer' */}
+						{/* tooltipContent="Leave Channel" */}
+						{/* 	tooltipId="OpenToolTip" */}
+						{/* /> */}
 					</div>
 				)
 			}

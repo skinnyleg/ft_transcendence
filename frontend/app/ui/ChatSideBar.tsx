@@ -1,6 +1,6 @@
 "use client"
 import type { FC } from 'react';
-import { ChannelUser } from '../interfaces/interfaces';
+import { ChannelInter, ChannelUser } from '../interfaces/interfaces';
 import UserCard from './UserCard';
 import { CiSearch } from "react-icons/ci";
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -126,6 +126,50 @@ const channelUsers: ChannelUser[] = [
 	},
 ]
 
+const channels: ChannelInter[] = [
+  {
+    id: '1',
+    channelName: 'General',
+    channelPic: '/GroupChat.png',
+    isJoined: true,
+	userRole: 'MEMBER',
+  },
+  {
+    id: '2',
+    channelName: 'Random',
+    channelPic: '/GroupChat.png',
+    isJoined: true,
+	userRole: 'ADMIN',
+  },
+  {
+    id: '3',
+    channelName: 'Rando',
+    channelPic: '/GroupChat.png',
+    isJoined: true,
+	userRole: 'OWNER',
+  },
+  {
+    id: '4',
+    channelName: 'Raom',
+    channelPic: '/GroupChat.png',
+    isJoined: false,
+  },
+  {
+    id: '5',
+    channelName: 'dom',
+    channelPic: '/GroupChat.png',
+    isJoined: false,
+  },
+  {
+    id: '6',
+    channelName: 'opi',
+    channelPic: '/GroupChat.png',
+    isJoined: false,
+  },
+  // Add more objects as needed...
+];
+
+
 interface ChatSideBarProps {
 	channelId: string | null;
 }
@@ -134,13 +178,16 @@ const ChatSideBar: FC<ChatSideBarProps> = ({channelId}) => {
 
 	const searchParams = useSearchParams()
 	const router = useRouter();
+	const channel = channels.find((c) => c.id === channelId);
+	const isJoined = channel?.isJoined ?? false;
 
 	const handleCloseSideBar = () => {
 		const channelId = searchParams.get('channel')
 		router.replace(`/Chat?channel=${channelId}`);
 	}
 		return (
-		<div className='w-full bg-teal-600 lg:ml-2 rounded-xl flex flex-col p-2 h-full overflow-y-auto'>
+		<div className={`w-full bg-teal-600 lg:ml-2 rounded-xl flex flex-col p-2 h-full overflow-y-auto 
+				${isJoined ? '' : 'blur'}`}>
 			<div className='flex flex-row rounded-xl bg-teal-200 w-full items-center sticky top-0'>
 				<IconWithTooltip
 					icon={IoIosArrowBack}
@@ -169,7 +216,7 @@ const ChatSideBar: FC<ChatSideBarProps> = ({channelId}) => {
 				channelUsers
 				.filter((user) => user.userRole === 'ADMIN')
 				.map((admin) => (
-					<UserCard key={admin.id} user={admin} />
+					<UserCard key={admin.id} user={admin} userRole={channel?.userRole} />
 				))
 			}
 			{ // Show "MEMBERS" div if there are search results for 'MEMBER' role
@@ -184,7 +231,7 @@ const ChatSideBar: FC<ChatSideBarProps> = ({channelId}) => {
 				channelUsers
 				.filter((user) => user.userRole === 'MEMBER')
 				.map((member) => (
-					<UserCard key={member.id} user={member} />
+					<UserCard key={member.id} user={member} userRole={channel?.userRole}/>
 				))
 			}
 		</div>
