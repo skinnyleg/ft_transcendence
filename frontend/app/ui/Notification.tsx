@@ -4,16 +4,18 @@ import { useEffect, useState } from 'react';
 import io from 'socket.io-client';
 import clsx from "clsx";
 
-interface NotificationsProps  {
-    handleNotification: (NotificationsData: NotificationsData) => void;
-}
+// interface NotificationsProps  {
+//     handleNotification: (NotificationsData: NotificationsData) => void;
+// }
 
 
-const Notifications = ({ handleNotification } : NotificationsProps) => {
+const Notifications = () => {
     const [notifications, setNotifications] = useState<NotificationsData[]>([]);
+    const [notifSent, setNotifSent] = useState< | null>(null)
     const [showNotifications, setShowNotifications] = useState(false);
     const [notificationNumber, setNotificationNumber] = useState(0);
     const [newNotification, setNewNotification] = useState<NotificationsData | null>(null);
+    const [notifPopUP, setNotifPopUp] = useState <NotificationsData | null>(null);
     const socket = io("http://localhost:8000");
 
     useEffect( () => {
@@ -33,6 +35,12 @@ const Notifications = ({ handleNotification } : NotificationsProps) => {
         }
         }
     }, [newNotification]);
+
+    socket.on("notification", (...args) => {
+        // setNotifSent()
+        console.log(args);
+    });
+
 
     const knotifications = [{
         userId: "1",

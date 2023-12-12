@@ -3,11 +3,12 @@ import TopBar from "@/app/ui/top";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { profileData } from "@/app/interfaces/interfaces";
-import { ArrowTrendingUpIcon, TrophyIcon, ChatBubbleBottomCenterIcon, HandThumbUpIcon, UserPlusIcon, HandRaisedIcon, HandThumbDownIcon } from "@heroicons/react/20/solid";
-import { ArrowTrendingDownIcon,  ChatBubbleLeftEllipsisIcon, WalletIcon } from "@heroicons/react/24/outline";
-import { Progress } from "@nextui-org/react";
+import { ArrowTrendingUpIcon, TrophyIcon,  HandThumbUpIcon, UserPlusIcon, HandRaisedIcon, HandThumbDownIcon } from "@heroicons/react/20/solid";
+import { ArrowTrendingDownIcon,  ChatBubbleLeftEllipsisIcon, UserMinusIcon, WalletIcon } from "@heroicons/react/24/outline";
+import { FaUserFriends } from "react-icons/fa";
 import withAuth from "@/app/withAuth";
 import ProgressBar from "@/app/ui/progressBar";
+import Conditional from "@/app/ui/Conditional";
 
 const matchHistory = [{
     id : "25/12/2024",
@@ -67,6 +68,7 @@ const matchHistory = [{
     isMeWhoWon : false,
 }]
 
+
 const Profile = () => {
 
     const [isFriend, setIsFriend] = useState<boolean | undefined>(false);
@@ -74,7 +76,6 @@ const Profile = () => {
     const pathname = usePathname();
     const [profileData, setProfileData] = useState<profileData | undefined>(undefined);
     let nickname : string = pathname.split("/")[2];
-    console.log(nickname);
 
     useEffect(() => {
         const getProfileData = async () => {
@@ -101,7 +102,7 @@ const Profile = () => {
 
     return (
     <main className="flex flex-col">
-        <TopBar nickname={nickname}/>
+        <TopBar />
         <div className="grid grid-cols-4 lg:auto-rows-min gap-2 w-full mt-4 md:grid-row-6 grid-row-6 ">
             <div className="bg-white relative col-start-1 col-end-5 h-[250px] row-start-1 row-end-2 w-full w-full shadow-md rounded-xl">
                 <div className="flex flex-col rounded-xl h-[250px]" style={{backgroundImage: `url(${profileData?.userData.BackgroundPic})`, backgroundSize: 'cover', backgroundPosition: 'center'}}>
@@ -116,12 +117,7 @@ const Profile = () => {
                 <ProgressBar level={level} />
             </div>
             <div className="relative col-start-4 col-end-5 mt-10 mb-1 lg:mt-0 lg:row-start-2 h-[30px] lg:row-end-3 row-start-3 row-end-4 flex w-full shadow-md rounded-xl">
-                <div className="hover:bg-white text-white px-3 text-sm lg:ml-10 rounded-full" onClick={() => {}}>
-                    <UserPlusIcon className="text-green-500 w-8 h-8"/>
-                </div>
-                <div className="hover:bg-white text-white text-sm rounded-full px-2 lg:ml-6 " onClick={() => {}}>
-                    <ChatBubbleLeftEllipsisIcon className="text-green-500 w-8 h-8"/>
-                </div>    
+                <Conditional isfriend={profileData?.isfriend} privateProfile = {profileData?.privateProfile}/>
             </div>
             {/* 4 cards */}
             <div  className="bg-lightblue col-span-1 lg:row-start-3 row-start-4 row-end-5 flex justify-between lg:row-end-4 w-full h-[100px] shadow-md rounded-xl">

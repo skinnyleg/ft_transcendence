@@ -5,17 +5,35 @@ import axios from "axios";
 import { use, useEffect, useState } from "react";
 import Link from 'next/link';
 import Notifications from './Notification';
-import {responseData} from "@/app/interfaces/interfaces";
+import {responseData, profileNickPic} from "@/app/interfaces/interfaces";
 
-
-interface nickprop {nickname : string};
-
-export default function TopBar ({nickname }: nickprop) {
+export default function TopBar () {
 
   const [search, setSearch] = useState('');
   const [show, setShow] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [results, setRes] = useState<responseData[]>([]);
+  const [profileData, setProfileData] = useState<profileNickPic | undefined>(undefined);
+
+  useEffect(() => {
+    const getnickname = async () => {
+      try {
+        const res = await fetch(`http://localhost:8000/user/Nickname`, {
+          method: "GET",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+        });
+        if (res.ok) {
+          const nickname = await res.json();
+          setProfileData(nickname);
+          console.log("nick:", nickname.nickname);
+        }
+      } catch (error) {
+        setError('Error fetching data');
+      }
+    };
+    getnickname();
+  }, []);
 
   const searchBackend = async (query: string) => {
     try {
@@ -77,9 +95,9 @@ export default function TopBar ({nickname }: nickprop) {
         </div>
       </div>
       <div className="flex flex-col lg:flex-row pr-2 lg:space-x-4">
-        {/* <Notifications  /> */}
-        <Link href={`http://localhost:3000/profile/` + nickname }> {/* pass nickname for profile link */}
-          <img src="/yo.jpg" alt="yo" className="w-10 h-10 rounded-full hidden lg:flex" />
+        <Notifications  />
+        <Link href={`http://localhost:3000/profile/` + profileData?.nickname}> {/* pass nickname for profile link */}
+          <img src={profileData?.profilepic} alt="yo" className="w-10 h-10 rounded-full hidden lg:flex" />
         </Link>
       </div>
     </div>
