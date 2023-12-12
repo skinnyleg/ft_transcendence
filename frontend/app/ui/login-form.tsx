@@ -11,7 +11,6 @@ import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { useFormState, useFormStatus } from 'react-dom';
 import Link  from 'next/link';
 import { useState } from 'react';
-import { Router } from 'react-router-dom';
 import { useRouter } from 'next/navigation';
  
 export default function LoginForm() {
@@ -60,7 +59,7 @@ export default function LoginForm() {
 
   return (
     <form className="space-y-3" onSubmit={handleSubmit}>
-      <div className="flex-1 rounded-lg backdrop-blur border border-gray-300 bg-opacity-80 px-6 pb-4 pt-8">
+      <div className="flex-1 rounded-lg backdrop-blur border border-gray-300 bg-opacity-80 px-6 pb-4 pt-8 mt-10">
         <h1 className={`${lusitana.className} mb-3 lg:text-2xl md:text-xl text-xl`}>
           Please log in to continue.
         </h1>

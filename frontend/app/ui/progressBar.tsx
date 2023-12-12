@@ -6,7 +6,7 @@ interface ProgressBarProps {
 
 const  ProgressBar = ({ level }: ProgressBarProps) => {
     return(
-        <div className="w-full h-full bg-white rounded-xl">
+        <div className="w-full bg-white rounded-xl">
   <div
     className="h-full bg-green-400 rounded-xl text-white text-center"
     style={{
@@ -15,7 +15,7 @@ const  ProgressBar = ({ level }: ProgressBarProps) => {
       role="progressbar"
       aria-valuenow={level}
       aria-valuemin={0}
-      aria-valuemax={100}
+      aria-valuemax={21}
   >
     {level}%
   </div>

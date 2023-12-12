@@ -133,12 +133,12 @@ function NavBar ({handleShowMenu}: NavBarProps)
         </div>
     <nav className={`flex flex-col lg:ml-2 lg:mt-2 lg:block mt-[8vh] fixed lg:h-[98%] h-[92vh] bg-back w-20 ${show ? '' : 'hidden'} lg:rounded-xl border border-blackpink transition-transform duration-300 `}>
       <div className="flex flex-col flex-grow">
-        <div className="flex items-center justify-center mt-6 h-16 px-6 font-medium hover:opacity">
+        <div className="flex items-center justify-center mt-6 h-16 w-10 mx-auto xl:h-30 xl:w-30 font-medium hover:opacity">
           <Image
             className="pointer-events-hover rounded-full border border-neonpink hover:opacity-80 border-[2px]" 
             src="/logo.png"
-            width={80}
-            height={80}
+            width={100}
+            height={100}
             alt="Profile Picture"
           />
         </div>
@@ -146,32 +146,32 @@ function NavBar ({handleShowMenu}: NavBarProps)
             <Link href="/Dashboard" className={clsx(`flex items-center mt-15 justify-center mt-10 px-15 font-medium text-gray-400 hover:opacity-50
                hover:text-neonpink`, {'text-neonpink'  : currentPath === "/Dashboard",
             })}>
-              <HomeIcon className="w-10 ml-3 h-6 mr-4" />
+              <HomeIcon className="w-10 ml-3 h-6 mr-4 xl:w-20 xl:h-20" />
             </Link>
-            <Link href="/chat" className={clsx(`flex items-center mt-15 justify-center mt-10 px-15 font-medium text-gray-400 hover:opacity-50
+            <Link href="/chat" className={clsx(`flex items-center mt-10 justify-center xl:mt-15 xl:w-20 xl:h-20 px-15 font-medium text-gray-400 hover:opacity-50
               hover:text-neonpink`, {'text-neonpink'  : currentPath === "/chat",
             })}>
-              <ChatBubbleBottomCenterIcon className="w-10 ml-3 h-6 mr-4" />
+              <ChatBubbleBottomCenterIcon className="w-10 ml-3 h-6 mr-4 xl:w-20 xl:h-20" />
             </Link>
-            <Link href="/Leaderboard" className={clsx(`flex items-center mt-15 justify-center mt-10 px-15 font-medium text-gray-400 hover:opacity-50
+            <Link href="/Leaderboard" className={clsx(`flex items-center mt-15 justify-center xl:mt-15 mt-10 px-15 font-medium text-gray-400 hover:opacity-50
               hover:text-neonpink`, {'text-neonpink'  : currentPath === "/Leaderboard",
             })}>
-              <TrophyIcon className="w-10 h-6 ml-3 mr-4" />
+              <TrophyIcon className="w-10 h-6 ml-3 mr-4 xl:w-20 xl:h-20" />
             </Link>
             <Link href="/settings"
-              className={clsx(`flex items-center mt-15 justify-center mt-10 px-15 font-medium text-gray-400 hover:opacity-50 hover:text-neonpink`, {
+              className={clsx(`flex items-center mt-15 justify-center mt-10 xl:mt-15 px-15 font-medium text-gray-400 hover:opacity-50 hover:text-neonpink`, {
               'text-neonpink'  : currentPath === "/Leaderboard",
               })}>
-              <Cog6ToothIcon className="w-10 ml-3 h-6 mr-4" />
+              <Cog6ToothIcon className="w-10 ml-3 h-6 mr-4 xl:w-20 xl:h-20" />
             </Link>
         </div>
-        <div className="absolute bottom-5 justify-center text-gray-500 items-center ml-4">
+        <div className="absolute bottom-5 justify-center text-gray-500 xl:mt-15 items-center ml-1">
           <Link href="/logout" 
             className={clsx(`flex hover:opacity-50
             hover:text-neonpink`, {
           'text-neonpink'  : currentPath === "/Leaderboard",
           })}>
-            <ArrowLeftOnRectangleIcon className="w-10 mr-4" />
+            <ArrowLeftOnRectangleIcon className="w-10 mr-4 xl:w-[80px]" />
           </Link>
         </div>
       </div>

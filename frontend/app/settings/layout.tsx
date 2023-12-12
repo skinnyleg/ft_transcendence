@@ -10,7 +10,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="flex bg-back flex-col md:flex-row h-screen md:overflow-hidden">
+    <div className="flex bg-back flex-col md:flex-row h-screen md:overflow-hidden h-screen">
       <div className={`flex-none md:w-10 w-20 lg:w-20`}>
         <NavBar handleShowMenu={handleShowMenu} />
       </div>
