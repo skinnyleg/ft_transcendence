@@ -5,12 +5,8 @@ import axios from "axios";
 import { use, useEffect, useState } from "react";
 import Link from 'next/link';
 import Notifications from './Notification';
+import {responseData} from "@/app/interfaces/interfaces";
 
-interface responseData {
-    id: string;
-    profilePic: string;
-    nickname: string;
-};
 
 interface nickprop {nickname : string};
 
@@ -55,19 +51,19 @@ export default function TopBar ({nickname }: nickprop) {
 
 
   return (
-    <div className="flex lg:flex-row  justify-between flex-col mt-20 lg:mt-0 w-full bg-transparent p-0">
-      <div className="lg:flex lg:justify-start">
-        <h1 className="text-2xl font-bold">Welcome Back ....!</h1>
+    <div className="flex lg:flex-row justify-between flex-col mt-20 lg:mt-3 w-full bg-transparent p-0">
+      <div className="lg:flex">
+        <h1 className="lg:text-2xl text-white md:text-xl text-lg font-bold">Welcome Back ....!</h1>
       </div>
-      <div className="flex lg:justify-start relative">
-        <MagnifyingGlassIcon className="h-8 w-8 p-2 rounded-full absolute top-1/2 left transform -translate-y-1/2" />
+      <div className="flex relative lg:flex md:hidden hidden">
+        <MagnifyingGlassIcon className="h-8 w-8 pl-3 rounded-full absolute top-1/2 left transform -translate-y-1/2" />
         <input
           onChange={(e) => {setSearch(e.target.value); if (e.target.value) setShow(true); else {setShow(false); setRes([]);} }}
           type="text"
           placeholder="Search..."
-          className={`p-1 h-10 lg:w-80 border border-gray-300 pl-12 rounded-t-xl ${show ? '' : 'rounded-b-xl'} focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-transparent`}
+          className={`p-1 lg:h-10 lg:w-80 md:w-40 w-80 mx-auto h-6 border border-gray-300 lg:pl-12 md:pl-12 pl-4 rounded-t-xl ${show ? '' : 'rounded-b-xl'} focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-transparent`}
         />
-        <div className={`${(show || search) ? 'block' : 'hidden'} absolute top-10 w-80 bg-white shadow-md transition-transform duration-300 z-10 rounded-b-lg`}>
+        <div className={`${(show || search) ? 'block' : 'hidden'} absolute top-10 lg:w-80 md:w-40 w-80 mx-auto bg-white shadow-md transition-transform duration-300 z-10 rounded-b-lg`}>
           <div className="flex flex-col">
             {show && results.map((result) => (
               <Link href={`/user/${result.id}`} key={result.id}>

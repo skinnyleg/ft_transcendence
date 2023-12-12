@@ -1,5 +1,5 @@
 import { BellAlertIcon } from "@heroicons/react/24/outline";
-import { NotificationsData } from "../Dashboard/page"
+import { NotificationsData } from "@/app/interfaces/interfaces"
 import { useEffect, useState } from 'react';
 import io from 'socket.io-client';
 import clsx from "clsx";
@@ -8,12 +8,31 @@ interface NotificationsProps  {
     handleNotification: (NotificationsData: NotificationsData) => void;
 }
 
+
 const Notifications = ({ handleNotification } : NotificationsProps) => {
     const [notifications, setNotifications] = useState<NotificationsData[]>([]);
     const [showNotifications, setShowNotifications] = useState(false);
     const [notificationNumber, setNotificationNumber] = useState(0);
     const [newNotification, setNewNotification] = useState<NotificationsData | null>(null);
     const socket = io("http://localhost:8000");
+
+    useEffect( () => {
+        const notif = async() => {
+        try{
+            const res = await fetch(`http://localhost:8000/user/Notifications`, {
+                method: "GET",
+                credentials: "include",
+                headers: { "Content-Type": "application/json" },
+            });
+            if (res.status === 200) {
+                const notification = await res.json();
+                setNotifications(notification);
+            }
+        }catch(error){
+            console.error(error);
+        }
+        }
+    }, [newNotification]);
 
     const knotifications = [{
         userId: "1",
@@ -27,7 +46,7 @@ const Notifications = ({ handleNotification } : NotificationsProps) => {
     const handleNewNotification = (data: NotificationsData) => {
         setNewNotification(data);
         setNotificationNumber(notificationNumber + 1);
-
+        
     }
 
     useEffect(() => {

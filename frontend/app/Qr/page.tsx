@@ -1,12 +1,14 @@
 'use client';
 // pages/VerifyCode.tsx
-import React, { useState } from 'react';
+import React, { use, useRef, useState } from 'react';
 import VerificationInput from '../ui/qrCode';
 import Image from 'next/image'
+// import useInputRefs from '../ui/useInputRefs';
 
 
-const VerifyCode: React.FC = () => {
+const VerifyCode :  React.FC = () => {
   const [error, setError] = useState<string | null>(null);
+  // const inputRefs =  Array(6).fill(0).map(() => useRef<HTMLInputElement | null>(null));
   const handleSubmit = async (code: string) => {
     try {
       // Send the code to the backend for verification
@@ -41,7 +43,7 @@ const VerifyCode: React.FC = () => {
       <div className={`${error ? 'hidden' : ''}`}>
         <h1 className="text-2xl font-bold mb-4 font-serif">Enter Verification Code</h1>
         <p className="md:text-sm lg:text-lg mb-1 text-xs">Please enter the 6-digit code from your authenticator app.</p>
-        <VerificationInput onSubmit={handleSubmit} />
+        {/* <VerificationInput inputRefs={inputRefs} onSubmit={handleSubmit} /> */}
       </div>
     </div>
 

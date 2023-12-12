@@ -23,6 +23,10 @@ function Dashboard() {
   const [dashboardData, setDashboardData] = useState<dashboardData | undefined>(undefined);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [nickname, setNickname] = useState('');
+  const [theme, setTheme] = useState('yo1.jpg');
+  const [powerup, setPowerup] = useState('FireBall');
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -44,9 +48,28 @@ function Dashboard() {
   const notDoneAchievements = dashboardData?.notDoneAchievements || [];
   const friends = dashboardData?.friends || [];
   const notifications = dashboardData?.notifications || [];
-  const nickname  = 'username';
-  const [theme, setTheme] = useState('yo1.jpg');
-  const [powerup, setPowerup] = useState('FireBall');
+
+  useEffect(() => {
+    const getnickname = async () => {
+      try {
+        const res = await fetch(`http://localhost:8000/user/Nickname`, {
+          method: "GET",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+        });
+        if (res.ok) {
+          const nickname = await res.json();
+          setNickname(nickname.nickname);
+          console.log("nick:", nickname.nickname);
+        }
+      } catch (error) {
+        setError('Error fetching data');
+      } finally {
+        setLoading(false);
+      }
+    };
+    getnickname();
+  }, []);
 
   const handleThemeChange = (newtheme: string) => {
     setTheme(newtheme);
