@@ -6,168 +6,9 @@ import { CiSearch } from "react-icons/ci";
 import { useRouter, useSearchParams } from 'next/navigation';
 import { IoIosArrowBack } from "react-icons/io";
 import { IconWithTooltip } from './CustomIcons';
+import { channelUsers, channels } from './ChatConstants';
 
 
-const channelUsers: ChannelUser[] = [
-	{
-		id: '1',
-		userNick: 'skinnyleg',
-		userPic: '/GroupChat.png',
-		userRole: 'ADMIN'
-	},
-	{
-		id: '2',
-		userNick: 'doba',
-		userPic: '/GroupChat.png',
-		userRole: 'ADMIN'
-	},
-	{
-		id: '3',
-		userNick: 'daifi',
-		userPic: '/GroupChat.png',
-		userRole: 'ADMIN'
-	},
-	{
-		id: '4',
-		userNick: 'ayoub',
-		userPic: '/GroupChat.png',
-		userRole: 'MEMBER'
-	},
-
-	{
-		id: '5',
-		userNick: 'taha',
-		userPic: '/GroupChat.png',
-		userRole: 'MEMBER'
-	},
-	{
-		id: '6',
-		userNick: 'mustapha',
-		userPic: '/GroupChat.png',
-		userRole: 'MEMBER'
-	},
-	{
-		id: '6',
-		userNick: 'mustapha',
-		userPic: '/GroupChat.png',
-		userRole: 'MEMBER'
-	},
-	{
-		id: '6',
-		userNick: 'mustapha',
-		userPic: '/GroupChat.png',
-		userRole: 'MEMBER'
-	},
-	{
-		id: '6',
-		userNick: 'mustapha',
-		userPic: '/GroupChat.png',
-		userRole: 'MEMBER'
-	},
-	{
-		id: '6',
-		userNick: 'mustapha',
-		userPic: '/GroupChat.png',
-		userRole: 'MEMBER'
-	},
-	{
-		id: '6',
-		userNick: 'mustapha',
-		userPic: '/GroupChat.png',
-		userRole: 'MEMBER'
-	},
-	{
-		id: '6',
-		userNick: 'mustapha',
-		userPic: '/GroupChat.png',
-		userRole: 'MEMBER'
-	},
-	{
-		id: '6',
-		userNick: 'mustapha',
-		userPic: '/GroupChat.png',
-		userRole: 'MEMBER'
-	},
-	{
-		id: '6',
-		userNick: 'mustapha',
-		userPic: '/GroupChat.png',
-		userRole: 'MEMBER'
-	},
-	{
-		id: '6',
-		userNick: 'mustapha',
-		userPic: '/GroupChat.png',
-		userRole: 'MEMBER'
-	},
-	{
-		id: '6',
-		userNick: 'mustapha',
-		userPic: '/GroupChat.png',
-		userRole: 'MEMBER'
-	},
-	{
-		id: '6',
-		userNick: 'mustapha',
-		userPic: '/GroupChat.png',
-		userRole: 'MEMBER'
-	},
-	{
-		id: '6',
-		userNick: 'mustapha',
-		userPic: '/GroupChat.png',
-		userRole: 'MEMBER'
-	},
-	{
-		id: '6',
-		userNick: 'mustapha',
-		userPic: '/GroupChat.png',
-		userRole: 'MEMBER'
-	},
-]
-
-const channels: ChannelInter[] = [
-  {
-    id: '1',
-    channelName: 'General',
-    channelPic: '/GroupChat.png',
-    isJoined: true,
-	userRole: 'MEMBER',
-  },
-  {
-    id: '2',
-    channelName: 'Random',
-    channelPic: '/GroupChat.png',
-    isJoined: true,
-	userRole: 'ADMIN',
-  },
-  {
-    id: '3',
-    channelName: 'Rando',
-    channelPic: '/GroupChat.png',
-    isJoined: true,
-	userRole: 'OWNER',
-  },
-  {
-    id: '4',
-    channelName: 'Raom',
-    channelPic: '/GroupChat.png',
-    isJoined: false,
-  },
-  {
-    id: '5',
-    channelName: 'dom',
-    channelPic: '/GroupChat.png',
-    isJoined: false,
-  },
-  {
-    id: '6',
-    channelName: 'opi',
-    channelPic: '/GroupChat.png',
-    isJoined: false,
-  },
-  // Add more objects as needed...
-];
 
 
 interface ChatSideBarProps {
@@ -205,7 +46,7 @@ const ChatSideBar: FC<ChatSideBarProps> = ({channelId}) => {
 				/>
 			</div>
 			{ // Show "OWNERS" div if there are search results for 'ADMIN' role
-				channelUsers.some((user) => user.userRole === 'ADMIN') && (
+				channelUsers.some((user) => user.userRole === 'ADMIN' || user.userRole === 'OWNER') && (
 					<div className='flex items-center gap-1 h-7 mt-2 p-1'>
 						<h1 className='text-teal-800 font-bold font-sans w-fit text-xs'>ADMINS</h1>
 						<div className="w-[100%] h-1 bg-teal-800 rounded-full"></div>
@@ -214,7 +55,7 @@ const ChatSideBar: FC<ChatSideBarProps> = ({channelId}) => {
 			}
 			{
 				channelUsers
-				.filter((user) => user.userRole === 'ADMIN')
+				.filter((user) => user.userRole === 'ADMIN' || user.userRole === 'OWNER')
 				.map((admin) => (
 					<UserCard key={admin.id} user={admin} userRole={channel?.userRole} />
 				))

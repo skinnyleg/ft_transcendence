@@ -8,13 +8,19 @@ import AddPhotoAlternateRoundedIcon from '@mui/icons-material/AddPhotoAlternateR
 import { BiSolidEditAlt } from "react-icons/bi";
 import { RiLockPasswordFill } from "react-icons/ri";
 import { IoMdExit } from "react-icons/io";
+import { FaUserCircle } from "react-icons/fa";
+import { IoVolumeMuteSharp } from "react-icons/io5";
+import { RiPingPongFill } from "react-icons/ri";
+import { FaUserSlash } from "react-icons/fa";
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 
 
 interface UserDropDownProps {
 	userRole: string | undefined;
+	userCardRole: string;
 }
 
-const UserDropDown: FC<UserDropDownProps> = ({userRole}) => {
+const UserDropDown: FC<UserDropDownProps> = ({userRole, userCardRole}) => {
   return (
     <div className="z-11">
       <Menu as="div" className="relative text-left">
@@ -48,7 +54,7 @@ const UserDropDown: FC<UserDropDownProps> = ({userRole}) => {
 					} group flex w-full items-center gap-4 rounded-md px-2 py-2 text-sm`}
 				  >
 					<IconWithTooltip
-						icon={BiSolidEditAlt}
+						icon={FaUserCircle}
 						styles='w-6 h-6 hover:cursor-pointer'
 						tooltipId="OpenToolTip"
 						tooltipContent=""
@@ -68,7 +74,7 @@ const UserDropDown: FC<UserDropDownProps> = ({userRole}) => {
 					} group flex w-full items-center gap-4 rounded-md px-2 py-2 text-sm`}
 				  >
 					<IconWithTooltip
-						icon={BiSolidEditAlt}
+						icon={RiPingPongFill}
 						styles='w-6 h-6 hover:cursor-pointer'
 						tooltipId="OpenToolTip"
 						tooltipContent=""
@@ -79,28 +85,9 @@ const UserDropDown: FC<UserDropDownProps> = ({userRole}) => {
 				)}
 			  </Menu.Item>
 			</div>
-			<div className="px-1 py-1">
-			  <Menu.Item>
-				{({ active }) => (
-				  <button
-					className={`${
-					  active ? 'bg-violet-500 text-white' : 'text-gray-900'
-					} group flex w-full items-center gap-4 rounded-md px-2 py-2 text-sm`}
-				  >
-					<IconWithTooltip
-						icon={BiSolidEditAlt}
-						styles='w-6 h-6 hover:cursor-pointer'
-						tooltipId="OpenToolTip"
-						tooltipContent=""
-						// clickBehavior={showSideBar}
-					/>
-					Add/Remove/Block User
-				  </button>
-				)}
-			  </Menu.Item>
-			</div>
 			{
-				(userRole === 'OWNER' || userRole === 'ADMIN') && (
+				((userRole === 'OWNER' || userRole === 'ADMIN')
+				&& (userCardRole !== 'OWNER')) && (
 					<>
 						<div className="px-1 py-1">
 						  <Menu.Item>
@@ -111,7 +98,7 @@ const UserDropDown: FC<UserDropDownProps> = ({userRole}) => {
 								} group flex w-full items-center gap-4 rounded-md px-2 py-2 text-sm`}
 							  >
 								<IconWithTooltip
-									icon={BiSolidEditAlt}
+									icon={IoVolumeMuteSharp}
 									styles='w-6 h-6 hover:cursor-pointer'
 									tooltipId="OpenToolTip"
 									tooltipContent=""
@@ -131,7 +118,7 @@ const UserDropDown: FC<UserDropDownProps> = ({userRole}) => {
 								} group flex w-full items-center gap-4 rounded-md px-2 py-2 text-sm`}
 							  >
 								<IconWithTooltip
-									icon={AddPhotoAlternateRoundedIcon}
+									icon={DeleteForeverIcon}
 									styles='w-8 h-8 hover:cursor-pointer'
 									tooltipId="OpenToolTip"
 									tooltipContent=""
@@ -151,8 +138,8 @@ const UserDropDown: FC<UserDropDownProps> = ({userRole}) => {
 								} group flex w-full items-center ml-0 gap-4 rounded-md px-2 py-2 text-sm`}
 							  >
 								<IconWithTooltip
-									icon={ChangeCircleIcon}
-									styles='w-8 h-8 hover:cursor-pointer'
+									icon={FaUserSlash}
+									styles='w-6 h-6 hover:cursor-pointer'
 									tooltipId="OpenToolTip"
 									tooltipContent=""
 									// clickBehavior={showSideBar}

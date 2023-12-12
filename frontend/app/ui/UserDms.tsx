@@ -1,41 +1,8 @@
 import type { FC } from 'react';
 import { DmsInter } from '../interfaces/interfaces';
 import DmComponent from './DmComponent';
+import { Dms } from './ChatConstants';
 
-// const Dms: DmsInter[] = []
-const Dms: DmsInter[] = [
-  {
-    id: '1',
-    userNick: 'General',
-    userPic: '/GroupChat.png',
-  },
-  {
-    id: '2',
-    userNick: 'dom',
-    userPic: '/GroupChat.png',
-  },
-  {
-    id: '3',
-    userNick: 'Ran',
-    userPic: '/GroupChat.png',
-  },
-  {
-    id: '4',
-    userNick: 'Raom',
-    userPic: '/GroupChat.png',
-  },
-  {
-    id: '5',
-    userNick: 'opi',
-    userPic: '/GroupChat.png',
-  },
-  {
-    id: '6',
-    userNick: 'haitam',
-    userPic: '/GroupChat.png',
-  },
-  // Add more objects as needed...
-];
 
 interface UserDmsProps {}
 
