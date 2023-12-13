@@ -19,7 +19,7 @@ const Conditional = ({isfriend, privateProfile} : DataProps ) => {
     if (isfriend && !privateProfile)
     {
         return (
-            <div className="flex flex-row"> 
+            <div className="flex flex-row mx-auto"> 
                 <div className="flex hover:bg-white text-white px-3 text-sm lg:ml-10 xl:ml-10 rounded-full" onClick={() => {}}>
                     <FaUserFriends className="text-button w-8 h-8"/>
                 </div>
@@ -32,7 +32,7 @@ const Conditional = ({isfriend, privateProfile} : DataProps ) => {
     if (!isfriend && !privateProfile)
     {
         return (
-            <div className="flex flex-row">
+            <div className="flex flex-row mx-auto">
                 <div className="hover:bg-white text-white px-3 text-sm lg:ml-10 rounded-full" onClick={() => {}}>
                     <UserPlusIcon className="text-button w-8 h-8"/>
                 </div>
@@ -43,7 +43,7 @@ const Conditional = ({isfriend, privateProfile} : DataProps ) => {
         );
     }
     return (
-        <div className="flex flex-row">
+        <div className="flex flex-row mx-auto">
             <div className="hover:bg-white text-white px-3 text-sm lg:ml-10 rounded-full" onClick={() => {}}>
                 <SiAuthy className="text-button w-8 h-8"/>
             </div>

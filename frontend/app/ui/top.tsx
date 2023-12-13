@@ -94,7 +94,7 @@ export default function TopBar () {
         <h1 className="lg:text-2xl text-gray-500 md:text-xl text-lg font-bold">Welcome Back ....!</h1>
       </div>
       <div className="flex relative lg:flex md:hidden hidden bg-accent" ref={searchRef}>
-        <MagnifyingGlassIcon className="h-8 w-8 pl-3 rounded-full absolute top-1/2 left transform -translate-y-1/2" />
+        <MagnifyingGlassIcon className="h-8 w-8 pl-3 rounded-full absolute top-1/3 left transform -translate-y-1/2" />
         <input
           onChange={(e) => {setSearch(e.target.value); if (e.target.value) setShow(true); else {setShow(false); setRes([]);} }}
           onAuxClickCapture={(e) =>{setSearch(''); setShow(false); setRes([]);}}
@@ -118,7 +118,7 @@ export default function TopBar () {
       <div className="flex flex-col lg:flex-row pr-2 lg:space-x-4">
         <Notifications  />
         <Link href={`http://localhost:3000/profile/` + profileData?.nickname}> {/* pass nickname for profile link */}
-          <img src={profileData?.profilePic} alt="yo" className="w-10 h-10 rounded-full border border-accents border-[2px] hidden lg:flex" />
+          <img src={profileData?.profilePic} alt="yo" className="w-[50px] h-[50px] xl:w-[60px] xl:h-[60px] rounded-full border border-accents border-[2px] hidden lg:flex" />
         </Link>
       </div>
     </div>

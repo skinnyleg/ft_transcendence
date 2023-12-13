@@ -122,17 +122,17 @@ const Profile = () => {
             {/* 4 cards */}
             <div  className="bg-accents col-span-1 lg:row-start-3 row-start-4 row-end-5 flex justify-between lg:row-end-4 w-full xl:h-[150px] h-[150px] shadow-md rounded-xl">
                 <div className="flex lg:flex-row flex-col h-full">
-                    <WalletIcon className="text-white xl:w-[100px] xl:h-[100px] lg:w-[80px] mb-4 md:w-[80px] w-[70px] xl:mt-8 mt-4 lg:ml-2 md:ml-2 ml-0"/>
-                    <p className="lg:text-xl xl:text-2xl lg:block md:block hidden text-lg text-center xl:mt-8 lg:w-20 w-10 lg:ml-2 ml-7 pb-2 lg:mt-10 mt-3 text-bold-900">Wallet</p>
+                    <WalletIcon className="text-white xl:w-[60px] xl:h-[60px] lg:w-[80px] mb-4 md:w-[80px] w-[70px] xl:mt-8 mt-4 lg:ml-2 md:ml-2 ml-0"/>
+                    <p className="lg:text-2xl xl:text-3xl lg:block md:block hidden text-lg text-center xl:mt-12 lg:w-20 w-10 lg:ml-5 ml-7 pb-2 lg:mt-10 mt-3 text-bold-900">Wallet</p>
                 </div>
                 <h2 className="lg:text-2xl xl:text-5xl md:text-2xl text-lg mt-7 xl:mt-10 lg:mt-12 md:mt-10 text-bold-900 mr-3 md:mr-3 lg:mr-4">{profileData?.userData.wallet}</h2>
             </div>
             <div  className="bg-accents col-span-1 flex justify-between lg:row-start-3 xl:h-[150px] row-start-4 row-end-5 lg:row-end-4 w-full h-[150px] shadow-md rounded-xl">
-                <div className="flex lg:flex-row flex-col h-full">
-                    <TrophyIcon  className="text-white xl:w-[100px] lg:w-[80px] md:w-[80px] w-[70px] mt-4 lg:ml-2 md:ml-2 ml-0"/>
-                    <p className="lg:text-xl xl:text-2xl lg:block md:block hidden text-lg text-center xl:mt-8 lg:w-20 w-10 lg:ml-2 ml-7 pb-2 lg:mt-10 mt-3 text-bold-900">Rank</p>
+            <div className="flex lg:flex-row flex-col h-full">
+                    <TrophyIcon className="text-white xl:w-[60px] xl:h-[60px] lg:w-[80px] mb-4 md:w-[80px] w-[70px] xl:mt-8 mt-4 lg:ml-2 md:ml-2 ml-0"/>
+                    <p className="lg:text-2xl xl:text-3xl lg:block md:block hidden text-lg text-center xl:mt-12 lg:w-20 w-10 lg:ml-5 ml-7 pb-2 lg:mt-10 mt-3 text-bold-900">Rank</p>
                 </div>
-                <h2 className="lg:text-2xl xl:text-5xl md:text-2xl text-lg mt-7 xl:mt-10 lg:mt-12 md:mt-10 text-bold-900 mr-3 md:mr-3 lg:mr-4">{/*profileData?.userData.Rank*/}5</h2>
+                <h2 className="lg:text-2xl xl:text-5xl md:text-2xl text-lg mt-7 xl:mt-10 lg:mt-12 md:mt-10 text-bold-900 mr-3 md:mr-3 lg:mr-4">2</h2>
             </div>
             <div className="bg-accents col-span-1 lg:row-start-3 row-start-4 row-end-5 lg:row-end-4 w-full xl:h-[150px] h-[150px] shadow-md flex justify-between rounded-xl">
                 <HandThumbUpIcon width={150} height={100} className="text-white text-2xl xl:mt-5"/>
@@ -146,7 +146,7 @@ const Profile = () => {
                 <div className="lg:w-[80%] xl:w-[90%] w-[98%] mt-5 h-full mx-auto">
                     {matchHistory.map((match) => {
                         return (
-                        <div key={match.id} className="flex flex-col border border-[#69B02d] rounded-xl w-full mt-2 xl:mt-4">
+                        <div key={match.id} className="flex flex-col border border-lightQuartze rounded-xl w-full mt-2 xl:mt-4">
                             <div className="flex flex-row justify-between">
                                 <div className="flex flex-row m-3 ">
                                     <img src="/yo.jpg" alt="profilePic" className="mt-2 rounded-full w-10 h-10 xl:w-15 xl:w-15 rounded-full" />
