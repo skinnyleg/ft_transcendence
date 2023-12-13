@@ -116,53 +116,53 @@ const Profile = () => {
             h-[30px] xl:h-[40px] rounded-2xl lg:w-[100%] w-full flex shadow-md">
                 <ProgressBar level={level} />
             </div>
-            <div className="relative col-start-4 col-end-5 mt-10 mb-1 lg:mt-0 lg:row-start-2 xl:h-[70px] h-[30px] lg:row-end-3 row-start-3 row-end-4 flex w-full shadow-md rounded-xl">
+            <div className="relative col-start-4 col-end-5 mt-10 mb-1 lg:mt-0 lg:row-start-2 xl:h-[70px] h-[30px] lg:row-end-3 row-start-3 row-end-4 flex w-full">
                 <Conditional isfriend={profileData?.isfriend} privateProfile = {profileData?.privateProfile}/>
             </div>
             {/* 4 cards */}
-            <div  className="bg-lightblue col-span-1 lg:row-start-3 row-start-4 row-end-5 flex justify-between lg:row-end-4 w-full xl:h-[150px] h-[150px] shadow-md rounded-xl">
+            <div  className="bg-accents col-span-1 lg:row-start-3 row-start-4 row-end-5 flex justify-between lg:row-end-4 w-full xl:h-[150px] h-[150px] shadow-md rounded-xl">
                 <div className="flex lg:flex-row flex-col h-full">
-                    <WalletIcon className="text-red-500 xl:w-[100px] xl:h-[100px] lg:w-[80px] mb-4 md:w-[80px] w-[70px] xl:mt-8 mt-4 lg:ml-2 md:ml-2 ml-0"/>
+                    <WalletIcon className="text-white xl:w-[100px] xl:h-[100px] lg:w-[80px] mb-4 md:w-[80px] w-[70px] xl:mt-8 mt-4 lg:ml-2 md:ml-2 ml-0"/>
                     <p className="lg:text-xl xl:text-2xl lg:block md:block hidden text-lg text-center xl:mt-8 lg:w-20 w-10 lg:ml-2 ml-7 pb-2 lg:mt-10 mt-3 text-bold-900">Wallet</p>
                 </div>
                 <h2 className="lg:text-2xl xl:text-5xl md:text-2xl text-lg mt-7 xl:mt-10 lg:mt-12 md:mt-10 text-bold-900 mr-3 md:mr-3 lg:mr-4">{profileData?.userData.wallet}</h2>
             </div>
-            <div  className="bg-lightblue col-span-1 flex justify-between lg:row-start-3 xl:h-[150px] row-start-4 row-end-5 lg:row-end-4 w-full h-[150px] shadow-md rounded-xl">
+            <div  className="bg-accents col-span-1 flex justify-between lg:row-start-3 xl:h-[150px] row-start-4 row-end-5 lg:row-end-4 w-full h-[150px] shadow-md rounded-xl">
                 <div className="flex lg:flex-row flex-col h-full">
-                    <TrophyIcon  className="text-red-500 xl:w-[100px] lg:w-[80px] md:w-[80px] w-[70px] mt-4 lg:ml-2 md:ml-2 ml-0"/>
+                    <TrophyIcon  className="text-white xl:w-[100px] lg:w-[80px] md:w-[80px] w-[70px] mt-4 lg:ml-2 md:ml-2 ml-0"/>
                     <p className="lg:text-xl xl:text-2xl lg:block md:block hidden text-lg text-center xl:mt-8 lg:w-20 w-10 lg:ml-2 ml-7 pb-2 lg:mt-10 mt-3 text-bold-900">Rank</p>
                 </div>
                 <h2 className="lg:text-2xl xl:text-5xl md:text-2xl text-lg mt-7 xl:mt-10 lg:mt-12 md:mt-10 text-bold-900 mr-3 md:mr-3 lg:mr-4">{/*profileData?.userData.Rank*/}5</h2>
             </div>
-            <div className="bg-lightblue col-span-1 lg:row-start-3 row-start-4 row-end-5 lg:row-end-4 w-full xl:h-[150px] h-[150px] shadow-md flex justify-between rounded-xl">
-                <HandThumbUpIcon width={150} height={100} className="text-green-500 text-2xl xl:mt-5"/>
-                <span className="center text-green-500 text-bold xl:mt-10 mt-5 lg:mr-20 mr-5 ml-2 lg:text-5xl text-3xl" >2</span>
+            <div className="bg-accents col-span-1 lg:row-start-3 row-start-4 row-end-5 lg:row-end-4 w-full xl:h-[150px] h-[150px] shadow-md flex justify-between rounded-xl">
+                <HandThumbUpIcon width={150} height={100} className="text-white text-2xl xl:mt-5"/>
+                <span className="center text-black text-bold xl:mt-10 mt-5 lg:mr-20 mr-5 ml-2 lg:text-5xl text-3xl" >2</span>
             </div>
-            <div  className="bg-lightblue col-span-1 lg:row-start-3 row-start-4 row-end-5 lg:row-end-4 w-full xl:h-[150px] h-[150px] shadow-md flex justify-between rounded-xl">
-                <HandThumbDownIcon width={150} height={100} className="text-red-400 text-2xl xl:mt-5"/>
-                <span className="center text-green-500 text-bold xl:mt-10 mt-5 lg:mr-20 mr-5 ml-2 lg:text-5xl text-3xl" >2</span>
+            <div  className="bg-accents col-span-1 lg:row-start-3 row-start-4 row-end-5 lg:row-end-4 w-full xl:h-[150px] h-[150px] shadow-md flex justify-between rounded-xl">
+                <HandThumbDownIcon width={150} height={100} className="text-white text-2xl xl:mt-5"/>
+                <span className="center text-black text-bold xl:mt-10 mt-5 lg:mr-20 mr-5 ml-2 lg:text-5xl text-3xl" >2</span>
             </div>
-            <div className="bg-lightblue overflow-y-scroll overflow-y-auto styled-scrollbar xl:h-[500px] lg:col-span-2 col-span-4 lg:row-start-4 lg:row-end-5 row-start-5 row-end-6 w-full h-[500px] shadow-md rounded-xl">
+            <div className="bg-accents overflow-y-scroll overflow-y-auto styled-scrollbar xl:h-[500px] lg:col-span-2 col-span-4 lg:row-start-4 lg:row-end-5 row-start-5 row-end-6 w-full h-[500px] shadow-md rounded-xl">
                 <div className="lg:w-[80%] xl:w-[90%] w-[98%] mt-5 h-full mx-auto">
                     {matchHistory.map((match) => {
                         return (
                         <div key={match.id} className="flex flex-col border border-[#69B02d] rounded-xl w-full mt-2 xl:mt-4">
                             <div className="flex flex-row justify-between">
-                                <div className="flex flex-row m-3">
-                                    <img src="/yo.jpg" alt="profilePic" className="rounded-full w-10 h-10 xl:w-15 xl:w-15 rounded-full" />
-                                    <h2 className="text-bold m-1 lg:ml-5 md:ml-5 ml-1 lg:text-lg xl:text-2xl md:text-lg text-sm ">{match.winner.nickname}</h2>
+                                <div className="flex flex-row m-3 ">
+                                    <img src="/yo.jpg" alt="profilePic" className="mt-2 rounded-full w-10 h-10 xl:w-15 xl:w-15 rounded-full" />
+                                    <h2 className="text-bold m-1 lg:ml-5 md:ml-5 ml-1 text-white lg:text-lg xl:text-2xl md:text-lg text-sm ">{match.winner.nickname}</h2>
                                 </div>
                                 <div className="flex flex-col m-0 ">
                                     <span className="text-bold text-center mt-2 xl:text-lg text-sm">{match.isMeWhoWon ? `won` : `lose`}</span>  
-                                    <div className="flex flex-row justify-between border border-white rounded-xl xl:w-[100px] w-[50px] mb-2 h-[30px] xl:h-[40px] bg-signin text-white">
+                                    <div className="flex flex-row justify-between border border-white rounded-xl xl:w-[100px] w-[50px] mb-2 h-[30px] xl:h-[40px] bg-button text-white">
                                         <h2 className="text-bold ml-2 xl:mt-1 text-xl">{match.winnerScore}</h2>
                                         <h2 className="text-bold xl:mt-1 text-xl">:</h2>
                                         <h2 className="text-bold mr-2 xl:mt-1 text-xl">{match.loserScore}</h2>
                                     </div>
                                 </div>
                                 <div className="flex flex-row-reverse m-3"> 
-                                    <img src="/yo1.jpg" alt="profilePic" className="rounded-full w-10 h-10 xl:w-15 xl:w-15 rounded-full" />
-                                    <h2 className="text-bold m-2 lg:mr-5 md:mr-5 mr-1 lg:text-lg xl:text-2xl md:text-lg text-sm" >{match.loser.nickname}</h2>
+                                    <img src="/yo1.jpg" alt="profilePic" className="rounded-full mt-2 w-10 h-10 xl:w-15 xl:w-15 rounded-full" />
+                                    <h2 className="text-bold m-2 lg:mr-5 md:mr-5 mr-1 lg:text-lg xl:text-2xl md:text-lg text-sm text-white" >{match.loser.nickname}</h2>
                                 </div>
                             </div>
                         </div>
@@ -170,7 +170,7 @@ const Profile = () => {
                     })}
                 </div>
             </div>
-            <div className="bg-lightblue lg:col-span-2 col-span-4 lg:row-start-4 xl:h-[500px] lg:row-end-5 row-start-6 row-end-7 w-full h-[500px] shadow-md rounded-xl"> match history </div>
+            <div className="bg-accents lg:col-span-2 col-span-4 lg:row-start-4 xl:h-[500px] lg:row-end-5 row-start-6 row-end-7 w-full h-[500px] shadow-md rounded-xl"> match history </div>
         </div>
     </main>
     );

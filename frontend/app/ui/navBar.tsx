@@ -88,7 +88,7 @@ function NavBar ({handleShowMenu}: NavBarProps)
 
   return (
   <div className={`${inter.className}`}>
-    <div className="block lg:hidden bg-gray-800 top-0 text-white md:w-screen h-[8vh] z-10 p-4 flex justify-between items-center border-indigo-600 fixed w-full ">
+    <div className="block lg:hidden bg-nav top-0 text-white md:w-screen h-[8vh] z-10 p-4 flex justify-between items-center border-indigo-600 fixed w-full ">
       <button className="text-white p-2 focus:outline-none">
           <Bars4Icon onClick={() => {setShow(!show); handleShowMenu(!show)}} className="w-6 h-6"/>
       </button>
@@ -131,11 +131,11 @@ function NavBar ({handleShowMenu}: NavBarProps)
               ))}
             </div>
         </div>
-    <nav className={`flex flex-col lg:ml-2 lg:mt-2 lg:block mt-[8vh] fixed lg:h-[98%] h-[92vh] bg-back w-20 ${show ? '' : 'hidden'} lg:rounded-xl border border-blackpink transition-transform duration-300 `}>
+    <nav className={`flex flex-col lg:ml-2 lg:mt-2 lg:block mt-[8vh] fixed lg:h-[98%] h-[92vh] bg-nav w-20 ${show ? '' : 'hidden'} lg:rounded-xl border border-blackpink transition-transform duration-300 `}>
       <div className="flex flex-col flex-grow">
         <div className="flex items-center justify-center mt-6 h-16 w-10 mx-auto xl:h-30 xl:w-30 font-medium hover:opacity">
           <Image
-            className="pointer-events-hover rounded-full border border-neonpink hover:opacity-80 border-[2px]" 
+            className="pointer-events-hover rounded-full border border-accents hover:opacity-80 border-[2px]" 
             src="/logo.png"
             width={100}
             height={100}
@@ -143,33 +143,33 @@ function NavBar ({handleShowMenu}: NavBarProps)
           />
         </div>
         <div className="flex flex-col flex-grow mt-20">
-            <Link href="/Dashboard" className={clsx(`flex items-center mt-15 justify-center mt-10 px-15 font-medium text-gray-400 hover:opacity-50
-               hover:text-neonpink`, {'text-neonpink'  : currentPath === "/Dashboard",
+            <Link href="/Dashboard" className={clsx(`flex items-center mt-15 justify-center mt-10 px-15 font-medium text-gray-400
+               hover:text-accents`, {'text-accents'  : currentPath === "/Dashboard",
             })}>
               <HomeIcon className="w-10 ml-3 h-6 mr-4 xl:w-20 xl:h-20" />
             </Link>
-            <Link href="/chat" className={clsx(`flex items-center mt-10 justify-center xl:mt-15 xl:w-20 xl:h-20 px-15 font-medium text-gray-400 hover:opacity-50
-              hover:text-neonpink`, {'text-neonpink'  : currentPath === "/chat",
+            <Link href="/chat" className={clsx(`flex items-center mt-10 justify-center xl:mt-15 xl:w-20 xl:h-20 px-15 font-medium text-gray-400
+              hover:text-accents`, {'text-accents'  : currentPath === "/chat",
             })}>
               <ChatBubbleBottomCenterIcon className="w-10 ml-3 h-6 mr-4 xl:w-20 xl:h-20" />
             </Link>
-            <Link href="/Leaderboard" className={clsx(`flex items-center mt-15 justify-center xl:mt-15 mt-10 px-15 font-medium text-gray-400 hover:opacity-50
-              hover:text-neonpink`, {'text-neonpink'  : currentPath === "/Leaderboard",
+            <Link href="/Leaderboard" className={clsx(`flex items-center mt-15 justify-center xl:mt-15 mt-10 px-15 font-medium text-gray-400
+              hover:text-accents`, {'text-accents'  : currentPath === "/Leaderboard",
             })}>
               <TrophyIcon className="w-10 h-6 ml-3 mr-4 xl:w-20 xl:h-20" />
             </Link>
             <Link href="/settings"
-              className={clsx(`flex items-center mt-15 justify-center mt-10 xl:mt-15 px-15 font-medium text-gray-400 hover:opacity-50 hover:text-neonpink`, {
-              'text-neonpink'  : currentPath === "/Leaderboard",
+              className={clsx(`flex items-center mt-15 justify-center mt-10 xl:mt-15 px-15 font-medium text-gray-400 hover:text-accents`, {
+              'text-accents'  : currentPath === "/Leaderboard",
               })}>
               <Cog6ToothIcon className="w-10 ml-3 h-6 mr-4 xl:w-20 xl:h-20" />
             </Link>
         </div>
         <div className="absolute bottom-5 justify-center text-gray-500 xl:mt-15 items-center ml-1">
           <Link href="/logout" 
-            className={clsx(`flex hover:opacity-50
-            hover:text-neonpink`, {
-          'text-neonpink'  : currentPath === "/Leaderboard",
+            className={clsx(`flex
+            hover:text-accents`, {
+          'text-accents'  : currentPath === "/Leaderboard",
           })}>
             <ArrowLeftOnRectangleIcon className="w-10 mr-4 xl:w-[80px]" />
           </Link>

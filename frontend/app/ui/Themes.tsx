@@ -29,7 +29,7 @@ const Themes = ({ handleThemeChange }: ThemesProps) => {
   }
 
   return (
-    <div className="bg- p-2 rounded-md col-span-1 lg:col-span-3 mt-4 row-start-2 row-end-3 lg:col-span-3 h-[200px] md:h-[300px] lg:h-full lg:space-x-4 lg:flex-row">
+    <div className="bg- p-2 rounded-md col-span-1 lg:col-span-3 mt-4 row-start-2 row-end-3 lg:col-span-3 h-[200px] xl:h-[360px] md:h-[300px] lg:h-full lg:space-x-4 lg:flex-row">
         <h4 className="text-xl font-bold  mb-0 font-white">
          Choose Themes</h4>
         <div className="flex overflow-x-auto mt-2 lg:h-[260px] h-[190px]">
@@ -44,7 +44,8 @@ const Themes = ({ handleThemeChange }: ThemesProps) => {
                 key={index}
                 className="relative rounded-md">
                 <img  onClick={() => updateStates(image)} src={image} className="w-full md:h-full h-[150px] lg:h-full rounded-md hover:cursor-pointer" />
-                <Button radius="full" className="hidden lg:block absolute bottom-2 right-10 left-10 bg-gradient-to-tr from-pink-500 to-yellow-500 text-white shadow-lg hover:from-pink-400 hover:to-yellow-400"
+                <Button radius="full" className="hidden lg:block absolute bottom-2 right-10 left-10 bg-gradient-to-tr from-main to-accents text-white shadow-lg 
+                hover:from-accents hover:to-main hover:to-lightQuartzetext-white shadow-lg"
                   onClick={() => updateStates(image)}
                 >
                   Choose

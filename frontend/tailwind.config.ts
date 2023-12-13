@@ -22,6 +22,11 @@ const config: Config = {
       },
       colors: {
         signin: '#132839',
+        main: '#ABDAE3',
+        nav: '#06435C',
+        accents: '#249CB4',
+        lightQuartze: '#DCF3F0',
+        button : '#004A57',
         back: '#1a1a1a',
         hardblue: '#0463CA',
         neonpink: '#FF69B4',

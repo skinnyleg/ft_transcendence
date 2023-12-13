@@ -65,12 +65,12 @@ const jsonData = JSON.stringify({ data }, null, 3);
 const FriendsList = ({friends} : FriendsData) => {
 
     return (
-        <div className="bg-white p-2 rounded-md col-span-1 lg:col-span-2 lg:col-start-4 lg:col-end-6  
-          row-start-5 row-end-6 lg:row-start-2 lg:row-end-4 lg:w-full lg:h-full h-[400px] shadow-md">
-            <h4 className="text-xl font-bold mb-0">FRIENDS</h4>
+        <div className="bg-accents p-2 rounded-md col-span-1 lg:col-span-2 lg:col-start-4 lg:col-end-6  
+          row-start-5 row-end-6 lg:row-start-2 lg:row-end-4 lg:w-full lg:h-full xl:h-full xl:w-[500px] h-[400px] shadow-md">
+            <h4 className="text-xl font-bold text-white m-2">FRIENDS</h4>
             <div className="flex-col space-y-4 p-4 overflow-y-scroll h-5/6 w-full styled-scrollbar">
                 {data.friends.map((friend) => (
-                    <div key={friend.id} className="bg-white flex-row p-4 border rounded-md flex items-center justify-between">
+                    <div key={friend.id} className="bg-lightQuartze flex-row p-4 border rounded-md flex items-center justify-between">
                         <div className="flex items-center">
                             <img src={friend.profilePic} alt={`Friend ` + friend.id} className="w-10 h-10 ml-1 rounded-full" />
                             <span className={clsx(`h-3 w-3 rounded-full relative transform translate-y-3 translate-x-[-10px]`
@@ -86,10 +86,10 @@ const FriendsList = ({friends} : FriendsData) => {
                           </div>
                           <div className="flex">
                             
-                            <button className="ml-2 bg-neonpink rounded-md px-2 py-1 text-white text-xs  lg:block md:block xs:hidden ">Challenge</button>
-                            <GiPingPongBat  className="w-8 h-6 ml-2 hidden md:hidden xs:block" />
-                            <button className="ml-2 bg-neonpink rounded-md px-2 py-1 text-white text-xs lg:block md:block xs:hidden ">Chat</button>
-                            <ChatBubbleBottomCenterIcon className="w-8 h-6 ml-2 hidden md:hidden xs:block" />
+                            <button className="ml-2 bg-button rounded-md px-2 py-1 text-white text-xs  lg:block md:block xs:hidden ">Challenge</button>
+                            <GiPingPongBat  className="w-8 h-6 ml-2 hidden md:hidden text-button xs:block" />
+                            <button className="ml-2 bg-button rounded-md px-2 py-1 text-white text-xs lg:block md:block xs:hidden ">Chat</button>
+                            <ChatBubbleBottomCenterIcon className="w-8 h-6 ml-2 hidden text-button md:hidden xs:block" />
                           </div>
                         </div>
                     ))}
