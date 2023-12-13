@@ -12,24 +12,29 @@ interface ChatContentProps {
 }
 
 const ChatContent: FC<ChatContentProps> = ({channel}) => {
-  const scrollableRef = useRef(null);
 
+		const scrollableRef = useRef(null);
 		const isJoined = channel?.isJoined;
 		const channelType = channel?.channelType;
 		const addBlur = !isJoined && (channelType === 'PROTECTED' || channelType === 'PRIVATE');
 
 
 		useEffect(() => {
+			console.log("ref obj == ", scrollableRef.current)
 			if (scrollableRef.current) {
 				// Scroll to the bottom when Messages or addBlur change
 				scrollableRef.current.scrollTop = scrollableRef.current.scrollHeight;
 			}
-		}, [Messages, addBlur]);
+			// return () => {
+			// 	console.log("cleanup")
+			// 	scrollableRef.current = null;
+			// }
+		}, [Messages, channel]);
 
 
 
 		return (
-			<div className={`w-full flex-grow p-2 gap-2 flex flex-col mt-3 mb-3 overflow-y-auto ${addBlur ? 'blur' : ''}`}>
+			<div ref={scrollableRef} className={`w-full flex-grow p-2 gap-2 flex flex-col mt-3 mb-3 overflow-y-auto ${addBlur ? 'blur overflow-y-hidden' : ''}`}>
 				{
 					Messages.map((message) => {
 						if (message.senderNick === user.userNick)

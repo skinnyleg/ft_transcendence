@@ -8,7 +8,7 @@ interface UserChannelsProps {}
 
 const UserChannels: FC<UserChannelsProps> = ({}) => {
 		return (
-			<div className='overflow-y-auto'>
+			<div className='flex gap-0 flex-col overflow-y-auto'>
 				{
 				  channels.length > 0 && (
 					channels.map((channel) => (

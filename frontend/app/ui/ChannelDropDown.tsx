@@ -123,6 +123,26 @@ const ChannelDropDown: FC<ChannelDropDownProps> = ({userRole, showSideBar}) => {
 							)}
 						  </Menu.Item>
 						</div>
+						<div className="px-1 py-1">
+						  <Menu.Item>
+							{({ active }) => (
+							  <button
+								className={`${
+								  active ? 'bg-violet-500 text-white' : 'text-gray-900'
+								} group flex w-full items-center gap-4 rounded-md px-2 py-2 text-sm`}
+							  >
+								<IconWithTooltip
+									icon={AddPhotoAlternateRoundedIcon}
+									styles='w-8 h-8 hover:cursor-pointer'
+									tooltipId="OpenToolTip"
+									tooltipContent=""
+									// clickBehavior={showSideBar}
+								/>
+								Change Owner
+							  </button>
+							)}
+						  </Menu.Item>
+						</div>
 					</>
 				)
 			}

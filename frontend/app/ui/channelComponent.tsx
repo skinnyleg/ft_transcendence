@@ -21,8 +21,8 @@ const ChannelComponent: FC<channelComponentProps> = ({channel}) => {
 				<Image
 					src={channel.channelPic}
 					alt='channel Image'
-					width='45'
-					height='45'
+					width={45}
+					height={45}
 					className='rounded-full bg-teal-300'
 				/>
 				<div className='flex flex-col bg-teal-100 w-full pl-2 rounded-xl'>

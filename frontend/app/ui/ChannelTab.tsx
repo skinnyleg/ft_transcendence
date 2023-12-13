@@ -33,6 +33,7 @@ const ChannelTab = () => {
 				{/* 		style='w-full h-6 focus:ring-0 focus:outline-none' */}
 				{/* 	/> */}
 				{/* </button> */}
+				<CreateChannelComponent />
 			</div>
 		<UserChannels />
 		</div>

@@ -37,21 +37,21 @@ export const Messages: MessageInter[] = [
 		timeStamp: '11:35 AM'
 	},
 	{
-		id: '5',
+		id: '6',
 		senderPic: '/GroupChat.png',
 		senderNick: 'daifi',
 		content: 'hello',
 		timeStamp: '11:35 AM'
 	},
 	{
-		id: '5',
+		id: '7',
 		senderPic: '/GroupChat.png',
 		senderNick: 'daifi',
 		content: 'hello',
 		timeStamp: '11:35 AM'
 	},
 	{
-		id: '5',
+		id: '8',
 		senderPic: '/GroupChat.png',
 		senderNick: 'skinnyleg',
 		content: 'hello',
@@ -132,79 +132,79 @@ export const channelUsers: ChannelUser[] = [
 		userRole: 'MEMBER'
 	},
 	{
-		id: '6',
+		id: '7',
 		userNick: 'mustapha',
 		userPic: '/GroupChat.png',
 		userRole: 'MEMBER'
 	},
 	{
-		id: '6',
+		id: '8',
 		userNick: 'mustapha',
 		userPic: '/GroupChat.png',
 		userRole: 'MEMBER'
 	},
 	{
-		id: '6',
+		id: '9',
 		userNick: 'mustapha',
 		userPic: '/GroupChat.png',
 		userRole: 'MEMBER'
 	},
 	{
-		id: '6',
+		id: '10',
 		userNick: 'mustapha',
 		userPic: '/GroupChat.png',
 		userRole: 'MEMBER'
 	},
 	{
-		id: '6',
+		id: '11',
 		userNick: 'mustapha',
 		userPic: '/GroupChat.png',
 		userRole: 'MEMBER'
 	},
 	{
-		id: '6',
+		id: '12',
 		userNick: 'mustapha',
 		userPic: '/GroupChat.png',
 		userRole: 'MEMBER'
 	},
 	{
-		id: '6',
+		id: '13',
 		userNick: 'mustapha',
 		userPic: '/GroupChat.png',
 		userRole: 'MEMBER'
 	},
 	{
-		id: '6',
+		id: '14',
 		userNick: 'mustapha',
 		userPic: '/GroupChat.png',
 		userRole: 'MEMBER'
 	},
 	{
-		id: '6',
+		id: '15',
 		userNick: 'mustapha',
 		userPic: '/GroupChat.png',
 		userRole: 'MEMBER'
 	},
 	{
-		id: '6',
+		id: '16',
 		userNick: 'mustapha',
 		userPic: '/GroupChat.png',
 		userRole: 'MEMBER'
 	},
 	{
-		id: '6',
+		id: '17',
 		userNick: 'mustapha',
 		userPic: '/GroupChat.png',
 		userRole: 'MEMBER'
 	},
 	{
-		id: '6',
+		id: '18',
 		userNick: 'mustapha',
 		userPic: '/GroupChat.png',
 		userRole: 'MEMBER'
 	},
 	{
-		id: '6',
+		id: '19',
 		userNick: 'mustapha',
 		userPic: '/GroupChat.png',
 		userRole: 'MEMBER'
