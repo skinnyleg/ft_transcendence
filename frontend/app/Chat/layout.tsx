@@ -1,22 +1,23 @@
-'use client';
 import React, { useState } from "react";
-import NavBar from "../ui/navBar";
- 
-export default function Layout({ children }: { children: React.ReactNode }) {
-  const [showMenu, setShowMenu] = useState(false);
+import { Metadata } from "next";
+import LayoutChat from "../ui/layoutChat";
 
-  const handleShowMenu = (showMenu: boolean) => {
-    setShowMenu(showMenu);
-  }
+export const metadata : Metadata = {
+  title: 'Chat',
+  description: 'Pong Platform Chat Page',
+  viewport: 'width=device-width, initial-scale=1',
+  icons: ''
+
+}
+
+export default function Layout({ children }: { children: React.ReactNode }) {
+
 
   return (
-		<div className="flex bg-back flex-col md:flex-row md:overflow-hidden">
-		  <div className={`flex-none md:w-10 w-20 lg:w-20`}>
-			<NavBar handleShowMenu={handleShowMenu} />
-		  </div>
-		  <div className={`flex-grow ${
-			  showMenu  ? 'ml-[90px] ' : 'ml-3 lg:ml-3'
-			} transition-margin duration-300`}>{children}</div>
-		</div>
-	);
+    <div className="flex bg-main flex-col md:flex-row md:overflow-y-auto overflow-y-auto xl:h-screen lg:h-screen">
+      <LayoutChat>
+        {children}
+      </LayoutChat>
+    </div>
+  );
 }

@@ -13,9 +13,10 @@ import { IoMdExit } from "react-icons/io";
 interface ChannelDropDownProps {
 	userRole: string | undefined;
 	showSideBar: () => void;
+	channelType: string | undefined;
 }
 
-const ChannelDropDown: FC<ChannelDropDownProps> = ({userRole, showSideBar}) => {
+const ChannelDropDown: FC<ChannelDropDownProps> = ({userRole, showSideBar, channelType}) => {
   return (
     <div className="z-10">
       <Menu as="div" className="relative text-left">
@@ -103,26 +104,30 @@ const ChannelDropDown: FC<ChannelDropDownProps> = ({userRole, showSideBar}) => {
 							)}
 						  </Menu.Item>
 						</div>
-						<div className="px-1 py-1">
-						  <Menu.Item>
-							{({ active }) => (
-							  <button
-								className={`${
-								  active ? 'bg-violet-500 text-white' : 'text-gray-900'
-								} group flex w-full items-center gap-4 rounded-md px-2 py-2 text-sm`}
-							  >
-								<IconWithTooltip
-									icon={RiLockPasswordFill}
-									styles='w-6 h-6 hover:cursor-pointer'
-									tooltipId="OpenToolTip"
-									tooltipContent=""
-									// clickBehavior={showSideBar}
-								/>
-								Change Password
-							  </button>
-							)}
-						  </Menu.Item>
-						</div>
+						{
+							channelType === 'PROTECTED' && (
+									<div className="px-1 py-1">
+									  <Menu.Item>
+										{({ active }) => (
+										  <button
+											className={`${
+											  active ? 'bg-violet-500 text-white' : 'text-gray-900'
+											} group flex w-full items-center gap-4 rounded-md px-2 py-2 text-sm`}
+										  >
+											<IconWithTooltip
+												icon={RiLockPasswordFill}
+												styles='w-6 h-6 hover:cursor-pointer'
+												tooltipId="OpenToolTip"
+												tooltipContent=""
+												// clickBehavior={showSideBar}
+											/>
+											Change Password
+										  </button>
+										)}
+									  </Menu.Item>
+									</div>
+							)
+						}
 						<div className="px-1 py-1">
 						  <Menu.Item>
 							{({ active }) => (

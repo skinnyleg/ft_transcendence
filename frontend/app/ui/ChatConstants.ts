@@ -106,12 +106,12 @@ export const channelUsers: ChannelUser[] = [
 		userPic: '/GroupChat.png',
 		userRole: 'ADMIN'
 	},
-	{
-		id: '3',
-		userNick: 'daifi',
-		userPic: '/GroupChat.png',
-		userRole: 'ADMIN'
-	},
+	// {
+	// 	id: '3',
+	// 	userNick: 'daifi',
+	// 	userPic: '/GroupChat.png',
+	// 	userRole: 'ADMIN'
+	// },
 	{
 		id: '4',
 		userNick: 'ayoub',
@@ -218,7 +218,7 @@ export const user: ChannelUser = {
 	id: '1',
 	userPic: '',
 	userNick: 'skinnyleg',
-	userRole: '',
+	userRole: 'MEMBER',
 }
 
 export const channels: ChannelInter[] = [
@@ -244,7 +244,7 @@ export const channels: ChannelInter[] = [
     channelPic: '/GroupChat.png',
     isJoined: true,
 	userRole: 'OWNER',
-	channelType: 'PUBLIC',
+	channelType: 'PROTECTED',
   },
   {
     id: '4',

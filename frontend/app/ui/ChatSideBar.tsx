@@ -6,10 +6,7 @@ import { CiSearch } from "react-icons/ci";
 import { useRouter, useSearchParams } from 'next/navigation';
 import { IoIosArrowBack } from "react-icons/io";
 import { IconWithTooltip } from './CustomIcons';
-import { channelUsers, channels } from './ChatConstants';
-
-
-
+import { channelUsers, channels, user } from './ChatConstants';
 
 interface ChatSideBarProps {
 	channelId: string | null;
@@ -26,6 +23,21 @@ const ChatSideBar: FC<ChatSideBarProps> = ({channelId}) => {
 		const channelId = searchParams.get('channel')
 		router.replace(`/Chat?channel=${channelId}`);
 	}
+
+	const renderBar = (channelUsers: ChannelUser[], userRole: string[]) => {
+		const users = channelUsers.filter((user) => userRole.includes(user.userRole));
+		if (users.length === 1 && users[0].userNick === user.userNick)
+			return null;
+		return (
+			<div className='flex items-center gap-1 h-7 mt-2 p-1'>
+				<h1 className='text-teal-800 font-bold font-sans w-fit text-xs'>
+					{userRole.length > 1 ? 'ADMINS' : 'MEMBERS'}
+				</h1>
+				<div className="w-[100%] h-1 bg-teal-800 rounded-full"></div>
+			</div>
+		);
+	}
+
 		return (
 		<div className={`w-full bg-teal-600 lg:ml-2 rounded-xl flex flex-col p-2 h-full overflow-y-auto`}>
 			<div className={`${isJoined ? '' : 'blur overflow-y-hidden'}`}>
@@ -45,32 +57,18 @@ const ChatSideBar: FC<ChatSideBarProps> = ({channelId}) => {
 						className='w-4/5 h-10 bg-teal-200 rounded-xl border-none focus:ring-0 text-black'
 					/>
 				</div>
-				{ // Show "OWNERS" div if there are search results for 'ADMIN' role
-					channelUsers.some((user) => user.userRole === 'ADMIN' || user.userRole === 'OWNER') && (
-						<div className='flex items-center gap-1 h-7 mt-2 p-1'>
-							<h1 className='text-teal-800 font-bold font-sans w-fit text-xs'>ADMINS</h1>
-							<div className="w-[100%] h-1 bg-teal-800 rounded-full"></div>
-						</div>
-					)
-				}
+				{renderBar(channelUsers, ['ADMIN', 'OWNER'])}
 				{
 					channelUsers
-					.filter((user) => user.userRole === 'ADMIN' || user.userRole === 'OWNER')
+					.filter((u) => (u.userRole === 'ADMIN' || u.userRole === 'OWNER') && user.userNick !== u.userNick)
 					.map((admin) => (
 						<UserCard key={admin.id} user={admin} userRole={channel?.userRole} />
 					))
 				}
-				{ // Show "MEMBERS" div if there are search results for 'MEMBER' role
-					channelUsers.some((user) => user.userRole === 'MEMBER') && (
-						<div className='flex items-center gap-1 h-7 mt-2 p-1'>
-							<h1 className='text-teal-800 font-bold font-sans w-fit text-xs'>MEMBERS</h1>
-							<div className="w-[100%] h-1 bg-teal-800 rounded-full"></div>
-						</div>
-					)
-				}
+				{renderBar(channelUsers, ['MEMBER'])}
 				{
 					channelUsers
-					.filter((user) => user.userRole === 'MEMBER')
+					.filter((u) => u.userRole === 'MEMBER' && u.userNick !== user.userNick)
 					.map((member) => (
 						<UserCard key={member.id} user={member} userRole={channel?.userRole}/>
 					))

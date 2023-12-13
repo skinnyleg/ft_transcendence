@@ -6,6 +6,7 @@ import { IoMdAddCircleOutline } from "react-icons/io";
 import { CreateChannelIcon } from './CustomIcons';
 import CreateChannelComponent from './CreateChannelComponent';
 
+
 const ChannelTab = () => {
 	return (
 		<div className="bg-teal-600 rounded-lg p-3 w-full lg:w-full h-[50%] flex flex-col">
@@ -20,22 +21,11 @@ const ChannelTab = () => {
 						className='w-4/5 h-10 bg-teal-200 border-none focus:ring-0 text-black'
 					/>
 				</div>
-				{/* <Popup trigger={ */}
-				{/* <button className='text-black bg-teal-200 text-center w-1/6 rounded-e-xl'> */}
-				{/* 	<CreateChannelIcon */}
-				{/* 		style='w-full h-6 focus:ring-0 focus:outline-none' */}
-				{/* 	/> */}
-				{/* </button>} modal> */}
-				{/* 		<CreateChannelComponent /> */}
-				{/* </Popup> */}
-				{/* <button className='text-black bg-teal-200 text-center w-1/6 rounded-e-xl'> */}
-				{/* 	<CreateChannelIcon */}
-				{/* 		style='w-full h-6 focus:ring-0 focus:outline-none' */}
-				{/* 	/> */}
-				{/* </button> */}
 				<CreateChannelComponent />
 			</div>
-		<UserChannels />
+			<div className='flex gap-0 flex-col overflow-y-auto'>
+				<UserChannels />
+			</div>
 		</div>
 	)
 }

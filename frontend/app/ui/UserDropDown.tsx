@@ -13,6 +13,8 @@ import { IoVolumeMuteSharp } from "react-icons/io5";
 import { RiPingPongFill } from "react-icons/ri";
 import { FaUserSlash } from "react-icons/fa";
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import { GiPoliceOfficerHead } from "react-icons/gi";
+import { FaUserXmark } from "react-icons/fa6";
 
 
 interface UserDropDownProps {
@@ -21,6 +23,16 @@ interface UserDropDownProps {
 }
 
 const UserDropDown: FC<UserDropDownProps> = ({userRole, userCardRole}) => {
+
+
+	const displayActions = () => {
+		if (userRole === 'MEMBER')
+			return (false)
+		if (userRole === 'ADMIN' && (userCardRole === 'ADMIN' || userCardRole === 'OWNER'))
+			return (false);
+		return (true);
+	}
+
   return (
     <div className="z-11">
       <Menu as="div" className="relative text-left">
@@ -86,8 +98,7 @@ const UserDropDown: FC<UserDropDownProps> = ({userRole, userCardRole}) => {
 			  </Menu.Item>
 			</div>
 			{
-				((userRole === 'OWNER' || userRole === 'ADMIN')
-				&& (userCardRole !== 'OWNER')) && (
+				displayActions() && (
 					<>
 						<div className="px-1 py-1">
 						  <Menu.Item>
@@ -149,6 +160,54 @@ const UserDropDown: FC<UserDropDownProps> = ({userRole, userCardRole}) => {
 							)}
 						  </Menu.Item>
 						</div>
+						{
+							(userRole === 'OWNER' && userCardRole === 'ADMIN') && (
+								<div className="px-1 py-1">
+								  <Menu.Item>
+									{({ active }) => (
+									  <button
+										className={`${
+										  active ? 'bg-violet-500 text-white' : 'text-gray-900'
+										} group flex w-full items-center gap-4 rounded-md px-2 py-2 text-sm`}
+									  >
+										<IconWithTooltip
+											icon={FaUserXmark}
+											styles='w-6 h-6 hover:cursor-pointer'
+											tooltipId="OpenToolTip"
+											tooltipContent=""
+											// clickBehavior={showSideBar}
+										/>
+										Demote
+									  </button>
+									)}
+								  </Menu.Item>
+								</div>
+							)
+						}
+						{
+							(userRole === 'OWNER' && userCardRole === 'MEMBER') && (
+								<div className="px-1 py-1">
+								  <Menu.Item>
+									{({ active }) => (
+									  <button
+										className={`${
+										  active ? 'bg-violet-500 text-white' : 'text-gray-900'
+										} group flex w-full items-center gap-4 rounded-md px-2 py-2 text-sm`}
+									  >
+										<IconWithTooltip
+											icon={GiPoliceOfficerHead}
+											styles='w-6 h-6 hover:cursor-pointer'
+											tooltipId="OpenToolTip"
+											tooltipContent=""
+											// clickBehavior={showSideBar}
+										/>
+										Promote
+									  </button>
+									)}
+								  </Menu.Item>
+								</div>
+							)
+						}
 					</>
 				)
 			}

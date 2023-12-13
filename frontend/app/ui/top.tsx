@@ -89,7 +89,7 @@ export default function TopBar () {
 
   console.log("here", profileData?.profilePic);
   return (
-    <div className="flex lg:flex-row justify-between flex-col xl:mt-6 mt-20 lg:mt-3 w-full bg-transparent p-0">
+    <div className="flex lg:flex-row justify-between flex-col xl:mt-0 mt-20 lg:mt-0 w-full bg-transparent p-0">
       <div className="lg:flex">
         <h1 className="lg:text-2xl text-gray-500 md:text-xl text-lg font-bold">Welcome Back ....!</h1>
       </div>

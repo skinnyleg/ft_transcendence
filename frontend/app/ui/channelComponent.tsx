@@ -16,8 +16,7 @@ const ChannelComponent: FC<channelComponentProps> = ({channel}) => {
 	}
 
 	return (
-		<div onClick={setChannelQuery} className='rounded-xl w-full h-14 mb-0 text-black p-2 flex justify-between items-center hover:cursor-pointer'>
-			<div className='flex gap-2 w-full'>
+		<div onClick={setChannelQuery} className='gap-2 rounded-xl w-full h-14 mb-0 text-black p-2 flex justify-between items-center hover:cursor-pointer'>
 				<Image
 					src={channel.channelPic}
 					alt='channel Image'
@@ -29,7 +28,6 @@ const ChannelComponent: FC<channelComponentProps> = ({channel}) => {
 					<h1 className='font-bold text-xl'>{channel.channelName}</h1>
 					<p className='text-gray-500'>last message</p>
 				</div>
-			</div>
 		</div>
 	);
 }

@@ -1,6 +1,5 @@
 
 import type { FC } from 'react';
-import { ChannelInter } from '../interfaces/interfaces';
 import ChannelComponent from './channelComponent';
 import { channels } from './ChatConstants';
 
@@ -8,7 +7,7 @@ interface UserChannelsProps {}
 
 const UserChannels: FC<UserChannelsProps> = ({}) => {
 		return (
-			<div className='flex gap-0 flex-col overflow-y-auto'>
+			<>
 				{
 				  channels.length > 0 && (
 					channels.map((channel) => (
@@ -19,7 +18,7 @@ const UserChannels: FC<UserChannelsProps> = ({}) => {
 					))
 				  )
 				}
-			</div>
+			</>
 	);
 }
 export default UserChannels;

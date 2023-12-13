@@ -62,37 +62,8 @@ const ChatTopBar: FC<ChatTopBarProps> = ({channel}) => {
 						<ChannelDropDown
 							userRole={channel.userRole}
 							showSideBar={showSideBar}
+							channelType={channel.channelType}
 						/>
-						{/* <IconWithTooltip */}
-						{/* 	icon={HiDotsVertical} */}
-						{/* 	styles='w-8 h-8 hover:cursor-pointer' */}
-						{/* 	tooltipId="OpenToolTip" */}
-						{/* 	tooltipContent="See Options" */}
-						{/* 	// clickBehavior={showSideBar} */}
-						{/* /> */}
-						{/* { */}
-						{/* 	channel.userRole === 'OWNER' && ( */}
-						{/* 		<IconWithTooltip */}
-						{/* 			icon={IoMdSettings} */}
-						{/* 			styles='w-8 h-8 hover:cursor-pointer' */}
-						{/* 			tooltipId="settingsToolTip" */}
-						{/* 			tooltipContent="Channel Settings" */}
-						{/* 		/> */}
-						{/* 	) */}
-						{/* } */}
-						{/* <IconWithTooltip */}
-						{/* 	icon={GoSidebarExpand} */}
-						{/* 	styles='w-8 h-8 hover:cursor-pointer lg:hidden' */}
-						{/* 	tooltipId="OpenToolTip" */}
-						{/* 	tooltipContent="See Members" */}
-						{/* 	clickBehavior={showSideBar} */}
-						{/* /> */}
-						{/* <IconWithTooltip */}
-						{/* 	icon={HiLogout} */}
-						{/* 	styles='w-8 h-8 hover:cursor-pointer' */}
-						{/* tooltipContent="Leave Channel" */}
-						{/* 	tooltipId="OpenToolTip" */}
-						{/* /> */}
 					</div>
 				)
 			}
