@@ -15,9 +15,9 @@ const PowerUps = ({handlePowerUpChange}: PowerUpsProps) => {
   const powerups = ['FireBall', 'IceBall', 'LightningBall', 'WaterBall', 'EarthBall', 'AirBall'];
 
   return (
-    <div className="bg-neonpink p-2 rounded-md lg:col-span-3 col-span-1 lg:h-[200px] lg:w-full h-[200px] lg:mt-20 mt-10 row-start-3 row-end-4 shadow-md">
-      <h4 className="text-2xl font-bold mb-4">Power Ups</h4>
-      <div className="flex overflow-x-auto lg:h-[150px] h-[100px]">
+    <div className="bg-accents p-2 rounded-md lg:col-span-3 col-span-1 lg:w-full xl:h-[200px] h-[200px] row-start-3 row-end-4 shadow-md">
+      <h4 className="text-2xl text-gray-600 font-bold mb-10 ml-2">Power Ups</h4>
+      <div className="flex overflow-x-auto lg:h-[150px] h-[100px] mt-5">
         <Swiper
           slidesPerView={4}
           pagination={{ clickable: true }}

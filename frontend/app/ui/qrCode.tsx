@@ -2,18 +2,18 @@
 import Image from 'next/image';
 import { useState, useRef } from 'react';
 import React from 'react';
-import UseInputRefs from './useInputRefs';
+// import useInputRefs from './useInputRefs';
 
 interface VerificationInputProps {
   onSubmit: (code: string) => void;
+  inputRefs: React.RefObject<HTMLInputElement>[];
 }
 
 
 
-const VerificationInput: React.FC<VerificationInputProps> = ({ onSubmit }) => {
+const VerificationInput: React.FC<VerificationInputProps> = ({ inputRefs, onSubmit }) => {
 
   const [code, setCode] = useState<string>('');
-  const inputRefs = UseInputRefs(6);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     let newCode = code;
@@ -39,21 +39,17 @@ const VerificationInput: React.FC<VerificationInputProps> = ({ onSubmit }) => {
   };
 
   return (
-    <div className="bg-signin flex justify-center items-center h-1/2">
-      <div className="flex space-x-2">
-        {[...Array(6)].map((_, index) => (
-          <input
-            key={index}
-            type="text"
-            maxLength={1}
-            value={code[index] || ''}
-            onChange={(e) => handleChange(e, index)}
-            onKeyDown={(e) => handleKeyDown(e, index)}
-            ref={inputRefs[index]}
-            className="w-10 h-10 text-center border border-gray-300 rounded focus:outline-none focus:ring focus:border-blue-500 hover:border-blue-500"
-          />
-        ))}
-      </div>
+    <div className="flex space-x-2">
+      {[...Array(6)].map((_, index) => (
+        <input
+          key={index}
+          type="text"
+          value={code[index] || ''}
+          onChange={(e) => handleChange(e, index)}
+          ref={inputRefs[index]}
+          className="w-10 h-10 text-center border border-gray-300 rounded focus:outline-none focus:ring focus:border-blue-500 hover:border-blue-500"
+        />
+      ))}
     </div>
   );
 };

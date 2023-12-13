@@ -1,19 +1,40 @@
 import { BellAlertIcon } from "@heroicons/react/24/outline";
-import { NotificationsData } from "../Dashboard/page"
+import { NotificationsData } from "@/app/interfaces/interfaces"
 import { useEffect, useState } from 'react';
 import io from 'socket.io-client';
 import clsx from "clsx";
 
-interface NotificationsProps  {
-    handleNotification: (NotificationsData: NotificationsData) => void;
-}
+// interface NotificationsProps  {
+//     handleNotification: (NotificationsData: NotificationsData) => void;
+// }
 
-const Notifications = ({ handleNotification } : NotificationsProps) => {
+
+const Notifications = () => {
     const [notifications, setNotifications] = useState<NotificationsData[]>([]);
+    const [notifSent, setNotifSent] = useState< | null>(null)
     const [showNotifications, setShowNotifications] = useState(false);
     const [notificationNumber, setNotificationNumber] = useState(0);
     const [newNotification, setNewNotification] = useState<NotificationsData | null>(null);
+    const [notifPopUP, setNotifPopUp] = useState <NotificationsData | null>(null);
     const socket = io("http://localhost:8000");
+
+    useEffect( () => {
+        const notif = async() => {
+        try{
+            const res = await fetch(`http://localhost:8000/user/Notifications`, {
+                method: "GET",
+                credentials: "include",
+                headers: { "Content-Type": "application/json" },
+            });
+            if (res.status === 200) {
+                const notification = await res.json();
+                setNotifications(notification);
+            }
+        }catch(error){
+            console.error(error);
+        }
+        }
+    }, [newNotification]);
 
     const knotifications = [{
         userId: "1",
@@ -27,10 +48,16 @@ const Notifications = ({ handleNotification } : NotificationsProps) => {
     const handleNewNotification = (data: NotificationsData) => {
         setNewNotification(data);
         setNotificationNumber(notificationNumber + 1);
-
+        
     }
 
     useEffect(() => {
+
+        socket.on("notification", (notif) => {
+            console.log(notif);
+            setNotifSent(notif);
+        });
+
         socket.on("notifHistory", (data: NotificationsData) => {
             setNotifications((prevNotifications) => {
                 return [...prevNotifications, data];
@@ -41,9 +68,8 @@ const Notifications = ({ handleNotification } : NotificationsProps) => {
 
     return (
         <div className="notifications relative">
-
-            <BellAlertIcon onClick={()=>{setShowNotifications(!showNotifications)}} className= "h-15 hidden lg:flex w-10 p-2 bg-gray-100 rounded-full"/>
-            <span className={clsx(`absolute text-s text-white font-bold rounded-full h-5 w-5 flex items-center justify-center bottom-0 right-0 transform translate-x-[8px]`
+            <BellAlertIcon onClick={()=>{setShowNotifications(!showNotifications)}} className= "h-[55px] hidden lg:flex w-[55px] p-2 bg-gray-100 text-accents rounded-full"/>
+            <span className={clsx(`absolute text-s text-white font-bold rounded-full h-5 w-5 flex items-center md:hidden hidden xl:flex lg:flex justify-center bottom-0 right-0 transform translate-x-[8px]`
             , {'hidden' : showNotifications},
             {
                 'bg-red-500 ' : (notificationNumber > 0),

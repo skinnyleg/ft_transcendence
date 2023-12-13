@@ -24,9 +24,9 @@ export class QrService {
 		const isValid = authenticator.check(QrCode, secret);
 		 if (isValid)
 		{
-			const token = await this.authService.createToken(user.id, user.login, TOKENEXP, TOKENSECRET)
+			const token = await this.authService.createToken(user.id, user.nickname, TOKENEXP, TOKENSECRET)
 			res.cookie('token', token, {signed: true});
-			const refresh = await this.authService.createToken(user.id, user.login, REFRESHEXP, REFRESHSECRET)
+			const refresh = await this.authService.createToken(user.id, user.nickname, REFRESHEXP, REFRESHSECRET)
 			res.cookie('refresh', refresh, {signed: true})
 			res.status(200).json(token);
 		 } else {

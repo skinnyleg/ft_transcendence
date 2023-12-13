@@ -1,3 +1,4 @@
+import { inter } from "../ui/fonts";
 
 export enum UserStatus {
     online = 'ONLINE',
@@ -19,6 +20,11 @@ export interface FriendsData {
   status: UserStatus;
 }[];
 
+export interface profileNickPic{
+  nickname: string;
+  profilePic:string; 
+};
+
 export interface AchievementsData {
   id: string;
   title: string;
@@ -27,12 +33,19 @@ export interface AchievementsData {
   totalScore: number;
 }[];
 
+export interface responseData {
+  id: string;
+  profilePic: string;
+  nickname: string;
+};
+
+
 export interface NotificationsData {
   userId: string;
   userProfilePic: string;
   description: string;
   typeOfRequest: any;
-  responded: boolean; 
+  responded: boolean;
 }[];
 
 export interface profileData {

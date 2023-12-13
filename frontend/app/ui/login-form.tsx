@@ -11,7 +11,6 @@ import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { useFormState, useFormStatus } from 'react-dom';
 import Link  from 'next/link';
 import { useState } from 'react';
-import { Router } from 'react-router-dom';
 import { useRouter } from 'next/navigation';
  
 export default function LoginForm() {
@@ -60,14 +59,14 @@ export default function LoginForm() {
 
   return (
     <form className="space-y-3" onSubmit={handleSubmit}>
-      <div className="flex-1 rounded-lg backdrop-blur border border-gray-300 bg-opacity-80 px-6 pb-4 pt-8">
+      <div className="flex-1 rounded-lg bg-accents border border-gray-300 px-6 pb-4 pt-8 mt-10">
         <h1 className={`${lusitana.className} mb-3 lg:text-2xl md:text-xl text-xl`}>
           Please log in to continue.
         </h1>
         <div className="w-4/5">
           <div className="mt-10">
             <label
-              className="ml-6 mb-3 mt-5 text-xs hidden lg:block md:block font-medium text-gray-1000"
+              className="ml-6 mb-3 mt-5 text-xs hidden lg:block md:block font-medium text-white"
               htmlFor="username"
             >
               username
@@ -86,7 +85,7 @@ export default function LoginForm() {
             </div>
           </div>
           <div className="mt-10">
-            <label className="md:ml-6 mb-3 mt-5 hidden lg:block md:block text-xs font-medium text-gray-1000" htmlFor="password">
+            <label className="md:ml-6 mb-3 mt-5 hidden lg:block md:block text-xs font-medium text-white" htmlFor="password">
               Password
             </label>
             <div className="relative">
@@ -110,10 +109,10 @@ export default function LoginForm() {
             <div className="mx-4 text-xl">or</div>
             <div className="border-t border-black w-1/2"></div>
           </div>
-          <div className="mt-2 mb-5 flex items-center justify-center">
+          <div className="mt-2 mb-5 flex items-center bg-lightQuartze justify-center">
             <Link href="http://localhost:8000/auth/42/">
               <Image
-                className="pointer-events-hover rounded-md hover:opacity-80"
+                className="pointer-events-hover opacity-90 rounded-md hover:opacity-80"
                 src="/42.jpg"
                 width={40}
                 height={40}
@@ -131,7 +130,7 @@ function LoginButton() {
  const { pending } = useFormStatus();
 
  return (
-    <button className="mt-5 ml-6 w-4/5 bg-signin border border-gray-500 rounded-lg px-4 py-[7px] flex items-center justify-between" aria-disabled={pending}>
+    <button className="mt-5 ml-6 w-4/5 bg-button border border-gray-500 rounded-lg px-4 py-[7px] flex items-center justify-between" aria-disabled={pending}>
       <span className="text-white items-center">Log in</span>
       <ArrowRightIcon className="h-4 w-4 text-white" />
     </button>

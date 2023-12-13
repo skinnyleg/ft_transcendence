@@ -28,9 +28,9 @@ const imgObj: Record<string, string> = {
 
 const Achievements = ({doneAchievements, notDoneAchievements}: AchievementsDataProps)=> {
   return (
-    <div className="bg-hardblue p-5 rounded-md lg:col-span-2 col-span-1 lg:col-start-4 lg:col-end-6 md:row-start-4 md:row-end-5 lg:row-start-1 lg:row-end-2 w-full h-[200px] lg:h-[300px] shadow-md">
-      <h4 className="text-xl font-bold mb-0">ACHIEVEMENTS</h4>
-      <div className="flex-col space-y-4 p-4 overflow-y-scroll h-[150px] lg:h-5/6 w-full styled-scrollbar">
+    <div className="bg-accents p-5 rounded-md lg:col-span-2 col-span-1 lg:col-start-4 lg:col-end-6 md:row-start-4 md:row-end-5 lg:row-start-1 lg:row-end-2 w-full h-[350px] xl:h-[370px] lg:h-[300px] shadow-md">
+      <h4 className="text-xl font-bold text-white mb-0">ACHIEVEMENTS</h4> 
+      <div className="flex-col space-y-4 p-4 overflow-y-scroll h-5/6 lg:h-5/6 w-full styled-scrollbar">
       {/* Not done achievements */}
       {notDoneAchievements?.map((notdoneAchievement) => (
           <div key={notdoneAchievement.id} className="bg-white flex-none p-4 border rounded flex items-center py-2">

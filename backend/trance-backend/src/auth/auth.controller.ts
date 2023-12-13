@@ -33,9 +33,9 @@ export class AuthController {
 			response.redirect(`${process.env.FrontendHost}/Qr`);
 			return;
 		}
-		const token = await this.authService.createToken(request.user.id, request.user.login, TOKENEXP, TOKENSECRET)
+		const token = await this.authService.createToken(request.user.id, request.user.nickname, TOKENEXP, TOKENSECRET)
 		response.cookie('token', token, {signed: true})
-		const refresh = await this.authService.createToken(request.user.id, request.user.login, REFRESHEXP, REFRESHSECRET)
+		const refresh = await this.authService.createToken(request.user.id, request.user.nickname, REFRESHEXP, REFRESHSECRET)
 		response.cookie('refresh', refresh, {signed: true})
 		response.redirect(`${process.env.FrontendHost}/Dashboard`);
 		// response.status(200).json(token);
@@ -49,15 +49,16 @@ export class AuthController {
 	}
 
 
+	@UseGuards(JwtAuthGuard)
 	@Post('CheckToken')
 	CheckToken(@Body() payload: tokenDto, @Req() req, @Res() res)
 	{
 		if (req.signedCookies && 'token' in req.signedCookies) {
 		  if (req.signedCookies.token.length > 0) {
-				if (req.signedCookies.token === payload.token)
-				{
-					res.status(200).json(payload.token);
-				}
+			if (payload.token === "")
+				res.status(200).json(req.signedCookies.token);
+			else if (req.signedCookies.token === payload.token)
+				res.status(200).json(payload.token);
 		  }
 		}
 		throw new UnauthorizedException('not allowed');

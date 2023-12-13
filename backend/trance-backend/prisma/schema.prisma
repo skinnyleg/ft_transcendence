@@ -38,7 +38,6 @@ enum AchievementStatus {
 model User {
   id            String     @id @default(uuid())
   intraId       Int        @unique
-  login         String     @unique
   password      String
   profilePic    String
   BackgroundPic String
