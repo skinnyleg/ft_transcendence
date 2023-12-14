@@ -6,7 +6,11 @@ import { Record } from '@prisma/client/runtime/library';
 import { RequestActionDto } from './Dto/requestDto';
 import { validateAndSendError } from 'src/utils/validateInputWebsocket';
 
-@WebSocketGateway({ namespace: 'friendsGateway', cors: true })
+@WebSocketGateway({ namespace: 'friendsGateway', cors: {
+    origin: "http://localhost:3000",
+    allowedHeaders: ["token"],
+    credentials: true
+  }})
 export class FriendsGateway {
   constructor(private readonly friendsService: FriendsService) {}
   @WebSocketServer()
@@ -25,7 +29,7 @@ export class FriendsGateway {
 		if (verify.valid == true)
 			this.friendsService.sendWebSocketError(client, verify.error, false);
 		else
-			await this.friendsService.sendRequest(client, verify.input.userId)
+			await this.friendsService.sendRequest(client, verify.input.userId);
 	}
 
 	@SubscribeMessage('remove-friend')
