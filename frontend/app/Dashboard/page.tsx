@@ -6,12 +6,12 @@ import React, { useState, useEffect } from 'react';
 import PowerUps from '../ui/PowerUps';
 import PlayButton from '../ui/PlayButton';
 import axios from 'axios';
-import withAuth from '../withAuth';
 import FriendsList from '../ui/FriendList';
 import { FaRobot } from "react-icons/fa";
 
 import {dashboardData, profileData} from '../interfaces/interfaces';
 import { QuestionMarkCircleIcon, QueueListIcon } from '@heroicons/react/24/outline';
+import withAuth from '../withAuth';
 
 
 function Dashboard() {
@@ -58,8 +58,6 @@ function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-5 lg:grid-rows-3 gap-4 w-full h-full mt-4 md:grid-row-5 grid-row-5">
         
           <div className="relative p-20 rounded-md col-span-1 lg:col-span-3 h-[200px] md:h-[300px] xl:h-[370px] lg:w-full shadow-md" style={{backgroundImage: `url(${theme})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
-            {/* todo: add Bot/Quee button */}
-
             <FaRobot className="text-accents w-8 h-8 absolute right-5 top-5"/>
             <QueueListIcon className="text-accents w-8 h-8 absolute right-12 mr-2 top-5" />
             <PlayButton theme = {theme} PowerUp={powerup}/>
@@ -80,4 +78,4 @@ function Dashboard() {
   );
 }
 
-export default withAuth(Dashboard);
+export default (Dashboard);

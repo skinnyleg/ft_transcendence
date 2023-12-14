@@ -171,7 +171,7 @@ function NavBar ({handleShowMenu}: NavBarProps)
             hover:text-accents`, {
           'text-accents'  : currentPath === "/Leaderboard",
           })}>
-            <ArrowLeftOnRectangleIcon className="w-10 mr-4 xl:w-[80px]" />
+            <ArrowLeftOnRectangleIcon className="w-10 mr-4 xl:w-[80px] lg:w-[50px]" />
           </Link>
         </div>
       </div>
@@ -180,4 +180,4 @@ function NavBar ({handleShowMenu}: NavBarProps)
   );
 }
 
-export default (NavBar);
+export default withAuth(NavBar);

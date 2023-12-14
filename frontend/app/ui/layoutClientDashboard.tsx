@@ -10,11 +10,10 @@ export default function LayoutClientDashboard({
   }) {
 
     const [showMenu, setShowMenu] = useState(false);
-
     const handleShowMenu = (showMenu: boolean) => {
         setShowMenu(showMenu);
     }
-
+    
     return (
         <>
             <div className={`flex-none md:w-10 w-20 lg:w-20`}>

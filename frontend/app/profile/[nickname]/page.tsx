@@ -6,7 +6,6 @@ import { profileData } from "@/app/interfaces/interfaces";
 import { ArrowTrendingUpIcon, TrophyIcon,  HandThumbUpIcon, UserPlusIcon, HandRaisedIcon, HandThumbDownIcon } from "@heroicons/react/20/solid";
 import { ArrowTrendingDownIcon,  ChatBubbleLeftEllipsisIcon, UserMinusIcon, WalletIcon } from "@heroicons/react/24/outline";
 import { FaUserFriends } from "react-icons/fa";
-import withAuth from "@/app/withAuth";
 import ProgressBar from "@/app/ui/progressBar";
 import Conditional from "@/app/ui/Conditional";
 
@@ -177,4 +176,4 @@ const Profile = () => {
 
 }
 
-export default withAuth (Profile);
+export default  (Profile);

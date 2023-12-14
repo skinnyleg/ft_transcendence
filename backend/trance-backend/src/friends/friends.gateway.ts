@@ -14,7 +14,8 @@ export class FriendsGateway {
 
 
 	async handleConnection(client: Socket) {
-		await this.friendsService.saveUser(client)
+		await this.friendsService.saveUser(client);
+		console.log(client.id);
 	}
 
 	@SubscribeMessage('add-friend')

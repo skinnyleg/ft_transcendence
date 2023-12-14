@@ -1,7 +1,7 @@
 'use client'
 
 import TopBar from "../ui/top";
-import withAuth from "../withAuth"
+// import withAuth from "../withAuth"
 
 const settings = () => {
 
@@ -15,4 +15,4 @@ const settings = () => {
     );
 }
 
-export default withAuth(settings);
+export default (settings);

@@ -3,7 +3,7 @@ import { NotificationsData } from "@/app/interfaces/interfaces"
 import { useEffect, useState } from 'react';
 import io from 'socket.io-client';
 import clsx from "clsx";
-
+import { Cookies } from "react-cookie";
 // interface NotificationsProps  {
 //     handleNotification: (NotificationsData: NotificationsData) => void;
 // }
@@ -16,7 +16,20 @@ const Notifications = () => {
     const [notificationNumber, setNotificationNumber] = useState(0);
     const [newNotification, setNewNotification] = useState<NotificationsData | null>(null);
     const [notifPopUP, setNotifPopUp] = useState <NotificationsData | null>(null);
-    const socket = io("http://localhost:8000");
+    const cookies = new Cookies();
+    const token = cookies.get('token');
+    const socket = io("http://localhost:8000/friendsGateway", {
+        withCredentials: true,
+        transportOptions: {
+          polling: {
+            extraHeaders: {
+              "token": token
+            }
+          }
+        }
+      });
+
+    
 
     useEffect( () => {
         const notif = async() => {
@@ -51,20 +64,21 @@ const Notifications = () => {
         
     }
 
-    useEffect(() => {
+    // useEffect(() => {
 
-        socket.on("notification", (notif) => {
-            console.log(notif);
-            setNotifSent(notif);
-        });
+    //     socket.on("notification", (notif) => {
+    //         console.log(notif);
+    //         setNotifSent(notif);
+    //     });
 
-        socket.on("notifHistory", (data: NotificationsData) => {
-            setNotifications((prevNotifications) => {
-                return [...prevNotifications, data];
-            });
-            handleNewNotification(data);
-        });
-    }, []);
+    //     socket.on("notifHistory", (data: NotificationsData) => {
+    //         console.log(socket.connected);
+    //         setNotifications((prevNotifications) => {
+    //             return [...prevNotifications, data];
+    //         });
+    //         handleNewNotification(data);
+    //     });
+    // }, []);
 
     return (
         <div className="notifications relative">

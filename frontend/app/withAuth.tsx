@@ -7,9 +7,9 @@ import { withCookies, Cookies } from 'react-cookie';
 
 
 const withAuth = (WrappedComponent: any) => {
-  const WithAuth = (props: any) => {
+  const WithAuth = async (props: any) => {
   const router = useRouter();
-  // const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
     async function checkAuth()  {
       try {
@@ -20,26 +20,29 @@ const withAuth = (WrappedComponent: any) => {
           method: "POST",
           credentials: "include",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ token: (localStorage.getItem('token')) ? localStorage.getItem('token') : ""})
+          body: JSON.stringify({ token: (token) ? token : ""})
         });
+        if (res.status === 200){
+          console.log("lops")
+          setLoading(false);
+        }
         if (res.status === 401) {
           // Redirect to the login page
-          router.replace('/', undefined);
-          return null;
+          return false;
         } else {
           const auth = await res.json();
           if (!auth) {
             // Redirect to the login page
-            router.replace('/', undefined);
+            return false;
           }
         }
       } catch (error) {
-        router.replace('/', undefined);
+        return false;
         console.error("Error during authentication check:", error);
       }
     };
-    checkAuth();
-
+    const de = await checkAuth();
+    console.log("lol", de);
     return <WrappedComponent {...props} />;
   };
 

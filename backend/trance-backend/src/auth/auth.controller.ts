@@ -62,6 +62,7 @@ export class AuthController {
 		  }
 		}
 		throw new UnauthorizedException('not allowed');
+
 	}
 
 
