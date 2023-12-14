@@ -9,7 +9,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import withAuth from "../withAuth";
 import {responseData} from "@/app/interfaces/interfaces";
 import { useDebouncedCallback } from "use-debounce";
 import { BellAlertIcon } from "@heroicons/react/20/solid";
@@ -180,4 +179,4 @@ function NavBar ({handleShowMenu}: NavBarProps)
   );
 }
 
-export default withAuth(NavBar);
+export default (NavBar);

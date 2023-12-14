@@ -11,7 +11,6 @@ import { FaRobot } from "react-icons/fa";
 
 import {dashboardData, profileData} from '../interfaces/interfaces';
 import { QuestionMarkCircleIcon, QueueListIcon } from '@heroicons/react/24/outline';
-import withAuth from '../withAuth';
 
 
 function Dashboard() {
