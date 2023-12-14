@@ -6,7 +6,7 @@ import { Record } from '@prisma/client/runtime/library';
 import { RequestActionDto } from './Dto/requestDto';
 import { validateAndSendError } from 'src/utils/validateInputWebsocket';
 
-@WebSocketGateway({ namespace: 'friendsGateway' })
+@WebSocketGateway({ namespace: 'friendsGateway', cors: true })
 export class FriendsGateway {
   constructor(private readonly friendsService: FriendsService) {}
   @WebSocketServer()
