@@ -54,6 +54,7 @@ model User {
   setPass       Boolean    @default(false)
   Wins          Int        @default(0)
   Losses        Int        @default(0)
+  FirstLogin    Boolean    @default(true)
 
   userRequests Request[]
   channels     Channel[]

@@ -34,9 +34,11 @@ export class AuthController {
 			return;
 		}
 		const token = await this.authService.createToken(request.user.id, request.user.nickname, TOKENEXP, TOKENSECRET)
-		response.cookie('token', token, {signed: true})
 		const refresh = await this.authService.createToken(request.user.id, request.user.nickname, REFRESHEXP, REFRESHSECRET)
-		response.cookie('refresh', refresh, {signed: true})
+		response.cookie('token', token, {signed: true, maxAge: TOKENEXP * 1000})
+		response.cookie('refresh', refresh, {signed: true, maxAge: REFRESHEXP * 1000})
+		if (request.user.FirstLogin === true)
+			response.redirect(`${process.env.FrontendHost}/settings`);
 		response.redirect(`${process.env.FrontendHost}/Dashboard`);
 		// response.status(200).json(token);
 	}

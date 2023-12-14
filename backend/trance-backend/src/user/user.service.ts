@@ -357,7 +357,6 @@ export class UserService {
 		if (!request)
 			throw new InternalServerErrorException('Can\'t generate a request');
 		return (request.id)
-
 	}
 
 	async getNickById(id: string)
