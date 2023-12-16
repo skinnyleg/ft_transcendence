@@ -62,15 +62,6 @@ export class AuthController {
 	@Get('CheckToken')
 	CheckToken(@Res() res)
 	{
-		// if (req.signedCookies && 'token' in req.signedCookies) {
-		//   if (req.signedCookies.token.length > 0) {
-		// 	if (payload.token === "")
-		// 		res.status(200).json(req.signedCookies.token);
-		// 	else if (req.signedCookies.token === payload.token)
-		// 		res.status(200).json(payload.token);
-		//   }
-		// }
-		// throw new UnauthorizedException('not allowed')
 		res.status(200).send({message: "true"})
 	}
 

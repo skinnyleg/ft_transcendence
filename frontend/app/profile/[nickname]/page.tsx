@@ -103,16 +103,16 @@ const Profile = () => {
     <main className="flex flex-col h-screen">
         <TopBar />
         <div className="grid grid-cols-4 xl:mt-5 lg:auto-rows-min xl:gap-5 gap-4 w-full mt-4 md:grid-row-6 grid-row-6 ">
-            <div className="bg-white relative col-start-1 col-end-5 xl:h-[400px] h-[400px] row-start-1 row-end-2 w-full w-full shadow-md rounded-xl">
+            <div className="bg-white relative col-start-1 col-end-5 xl:h-[400px] h-[400px] row-start-1 row-end-2 w-full  shadow-md rounded-xl">
                 <div className="flex flex-col rounded-xl  lg:h-[400px]" style={{backgroundImage: `url(${profileData?.userData.BackgroundPic})`, backgroundSize: 'cover', backgroundPosition: 'center'}}>
                     <h1 className="pt-20 mt-10 p-5 text-5xl text-white text-bold-900">{profileData?.userData.nickname}</h1>
                 </div>
                 <div  className="rounded-full lg:w-[80px] w-[60px] xl:h-[150px] xl:w-[150px] lg:h-22 h-15 absolute bottom-0 left-0 transform  xl:translate-x-[10px] xl:translate-y-[55px] translate-x-[8px] translate-y-[32px] border-2">
-                    <img src={profileData?.userData.profilePic} alt="profile Picture" className="rounded-full lg:w-20 lg:h-20 xl:w-[150px] xl:h-[150px] w-15 h-15 rounded-full" />
+                    <img src={profileData?.userData.profilePic} alt="profile Picture" className="lg:w-20 lg:h-20 xl:w-[150px] xl:h-[150px] w-15 h-15 rounded-full" />
                 </div>
             </div>
             <div className="bg-lightblue lg:col-start-2 lg:col-end-4 w-full lg:row-start-2 lg:mt-0 mt-10 lg:row-end-3 col-start-1 col-end-4 row-start-3 row-end-4
-            h-[30px] xl:h-[40px] rounded-2xl lg:w-[100%] w-full flex shadow-md">
+            h-[30px] xl:h-[40px] rounded-2xl lg:w-[100%] flex shadow-md">
                 <ProgressBar level={level} />
             </div>
             <div className="relative col-start-4 col-end-5 mt-10 mb-1 lg:mt-0 lg:row-start-2 xl:h-[70px] h-[30px] lg:row-end-3 row-start-3 row-end-4 flex w-full">
@@ -141,14 +141,14 @@ const Profile = () => {
                 <HandThumbDownIcon width={150} height={100} className="text-white text-2xl xl:mt-5"/>
                 <span className="center text-black text-bold xl:mt-10 mt-5 lg:mr-20 mr-5 ml-2 lg:text-5xl text-3xl" >2</span>
             </div>
-            <div className="bg-accents overflow-y-scroll overflow-y-auto styled-scrollbar xl:h-[500px] lg:col-span-2 col-span-4 lg:row-start-4 lg:row-end-5 row-start-5 row-end-6 w-full h-[500px] shadow-md rounded-xl">
+            <div className="bg-accents overflow-y-scroll styled-scrollbar xl:h-[500px] lg:col-span-2 col-span-4 lg:row-start-4 lg:row-end-5 row-start-5 row-end-6 w-full h-[500px] shadow-md rounded-xl">
                 <div className="lg:w-[80%] xl:w-[90%] w-[98%] mt-5 h-full mx-auto">
                     {matchHistory.map((match) => {
                         return (
                         <div key={match.id} className="flex flex-col border border-lightQuartze rounded-xl w-full mt-2 xl:mt-4">
                             <div className="flex flex-row justify-between">
                                 <div className="flex flex-row m-3 ">
-                                    <img src="/yo.jpg" alt="profilePic" className="mt-2 rounded-full w-10 h-10 xl:w-15 xl:w-15 rounded-full" />
+                                    <img src="/yo.jpg" alt="profilePic" className="mt-2 w-10 h-10 xl:w-15 xl:w-15 rounded-full" />
                                     <h2 className="text-bold m-1 lg:ml-5 md:ml-5 ml-1 text-white lg:text-lg xl:text-2xl md:text-lg text-sm ">{match.winner.nickname}</h2>
                                 </div>
                                 <div className="flex flex-col m-0 ">
@@ -160,7 +160,7 @@ const Profile = () => {
                                     </div>
                                 </div>
                                 <div className="flex flex-row-reverse m-3"> 
-                                    <img src="/yo1.jpg" alt="profilePic" className="rounded-full mt-2 w-10 h-10 xl:w-15 xl:w-15 rounded-full" />
+                                    <img src="/yo1.jpg" alt="profilePic" className="mt-2 w-10 h-10 xl:w-15 xl:w-15 rounded-full" />
                                     <h2 className="text-bold m-2 lg:mr-5 md:mr-5 mr-1 lg:text-lg xl:text-2xl md:text-lg text-sm text-white" >{match.loser.nickname}</h2>
                                 </div>
                             </div>

@@ -85,8 +85,8 @@ const Notifications = () => {
 
     return (
         <div className="notifications relative">
-            <BellAlertIcon onClick={()=>{setShowNotifications(!showNotifications)}} className= "h-[55px] hidden lg:flex w-[55px] p-2 bg-gray-100 text-accents rounded-full"/>
-            <span className={clsx(`absolute text-s text-white font-bold rounded-full h-5 w-5 flex items-center md:hidden hidden xl:flex lg:flex justify-center bottom-0 right-0 transform translate-x-[8px]`
+            <BellAlertIcon onClick={()=>{setShowNotifications(!showNotifications)}} className= "h-[60px] hidden lg:flex w-[60px] p-2 bg-gray-100 text-accents rounded-full"/>
+            <span className={clsx(`absolute text-s text-white font-bold rounded-full h-5 w-5 flex items-center md:hidden  xl:flex lg:flex justify-center bottom-0 right-0 transform translate-x-[8px]`
             , {'hidden' : showNotifications},
             {
                 'bg-red-500 ' : (notificationNumber > 0),
