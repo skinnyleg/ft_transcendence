@@ -60,9 +60,18 @@ export class AuthController {
 
 	@UseGuards(JwtAuthGuard)
 	@Get('CheckToken')
-	CheckToken(@Req() req, @Res() res)
+	CheckToken(@Res() res)
 	{
-		res.status(200).send({mssg: "sdj"})
+		// if (req.signedCookies && 'token' in req.signedCookies) {
+		//   if (req.signedCookies.token.length > 0) {
+		// 	if (payload.token === "")
+		// 		res.status(200).json(req.signedCookies.token);
+		// 	else if (req.signedCookies.token === payload.token)
+		// 		res.status(200).json(payload.token);
+		//   }
+		// }
+		// throw new UnauthorizedException('not allowed')
+		res.status(200).send({message: "true"})
 	}
 
 

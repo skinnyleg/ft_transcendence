@@ -7,10 +7,11 @@ import { RequestActionDto } from './Dto/requestDto';
 import { validateAndSendError } from 'src/utils/validateInputWebsocket';
 
 @WebSocketGateway({ namespace: 'friendsGateway', cors: {
-    origin: "http://localhost:3000",
-    allowedHeaders: ["token"],
-    credentials: true
-  }})
+		origin: process.env.FrontendHost,
+		allowedHeaders: ["token"],
+		credentials: true
+	}
+})
 export class FriendsGateway {
   constructor(private readonly friendsService: FriendsService) {}
   @WebSocketServer()
