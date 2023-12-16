@@ -10,6 +10,8 @@ import { DmOutils } from '../dm/dm.outils';
 import { creatMessageCh } from '../dto/creat-message.dto';
 import { ChannelOutils } from '../channel/outils';
 import { DmService } from '../dm/dm.service';
+import { joinChannelDto, responseJoinChannelDto } from '../dto/joinChannelDto.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 
 @WebSocketGateway({ namespace: 'chatGateway' })
@@ -22,6 +24,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		private Outils: ChannelOutils,
 		private DmOutils: DmOutils,
 		private DmService: DmService,
+		private readonly prisma: PrismaService,
 	){}
 
 	@WebSocketServer()
@@ -45,6 +48,81 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	{
 		console.log(`------ disconnect: ${client.data.user.nickname} ------`);
 		client.disconnect();
+	}
+
+	@SubscribeMessage('creatChannel')
+	  async	handleChannelCreated(@MessageBody() data: creatChannelDto, @ConnectedSocket() client: Socket)
+	{
+		try
+		{
+			// add a field for the picture of channel
+			const owner = client.data.user.nickname;
+			data.type = data.type.toUpperCase();
+			if (data.name.length > 10) {
+				throw new BadRequestException(`The name of channel should be less than or equal 10`);
+			}
+			if (data.type !== 'PROTECTED' && data.type !== 'PUBLIC' && data.type !== 'PRIVATE') {
+				throw new BadRequestException(`Channel type ${data.type} unknow.`);
+			}
+			const newChannel = await this.channelService.creatChannel(data, owner);
+			console.log(`${owner} creat new channel: `, newChannel);
+			client.emit('channelCreated', newChannel);
+		}
+		catch (error)
+		{
+			console.error('Error creating channel:', error.message);
+			client.emit('Failed', { error: 'Failed to create a new channel.' });
+		}
+	}
+
+	@SubscribeMessage('joinChannel')
+	async	handleAddUser2Channel(@MessageBody() data: joinChannelDto,  @ConnectedSocket() client: Socket)
+	{
+		try
+		{
+			const {channelName, password} = data;
+			const user = client.data.user.nickname;
+			const updateChannelUsers = await this.channelService.joinChannel(channelName, user, password);
+			if (updateChannelUsers[0] === 'PRIVATE') {
+				this.server.to(updateChannelUsers[1]).emit('joinChannelRequest', { channelName, user });
+				return;
+			}
+			else {
+				client.emit('userAdded2Channel', updateChannelUsers);
+			}
+		}
+		catch (error)
+		{
+			client.emit('Failed', error.message);
+		}
+	}
+
+	@SubscribeMessage('responseJoinChannel')
+	async	handleResponseJoinChannel(@MessageBody() data: responseJoinChannelDto,  @ConnectedSocket() client: Socket)
+	{
+		try
+		{
+			const {channelName, user, value} = data;
+			if (value) {
+				await this.prisma.channel.update({
+					where: { name: channelName },
+					data: {
+						users: {
+							connect: { nickname: user },
+						},
+					},
+		
+				});
+				client.emit('userAdded2Channel', `Your request to join channel ${channelName} accepted`);
+			}
+			else {
+				client.emit('userAdded2Channel', `Your request to join channel ${channelName} rejected`);
+			}
+		}
+		catch (error)
+		{
+			client.emit('Failed', error.message);
+		}
 	}
 
 	@SubscribeMessage('sendMessageCH')
@@ -80,8 +158,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@SubscribeMessage('sendMessageDM')
 	async	handleSendMessageDm(@MessageBody() data: any, @ConnectedSocket() client: Socket)
 	{
-		// check blocker users
 		try
+		// check if i'm blocked by this users
 		{
 			let dmId = '';
 			const {receiver, content} = data;
@@ -105,56 +183,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			client.emit('Faild', 'message faild to send dm');
 		}
 	}
-
+	
 
 	
-	@SubscribeMessage('creatChannel')
-  	async	handleChannelCreated(@MessageBody() data: creatChannelDto, @ConnectedSocket() client: Socket)
-	{
-    	try
-		{
-			const owner = client.data.user.nickname;
-			data.type = data.type.toUpperCase();
-			if (data.name.length > 10) {
-				throw new BadRequestException(`The name of channel should be less than or equal 10`);
-			}
-			if (data.type !== 'PROTECTED' && data.type !== 'PUBLIC' && data.type !== 'PRIVATE') {
-				throw new BadRequestException(`Channel type : ${data.type} unknow.`);
-			}
-			const newChannel = await this.channelService.creatChannel(data, owner);
-			console.log(`${owner} creat new channel: `, newChannel);
-			client.emit('channelCreated', newChannel);
-		}
-    	catch (error)
-    	{
-      		console.error('Error creating channel:', error.message);
-			client.emit('Failed', { error: 'Failed to create a new channel.' });
-    	}
-	}
-
-	@SubscribeMessage('getUserChannels')
-	async handleGetUserChannels(@MessageBody() nickname: string, @ConnectedSocket() client: Socket)
-	{
-		try
-		{
-			const updatedChannels = await this.channelService.getUserChannels(client.data.user.nickname);
-			client.emit('UserChannels', updatedChannels);
-		}
-		catch(error)
-		{
-			if (error instanceof NotFoundException) {
-				console.error('Resource not found.');
-            }
-			else if (error instanceof UnauthorizedException) {
-				console.error('Unauthorized access.');
-            }
-			else {
-				console.error('An unexpected error occurred:', error.message);
-            }
-			client.emit('Failed', { error: 'Failed to get channels.' });
-		}
-	}
-
 	@SubscribeMessage('leaveChannel')
 	async	handleLeaveChannel(@MessageBody() channelName: string, @ConnectedSocket() client: Socket)
 	{
@@ -182,7 +213,24 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			client.emit('Failed', { error: 'Failed to leave channel.' });
 		}
 	}
-
+	
+	
+	@SubscribeMessage('kickUser')
+	async	handleKickUser(@MessageBody() data: any, @ConnectedSocket() client: Socket)
+	{
+		try
+		{
+			const {channelName, user2kick} = data;
+			await this.channelService.kickUser(channelName, client.data.user.nickname, user2kick);
+			client.emit('kickUserDone', {msg: `the ${user2kick} is kicked from the channel by ${client.data.user.nickname}`});
+		}
+		catch(error)
+		{
+			console.error('error in kick user');
+			client.emit('Failed', { error: 'Failed to kick that user.' });
+		}
+	}
+	
 	@SubscribeMessage('changeOwner')
 	async	handleChangeOwner(@MessageBody() data: changeOwner, @ConnectedSocket() client: Socket)
 	{
@@ -199,33 +247,17 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			}
 			else if (error instanceof BadRequestException) {
 				console.error('error in client side from changeOwner event');
-            }
+			}
 			else if (error instanceof UnauthorizedException) {
 				console.error('Unauthorized access.');
-            }
+			}
 			else {
 				console.error('An unexpected error occurred:', error.message);
-            }
+			}
 			client.emit('Failed', { error: 'Failed to change owner of channel.' });
 		}
 	}
-
-	@SubscribeMessage('kickUser')
-	async	handleKickUser(@MessageBody() data: any, @ConnectedSocket() client: Socket)
-	{
-		try
-		{
-			const {channelName, user2kick} = data;
-			await this.channelService.kickUser(channelName, client.data.user.nickname, user2kick);
-			client.emit('kickUserDone', {msg: `the ${user2kick} is kicked from the channel by ${client.data.user.nickname}`});
-		}
-		catch(error)
-		{
-			console.error('error in kick user');
-			client.emit('Failed', { error: 'Failed to kick that user.' });
-		}
-	}
-
+	
 	@SubscribeMessage('banUser')
 	async	handleBanUser(@MessageBody() data: any, @ConnectedSocket() client: Socket)
 	{
@@ -241,7 +273,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			client.emit('Failed', { error: 'Failed to ban that user.' });
 		}
 	}
-
+	
 	@SubscribeMessage('muteUser')
 	async	handleMuteUser(@MessageBody() data: any, @ConnectedSocket() client: Socket)
 	{
@@ -271,7 +303,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			client.emit('Failed', { error: 'Failed to mute that user.' });
 		}
 	}
-
+	
 	@SubscribeMessage('changeTypeOfChannel')
 	async	handleChangeTypeOfChannel(@MessageBody() data: any, @ConnectedSocket() client: Socket)
 	{
@@ -287,7 +319,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			client.emit('Failed', `the channel is Failed to change type.`);
 		}
 	}
-
+	
 	@SubscribeMessage('changeNameOfChannel')
 	async	handleChangeNameOfChannel(@MessageBody() data: any, @ConnectedSocket() client: Socket)
 	{
@@ -302,7 +334,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			client.emit('Failed', `the channel is Failed to change name.`);
 		}
 	}
-
+	
 	@SubscribeMessage('changePassOfChannel')
 	async	handleChangePassOfChannel(@MessageBody() data: any, @ConnectedSocket() client: Socket)
 	{
@@ -317,4 +349,34 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			client.emit('Failed', `the channel is Failed to change password.`);
 		}
 	}
+
+	// add event to change picture of channel by owner.
+	//add event to get channel users and admins and owner.
+
+	@SubscribeMessage('getUserChannels')
+	async handleGetUserChannels(@MessageBody() nickname: string, @ConnectedSocket() client: Socket)
+	{
+		try
+		{
+			const updatedChannels = await this.channelService.getUserChannels(client.data.user.nickname);
+			client.emit('UserChannels', updatedChannels);
+		}
+		catch(error)
+		{
+			if (error instanceof NotFoundException) {
+				console.error('Resource not found.');
+			}
+			else if (error instanceof UnauthorizedException) {
+				console.error('Unauthorized access.');
+			}
+			else {
+				console.error('An unexpected error occurred:', error.message);
+			}
+			client.emit('Failed', { error: 'Failed to get channels.' });
+		}
+	}
+
+	// add event for search for a all channels by the user
+	// search for dm for all user friends
+	// add event to search for a user in the channel users
 }

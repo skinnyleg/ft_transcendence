@@ -92,6 +92,17 @@ export class ChannelOutils {
         return true;
     }
     //-------------------------------------------------------------------------------//
+    async   isChannelExist(name: string): Promise<boolean>
+    {
+        const channel = await this.prisma.channel.findUnique({
+            where: { name },
+        });
+        if (!channel) {
+            return false;
+        }
+        return true;
+    }
+    //-------------------------------------------------------------------------------//
     async   getChannelOwner(channelName: string): Promise<string | null>
     {
         const channel = await this.findChannelByName(channelName);
@@ -112,12 +123,23 @@ export class ChannelOutils {
         return true;
     }
     //-------------------------------------------------------------------------------//
-    async   getChannelIdByName(channelName: string):Promise<string>
+    async   getChannelIdByName(channelName: string):Promise<string | null>
     {
         const channel = await this.findChannelByName(channelName);
-        return channel.id;
+        return channel?.id || null;
     }
     //-------------------------------------------------------------------------------//
+    async   getChannelType(channelName: string):Promise<string | null>
+    {
+        const channel = await this.findChannelByName(channelName);
+        return channel?.type || null;
+    }
+    //-------------------------------------------------------------------------------//
+    async   getChannelPass(channelName: string):Promise<string | null>
+    {
+        const channel = await this.findChannelByName(channelName);
+        return channel?.password || null;
+    }
     //-------------------------------------------------------------------------------//
     async   getBlacklist(channelName: string, user: string):Promise<Blacklist | null>
     {

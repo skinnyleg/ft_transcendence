@@ -48,9 +48,6 @@ export class ChannelService {
         // befor creat chnnel check if the name exist befor
         const {name, type, password} = creteChannelDto;
         const type_: Types = type as Types;
-        // console.log('type: ', type);
-        // console.log('password: ', password);
-        // console.log('password length: ', password.length);
         if (type === 'PROTECTED' && (!password || password.length === 0)) {
             throw new BadRequestException('A password must be set for protected channel.');
         }
@@ -111,6 +108,42 @@ export class ChannelService {
         }
         return updatedChannels.channels || [];
     }
+
+    async   joinChannel(channelName: string, username: string, password?: string)
+    {
+        const isChannelExist = await this.outils.isChannelExist(channelName);
+        if (!isChannelExist) {
+            throw new NotFoundException(`Channel with name ${channelName} not exist`);
+        }
+        const isUserInChannel =  await this.outils.isUserInChannel(channelName, username);
+        if (isUserInChannel) {
+            throw new UnauthorizedException(`${username} is already a member of ${channelName}.`);
+        }
+        const isClean = await this.outils.isUserInBlacklist(channelName, username);
+        if(isClean) {
+            throw new UnauthorizedException(`${username} is blacklisted in ${channelName}.`);
+        }
+        // busness logic
+        const type = await this.outils.getChannelType(channelName);
+        if (type === 'PROTECTED' && (await this.outils.getChannelPass(channelName) !== password)) {
+            throw new UnauthorizedException('Password incorrect for this channel.');
+        }
+        if (type === 'PRIVATE') {
+            const owner = await this.outils.getChannelOwner(channelName);
+            //send an demande to the owner of channel
+            return ['PRIVATE', owner];
+        }
+        await this.prisma.channel.update({
+            where: { name: channelName },
+            data: {
+                users: {
+                    connect: { nickname: username },
+                },
+            },
+
+        });
+        return ['Done'];
+    } 
 
     async   leaveChannel(channelName: string, nickname: string)
     {
