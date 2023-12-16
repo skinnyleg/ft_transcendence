@@ -1,47 +1,39 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { Channel, User, Types, Message, Dm } from '@prisma/client';
+import { ValidationError, validate } from "class-validator";
 
 
 @Injectable()
 export class DmOutils {
+	constructor(
+		private readonly prisma: PrismaService,
+		){}
 
-    constructor(
-        private readonly prisma: PrismaService,
-    ){}
-
-    // private userSocket: Socke
-
-    async   getDmIdby2User(user1Id: string, user2Id: string):Promise<string | null>
+	async	getDmIdby2User(user1Id: string, user2Id: string):Promise<string | null>
     {
-        // console.log('into id dm');
-        // console.log(id1, id2);
-        // const sortedUserIds = [id1, id2].sort();
-        // const dm = await this.prisma.dm.findFirst({
-        //     where: {
-        //         AND: [
-        //             {members: {some: {id: sortedUserIds[0]}}},
-        //             {members: {some: {id: sortedUserIds[1]}}},
-        //         ],
-        //     },
-        // });
-        // if(!dm) {
-        //     return null;
-        // }
-        // console.log('id dm: ', dm.id);
-        // return dm.id;
-        const dm: Dm | null = await this.prisma.dm.findFirst({
-            where: {
-              members: {
-                every: {
-                  id: {
-                    in: [user1Id, user2Id],
-                  },
-                },
+      const dm: Dm | null = await this.prisma.dm.findFirst({
+        where: {
+          members: {
+            every: {
+              id: {
+                in: [user1Id, user2Id],
               },
             },
-          });
-      
-          return dm ? dm.id : null;
+          },
+        },
+      });
+      return dm ? dm.id : null;
     }
+    
+    async	validateDtoData(data: any, dtoClass: any)
+	{
+		const ObjectDto = new dtoClass();
+		Object.assign(ObjectDto, data);
+		const ValidationError: ValidationError[] = await validate(ObjectDto);
+		if (ValidationError.length > 0) {
+			console.error('ValidationErrors: ', ValidationError);
+			throw new BadRequestException('Invalide data');
+		}
+	}
 }

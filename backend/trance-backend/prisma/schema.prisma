@@ -120,6 +120,7 @@ model FriendStatus {
 model Channel {
   id        String      @id @default(uuid())
   name      String      @unique
+  picture   String      @default("")
   owner     String
   type      Types
   password  String?

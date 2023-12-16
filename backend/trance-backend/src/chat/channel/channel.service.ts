@@ -7,6 +7,7 @@ import { ChannelOutils } from './outils';
 import { DateTime } from 'luxon';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { error } from 'console';
+import { elementAt } from 'rxjs';
 
 interface mutedUsers {
     name: string;
@@ -90,10 +91,7 @@ export class ChannelService {
     
     async   getUserChannels(nickname: string): Promise<Channel[]>
     {
-        // if (nickname !== client.data.user.nickname) {
-        //     throw new UnauthorizedException('Unauthorized access: you try to get channels of another user.');
-        // }
-        const updatedChannels = await this.prisma.user.findUnique({
+        const user = await this.prisma.user.findUnique({
             where: { nickname },
             select: {
                 channels: {
@@ -103,10 +101,10 @@ export class ChannelService {
                 },
             },
         });
-        if (!updatedChannels) {
-            throw new NotFoundException('Resource not found: in get user channels.');
+        if (!user) {
+            throw new NotFoundException(`${nickname} user not found.`);
         }
-        return updatedChannels.channels || [];
+        return user.channels || [];
     }
 
     async   joinChannel(channelName: string, username: string, password?: string)
@@ -347,7 +345,7 @@ export class ChannelService {
     }
 
     //change type of channel
-    async   changeTypeOfChannel(channelName: string, owner: string, newType: Types, password?: string)
+    async   changeChannelType(channelName: string, owner: string, newType: Types, password?: string)
     {
         const channel2update = await this.outils.findChannelByName(channelName);
         if (!channel2update) {
@@ -400,12 +398,15 @@ export class ChannelService {
         }
     }
 
-    async   changeNameOfChannel(channelName: string, owner: string, newName: string)
+    async   changeChannelName(channelName: string, owner: string, newName: string)
     {
         const channel2update = await this.outils.findChannelByName(channelName);
         if (!channel2update) {
-            console.error('error in changeNameOfChannel');
-            throw new error('error in changeNameOfChannel');
+            throw new NotFoundException(`${channelName} not found.`);
+        }
+        const channelOwner = await this.outils.getChannelOwner(channelName);
+        if (channelOwner !== owner) {
+            throw new UnauthorizedException('You are not allowed to make changes in this channel.');
         }
         const id: string = await this.outils.getChannelIdByName(channelName);
         await this.prisma.channel.update({
@@ -419,12 +420,15 @@ export class ChannelService {
         });
     }
 
-    async   changePassOfChannel(channelName: string, owner: string, newPassword: string)
+    async   changeChannelPass(channelName: string, owner: string, newPassword: string)
     {
         const channel2update = await this.outils.findChannelByName(channelName);
         if (!channel2update) {
-            console.error('error in changeNameOfChannel');
-            throw new error('error in changeNameOfChannel');
+            throw new NotFoundException(`${channelName} not found.`);
+        }
+        const channelOwner = await this.outils.getChannelOwner(channelName);
+        if (channelOwner !== owner) {
+            throw new UnauthorizedException('You are not allowed to make changes in this channel.');
         }
         if (channel2update.type === 'PROTECTED') {
             await this.prisma.channel.update({
@@ -436,8 +440,37 @@ export class ChannelService {
             });
         }
         else {
-            console.error('error in changePassOfChannel');
+            throw new BadRequestException('Change password only allowed in PROTECTED channels.');
         }
+    }
+
+    async   changeChannelPicture(channelName: string, newPicture: string, owner: string)
+    {
+        const channel2update = await this.outils.findChannelByName(channelName);
+        if (!channel2update) {
+            throw new NotFoundException(`${channelName} not found.`);
+        }
+        const channelOwner = await this.outils.getChannelOwner(channelName);
+        if (channelOwner !== owner) {
+            throw new UnauthorizedException('You are not allowed to make changes in this channel.');
+        }
+        await this.prisma.channel.update({
+            where: { name: channelName},
+            data: { picture: newPicture },
+        });
+    }
+
+    async   getChannelUsers(channelName: string): Promise<User[]>
+    {
+        const channel = await this.prisma.channel.findUnique({
+            where: { name: channelName },
+            include: { users: true },
+        });
+        if (!channel) {
+            throw new NotFoundException(`Channel with name ${channelName} not found.`);
+        }
+        const users: User[] = channel?.users || [];
+        return users;
     }
 
 }

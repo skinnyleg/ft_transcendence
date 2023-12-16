@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { DmOutils } from './dm.outils';
 import { User, Types, Message, Dm } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -41,5 +41,17 @@ export class DmService {
         });
         console.log('newmessage: ', newMessage);
         return newMessage;
+    }
+
+    async   getUserDms(user: string): Promise<Dm[] | []>
+    {
+        const findUser = await this.prisma.user.findUnique({
+            where: {nickname: user},
+            select: { Dm: true },
+        });
+        if (!findUser) {
+            throw new NotFoundException(`${user} user not fout.`);
+        }
+       return findUser?.Dm || []; 
     }
 }

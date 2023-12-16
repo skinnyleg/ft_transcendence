@@ -59,7 +59,7 @@ export class ChannelOutils {
         if(!channel) {
             throw new  NotFoundException(`Channel with name ${name} not found.`);
         }
-        return channel;
+        return channel as Channel;
     }
     //-------------------------------------------------------------------------------//
     async   isUserInChannel(channelName: string, nickname: string): Promise<boolean>
@@ -195,7 +195,7 @@ export class ChannelOutils {
     //-------------------------------------------------------------------------------//
     async   getUserIdByName(nickname: string): Promise<string | null>
     {
-        const user= await this.prisma.user.findUnique({
+        const user = await this.prisma.user.findUnique({
             where : {
                 nickname,
             },

@@ -5,16 +5,25 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../../user/user.service';
 import { creatChannelDto } from '../dto/creat-channel.dto';
 import { BadRequestException, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { changeOwner } from '../dto/changeOwner.dto';
 import { DmOutils } from '../dm/dm.outils';
 import { creatMessageCh } from '../dto/creat-message.dto';
 import { ChannelOutils } from '../channel/outils';
 import { DmService } from '../dm/dm.service';
 import { joinChannelDto, responseJoinChannelDto } from '../dto/joinChannelDto.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { sendMessageDmDto } from '../dto/sendMessage.dto';
+import { changeNameDto, changeOwnerDto, changePassDto, changeTypeDto, changepicDto } from '../dto/changePramCH.dto';
+import { threadId } from 'worker_threads';
+import { banUserDto, kickUserDto, muteUserDto } from '../dto/blacklist.dto';
 
 
-@WebSocketGateway({ namespace: 'chatGateway' })
+@WebSocketGateway({ 
+	namespace: 'chatGateway', cors: {
+	origin: process.env.FrontendHost,
+	allowedHeaders: ['token'],
+	credentials: true
+} })
+
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	constructor(
@@ -34,28 +43,44 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	async handleConnection(@ConnectedSocket() client: Socket)
 	{
-		const token: string = client.handshake.headers.token as string;
-		const payload = await this.jwtService.verifyAsync(token, { secret: process.env.jwtsecret })
-		const user = await this.userService.findOneById(payload.sub);
-		client.data.user = user;
-		console.log(`------ coonect: ${user.nickname} ------`);
-		this.usersSockets.push({userId: user.id, socket: client});
-		client.emit('userConnection', {msg: `${client.data.user.nickname} is connected`});
-		await this.channelService.pushMutedUsers();
+		try
+		{
+			const token: string = client.handshake.headers.token as string;
+			const payload = await this.jwtService.verifyAsync(token, { secret: process.env.jwtsecret })
+			const user = await this.userService.findOneById(payload.sub);
+			client.data.user = user;
+			console.log(`------ coonect: ${user.nickname} ------`);
+			this.usersSockets.push({userId: user.id, socket: client});
+			client.emit('userConnection', {msg: `${client.data.user.nickname} is connected`});
+			await this.channelService.pushMutedUsers();
+		}
+		catch (error)
+		{
+			console.error(error.message);
+			client.disconnect();
+		}
 	}
 		
 	async handleDisconnect(@ConnectedSocket() client: Socket)
 	{
-		console.log(`------ disconnect: ${client.data.user.nickname} ------`);
-		client.disconnect();
+		try
+		{
+			console.log(`------ User disconnect ------`);
+			client.disconnect();
+		}
+		catch (error)
+		{
+			console.error(error.message);
+		}
 	}
 
 	@SubscribeMessage('creatChannel')
-	  async	handleChannelCreated(@MessageBody() data: creatChannelDto, @ConnectedSocket() client: Socket)
+	async	creatChannel(@MessageBody() data: creatChannelDto, @ConnectedSocket() client: Socket)
 	{
 		try
 		{
 			// add a field for the picture of channel
+			await  this.DmOutils.validateDtoData(data, creatChannelDto);
 			const owner = client.data.user.nickname;
 			data.type = data.type.toUpperCase();
 			if (data.name.length > 10) {
@@ -70,16 +95,17 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		}
 		catch (error)
 		{
-			console.error('Error creating channel:', error.message);
+			// console.error('Error creating channel:', error.message);
 			client.emit('Failed', { error: 'Failed to create a new channel.' });
 		}
 	}
 
 	@SubscribeMessage('joinChannel')
-	async	handleAddUser2Channel(@MessageBody() data: joinChannelDto,  @ConnectedSocket() client: Socket)
+	async	AddUser2Channel(@MessageBody() data: joinChannelDto,  @ConnectedSocket() client: Socket)
 	{
 		try
 		{
+			await  this.DmOutils.validateDtoData(data, joinChannelDto);
 			const {channelName, password} = data;
 			const user = client.data.user.nickname;
 			const updateChannelUsers = await this.channelService.joinChannel(channelName, user, password);
@@ -98,10 +124,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('responseJoinChannel')
-	async	handleResponseJoinChannel(@MessageBody() data: responseJoinChannelDto,  @ConnectedSocket() client: Socket)
+	async	ResponseJoinChannel(@MessageBody() data: responseJoinChannelDto,  @ConnectedSocket() client: Socket)
 	{
 		try
 		{
+			await  this.DmOutils.validateDtoData(data, responseJoinChannelDto);
 			const {channelName, user, value} = data;
 			if (value) {
 				await this.prisma.channel.update({
@@ -130,22 +157,30 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	{
 		try
 		{
+			await  this.DmOutils.validateDtoData(data, creatMessageCh);
 			const {channelId, content} = data;
 			const isUserInBlacklist = await this.Outils.isUserInBlacklist(channelId, client.data.user.nickname);
 			if (isUserInBlacklist) {
 				throw new UnauthorizedException(`you are not allowed to send message`);
 			}
-			const channels = await this.channelService.getUserChannels(client.data.user.nickname);
+			// const channels = await this.channelService.getUserChannels(client.data.user.nickname);
 			const message = await this.channelService.creatMessageChannel(channelId, client.data.user.nickname, content);
 			const Id = await this.Outils.getChannelIdByName(channelId);
-			for (const channel of channels) {
-				// check blocked and bane users and don't join theme into the room
-				client.join(channel.id);
+			// for (const channel of channels) {
+			// 	// check blocked and bane users and don't join theme into the room
+			// 	client.join(channel.id);
+			// }
+			// const channelUsers = await this.channelService.getChannelUsers(channelId);
+			// for (const channel of channels) {
+			// 	// check blocked and bane users and don't join theme into the room
+			// 	client.leave(channel.id);
+			// }
+			for (const user  of this.usersSockets) {
+				user.socket.join(Id);
 			}
 			this.server.to(Id).emit('sendMessageDone', message);
-			for (const channel of channels) {
-				// check blocked and bane users and don't join theme into the room
-				client.leave(channel.id);
+			for (const user  of this.usersSockets) {
+				user.socket.leave(Id);
 			}
 		}
 		catch (error)
@@ -156,12 +191,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('sendMessageDM')
-	async	handleSendMessageDm(@MessageBody() data: any, @ConnectedSocket() client: Socket)
+	async	handleSendMessageDm(@MessageBody() data: sendMessageDmDto, @ConnectedSocket() client: Socket)
 	{
 		try
-		// check if i'm blocked by this users
 		{
+			await  this.DmOutils.validateDtoData(data, sendMessageDmDto);
+			// check if i'm blocked by this users
 			let dmId = '';
+			// console.log('receiver: ', data[1]);
 			const {receiver, content} = data;
 			const user2Id = await this.Outils.getUserIdByName(receiver);
 			dmId = await this.DmOutils.getDmIdby2User(client.data.user.id, user2Id);
@@ -169,13 +206,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				await this.DmService.creatDMchat(client.data.user.id, user2Id);
 				dmId = await this.DmOutils.getDmIdby2User(client.data.user.id, user2Id);
 			}
-			const receiverSocket = this.usersSockets.find(user => user.userId === user2Id);
-			client.join(dmId);
-			receiverSocket.socket.join(dmId);
 			const message = await this.DmService.creatMessageDm(dmId, client.data.user.nickname, content);
-			this.server.to(dmId).emit('sendMessageDone', message);
-			client.leave(dmId);
-			receiverSocket.socket.leave(dmId);
+			const receiverSocket = this.usersSockets.find(user => user.userId === user2Id);
+			if (receiverSocket) {
+				client.join(dmId);
+				receiverSocket.socket.join(dmId);
+				this.server.to(dmId).emit('sendMessageDone', message);
+				client.leave(dmId);
+				receiverSocket.socket.leave(dmId);
+			}
 		}
 		catch (error)
 		{
@@ -213,166 +252,203 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			client.emit('Failed', { error: 'Failed to leave channel.' });
 		}
 	}
-	
-	
+
+	//---------- blacklist ----------////---------- blacklist ----------////---------- blacklist ----------//
 	@SubscribeMessage('kickUser')
-	async	handleKickUser(@MessageBody() data: any, @ConnectedSocket() client: Socket)
+	async	KickUser(@MessageBody() data: kickUserDto, @ConnectedSocket() client: Socket)
 	{
 		try
 		{
+			await  this.DmOutils.validateDtoData(data, kickUserDto);
 			const {channelName, user2kick} = data;
-			await this.channelService.kickUser(channelName, client.data.user.nickname, user2kick);
-			client.emit('kickUserDone', {msg: `the ${user2kick} is kicked from the channel by ${client.data.user.nickname}`});
+			const admin = client.data.user.nickname;
+			await this.channelService.kickUser(channelName, admin, user2kick);
+			client.emit('kickDone', {msg: `${user2kick} is kicked.`});
+			// emit an notification to the user kicked and to all chanel users
 		}
 		catch(error)
 		{
-			console.error('error in kick user');
-			client.emit('Failed', { error: 'Failed to kick that user.' });
-		}
-	}
-	
-	@SubscribeMessage('changeOwner')
-	async	handleChangeOwner(@MessageBody() data: changeOwner, @ConnectedSocket() client: Socket)
-	{
-		try
-		{
-			const {channelName, newOwner} = data;
-			await this.channelService.changeOwnerOfChannel(channelName, client.data.user.nickname, newOwner);
-			client.emit('changeOwnerDone', { msg: `the ${newOwner} is the new owner of ${channelName}.`});
-		}
-		catch(error)
-		{
-			if (error instanceof NotFoundException) {
-				console.error('Resource not found.');
-			}
-			else if (error instanceof BadRequestException) {
-				console.error('error in client side from changeOwner event');
-			}
-			else if (error instanceof UnauthorizedException) {
-				console.error('Unauthorized access.');
-			}
-			else {
-				console.error('An unexpected error occurred:', error.message);
-			}
-			client.emit('Failed', { error: 'Failed to change owner of channel.' });
+			console.error('Error<kickUser>: ', error.message);
+			client.emit('Failed', { error: `Failed to kick user.`});
 		}
 	}
 	
 	@SubscribeMessage('banUser')
-	async	handleBanUser(@MessageBody() data: any, @ConnectedSocket() client: Socket)
+	async	BanUser(@MessageBody() data: banUserDto, @ConnectedSocket() client: Socket)
 	{
 		try
 		{
-			const {channelName, user2kick} = data;
-			await this.channelService.banUser(channelName, client.data.user.nickname, user2kick);
-			client.emit('banUserDone', {msg: `the ${user2kick} is baned from the channel by ${client.data.user.nickname}`});
+			await  this.DmOutils.validateDtoData(data, banUserDto);
+			const {channelName, user2ban} = data;
+			const admin = client.data.user.nickname;
+			await this.channelService.banUser(channelName, admin, user2ban);
+			client.emit('banDone', {msg: `${user2ban} is baned.`});
+			// emit an notification to the user baned and to all chanel users
 		}
 		catch(error)
 		{
-			console.error('error in ban user');
-			client.emit('Failed', { error: 'Failed to ban that user.' });
+			console.error('Error<banUser>: ', error.message);
+			client.emit('Failed', { error: 'Failed to ban user.' });
 		}
 	}
 	
 	@SubscribeMessage('muteUser')
-	async	handleMuteUser(@MessageBody() data: any, @ConnectedSocket() client: Socket)
+	async	MuteUser(@MessageBody() data: muteUserDto, @ConnectedSocket() client: Socket)
 	{
 		try
 		{
+			await  this.DmOutils.validateDtoData(data, muteUserDto);
 			const {channelName, user2mute, expirationTime} = data;
-			await this.channelService.muteUser(channelName, client.data.user.nickname, user2mute, expirationTime);
-			client.emit('muteUserDone', {msg: `the ${user2mute} is muteed from the channel by ${client.data.user.nickname}`});
+			const admin = client.data.user.nickname;
+			await this.channelService.muteUser(channelName, admin, user2mute, expirationTime);
+			client.emit('muteDone', {msg: `${user2mute} is muteed.`});
+			// emit an notification to the user muted and to all chanel users
 		}
 		catch(error)
 		{
-			//-----------------------------
-			if (error instanceof NotFoundException) {
-				console.error('Resource not found.');
-			}
-			else if (error instanceof BadRequestException) {
-				console.error('error in client side from mute user event');
-            }
-			else if (error instanceof UnauthorizedException) {
-				console.error('Unauthorized access.');
-            }
-			else {
-				console.error('An unexpected error occurred:', error.message);
-            }
-			//-----------------------------
-			// console.error('error in mute user');
-			client.emit('Failed', { error: 'Failed to mute that user.' });
+			console.error('Error<muteUser>: ', error.message);
+			client.emit('Failed', { error: 'Failed to mute user.' });
 		}
 	}
-	
-	@SubscribeMessage('changeTypeOfChannel')
-	async	handleChangeTypeOfChannel(@MessageBody() data: any, @ConnectedSocket() client: Socket)
+	//---------- blacklist ----------////---------- blacklist ----------////---------- blacklist ----------//
+
+	//--------- changeParm ----------////--------- changeParm ----------////--------- changeParm ----------//
+	@SubscribeMessage('changeOwnerCH')
+	async	ChangeChannelOwner(@MessageBody() data: changeOwnerDto, @ConnectedSocket() client: Socket)
 	{
 		try
 		{
-			const {channelName, newType, password} = data;
-			console.log('pass is :', password);
-			await this.channelService.changeTypeOfChannel(channelName, client.data.user.nickname, newType, password);
-			client.emit('changeTypeDone', `the channel is changed to type: ${newType}.`);
+			await  this.DmOutils.validateDtoData(data, changeOwnerDto);
+			const {channelName, newOwner} = data;
+			const owner = client.data.user.nickname;
+			await this.channelService.changeOwnerOfChannel(channelName, owner, newOwner);
+			// emit notification to inform user he is the new owner inside channel | serverside
 		}
-		catch (error)
+		catch(error)
 		{
-			client.emit('Failed', `the channel is Failed to change type.`);
-		}
-	}
-	
-	@SubscribeMessage('changeNameOfChannel')
-	async	handleChangeNameOfChannel(@MessageBody() data: any, @ConnectedSocket() client: Socket)
-	{
-		try
-		{
-			const {channelName, newName} = data;
-			await this.channelService.changeNameOfChannel(channelName, client.data.user.nickname, newName);
-			client.emit('changeNameDone', `the channel is changed to name: ${newName}.`);
-		}
-		catch (error)
-		{
-			client.emit('Failed', `the channel is Failed to change name.`);
-		}
-	}
-	
-	@SubscribeMessage('changePassOfChannel')
-	async	handleChangePassOfChannel(@MessageBody() data: any, @ConnectedSocket() client: Socket)
-	{
-		try
-		{
-			const {channelName, newPassword} = data;
-			await this.channelService.changePassOfChannel(channelName, client.data.user.nickname, newPassword);
-			client.emit('changePassDone', `the channel is changed the password.`);
-		}
-		catch (error)
-		{
-			client.emit('Failed', `the channel is Failed to change password.`);
+			console.error('Error<changeOwnerCH>: ', error.message);
+			client.emit('Failed', { error: 'Failed to change channel owner.' });
 		}
 	}
 
-	// add event to change picture of channel by owner.
+	@SubscribeMessage('changeTypeCH')
+	async	ChangeChannelType(@MessageBody() data: changeTypeDto, @ConnectedSocket() client: Socket)
+	{
+		try
+		{
+			await  this.DmOutils.validateDtoData(data, changeTypeDto);
+			const {channelName, newType, password} = data;
+			const owner = client.data.user.nickname;
+			await this.channelService.changeChannelType(channelName, owner, newType, password);
+			// emit notification inside channel : `New type is seted to: ${newType}.` | serverside
+		}
+		catch (error)
+		{
+			console.error('Error<changeTypeCH>: ', error.message);
+			client.emit('Failed', `Failed to change channel type.`);
+		}
+	}
+	
+	@SubscribeMessage('changeNameCH')
+	async	ChangeChannelName(@MessageBody() data: changeNameDto, @ConnectedSocket() client: Socket)
+	{
+		try
+		{
+			await  this.DmOutils.validateDtoData(data, changeNameDto);
+			const {channelName, newName} = data;
+			const owner = client.data.user.nickname;
+			await this.channelService.changeChannelName(channelName, owner, newName);
+			// emit notification inside channel : `New channel name seted.` | serverside
+		}
+		catch (error)
+		{
+			console.error('Error<changeNameCH>: ', error.message);
+			client.emit('Failed', `Failed to change chnnel name.`);
+		}
+	}
+	
+	@SubscribeMessage('changePassCH')
+	async	ChangeChannelPass(@MessageBody() data: changePassDto, @ConnectedSocket() client: Socket)
+	{
+		try
+		{
+			await  this.DmOutils.validateDtoData(data, changePassDto);
+			const {channelName, newPassword} = data;
+			const owner = client.data.user.nickname;
+			await this.channelService.changeChannelPass(channelName, owner, newPassword);
+			// emit notification inside channel : `New password is seted.` | serverside
+		}
+		catch (error)
+		{
+			console.error('Error<changePassCH>: ', error.message);
+			client.emit('Failed', `Failed to change channel password.`);
+		}
+	}
+
+	@SubscribeMessage('changePicCH')
+	async	ChangeChannelPicture(@MessageBody() data: changepicDto, @ConnectedSocket() client: Socket)
+	{
+		try
+		{
+			await  this.DmOutils.validateDtoData(data, changepicDto);
+			const {channelName, newPicture} = data;
+			const owner = client.data.user.nickname;
+			await this.channelService.changeChannelPicture(channelName, newPicture, owner);
+			// emit notification inside channel : 'New picture is seted.' | serverside
+		}
+		catch (error)
+		{
+			console.error('Error<changePicCH>: ', error.message);
+			client.emit('Failed', 'Faild to change picture.');
+		} 
+	}
+		//--------- changeParm ----------////--------- changeParm ----------////--------- changeParm ----------//
+	
 	//add event to get channel users and admins and owner.
+	@SubscribeMessage('getChSidebar')
+	async	getChannelSidebar(@MessageBody() channelName: string, @ConnectedSocket() client: Socket)
+	{
+		try
+		{
+			// const channelName = data;
+		}
+		catch
+		{
+
+		}
+	}
 
 	@SubscribeMessage('getUserChannels')
-	async handleGetUserChannels(@MessageBody() nickname: string, @ConnectedSocket() client: Socket)
+	async	GetUserChannels(@ConnectedSocket() client: Socket)
 	{
 		try
 		{
-			const updatedChannels = await this.channelService.getUserChannels(client.data.user.nickname);
-			client.emit('UserChannels', updatedChannels);
+			const user = client.data.user.nickname;
+			const userChannels = await this.channelService.getUserChannels(user);
+			client.emit('UserChannels', userChannels);
+			// return obj hold channels names and the last msg and the picture
 		}
 		catch(error)
 		{
-			if (error instanceof NotFoundException) {
-				console.error('Resource not found.');
-			}
-			else if (error instanceof UnauthorizedException) {
-				console.error('Unauthorized access.');
-			}
-			else {
-				console.error('An unexpected error occurred:', error.message);
-			}
-			client.emit('Failed', { error: 'Failed to get channels.' });
+			console.error('Error<getUserChannels>: ', error.message);
+			client.emit('Failed', { error: 'Failed to get user channels.' });
+		}
+	}
+
+	@SubscribeMessage('getUserDm')
+	async	GetUserDm(@ConnectedSocket() client: Socket)
+	{
+		try
+		{
+			const user = client.data.user.nickname;
+			// const userDms = await this.DmService.(client.data.user.nickname);
+			// client.emit('UserDms', userDms);
+			// rteurn obj hold receiver name the last message and the picture of receiver
+		}
+		catch(error)
+		{
+			console.error('Error<getUserDms>: ', error.message);
+			client.emit('Failed', { error: 'Failed to get user direct messages.' });
 		}
 	}
 
