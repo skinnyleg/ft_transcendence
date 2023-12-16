@@ -7,9 +7,9 @@ import checkAuth from "./checktoken";
 export default async function middleware(request: NextRequest){
     const token  = request.cookies.get("token");
     const succes = await checkAuth(token?.value);
-    console.log(succes)
+    console.log("hsa", succes);
 
-    if (token?.value){
+    if (succes){
         return NextResponse.next();
     }
     return NextResponse.redirect(new URL("/", "http://localhost:3000"));

@@ -35,7 +35,6 @@ export default function LoginForm() {
       
       if (response.ok) {
         const res = await response.json();
-        console.log('re 1 :', res);
         localStorage.setItem('token', res);
         router.push('/Dashboard', undefined);
       } else if (response.status === 401) {

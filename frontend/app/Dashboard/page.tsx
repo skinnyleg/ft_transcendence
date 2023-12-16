@@ -26,7 +26,7 @@ function Dashboard() {
     const fetchData = async () => {
       try {
         const response = await axios.get('http://localhost:8000/user/Dashboard', { withCredentials: true});
-        console.log("data", response.data);
+        console.log("Dash", response.status);
         setDashboardData(response.data);
       } catch (error) {
         setError('Error fetching data');
@@ -37,7 +37,7 @@ function Dashboard() {
 
     fetchData();
   }, []);
-  console.log("hello", dashboardData);
+  // console.log("hello", dashboardData);
   const doneAchievements = dashboardData?.doneAchievements || [];
   const notDoneAchievements = dashboardData?.notDoneAchievements || [];
   const friends = dashboardData?.friends || [];

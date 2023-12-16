@@ -86,7 +86,7 @@ const Profile = () => {
                 });
                 if (res.ok) {
                     const profileData = await res.json();
-                    console.log(profileData);
+                    // console.log(profileData);
                     setProfileData(profileData);
                 }
             } catch (error) {

@@ -28,7 +28,10 @@ const Notifications = () => {
           }
         }
       });
-
+    socket.connect;
+      socket.on("connect", () => {
+        console.log(socket.connected);
+    });
     
 
     useEffect( () => {

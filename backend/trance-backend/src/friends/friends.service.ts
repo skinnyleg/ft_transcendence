@@ -80,7 +80,7 @@ export class FriendsService {
 		}
 	}
 
-
+	
 
 	async sendRequest(client: Socket, userId: string)
 	{

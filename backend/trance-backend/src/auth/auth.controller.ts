@@ -6,6 +6,8 @@ import { tokenDto } from './Dto/tokenDto';
 import { JwtAuthGuard } from './jwt.guard';
 import { REFRESHEXP, REFRESHSECRET, TOKENEXP, TOKENSECRET } from 'src/classes/classes';
 import { RefreshJwtAuthGuard } from './refresh.guard';
+import { never } from 'rxjs';
+import { toUSVString } from 'util';
 
 @Controller('auth')
 export class AuthController {
@@ -35,12 +37,17 @@ export class AuthController {
 		}
 		const token = await this.authService.createToken(request.user.id, request.user.nickname, TOKENEXP, TOKENSECRET)
 		const refresh = await this.authService.createToken(request.user.id, request.user.nickname, REFRESHEXP, REFRESHSECRET)
-		response.cookie('token', token, {signed: true, maxAge: TOKENEXP * 1000})
-		response.cookie('refresh', refresh, {signed: true, maxAge: REFRESHEXP * 1000})
+		response.cookie('token', token, {maxAge: TOKENEXP * 1000})
+		response.cookie('refresh', refresh, {maxAge: REFRESHEXP * 1000})
 		if (request.user.FirstLogin === true)
+		{
+			console.log("yooo");
 			response.redirect(`${process.env.FrontendHost}/settings`);
+			console.log("yooo");
+
+			return never;
+		}
 		response.redirect(`${process.env.FrontendHost}/Dashboard`);
-		// response.status(200).json(token);
 	}
 
 	@UseGuards(JwtAuthGuard)
@@ -52,19 +59,10 @@ export class AuthController {
 
 
 	@UseGuards(JwtAuthGuard)
-	@Post('CheckToken')
-	CheckToken(@Body() payload: tokenDto, @Req() req, @Res() res)
+	@Get('CheckToken')
+	CheckToken(@Req() req, @Res() res)
 	{
-		if (req.signedCookies && 'token' in req.signedCookies) {
-		  if (req.signedCookies.token.length > 0) {
-			if (payload.token === "")
-				res.status(200).json(req.signedCookies.token);
-			else if (req.signedCookies.token === payload.token)
-				res.status(200).json(payload.token);
-		  }
-		}
-		throw new UnauthorizedException('not allowed');
-
+		res.status(200).send({mssg: "sdj"})
 	}
 
 
