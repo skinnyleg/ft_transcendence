@@ -35,8 +35,8 @@ export class AuthService {
 			res.redirect(`${process.env.FrontendHost}/Qr`);
 		const token = await this.createToken(user.id, user.nickname, TOKENEXP, TOKENSECRET)
 		const refresh = await this.createToken(user.id, user.nickname, REFRESHEXP, REFRESHSECRET)
-		res.cookie('token', token, {signed: true, maxAge: TOKENEXP * 1000})
-		res.cookie('refresh', refresh, {signed: true, maxAge: REFRESHEXP * 1000})
+		res.cookie('token', token, {maxAge: TOKENEXP * 1000})
+		res.cookie('refresh', refresh, {maxAge: REFRESHEXP * 1000})
 		console.log("token == ", token)
 		res.status(200).json(token);
 	}
@@ -79,8 +79,8 @@ export class AuthService {
 		res.clearCookie('refresh');
 		const token = await this.createToken(user.id, user.nickname, TOKENEXP, TOKENSECRET)
 		const refresh = await this.createToken(user.id, user.nickname, REFRESHEXP, REFRESHSECRET)
-		res.cookie('token', token, {signed: true, maxAge: TOKENEXP * 1000})
-		res.cookie('refresh', refresh, {signed: true, maxAge: REFRESHEXP * 1000})
+		res.cookie('token', token, {maxAge: TOKENEXP * 1000})
+		res.cookie('refresh', refresh, {maxAge: REFRESHEXP * 1000})
 		res.status(200).json(token);
 	}
 }
