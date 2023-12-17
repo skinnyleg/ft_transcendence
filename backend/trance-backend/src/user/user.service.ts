@@ -812,19 +812,51 @@ export class UserService {
 		if (isEnabled.isEnabled == true)
 			throw new ConflictException('2FA already enabled')
 
-		const secret = authenticator.generateSecret();
-		const url = authenticator.keyuri(login,'Pong',secret);
 		await this.prisma.user.update({
 			where: {
 				id: id,
 			},
 			data: {
 				isEnabled: true,
+			}
+		})
+	}
+
+
+	async getEnabled(id: string)
+	{
+		const user = await this.findOneById(id);
+		if (!user)
+			throw new NotFoundException('user not found')
+
+		const isEnabled = await this.prisma.user.findUnique({
+			where: {
+				id: id,
+			},
+			select: {
+				isEnabled: true,
+			}
+		})
+		return isEnabled;
+	}
+
+	async generateQRUrl(id: string)
+	{
+		const user = await this.findOneById(id);
+		if (!user)
+			throw new NotFoundException('user not found')
+		const secret = authenticator.generateSecret();
+		const url = authenticator.keyuri(user.nickname,'Pong',secret);
+		await this.prisma.user.update({
+			where: {
+				id: id,
+			},
+			data: {
 				Secret: secret,
 				otpauth_url: url
 			}
 		})
-		return url;
+		return {img: url};
 	}
 
 	async disable2FA(id: string)
@@ -860,8 +892,8 @@ export class UserService {
 
 		if (Enabled == true)
 		{
-			const url = await this.enable2FA(id, user.nickname)
-			return {valid:true, img: url}
+			await this.enable2FA(id, user.nickname)
+			return {valid:true}
 		}
 		await this.disable2FA(id)
 		return {valid:false}
