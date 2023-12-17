@@ -60,6 +60,20 @@ export class UserController {
 		return this.userService.getDashboard(id);
 	}
 
+	@Get('GenerateQr')
+	@UseGuards(JwtAuthGuard)
+ 	getQrUrl(@Req() req) {
+		const id = getId(req);
+		return this.userService.generateQRUrl(id);
+	}
+
+	@Get('qrEnabled')
+	@UseGuards(JwtAuthGuard)
+ 	getEnabled(@Req() req) {
+		const id = getId(req);
+		return this.userService.getEnabled(id);
+	}
+
 	@Get('Nickname')
 	@UseGuards(JwtAuthGuard)
  	getNickname(@Req() req) {
