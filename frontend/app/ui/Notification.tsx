@@ -18,20 +18,20 @@ const Notifications = () => {
     const [notifPopUP, setNotifPopUp] = useState <NotificationsData | null>(null);
     const cookies = new Cookies();
     const token = cookies.get('token');
-    const socket = io("http://localhost:8000/friendsGateway", {
-        withCredentials: true,
-        transportOptions: {
-          polling: {
-            extraHeaders: {
-              "token": token
-            }
-          }
-        }
-      });
-    socket.connect;
-      socket.on("connect", () => {
-        console.log(socket.connected);
-    });
+    // const socket = io("http://localhost:8000/friendsGateway", {
+    //     withCredentials: true,
+    //     transportOptions: {
+    //       polling: {
+    //         extraHeaders: {
+    //           "token": token
+    //         }
+    //       }
+    //     }
+    //   });
+    // socket.connect;
+    //   socket.on("connect", () => {
+    //     console.log(socket.connected);
+    // });
     
 
     useEffect( () => {

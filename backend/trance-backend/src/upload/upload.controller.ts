@@ -20,7 +20,7 @@ export class UploadController {
 	if (file === undefined)
 		throw new BadRequestException('Server doesn\'t this upload')
 	const id = getId(req);
-	const newDir =  'http://localhost:8000/' + 'upload/Profile/'
+	const newDir =  'http://localhost:8000/' + 'upload/profile/'
 	const filePath = newDir + file.filename
 	await this.uploadService.updateProfilePic(filePath, id)
     return { valid:true, filename: filePath };
