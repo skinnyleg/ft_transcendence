@@ -2,6 +2,22 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { Blacklist, Channel, Membership, User, Dm } from '@prisma/client';
 import { ChannelService } from './channel.service';
+import { Strategy } from "passport-jwt";
+import { use } from "passport";
+
+export interface channelsSide {
+    channelName?: string,
+    channelPicture?: string,
+    userRole?: string,
+    lastMsg?: string,
+    channelType?: string
+}
+
+export interface channelSidebar {
+    username?: string,
+    channelRole?: string,
+    userPicture?: string
+}
 
 @Injectable()
 export class ChannelOutils {
@@ -11,7 +27,7 @@ export class ChannelOutils {
     ){}
 
     //-------------------------------------------------------------------------------//
-    async   findChannelByName(name: string): Promise< Channel | null>
+    async   findChannelByName(name: string)
     {
         const channel =  await this.prisma.channel.findUnique({
             where: { name },
@@ -57,9 +73,9 @@ export class ChannelOutils {
         });
         
         if(!channel) {
-            throw new  NotFoundException(`Channel with name ${name} not found.`);
+            throw new  NotFoundException(`${name} channel not found.`);
         }
-        return channel as Channel;
+        return channel;
     }
     //-------------------------------------------------------------------------------//
     async   isUserInChannel(channelName: string, nickname: string): Promise<boolean>
@@ -178,7 +194,6 @@ export class ChannelOutils {
     {
         const blacklist = await this.getBlacklist(channelName, mutedUser);
         if(!blacklist) {
-            // throw new NotFoundException(`The ${mutedUser} is not found in getExpiredAtOfUser.`);
             return null;
         }
         return blacklist.expiredAt;
@@ -204,11 +219,6 @@ export class ChannelOutils {
         return user.id || null;
     }
     //-------------------------------------------------------------------------------//
-    // async   getAllChannels(): Promise<Channel[]>
-    // {
-    //     return this.prisma.channel.findMany();
-    // }
-    //-------------------------------------------------------------------------------//
     async   updateStatusInBlacklist(channelName: string, mutedUser: string)
     {
         const id = await this.getBlacklistId(channelName, mutedUser);
@@ -217,6 +227,20 @@ export class ChannelOutils {
         });
     }
     //-------------------------------------------------------------------------------//
+    async   getUserChannelRole(channelName: string, user: string): Promise<'owner' | 'admin' | 'member'>
+    {
+        const channel = await this.findChannelByName(channelName);
+        if (channel.owner === user) {
+            return 'owner';
+        }
+        const isAdmin = await this.isUserAdministrator(channelName, user);
+        if (isAdmin) {
+            return 'admin';
+        }
+        else {
+            return 'member';
+        }
+    }
     //-------------------------------------------------------------------------------//
     //-------------------------------------------------------------------------------//
 }

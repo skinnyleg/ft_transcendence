@@ -89,12 +89,24 @@ export class ChannelService {
     
     // add function to get all messages of channel 
     
-    async   getUserChannels(nickname: string): Promise<Channel[]>
+    async   getUserChannels(nickname: string)
     {
         const user = await this.prisma.user.findUnique({
             where: { nickname },
             select: {
                 channels: {
+                    include: {
+                        messages: {
+                            select: {
+                                content: true,
+                                createdAt: true
+                            },
+                            orderBy: {
+                                createdAt: 'desc',
+                            },
+                            take: 1,
+                        },
+                    },
                     orderBy: {
                         updatedAt: 'desc',
                     },
@@ -147,25 +159,12 @@ export class ChannelService {
     {
         const isMemberInChannel = await this.outils.isUserInChannel(channelName, nickname);
         if(!isMemberInChannel) {
-            throw new NotFoundException('Resource not found: the user is not a member of channel.');
+            throw new NotFoundException(`${nickname} not found in ${channelName}.`);
         }
         const isAdministrator = await this.outils.isUserAdministrator(channelName, nickname);
-        if(isAdministrator) {
-            const isOwner = await this.outils.getChannelOwner(channelName);
-            if(isOwner === nickname) {
-                throw new BadRequestException('Cannot leave as the owner. Set a new owner before leaving.');
-            }
-            else {
-                await this.prisma.channel.update({
-                    where: { name: channelName },
-                    data: {
-                        admins: {
-                            disconnect: [{ nickname:  nickname}],
-                        },
-                    },
-                });
-                console.log('remove from admins');
-            }
+        const isOwner = await this.outils.getChannelOwner(channelName);
+        if(isOwner === nickname) {
+            throw new BadRequestException('Set a new owner before leaving.');
         }
         await this.prisma.channel.update({
             where: { name: channelName },
@@ -173,16 +172,22 @@ export class ChannelService {
                 users: {
                     disconnect: [{ nickname }],
                 },
+                admins: {
+                    disconnect: [{nickname}],
+                },
             },
         });
     }
-    //-----------------------------------------------------------------------------------
+
     async   changeOwnerOfChannel(channelName: string, oldOwner: string, newOwner: string)
     {
         const isMemberOld = await this.outils.isUserInChannel(channelName, newOwner);
+        if (!isMemberOld) {
+            throw new NotFoundException(`${oldOwner} not found in ${channelName}.`);
+        }
         const isMemberNew = await this.outils.isUserInChannel(channelName, newOwner);
-        if (!isMemberOld || !isMemberNew) {
-            throw new NotFoundException('Resource not found: old owner or new owner is not a user in channels.');
+        if (!isMemberNew) {
+            throw new NotFoundException(`${newOwner} not found in ${channelName}.`);
         }
         await   this.prisma.channel.update({
             where: { name: channelName },
@@ -197,15 +202,15 @@ export class ChannelService {
     {
         const isCientMember = await this.outils.isUserInChannel(channelName, client);
         if(!isCientMember) {
-            throw new NotFoundException('The channel or the user is not found.');
+            throw new NotFoundException(`${client} not found in ${channelName}.`);
         }
         const isUser2kickMember = await this.outils.isUserInChannel(channelName, user2kick);
         if(!isUser2kickMember) {
-            throw new NotFoundException('The user to kick is not found.');
+            throw new NotFoundException(`${user2kick} not found in ${channelName}.`);
         }
         const isClientAdmin = await this.outils.isUserAdministrator(channelName, client);
         if(!isClientAdmin) {
-            throw new ForbiddenException('You are not authorized to perform this action. Only admins can do this.');
+            throw new ForbiddenException('Only admins can kick users.');
         }
         if((await this.outils.getChannelOwner(channelName)) === client)
         {
@@ -223,7 +228,7 @@ export class ChannelService {
         {
             const isNotAdmin = await this.outils.isUserAdministrator(channelName, user2kick);
             if(isNotAdmin) {
-                throw new ForbiddenException('You are not authorized to kick admin, only owner can do this.')
+                throw new ForbiddenException('Only owner can kick admins.')
             }
         }
         await this.prisma.channel.update({
@@ -239,15 +244,15 @@ export class ChannelService {
         //check user to ban if it is baned
         const isCientMember = await this.outils.isUserInChannel(channelName, client);
         if(!isCientMember) {
-            throw new NotFoundException('The channel or the user is not found.');
+            throw new NotFoundException(`${client} not found in ${channelName}.`);
         }
         const isUser2banMember = await this.outils.isUserInChannel(channelName, user2ban);
         if(!isUser2banMember) {
-            throw new NotFoundException('The user to ban is not found.');
+            throw new NotFoundException(`${user2ban} not found in ${channelName}.`);
         }
         const isClientAdmin = await this.outils.isUserAdministrator(channelName, client);
         if(!isClientAdmin) {
-            throw new ForbiddenException('You are not authorized to perform this action. Only admins can do this.');
+            throw new ForbiddenException('Only admins can ban users.');
         }
         if((await this.outils.getChannelOwner(channelName)) === client)
         {
@@ -265,7 +270,7 @@ export class ChannelService {
         {
             const isNotAdmin = await this.outils.isUserAdministrator(channelName, user2ban);
             if(isNotAdmin) {
-                throw new ForbiddenException('You are not authorized to ban admin, only owner can do this.')
+                throw new ForbiddenException('Only owner can ban admins.')
             }
         }
         await this.prisma.channel.update({
@@ -288,20 +293,20 @@ export class ChannelService {
         //check user to ban if it is baned
         const isCientMember = await this.outils.isUserInChannel(channelName, client);
         if(!isCientMember) {
-            throw new NotFoundException('The channel or the user is not found.');
+            throw new NotFoundException(`${client} not found in ${channelName}.`);
         }
         const isUser2muteMember = await this.outils.isUserInChannel(channelName, user2mute);
         if(!isUser2muteMember) {
-            throw new NotFoundException('The user to mute is not found.');
+            throw new NotFoundException(`${user2mute} not found in ${channelName}.`);
         }
         const isClientAdmin = await this.outils.isUserAdministrator(channelName, client);
         if(!isClientAdmin) {
-            throw new ForbiddenException('You are not authorized to perform this action. Only admins can do this.');
+            throw new ForbiddenException('Only admins can mute users.');
         }
         const isNotAdmin = await this.outils.isUserAdministrator(channelName, user2mute);
         if(isNotAdmin) {
             if((await this.outils.getChannelOwner(channelName)) !== client) {
-                throw new ForbiddenException('You are not authorized to mute admin, only owner can do this.')
+                throw new ForbiddenException('Only owner can mute admins.')
             }
         }
         expirationTime *= 60;
@@ -326,16 +331,14 @@ export class ChannelService {
 
     @Cron(CronExpression.EVERY_10_SECONDS)
     async MuteExpiration() {
-        // console.log(`the channels muted is : ${this.channels[0]}`);
         try {
-            // console.log('enter here');
             for (const channel of this.channels) {
                 for (const mutedUser of channel.users) {
-                    console.log(`the user muted is : ${mutedUser}`);
+                    // console.log(`the user muted is : ${mutedUser}`);
                     const expiredAt = await this.outils.getExpiredAtOfUser(channel.name, mutedUser);
                     if (expiredAt && new Date() >= new Date(expiredAt)) {
                         await this.outils.updateStatusInBlacklist(channel.name, mutedUser);
-                        console.log(`Mute expired for user ${mutedUser} in channel ${channel.name}`);
+                        // console.log(`Mute expired for user ${mutedUser} in channel ${channel.name}`);
                     }
                 }
             }
@@ -344,58 +347,25 @@ export class ChannelService {
         }
     }
 
-    //change type of channel
     async   changeChannelType(channelName: string, owner: string, newType: Types, password?: string)
     {
         const channel2update = await this.outils.findChannelByName(channelName);
-        if (!channel2update) {
-            console.error('error in changeTypeOfChannel');
-            throw new error('error in changeTypeOfChannel');
+        if (channel2update.type === newType) {
+            throw new BadRequestException('the chanel is already with this type.');
         }
-        if (newType === 'PROTECTED' || newType === 'PUBLIC' || newType === 'PRIVATE')
-        {
-            if (channel2update.type === newType) {
-                console.log('the chanel is already with this type.');
-                throw new error('the chanel is already with this type.');
-            }
-            else if (channel2update.type === 'PROTECTED') {
-                await this.prisma.channel.update({
-                    where: {
-                        name: channelName,
-                        owner,
-                    },
-                    data: {
-                        password: null,
-                    },
-                });
-            }
-            else if (newType === 'PROTECTED') {
-                console.log('in protected state');
-                await this.prisma.channel.update({
-                    where: {
-                        name: channelName,
-                        owner,
-                    },
-                    data: {
-                        password,
-                    },
-                });
-            }
-            await this.prisma.channel.update({
-                where: { 
-                    name: channelName,
-                    owner,
-                },
-                data: {
-                    type: newType,
-                },
-            });
+        if (newType !== 'PROTECTED') {
+            password = null;
         }
-        else
-        {
-            console.error(`the type ${newType} not exist in types of channel`);
-            throw new error(`the type ${newType} not exist in types of channel`);
-        }
+        await this.prisma.channel.update({
+            where: { 
+                name: channelName,
+                owner,
+            },
+            data: {
+                type: newType,
+                password,
+            },
+        });
     }
 
     async   changeChannelName(channelName: string, owner: string, newName: string)
@@ -467,10 +437,35 @@ export class ChannelService {
             include: { users: true },
         });
         if (!channel) {
-            throw new NotFoundException(`Channel with name ${channelName} not found.`);
+            throw new NotFoundException(`${channelName} not found.`);
         }
         const users: User[] = channel?.users || [];
         return users;
     }
 
+    async   searchChannels(channelName: string)
+    {
+        const channels = await this.prisma.channel.findMany({
+            where: {
+                name: {
+                    contains: channelName,
+                },
+            },
+            include: {
+                messages: {
+                    select: {
+                        content: true,
+                    },
+                    orderBy: {
+                        createdAt: 'desc',
+                    },
+                    take: 1,
+                },
+            },
+        });
+        if (!channels) {
+            return [];
+        }
+        return channels;
+    }
 }

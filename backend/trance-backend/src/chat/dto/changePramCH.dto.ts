@@ -1,4 +1,4 @@
-import { IsEnum, IsNotEmpty, IsString } from "class-validator";
+import { IsEnum, IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 enum Types {
     PUBLIC = 'PUBLIC',
@@ -37,6 +37,7 @@ export class changeTypeDto {
     @IsEnum(Types)
     newType: Types;
 
+    @IsOptional()
     @IsString()
     @IsNotEmpty()
     password: string;

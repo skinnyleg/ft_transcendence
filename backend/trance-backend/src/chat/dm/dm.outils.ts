@@ -3,9 +3,15 @@ import { PrismaService } from "src/prisma/prisma.service";
 import { Channel, User, Types, Message, Dm } from '@prisma/client';
 import { ValidationError, validate } from "class-validator";
 
+export interface dmsSide {
+	name?: string,
+	lastMsg?: string,
+	picture?: string
+}
 
 @Injectable()
 export class DmOutils {
+  
 	constructor(
 		private readonly prisma: PrismaService,
 		){}
@@ -26,7 +32,7 @@ export class DmOutils {
       return dm ? dm.id : null;
     }
     
-    async	validateDtoData(data: any, dtoClass: any)
+  	async	validateDtoData(data: any, dtoClass: any)
 	{
 		const ObjectDto = new dtoClass();
 		Object.assign(ObjectDto, data);
@@ -35,5 +41,14 @@ export class DmOutils {
 			console.error('ValidationErrors: ', ValidationError);
 			throw new BadRequestException('Invalide data');
 		}
+	}
+	async	updateDmupdatedAt(dmId: string, updatedAt: Date)
+	{
+		await this.prisma.dm.update({
+			where: {id: dmId},
+			data: {
+				updatedAt
+			},
+		});
 	}
 }

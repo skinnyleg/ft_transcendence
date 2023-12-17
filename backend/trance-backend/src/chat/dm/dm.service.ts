@@ -43,11 +43,44 @@ export class DmService {
         return newMessage;
     }
 
-    async   getUserDms(user: string): Promise<Dm[] | []>
+    async   getUserDms(user: string)
     {
         const findUser = await this.prisma.user.findUnique({
-            where: {nickname: user},
-            select: { Dm: true },
+            where: { nickname: user },
+            select: {
+                Dm: {
+                    include: { 
+                        members: {
+                            select: {
+                                id: true,
+                                nickname: true,
+                                status: true,
+                                profilePic: true,
+                            },
+                        },
+                        messages: {
+                            select: {
+                                content: true,
+                                sender: {
+                                    select: {
+                                        id: true,
+                                        nickname: true
+                                    },
+                                },
+                                createdAt: true,
+                                chatId: true
+                            },
+                            orderBy: { 
+                                createdAt: 'desc',
+                            },
+                            take: 1,
+                        },
+                    },
+                    orderBy: {
+                        updatedAt: 'desc',
+                    },
+                },
+            },
         });
         if (!findUser) {
             throw new NotFoundException(`${user} user not fout.`);

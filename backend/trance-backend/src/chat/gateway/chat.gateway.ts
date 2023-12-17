@@ -5,9 +5,9 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../../user/user.service';
 import { creatChannelDto } from '../dto/creat-channel.dto';
 import { BadRequestException, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { DmOutils } from '../dm/dm.outils';
+import { DmOutils, dmsSide } from '../dm/dm.outils';
 import { creatMessageCh } from '../dto/creat-message.dto';
-import { ChannelOutils } from '../channel/outils';
+import { ChannelOutils, channelSidebar, channelsSide } from '../channel/outils';
 import { DmService } from '../dm/dm.service';
 import { joinChannelDto, responseJoinChannelDto } from '../dto/joinChannelDto.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -15,6 +15,7 @@ import { sendMessageDmDto } from '../dto/sendMessage.dto';
 import { changeNameDto, changeOwnerDto, changePassDto, changeTypeDto, changepicDto } from '../dto/changePramCH.dto';
 import { threadId } from 'worker_threads';
 import { banUserDto, kickUserDto, muteUserDto } from '../dto/blacklist.dto';
+import { use } from 'passport';
 
 
 @WebSocketGateway({ 
@@ -40,6 +41,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	server: Server;
 
 	private readonly usersSockets: {userId: string, socket: any}[] = [];
+	private readonly dmSide: dmsSide[] = [];
+	private readonly channelSide: channelsSide[] = [];
+	private readonly membershipCH: channelSidebar[] = [];
 
 	async handleConnection(@ConnectedSocket() client: Socket)
 	{
@@ -195,10 +199,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	{
 		try
 		{
-			await  this.DmOutils.validateDtoData(data, sendMessageDmDto);
 			// check if i'm blocked by this users
+			await  this.DmOutils.validateDtoData(data, sendMessageDmDto);
 			let dmId = '';
-			// console.log('receiver: ', data[1]);
 			const {receiver, content} = data;
 			const user2Id = await this.Outils.getUserIdByName(receiver);
 			dmId = await this.DmOutils.getDmIdby2User(client.data.user.id, user2Id);
@@ -207,6 +210,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				dmId = await this.DmOutils.getDmIdby2User(client.data.user.id, user2Id);
 			}
 			const message = await this.DmService.creatMessageDm(dmId, client.data.user.nickname, content);
+			await this.DmOutils.updateDmupdatedAt(dmId, message.createdAt);
 			const receiverSocket = this.usersSockets.find(user => user.userId === user2Id);
 			if (receiverSocket) {
 				client.join(dmId);
@@ -218,37 +222,23 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		}
 		catch (error)
 		{
-			console.error('message faild dm', error.message);
+			console.error('Error<sendMessageDM>', error.message);
 			client.emit('Faild', 'message faild to send dm');
 		}
 	}
-	
-
 	
 	@SubscribeMessage('leaveChannel')
 	async	handleLeaveChannel(@MessageBody() channelName: string, @ConnectedSocket() client: Socket)
 	{
 		try
 		{
-			console.log('channel name befor: ', channelName);
-			console.log('username befor: ', client.data.user.nickname);
-			await this.channelService.leaveChannel(channelName, client.data.user.nickname);
+			const user = client.data.user.nickname;
+			await this.channelService.leaveChannel(channelName, user);
 			client.emit('leaveChannelDone', {msg: 'you are now out of this channel'});
 		}
 		catch(error)
 		{
-			if (error instanceof NotFoundException) {
-				console.error('Resource not found.');
-			}
-			else if (error instanceof BadRequestException) {
-				console.error('owner should set another owner before leave channel');
-            }
-			else if (error instanceof UnauthorizedException) {
-				console.error('Unauthorized access.');
-            }
-			else {
-				console.error('An unexpected error occurred:', error.message);
-            }
+			console.error('Error<leaveChannel>: ', error.message);
 			client.emit('Failed', { error: 'Failed to leave channel.' });
 		}
 	}
@@ -311,7 +301,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		}
 	}
 	//---------- blacklist ----------////---------- blacklist ----------////---------- blacklist ----------//
-
 	//--------- changeParm ----------////--------- changeParm ----------////--------- changeParm ----------//
 	@SubscribeMessage('changeOwnerCH')
 	async	ChangeChannelOwner(@MessageBody() data: changeOwnerDto, @ConnectedSocket() client: Socket)
@@ -322,6 +311,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			const {channelName, newOwner} = data;
 			const owner = client.data.user.nickname;
 			await this.channelService.changeOwnerOfChannel(channelName, owner, newOwner);
+			client.emit('ownerDone', 'owner has changed');
 			// emit notification to inform user he is the new owner inside channel | serverside
 		}
 		catch(error)
@@ -402,19 +392,35 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			client.emit('Failed', 'Faild to change picture.');
 		} 
 	}
-		//--------- changeParm ----------////--------- changeParm ----------////--------- changeParm ----------//
-	
-	//add event to get channel users and admins and owner.
+	//--------- changeParm ----------////--------- changeParm ----------////--------- changeParm ----------//
+	//--------- sideInfo CH&DM -------////------ sideInfo CH&DM -------////------ sideInfo CH&DM ----------//
 	@SubscribeMessage('getChSidebar')
 	async	getChannelSidebar(@MessageBody() channelName: string, @ConnectedSocket() client: Socket)
 	{
 		try
 		{
-			// const channelName = data;
+			const user = client.data.user.nickname;
+			if (!(await this.Outils.isUserInChannel(channelName, user))) {
+				throw new UnauthorizedException('Forbidden action.');
+			}
+			const channel = await this.Outils.findChannelByName(channelName);
+			for (const user of channel.users) {
+				let buffer: channelSidebar = {};
+				const role = (await this.Outils.getUserChannelRole(channel.name, user.nickname) 
+				=== 'member') ? 'member': 'admin';
+				buffer.username = user.nickname;
+				buffer.userPicture = user.profilePic;
+				buffer.channelRole = role;
+				this.membershipCH.push(buffer);
+			}
+			// console.log(this.membershipCH);
+			client.emit('channelSidebar', this.membershipCH);
+			this.membershipCH.length = 0;
 		}
-		catch
+		catch (error)
 		{
-
+			console.error('Error<getChSidebar>: ', error.message);
+			client.emit('Faild', 'Faild to get channel sidebar');
 		}
 	}
 
@@ -425,8 +431,18 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		{
 			const user = client.data.user.nickname;
 			const userChannels = await this.channelService.getUserChannels(user);
-			client.emit('UserChannels', userChannels);
-			// return obj hold channels names and the last msg and the picture
+			for(const channel of userChannels) {
+				let buffer: channelsSide = {};
+				buffer.channelName = channel.name;
+				buffer.channelPicture = channel.picture;
+				buffer.userRole = await this.Outils.getUserChannelRole(channel.name, user);
+				buffer.lastMsg = channel.messages[0]?.content;
+				buffer.channelType = channel.type;
+				this.channelSide.push(buffer);
+			}
+			// console.log(this.channelSide);
+			client.emit('UserChannels', this.channelSide);
+			this.channelSide.length = 0;
 		}
 		catch(error)
 		{
@@ -435,15 +451,29 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		}
 	}
 
-	@SubscribeMessage('getUserDm')
+	@SubscribeMessage('getUserDms')
 	async	GetUserDm(@ConnectedSocket() client: Socket)
 	{
 		try
 		{
+			let picture, name;
 			const user = client.data.user.nickname;
-			// const userDms = await this.DmService.(client.data.user.nickname);
-			// client.emit('UserDms', userDms);
-			// rteurn obj hold receiver name the last message and the picture of receiver
+			const userDms = await this.DmService.getUserDms(user);
+			for(const dm of userDms) {
+				const lastMsg = dm.messages[0].content;
+				if (user === dm.members[0].nickname) {
+					name = dm.members[1].nickname;
+					picture = dm.members[1].profilePic;
+				}
+				else {
+					name = dm.members[0].nickname;
+					picture = dm.members[0].profilePic;
+				}
+				this.dmSide.push({name, lastMsg, picture});	
+			}
+			// console.log(this.dmSide);
+			client.emit('UserDms', this.dmSide);
+			this.dmSide.length = 0;
 		}
 		catch(error)
 		{
@@ -451,8 +481,39 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			client.emit('Failed', { error: 'Failed to get user direct messages.' });
 		}
 	}
-
-	// add event for search for a all channels by the user
-	// search for dm for all user friends
-	// add event to search for a user in the channel users
+	//--------- sideInfo CH&DM -------////------ sideInfo CH&DM -------////------ sideInfo CH&DM ----------//
+	
+	@SubscribeMessage('searchChannel')
+	async	searchChannels(@MessageBody() channelName: string, @ConnectedSocket() client: Socket)
+	{
+		try
+		{
+			const user = client.data.user.nickname;
+			const channels = await this.channelService.searchChannels(channelName);
+			for (const channel of channels) {
+				const buffer: channelsSide = {};
+				buffer.channelName = channel.name;
+				buffer.channelPicture = channel.picture;
+				buffer.channelType = channel.type;
+				const isMember = await this.Outils.isUserInChannel(channelName, user);
+				if (isMember) {
+					buffer.userRole = await this.Outils.getUserChannelRole(channel.name, user);
+					buffer.lastMsg = channel.messages[0]?.content || 'none messages';
+				}
+				else {
+					buffer.userRole = 'none';
+					buffer.lastMsg = 'join channel to see messages';
+				}
+				this.channelSide.push(buffer);
+			}
+			client.emit('queryChannels', this.channelSide);
+			this.channelSide.length = 0;
+		}
+		catch (error)
+		{
+			console.error('Error<searchChannel>: ', error.message);
+			client.emit('Failed', { error: 'Failed to find channel.' });
+		}
+	}
+	// search for dm for all user friends -> merge with haitam in friend fields
 }

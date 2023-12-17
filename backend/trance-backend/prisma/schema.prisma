@@ -168,6 +168,7 @@ model Match {
 // Define a Chat model
 model Dm {
   id          String    @id @default(uuid())
+  updatedAt   DateTime    @default(now()) @updatedAt
   //user1Id     String
   //user2Id     String
   members     User[]     @relation("directmessage")
