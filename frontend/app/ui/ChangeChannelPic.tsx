@@ -1,37 +1,41 @@
 "use client"
 import { Dialog, Transition } from '@headlessui/react'
-import { FC, Fragment, useState } from 'react'
-import { CreateChannelIcon } from './CustomIcons'
+import { Dispatch, FC, Fragment, SetStateAction, useState } from 'react'
+import { CreateChannelIcon, IconWithTooltip } from './CustomIcons'
+import { Menu } from '@headlessui/react'
+import { BiSolidEditAlt } from "react-icons/bi";
 import Image from 'next/image'
-import ChannelTypes from './ChannelTypeSelect'
 
-interface CreateChannelProps {}
 
-const CreateChannel: FC<CreateChannelProps> = () => {
 
-  let [isOpen, setIsOpen] = useState(false)
-  let [img, setImg] = useState('/GroupChat.png')
-  let [type, setType] = useState('public')
+interface ChannelPicProps {
+    isOpen: boolean;
+    setIsOpen: Dispatch<SetStateAction<boolean>>;
+	currentPic: string | undefined;
+}
+
+const ChannelPic: FC<ChannelPicProps> = ({isOpen, setIsOpen, currentPic}) => {
+
+  let [img, setImg] = useState(currentPic)
+
 
   function closeModal() {
-	setType('public')
-	setImg('/GroupChat.png')
+    console.log("closing")
     setIsOpen(false)
-  }
+}
 
-  function openModal() {
+function openModal() {
+    console.log("opening")
     setIsOpen(true)
   }
-  const handleTypeChange = (type: string) => {
-	console.log("type is ", type);
-	setType(type);
-  }
+
 
   	const handleSubmit = (e) => {
 		e.preventDefault();
 		closeModal();
 	}
-  const updateImg = (e: React.ChangeEvent<HTMLInputElement>) => {
+
+	const updateImg = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const selectedFile = e.target.files?.[0];
 		if (selectedFile)
 			setImg(URL.createObjectURL(selectedFile))
@@ -39,16 +43,6 @@ const CreateChannel: FC<CreateChannelProps> = () => {
 
   return (
 	<>
-		<button
-			type="button"
-			onClick={openModal}
-			className="text-black bg-teal-200 text-center w-1/6 rounded-e-xl"
-		>
-			<CreateChannelIcon
-			style='w-full h-6 focus:ring-0 focus:outline-none'
-			/>
-		</button>
-
 		<Transition appear show={isOpen} as={Fragment}>
 			<Dialog as="form" className="relative z-30" onClose={closeModal}>
 				<Transition.Child
@@ -74,18 +68,18 @@ const CreateChannel: FC<CreateChannelProps> = () => {
 							leaveFrom="opacity-100 scale-100"
 							leaveTo="opacity-0 scale-95"
 						>
-							<Dialog.Panel className="w-full max-w-lg transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+							<Dialog.Panel className="w-full max-w-sm transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
 								<Dialog.Title
 									as="h3"
 									className="text-lg font-medium leading-6 text-gray-900"
 								>
-									Create Channel
+									Change Channel Picture
 								</Dialog.Title>
 								<div className="text-black mt-2 flex gap-2 flex-col">
 									<div className='flex flex-row gap-3 items-end p-3'>
 										<div className='w-[80px] h-[80px] '>
 											<Image
-												src={img}
+												src={img as string}
 												width={80}
 												height={80}
 												alt='Channel Picture'
@@ -101,28 +95,6 @@ const CreateChannel: FC<CreateChannelProps> = () => {
 										/>
 										Upload Image
 										</label>
-									</div>
-									<h1 className='text-bold text-lg text-blue-900'>Name</h1>
-									<input placeholder='Channel Name'
-										type='text'
-										className='rounded-2xl border-solid border-teal-200 focus:border-teal-500'
-										maxLength={10}
-										required
-									/>
-									<div className='w-full h-fit'>
-										<h1 className='text-bold text-lg text-blue-900'>Type</h1>
-										<ChannelTypes 
-											handleTypeChange={handleTypeChange}
-										/>
-									</div>
-
-									<div className={`w-full h-fit ${type === 'protected' ? '': 'hidden'}`}>
-										<h1 className={`text-bold text-lg text-blue-900`}>Password</h1>
-										<input placeholder='Channel Password'
-											type='password'
-											className='rounded-2xl w-full border-solid border-teal-200 focus:border-teal-500'
-											required
-										/>
 									</div>
 								</div>
 
@@ -140,7 +112,10 @@ const CreateChannel: FC<CreateChannelProps> = () => {
 										<button
 											type="button"
 											className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-red-900 hover:bg-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-											onClick={closeModal}
+											onClick={() => {
+												setImg(currentPic);
+												closeModal()
+											}}
 										>
 										Cancel
 										</button>
@@ -157,4 +132,7 @@ const CreateChannel: FC<CreateChannelProps> = () => {
 }
 
 
-export default CreateChannel;
+export default ChannelPic;
+
+
+

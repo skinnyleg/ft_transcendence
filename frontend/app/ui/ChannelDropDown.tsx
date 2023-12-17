@@ -1,5 +1,6 @@
+"use client"
 import { Menu, Transition } from '@headlessui/react'
-import { FC, Fragment } from 'react'
+import { FC, Fragment, useState } from 'react'
 import { IconWithTooltip } from './CustomIcons'
 import { HiDotsVertical } from "react-icons/hi";
 import { HiLogout } from "react-icons/hi";
@@ -8,17 +9,47 @@ import AddPhotoAlternateRoundedIcon from '@mui/icons-material/AddPhotoAlternateR
 import { BiSolidEditAlt } from "react-icons/bi";
 import { RiLockPasswordFill } from "react-icons/ri";
 import { IoMdExit } from "react-icons/io";
+import ChannelName from './ChangeChannelName';
+import ChannelPic from './ChangeChannelPic';
+import ChannelPass from './ChangeChannelPass';
+import ChannelType from './ChangeChannelType';
 
 
 interface ChannelDropDownProps {
 	userRole: string | undefined;
 	showSideBar: () => void;
 	channelType: string | undefined;
+	channelPic: string | undefined;
 }
 
-const ChannelDropDown: FC<ChannelDropDownProps> = ({userRole, showSideBar, channelType}) => {
+const ChannelDropDown: FC<ChannelDropDownProps> = ({userRole, showSideBar, channelType, channelPic}) => {
+
+	let [openName, setOpenName] = useState(false)
+	let [openPic, setOpenPic] = useState(false)
+	let [openPass, setOpenPass] = useState(false)
+	let [openType, setOpenType] = useState(false)
+
+
   return (
     <div className="z-10">
+		<ChannelName
+		isOpen={openName}
+		setIsOpen={setOpenName}
+		/>
+		<ChannelPic
+		isOpen={openPic}
+		setIsOpen={setOpenPic}
+		currentPic={channelPic}
+		/>
+		<ChannelPass
+		isOpen={openPass}
+		setIsOpen={setOpenPass}
+		/>
+		<ChannelType
+			isOpen={openType}
+			setIsOpen={setOpenType}
+			currentType={channelType?.toLowerCase()}
+		/>
       <Menu as="div" className="relative text-left">
         <div>
           <Menu.Button className="flex w-full justify-center rounded-md items-center text-sm font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75">
@@ -44,14 +75,14 @@ const ChannelDropDown: FC<ChannelDropDownProps> = ({userRole, showSideBar, chann
 			{
 				userRole === 'OWNER' && (
 					<>
-						<div className="px-1 py-1">
-						  <Menu.Item>
+						<div className="px-1 py-1" onClick={() => setOpenName(true)}>
+							<Menu.Item>
 							{({ active }) => (
-							  <button
+								<button
 								className={`${
-								  active ? 'bg-violet-500 text-white' : 'text-gray-900'
+									active ? 'bg-violet-500 text-white' : 'text-gray-900'
 								} group flex w-full items-center gap-4 rounded-md px-2 py-2 text-sm`}
-							  >
+								>
 								<IconWithTooltip
 									icon={BiSolidEditAlt}
 									styles='w-6 h-6 hover:cursor-pointer'
@@ -60,11 +91,11 @@ const ChannelDropDown: FC<ChannelDropDownProps> = ({userRole, showSideBar, chann
 									// clickBehavior={showSideBar}
 								/>
 								Change Name
-							  </button>
+								</button>
 							)}
-						  </Menu.Item>
+							</Menu.Item>
 						</div>
-						<div className="px-1 py-1">
+						<div className="px-1 py-1" onClick={() => setOpenPic(true)}>
 						  <Menu.Item>
 							{({ active }) => (
 							  <button
@@ -84,7 +115,7 @@ const ChannelDropDown: FC<ChannelDropDownProps> = ({userRole, showSideBar, chann
 							)}
 						  </Menu.Item>
 						</div>
-						<div className="px-1 py-1">
+						<div className="px-1 py-1" onClick={() => setOpenType(true)}>
 						  <Menu.Item>
 							{({ active }) => (
 							  <button
@@ -106,7 +137,7 @@ const ChannelDropDown: FC<ChannelDropDownProps> = ({userRole, showSideBar, chann
 						</div>
 						{
 							channelType === 'PROTECTED' && (
-									<div className="px-1 py-1">
+									<div className="px-1 py-1" onClick={() => setOpenPass(true)}>
 									  <Menu.Item>
 										{({ active }) => (
 										  <button
@@ -128,26 +159,6 @@ const ChannelDropDown: FC<ChannelDropDownProps> = ({userRole, showSideBar, chann
 									</div>
 							)
 						}
-						<div className="px-1 py-1">
-						  <Menu.Item>
-							{({ active }) => (
-							  <button
-								className={`${
-								  active ? 'bg-violet-500 text-white' : 'text-gray-900'
-								} group flex w-full items-center gap-4 rounded-md px-2 py-2 text-sm`}
-							  >
-								<IconWithTooltip
-									icon={AddPhotoAlternateRoundedIcon}
-									styles='w-8 h-8 hover:cursor-pointer'
-									tooltipId="OpenToolTip"
-									tooltipContent=""
-									// clickBehavior={showSideBar}
-								/>
-								Change Owner
-							  </button>
-							)}
-						  </Menu.Item>
-						</div>
 					</>
 				)
 			}
@@ -172,7 +183,7 @@ const ChannelDropDown: FC<ChannelDropDownProps> = ({userRole, showSideBar, chann
                 )}
               </Menu.Item>
             </div>
-            <div className="px-1 py-1 ">
+            <div className="px-1 py-1">
               <Menu.Item>
                 {({ active }) => (
                   <button

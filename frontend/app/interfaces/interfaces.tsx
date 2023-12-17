@@ -73,7 +73,7 @@ export interface ChannelInter {
 	id: string,
 	channelName: string,
 	channelPic: string,
-	isJoined: boolean,
+	isJoined: string,
 	channelType: string;
 	userRole?: string;
 }

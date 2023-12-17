@@ -27,7 +27,6 @@ const ChatTopBar: FC<ChatTopBarProps> = ({channel}) => {
 		router.replace('/Chat');
 	}
 	const showSideBar = () => {
-		console.log("hehehehe")
 		const channelId = searchParams.get('channel');
 		router.replace(`/Chat?channel=${channelId}&bar=open`);
 	}
@@ -57,12 +56,14 @@ const ChatTopBar: FC<ChatTopBarProps> = ({channel}) => {
 				</div>
 			</div>
 			{
-				channel.isJoined === true && (
+				channel.isJoined === "JOINED" && (
 					<div className='flex flex-row items-center justify-end gap-3 p-2 w-fit'>
 						<ChannelDropDown
+							key={channel.id}
 							userRole={channel.userRole}
 							showSideBar={showSideBar}
 							channelType={channel.channelType}
+							channelPic={channel.channelPic}
 						/>
 					</div>
 				)

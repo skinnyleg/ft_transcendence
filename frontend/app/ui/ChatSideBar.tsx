@@ -1,5 +1,5 @@
 "use client"
-import type { FC } from 'react';
+import { useState, type FC } from 'react';
 import { ChannelInter, ChannelUser } from '../interfaces/interfaces';
 import UserCard from './UserCard';
 import { CiSearch } from "react-icons/ci";
@@ -18,6 +18,16 @@ const ChatSideBar: FC<ChatSideBarProps> = ({channelId}) => {
 	const router = useRouter();
 	const channel = channels.find((c) => c.id === channelId);
 	const isJoined = channel?.isJoined ?? false;
+	const [search, setSearch] = useState('');
+
+
+	const filteredUsers = () => {
+		if (search === '')
+			return (channelUsers);
+		const searchUsers = channelUsers.filter(user => user.userNick.toLowerCase().includes(search.toLowerCase()));
+		return searchUsers;
+	}
+
 
 	const handleCloseSideBar = () => {
 		const channelId = searchParams.get('channel')
@@ -26,6 +36,9 @@ const ChatSideBar: FC<ChatSideBarProps> = ({channelId}) => {
 
 	const renderBar = (channelUsers: ChannelUser[], userRole: string[]) => {
 		const users = channelUsers.filter((user) => userRole.includes(user.userRole));
+
+		if (users.length === 0)
+			return null;
 		if (users.length === 1 && users[0].userNick === user.userNick)
 			return null;
 		return (
@@ -40,7 +53,7 @@ const ChatSideBar: FC<ChatSideBarProps> = ({channelId}) => {
 
 		return (
 		<div className={`w-full bg-teal-600 lg:ml-2 rounded-xl flex flex-col p-2 h-full overflow-y-auto`}>
-			<div className={`${isJoined ? '' : 'blur overflow-y-hidden'}`}>
+			<div className={`${isJoined ? '' : 'blur overflow-y-hidden pointer-events-none'}`}>
 				<div className='flex flex-row rounded-xl bg-teal-200 w-full items-center sticky top-0'>
 					<IconWithTooltip
 						icon={IoIosArrowBack}
@@ -55,19 +68,21 @@ const ChatSideBar: FC<ChatSideBarProps> = ({channelId}) => {
 					<input type='text'
 						placeholder='Search Users...'
 						className='w-4/5 h-10 bg-teal-200 rounded-xl border-none focus:ring-0 text-black'
+						value={search}
+						onChange={(e) => setSearch(e.target.value)}
 					/>
 				</div>
-				{renderBar(channelUsers, ['ADMIN', 'OWNER'])}
+				{renderBar(filteredUsers(), ['ADMIN', 'OWNER'])}
 				{
-					channelUsers
+					filteredUsers()
 					.filter((u) => (u.userRole === 'ADMIN' || u.userRole === 'OWNER') && user.userNick !== u.userNick)
 					.map((admin) => (
 						<UserCard key={admin.id} user={admin} userRole={channel?.userRole} />
 					))
 				}
-				{renderBar(channelUsers, ['MEMBER'])}
+				{renderBar(filteredUsers(), ['MEMBER'])}
 				{
-					channelUsers
+					filteredUsers()
 					.filter((u) => u.userRole === 'MEMBER' && u.userNick !== user.userNick)
 					.map((member) => (
 						<UserCard key={member.id} user={member} userRole={channel?.userRole}/>

@@ -10,10 +10,11 @@ const types = [
 
 interface ChannelTypeSelectProps {
     handleTypeChange: (type: string) => void;
+    currentType?: string | undefined;
 }
 
-const ChannelTypes: FC<ChannelTypeSelectProps> = ({handleTypeChange}) => {
-  const [selected, setSelected] = useState(types[0])
+const ChannelTypes: FC<ChannelTypeSelectProps> = ({handleTypeChange, currentType}) => {
+  const [selected, setSelected] = useState({type: currentType as string} || types[0])
 
   return (
     <div className="w-full rounded-2xl">
@@ -34,10 +35,11 @@ const ChannelTypes: FC<ChannelTypeSelectProps> = ({handleTypeChange}) => {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm">
+            <Listbox.Options className="mt-1 max-h-60 w-full rounded-md overflow-auto  py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm">
               {types.map((type, typeIdx) => (
                 <Listbox.Option
                   key={typeIdx}
+                  onClick={() => handleTypeChange(type.type)}
                   className={({ active }) =>
                     `relative cursor-default select-none py-2 pl-10 pr-4 ${
                       active ? 'bg-amber-100 text-amber-900' : 'text-gray-900'
@@ -46,7 +48,7 @@ const ChannelTypes: FC<ChannelTypeSelectProps> = ({handleTypeChange}) => {
                   value={type}
                 >
                   {({ selected }) => (
-                    <div onClick={() => handleTypeChange(type.type)}>
+                    <>
                       <span
                         className={`block truncate ${
                           selected ? 'font-medium' : 'font-normal'
@@ -59,7 +61,7 @@ const ChannelTypes: FC<ChannelTypeSelectProps> = ({handleTypeChange}) => {
                           <CheckIcon className="h-5 w-5" aria-hidden="true" />
                         </span>
                       ) : null}
-                    </div>
+                    </>
                   )}
                 </Listbox.Option>
               ))}

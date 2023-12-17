@@ -16,25 +16,25 @@ const Notifications = () => {
     const [notificationNumber, setNotificationNumber] = useState(0);
     const [newNotification, setNewNotification] = useState<NotificationsData | null>(null);
     const [notifPopUP, setNotifPopUp] = useState <NotificationsData | null>(null);
-    const socket = io("http://localhost:8000");
+    // const socket = io("http://localhost:8000");
 
-    useEffect( () => {
-        const notif = async() => {
-        try{
-            const res = await fetch(`http://localhost:8000/user/Notifications`, {
-                method: "GET",
-                credentials: "include",
-                headers: { "Content-Type": "application/json" },
-            });
-            if (res.status === 200) {
-                const notification = await res.json();
-                setNotifications(notification);
-            }
-        }catch(error){
-            console.error(error);
-        }
-        }
-    }, [newNotification]);
+    // useEffect( () => {
+    //     const notif = async() => {
+    //     try{
+    //         const res = await fetch(`http://localhost:8000/user/Notifications`, {
+    //             method: "GET",
+    //             credentials: "include",
+    //             headers: { "Content-Type": "application/json" },
+    //         });
+    //         if (res.status === 200) {
+    //             const notification = await res.json();
+    //             setNotifications(notification);
+    //         }
+    //     }catch(error){
+    //         console.error(error);
+    //     }
+    //     }
+    // }, [newNotification]);
 
     const knotifications = [{
         userId: "1",
@@ -51,23 +51,23 @@ const Notifications = () => {
         
     }
 
-    useEffect(() => {
+    // useEffect(() => {
 
-        socket.on("notification", (notif) => {
-            console.log(notif);
-            setNotifSent(notif);
-        });
+    //     socket.on("notification", (notif) => {
+    //         console.log(notif);
+    //         setNotifSent(notif);
+    //     });
 
-        socket.on("notifHistory", (data: NotificationsData) => {
-            setNotifications((prevNotifications) => {
-                return [...prevNotifications, data];
-            });
-            handleNewNotification(data);
-        });
-    }, []);
+    //     socket.on("notifHistory", (data: NotificationsData) => {
+    //         setNotifications((prevNotifications) => {
+    //             return [...prevNotifications, data];
+    //         });
+    //         handleNewNotification(data);
+    //     });
+    // }, []);
 
     return (
-        <div className="notifications relative">
+        <div className="notifications relative z-20">
             <BellAlertIcon onClick={()=>{setShowNotifications(!showNotifications)}} className= "h-[55px] hidden lg:flex w-[55px] p-2 bg-gray-100 text-accents rounded-full"/>
             <span className={clsx(`absolute text-s text-white font-bold rounded-full h-5 w-5 flex items-center md:hidden hidden xl:flex lg:flex justify-center bottom-0 right-0 transform translate-x-[8px]`
             , {'hidden' : showNotifications},
