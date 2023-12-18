@@ -1,9 +1,9 @@
 import { IsString, IsNotEmpty, IsOptional, IsEnum } from "class-validator";
 
 enum    channelType {
-    PUBLIC = 'public',
-    PROTECTED = 'protected',
-    PRIVATE = 'private'
+    PUBLIC = 'PUBLIC',
+    PROTECTED = 'PROTECTED',
+    PRIVATE = 'PRIVATE'
 }
 
 export class creatChannelDto {
@@ -11,6 +11,11 @@ export class creatChannelDto {
     @IsNotEmpty()
     @IsString()
     name: string;
+
+    @IsOptional()
+    @IsNotEmpty()
+    @IsString()
+    picture?: string;
   
     @IsEnum(channelType)
     type: string;

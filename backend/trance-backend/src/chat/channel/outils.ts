@@ -1,9 +1,7 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { Blacklist, Channel, Membership, User, Dm } from '@prisma/client';
-import { ChannelService } from './channel.service';
-import { Strategy } from "passport-jwt";
-import { use } from "passport";
+import { Cron, CronExpression } from "@nestjs/schedule";
 
 export interface channelsSide {
     channelName?: string,
@@ -19,6 +17,11 @@ export interface channelSidebar {
     userPicture?: string
 }
 
+export interface mutedUsers {
+    name: string;
+    users: string[];
+}
+
 @Injectable()
 export class ChannelOutils {
 
@@ -26,7 +29,8 @@ export class ChannelOutils {
         private readonly prisma: PrismaService,
     ){}
 
-    //-------------------------------------------------------------------------------//
+    public readonly mutedList: mutedUsers[] = [];
+
     async   findChannelByName(name: string)
     {
         const channel =  await this.prisma.channel.findUnique({
@@ -77,7 +81,7 @@ export class ChannelOutils {
         }
         return channel;
     }
-    //-------------------------------------------------------------------------------//
+
     async   isUserInChannel(channelName: string, nickname: string): Promise<boolean>
     {
         const channel = await this.prisma.channel.findUnique({
@@ -89,7 +93,7 @@ export class ChannelOutils {
         }
         return true;
     }
-    //-------------------------------------------------------------------------------//
+
     async   isUserAdministrator(channelName: string , nickname: string): Promise<boolean>
     {
         const isUserAdmin = await this.prisma.channel.count({
@@ -107,7 +111,7 @@ export class ChannelOutils {
         }
         return true;
     }
-    //-------------------------------------------------------------------------------//
+
     async   isChannelExist(name: string): Promise<boolean>
     {
         const channel = await this.prisma.channel.findUnique({
@@ -118,13 +122,7 @@ export class ChannelOutils {
         }
         return true;
     }
-    //-------------------------------------------------------------------------------//
-    async   getChannelOwner(channelName: string): Promise<string | null>
-    {
-        const channel = await this.findChannelByName(channelName);
-        return channel?.owner || null;
-    }
-    //-------------------------------------------------------------------------------//
+
     async   isUserInBlacklist(channelName: string, nickname: string): Promise<boolean>
     {
         const isUserInBlacklist = await this.prisma.blacklist.count({
@@ -138,25 +136,31 @@ export class ChannelOutils {
         }
         return true;
     }
-    //-------------------------------------------------------------------------------//
+
+    async   getChannelOwner(channelName: string): Promise<string | null>
+    {
+        const channel = await this.findChannelByName(channelName);
+        return channel?.owner || null;
+    }
+
     async   getChannelIdByName(channelName: string):Promise<string | null>
     {
         const channel = await this.findChannelByName(channelName);
         return channel?.id || null;
     }
-    //-------------------------------------------------------------------------------//
+
     async   getChannelType(channelName: string):Promise<string | null>
     {
         const channel = await this.findChannelByName(channelName);
         return channel?.type || null;
     }
-    //-------------------------------------------------------------------------------//
+
     async   getChannelPass(channelName: string):Promise<string | null>
     {
         const channel = await this.findChannelByName(channelName);
         return channel?.password || null;
     }
-    //-------------------------------------------------------------------------------//
+
     async   getBlacklist(channelName: string, user: string):Promise<Blacklist | null>
     {
         const blacklist = await this.prisma.blacklist.findFirst({
@@ -167,7 +171,7 @@ export class ChannelOutils {
         });
         return blacklist || null;
     }
-    //-------------------------------------------------------------------------------//
+
     async   getBlacklistId(channelName: string, user: string):Promise<string>
     {
         const blacklist = await this.getBlacklist(channelName, user);
@@ -176,7 +180,7 @@ export class ChannelOutils {
         }
         return blacklist.id;
     }
-    //-------------------------------------------------------------------------------//
+
     async   getStatusInBlacklist(channelName: string, user: string):Promise<string>
     {
         const isUserInBlacklis = await this.isUserInBlacklist(channelName, user);
@@ -189,7 +193,7 @@ export class ChannelOutils {
         });
         return blacklist.status;
     } 
-    //-------------------------------------------------------------------------------//
+
     async   getExpiredAtOfUser(channelName: string, mutedUser: string)
     {
         const blacklist = await this.getBlacklist(channelName, mutedUser);
@@ -198,7 +202,7 @@ export class ChannelOutils {
         }
         return blacklist.expiredAt;
     }
-    //-------------------------------------------------------------------------------//
+
     async getMuteBlacklist(): Promise<Blacklist[]>
     {
         return this.prisma.blacklist.findMany({
@@ -207,7 +211,7 @@ export class ChannelOutils {
             },
         });
     }
-    //-------------------------------------------------------------------------------//
+
     async   getUserIdByName(nickname: string): Promise<string | null>
     {
         const user = await this.prisma.user.findUnique({
@@ -218,15 +222,7 @@ export class ChannelOutils {
         console.log('user id: ', user.id);
         return user.id || null;
     }
-    //-------------------------------------------------------------------------------//
-    async   updateStatusInBlacklist(channelName: string, mutedUser: string)
-    {
-        const id = await this.getBlacklistId(channelName, mutedUser);
-        await this.prisma.blacklist.delete({
-            where: {id},
-        });
-    }
-    //-------------------------------------------------------------------------------//
+
     async   getUserChannelRole(channelName: string, user: string): Promise<'owner' | 'admin' | 'member'>
     {
         const channel = await this.findChannelByName(channelName);
@@ -241,6 +237,48 @@ export class ChannelOutils {
             return 'member';
         }
     }
-    //-------------------------------------------------------------------------------//
-    //-------------------------------------------------------------------------------//
+
+    async   updateStatusInBlacklist(channelName: string, mutedUser: string)
+    {
+        const id = await this.getBlacklistId(channelName, mutedUser);
+        await this.prisma.blacklist.delete({
+            where: {id},
+        });
+    }
+
+    @Cron(CronExpression.EVERY_10_SECONDS)
+    async MuteExpiration() {
+        try {
+            for (const channel of this.mutedList) {
+                for (const mutedUser of channel.users) {
+                    const expiredAt = await this.getExpiredAtOfUser(channel.name, mutedUser);
+                    if (expiredAt && new Date() >= new Date(expiredAt)) {
+                        await this.updateStatusInBlacklist(channel.name, mutedUser);
+                    }
+                }
+            }
+        }
+        catch (error) {
+            console.error('Error<processing mute expiration> :', error.message);
+        }
+    }
+
+    async   pushMutedUsers()
+    {
+        const array = await this.getMuteBlacklist()
+        if (array)
+        {
+            for (const element of array)
+            {
+                const channel = this.mutedList.find((c) => c.name == element.channelName);
+                if (channel) {
+                    channel.users.push(element.nickname);
+                }
+                else {
+                    const ch: mutedUsers = {name: element.channelName, users: [element.nickname]};
+                    this.mutedList.push(ch);
+                }
+            }
+        }
+    }
 }

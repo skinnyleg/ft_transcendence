@@ -1,0 +1,25 @@
+
+{
+    "name": "",
+    "type": "",
+    "password": ""
+}
+{
+    "channelName": "",
+    "password": ""
+}
+{
+    "channelName": "",
+    "user": "",
+    "value": ""
+}
+{
+    "channelId": "",
+    "content": ""
+}
+{
+    "receiver": "",
+    "content": ""
+}
+
+ // todo add function to get all messages of channel 

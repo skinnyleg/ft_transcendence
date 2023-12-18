@@ -13,10 +13,7 @@ import { joinChannelDto, responseJoinChannelDto } from '../dto/joinChannelDto.dt
 import { PrismaService } from 'src/prisma/prisma.service';
 import { sendMessageDmDto } from '../dto/sendMessage.dto';
 import { changeNameDto, changeOwnerDto, changePassDto, changeTypeDto, changepicDto } from '../dto/changePramCH.dto';
-import { threadId } from 'worker_threads';
 import { banUserDto, kickUserDto, muteUserDto } from '../dto/blacklist.dto';
-import { use } from 'passport';
-
 
 @WebSocketGateway({ 
 	namespace: 'chatGateway', cors: {
@@ -55,8 +52,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			client.data.user = user;
 			console.log(`------ coonect: ${user.nickname} ------`);
 			this.usersSockets.push({userId: user.id, socket: client});
-			client.emit('userConnection', {msg: `${client.data.user.nickname} is connected`});
-			await this.channelService.pushMutedUsers();
+			client.emit('userConnection', `${client.data.user.nickname} is connected`);
+			await this.Outils.pushMutedUsers();
 		}
 		catch (error)
 		{
@@ -83,24 +80,21 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	{
 		try
 		{
-			// add a field for the picture of channel
 			await  this.DmOutils.validateDtoData(data, creatChannelDto);
 			const owner = client.data.user.nickname;
-			data.type = data.type.toUpperCase();
-			if (data.name.length > 10) {
-				throw new BadRequestException(`The name of channel should be less than or equal 10`);
+			if (data.name.length > 10 || data.name.length < 1) {
+				throw new BadRequestException(`Invalid channel name.`);
 			}
-			if (data.type !== 'PROTECTED' && data.type !== 'PUBLIC' && data.type !== 'PRIVATE') {
-				throw new BadRequestException(`Channel type ${data.type} unknow.`);
+			if ((await this.Outils.isChannelExist(data.name))) {
+				throw new BadRequestException(`${data.name} is allocated.`);
 			}
 			const newChannel = await this.channelService.creatChannel(data, owner);
-			console.log(`${owner} creat new channel: `, newChannel);
-			client.emit('channelCreated', newChannel);
+			client.emit('creatDone', newChannel);
 		}
 		catch (error)
 		{
-			// console.error('Error creating channel:', error.message);
-			client.emit('Failed', { error: 'Failed to create a new channel.' });
+			console.error('Error<creatChannel>:', error.message);
+			client.emit('Failed', 'Failed to create a new channel.');
 		}
 	}
 
@@ -114,26 +108,42 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			const user = client.data.user.nickname;
 			const updateChannelUsers = await this.channelService.joinChannel(channelName, user, password);
 			if (updateChannelUsers[0] === 'PRIVATE') {
-				this.server.to(updateChannelUsers[1]).emit('joinChannelRequest', { channelName, user });
+				const ownerId = await this.Outils.getUserIdByName(updateChannelUsers[1]);
+				const ownerSocket = this.usersSockets.find(user => user.userId === ownerId);
+				if (!ownerSocket) {
+					// creat array for requet to join private array
+					// check if the owner not connected
+					return;
+				}
+				ownerSocket.socket.emit('joinReq', { msg: 'plz dakhlni f channel', channelName, user});
+				client.emit('joinReq', 'request to join channel send to owner.');
 				return;
 			}
 			else {
-				client.emit('userAdded2Channel', updateChannelUsers);
+				client.emit('joinDone', 'join channel done');
 			}
 		}
 		catch (error)
 		{
+			console.error('Error<joinChannel>: ', error.message);
 			client.emit('Failed', error.message);
 		}
 	}
 
-	@SubscribeMessage('responseJoinChannel')
+	@SubscribeMessage('resJoinChannel')
 	async	ResponseJoinChannel(@MessageBody() data: responseJoinChannelDto,  @ConnectedSocket() client: Socket)
 	{
 		try
 		{
 			await  this.DmOutils.validateDtoData(data, responseJoinChannelDto);
 			const {channelName, user, value} = data;
+			const resUserId = await this.Outils.getUserIdByName(user);
+			const userSocket = this.usersSockets.find(user => user.userId === resUserId);
+			if (!userSocket) {
+				// creat array for requet to join private array
+				// check if the user not connected
+				return;
+			}
 			if (value) {
 				await this.prisma.channel.update({
 					where: { name: channelName },
@@ -144,14 +154,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 					},
 		
 				});
-				client.emit('userAdded2Channel', `Your request to join channel ${channelName} accepted`);
+				userSocket.socket.emit('resJoinAnswer', `Request to join ${channelName} accepted`);
 			}
 			else {
-				client.emit('userAdded2Channel', `Your request to join channel ${channelName} rejected`);
+				userSocket.socket.emit('resJoinAnswer', `Request to join ${channelName} rejected`);
 			}
 		}
 		catch (error)
 		{
+			console.error('Error<resJoinChannel>: ', error.message);
 			client.emit('Failed', error.message);
 		}
 	}
@@ -165,20 +176,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			const {channelId, content} = data;
 			const isUserInBlacklist = await this.Outils.isUserInBlacklist(channelId, client.data.user.nickname);
 			if (isUserInBlacklist) {
-				throw new UnauthorizedException(`you are not allowed to send message`);
+				throw new UnauthorizedException(`You are not allowed to send message`);
 			}
-			// const channels = await this.channelService.getUserChannels(client.data.user.nickname);
 			const message = await this.channelService.creatMessageChannel(channelId, client.data.user.nickname, content);
 			const Id = await this.Outils.getChannelIdByName(channelId);
-			// for (const channel of channels) {
-			// 	// check blocked and bane users and don't join theme into the room
-			// 	client.join(channel.id);
-			// }
-			// const channelUsers = await this.channelService.getChannelUsers(channelId);
-			// for (const channel of channels) {
-			// 	// check blocked and bane users and don't join theme into the room
-			// 	client.leave(channel.id);
-			// }
 			for (const user  of this.usersSockets) {
 				user.socket.join(Id);
 			}
@@ -189,7 +190,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		}
 		catch (error)
 		{
-			console.error('message faild channel');
+			console.error('Error<sendMessageCH>: ', error.message);
 			client.emit('Faild', error.message);
 		}
 	}

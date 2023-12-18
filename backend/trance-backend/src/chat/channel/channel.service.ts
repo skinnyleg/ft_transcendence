@@ -1,18 +1,9 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException, Logger } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { creatChannelDto } from '../dto/creat-channel.dto';
 import { Channel, User, Types, Message, Dm } from '@prisma/client';
-import { Socket } from 'socket.io';
-import { ChannelOutils } from './outils';
+import { ChannelOutils, mutedUsers } from './outils';
 import { DateTime } from 'luxon';
-import { Cron, CronExpression } from '@nestjs/schedule';
-import { error } from 'console';
-import { elementAt } from 'rxjs';
-
-interface mutedUsers {
-    name: string;
-    users: string[];
-}
 
 @Injectable()
 export class ChannelService {
@@ -21,43 +12,21 @@ export class ChannelService {
         private readonly prisma: PrismaService,
         private  outils: ChannelOutils,
         ){}
-        
-    private channels: mutedUsers[] = [];
 
-    async   pushMutedUsers()
+    async creatChannel(data: creatChannelDto, owner: string): Promise<Channel>
     {
-        const array = await this.outils.getMuteBlacklist()
-        if (array)
-        {
-            for (const entry of array)
-            {
-                const channel = this.channels.find((c) => c.name == entry.channelName);
-                if (channel)
-                {
-                    channel.users.push(entry.nickname);
-                }
-                else {
-                    const ch: mutedUsers = {name: entry.channelName, users: [entry.nickname]};
-                    this.channels.push(ch);
-                }
-            }
-        }
-    }
-
-    async creatChannel(creteChannelDto: creatChannelDto, owner: string): Promise<Channel>
-    {
-        // befor creat chnnel check if the name exist befor
-        const {name, type, password} = creteChannelDto;
+        const {name, type, picture, password} = data;
         const type_: Types = type as Types;
-        if (type === 'PROTECTED' && (!password || password.length === 0)) {
-            throw new BadRequestException('A password must be set for protected channel.');
+        if (type === 'PROTECTED' && (!password || password.length < 4 || password.length > 8)) {
+            throw new BadRequestException('Invalid password.');
         }
         else if ((type === 'PUBLIC' || type === 'PRIVATE') && password) {
-            throw new BadRequestException('Private or public channels don\'t require password.');
+            throw new BadRequestException('Private & public channels don\'t require password.');
         }
         const newChannel = await this.prisma.channel.create({
             data: {
                 name,
+                picture,
                 type: type_,
                 owner,
                 password,
@@ -66,9 +35,38 @@ export class ChannelService {
             },
         });
         const channel_: mutedUsers = {name, users: []};
-        this.channels.push(channel_);
+        this.outils.mutedList.push(channel_);
         return newChannel;
     }
+
+    async   joinChannel(channelName: string, username: string, password?: string)
+    {
+        const isUserInChannel =  await this.outils.isUserInChannel(channelName, username);
+        if (isUserInChannel) {
+            throw new UnauthorizedException(`You are already member of ${channelName}.`);
+        }
+        const isClean = await this.outils.isUserInBlacklist(channelName, username);
+        if(isClean) {
+            throw new UnauthorizedException(`You are blacklisted in ${channelName}.`);
+        }
+        const type = await this.outils.getChannelType(channelName);
+        if (type === 'PROTECTED' && (await this.outils.getChannelPass(channelName) !== password)) {
+            throw new UnauthorizedException('Password incorrect.');
+        }
+        if (type === 'PRIVATE') {
+            const owner = await this.outils.getChannelOwner(channelName);
+            return ['PRIVATE', owner];
+        }
+        await this.prisma.channel.update({
+            where: { name: channelName },
+            data: {
+                users: {
+                    connect: { nickname: username },
+                },
+            },
+        });
+        return ['Done'];
+    } 
 
     async   creatMessageChannel(channelId: string, sender: string, content: string): Promise<Message | null>
     {
@@ -86,8 +84,6 @@ export class ChannelService {
         });
         return newMessage;
     }
-    
-    // add function to get all messages of channel 
     
     async   getUserChannels(nickname: string)
     {
@@ -119,41 +115,6 @@ export class ChannelService {
         return user.channels || [];
     }
 
-    async   joinChannel(channelName: string, username: string, password?: string)
-    {
-        const isChannelExist = await this.outils.isChannelExist(channelName);
-        if (!isChannelExist) {
-            throw new NotFoundException(`Channel with name ${channelName} not exist`);
-        }
-        const isUserInChannel =  await this.outils.isUserInChannel(channelName, username);
-        if (isUserInChannel) {
-            throw new UnauthorizedException(`${username} is already a member of ${channelName}.`);
-        }
-        const isClean = await this.outils.isUserInBlacklist(channelName, username);
-        if(isClean) {
-            throw new UnauthorizedException(`${username} is blacklisted in ${channelName}.`);
-        }
-        // busness logic
-        const type = await this.outils.getChannelType(channelName);
-        if (type === 'PROTECTED' && (await this.outils.getChannelPass(channelName) !== password)) {
-            throw new UnauthorizedException('Password incorrect for this channel.');
-        }
-        if (type === 'PRIVATE') {
-            const owner = await this.outils.getChannelOwner(channelName);
-            //send an demande to the owner of channel
-            return ['PRIVATE', owner];
-        }
-        await this.prisma.channel.update({
-            where: { name: channelName },
-            data: {
-                users: {
-                    connect: { nickname: username },
-                },
-            },
-
-        });
-        return ['Done'];
-    } 
 
     async   leaveChannel(channelName: string, nickname: string)
     {
@@ -161,7 +122,6 @@ export class ChannelService {
         if(!isMemberInChannel) {
             throw new NotFoundException(`${nickname} not found in ${channelName}.`);
         }
-        const isAdministrator = await this.outils.isUserAdministrator(channelName, nickname);
         const isOwner = await this.outils.getChannelOwner(channelName);
         if(isOwner === nickname) {
             throw new BadRequestException('Set a new owner before leaving.');
@@ -319,39 +279,21 @@ export class ChannelService {
                 channel: {connect: {name: channelName}},
             },
         });
-        const channel = this.channels.find((c) => c.name == channelName);
+        const channel = this.outils.mutedList.find((c) => c.name == channelName);
         if (channel) {
             channel.users.push(user2mute);
         }
         else {
             const ch: mutedUsers = {name: channelName, users: [user2mute]};
-            this.channels.push(ch);
+            this.outils.mutedList.push(ch);
         }
     }   
-
-    @Cron(CronExpression.EVERY_10_SECONDS)
-    async MuteExpiration() {
-        try {
-            for (const channel of this.channels) {
-                for (const mutedUser of channel.users) {
-                    // console.log(`the user muted is : ${mutedUser}`);
-                    const expiredAt = await this.outils.getExpiredAtOfUser(channel.name, mutedUser);
-                    if (expiredAt && new Date() >= new Date(expiredAt)) {
-                        await this.outils.updateStatusInBlacklist(channel.name, mutedUser);
-                        // console.log(`Mute expired for user ${mutedUser} in channel ${channel.name}`);
-                    }
-                }
-            }
-        } catch (error) {
-            console.log('Error processing mute expiration:', error);
-        }
-    }
 
     async   changeChannelType(channelName: string, owner: string, newType: Types, password?: string)
     {
         const channel2update = await this.outils.findChannelByName(channelName);
         if (channel2update.type === newType) {
-            throw new BadRequestException('the chanel is already with this type.');
+            throw new BadRequestException('Chanel already with this type.');
         }
         if (newType !== 'PROTECTED') {
             password = null;
