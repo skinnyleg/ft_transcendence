@@ -45,7 +45,8 @@ export class AuthService {
 		res.clearCookie('token');
 		res.clearCookie('refresh');
 		res.clearCookie('id');
-		return res.status(200).send({message: "signOut was succefull"})
+		res.redirect(`${process.env.FrontendHost}/`)
+		// return res.status(200).send({message: "signOut was succefull"})
 	}
 
 
