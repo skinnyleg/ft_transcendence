@@ -1,5 +1,5 @@
 import { Menu, Transition } from '@headlessui/react'
-import { FC, Fragment } from 'react'
+import { FC, Fragment, useState } from 'react'
 import { IconWithTooltip } from './CustomIcons'
 import { HiDotsVertical } from "react-icons/hi";
 import { HiLogout } from "react-icons/hi";
@@ -16,16 +16,27 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { GiPoliceOfficerHead } from "react-icons/gi";
 import { FaUserXmark } from "react-icons/fa6";
 import { GiThroneKing } from "react-icons/gi";
+import { useRouter } from 'next/navigation';
+import MuteUser from './muteUser';
 
 
 
 interface UserDropDownProps {
 	userRole: string | undefined;
 	userCardRole: string;
+	userNick: string;
 }
 
-const UserDropDown: FC<UserDropDownProps> = ({userRole, userCardRole}) => {
+const UserDropDown: FC<UserDropDownProps> = ({userRole, userCardRole, userNick}) => {
 
+
+	const [muteOptions, setMuteOptions] = useState(false);
+
+	const router = useRouter();
+
+	const viewProfile = () => {
+		router.push(`/profile/${userNick}`)
+	}
 
 	const displayActions = () => {
 		if (userRole === 'MEMBER')
@@ -37,6 +48,10 @@ const UserDropDown: FC<UserDropDownProps> = ({userRole, userCardRole}) => {
 
   return (
     <div className="">
+		<MuteUser
+			isOpen={muteOptions}
+			setIsOpen={setMuteOptions}
+		/>
       <Menu as="div" className="relative text-left">
         <div>
           <Menu.Button className="flex w-full justify-center z-0 items-center rounded-md text-sm font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75">
@@ -63,6 +78,7 @@ const UserDropDown: FC<UserDropDownProps> = ({userRole, userCardRole}) => {
 			  <Menu.Item>
 				{({ active }) => (
 				  <button
+					onClick={viewProfile}
 					className={`${
 					  active ? 'bg-violet-500 text-white' : 'text-gray-900'
 					} group flex w-full items-center gap-4 rounded-md px-2 py-2 text-sm`}
@@ -102,7 +118,7 @@ const UserDropDown: FC<UserDropDownProps> = ({userRole, userCardRole}) => {
 			{
 				displayActions() && (
 					<>
-						<div className="px-1 py-1">
+						<div className="px-1 py-1" onClick={() => setMuteOptions(true)}>
 						  <Menu.Item>
 							{({ active }) => (
 							  <button

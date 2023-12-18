@@ -73,6 +73,7 @@ const ChannelPassword: FC<ChannelPasswordProps> = () => {
                                         <input
                                             placeholder='type Channel Password'
                                             required
+											type='password'
                                             maxLength={8}
                                             minLength={4}
                                             className='rounded-full w-full h-10 p-2'

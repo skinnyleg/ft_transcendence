@@ -10,7 +10,7 @@ export const Messages: MessageInter[] = [
 	},
 	{
 		id: '2',
-		senderPic: '/GroupChat.png',
+		// senderPic: '/GroupChat.png',
 		senderNick: 'skinnyleg',
 		content: 'hello',
 		timeStamp: '11:35 AM'
@@ -24,7 +24,7 @@ export const Messages: MessageInter[] = [
 	},
 	{
 		id: '4',
-		senderPic: '/GroupChat.png',
+		// senderPic: '/GroupChat.png',
 		senderNick: 'med-doba',
 		content: 'hello',
 		timeStamp: '11:35 AM'
@@ -38,7 +38,7 @@ export const Messages: MessageInter[] = [
 	},
 	{
 		id: '6',
-		senderPic: '/GroupChat.png',
+		// senderPic: '/GroupChat.png',
 		senderNick: 'daifi',
 		content: 'hello',
 		timeStamp: '11:35 AM'

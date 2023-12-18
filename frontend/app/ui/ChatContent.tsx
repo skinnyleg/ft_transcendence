@@ -34,7 +34,7 @@ const ChatContent: FC<ChatContentProps> = ({channel}) => {
 
 
 		return (
-			<div ref={scrollableRef} className={`w-full flex-grow p-2 gap-2 flex flex-col mt-3 mb-3 overflow-y-auto ${addBlur ? 'blur overflow-y-hidden' : ''}`}>
+			<div ref={scrollableRef} className={`w-full flex-grow p-2 gap-1 flex flex-col mt-3 mb-3 overflow-y-auto ${addBlur ? 'blur overflow-y-hidden' : ''}`}>
 				{
 					Messages.map((message) => {
 						if (message.senderNick === user.userNick)

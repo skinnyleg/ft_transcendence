@@ -5,18 +5,18 @@ import { CreateChannelIcon, IconWithTooltip } from './CustomIcons'
 import { Menu } from '@headlessui/react'
 import { BiSolidEditAlt } from "react-icons/bi";
 import ChannelTypes from './ChannelTypeSelect'
+import MuteOptions from './MuteOptions'
 
 
 
-interface ChannelTypeProps {
+interface MuteUserProps {
     isOpen: boolean;
     setIsOpen: Dispatch<SetStateAction<boolean>>;
-	currentType: string | undefined;
 }
 
-const ChannelType: FC<ChannelTypeProps> = ({isOpen, setIsOpen, currentType}) => {
+const MuteUser: FC<MuteUserProps> = ({isOpen, setIsOpen}) => {
 
-	let [type, setType] = useState(currentType)
+	let [type, setType] = useState("")
 
 	const handleTypeChange = (type: string) => {
 		console.log("type is ", type);
@@ -72,38 +72,14 @@ function openModal() {
 									as="h3"
 									className="text-lg font-medium leading-6 text-gray-900"
 								>
-									Change Channel Type
+									Mute User Options
 								</Dialog.Title>
 								<div className="text-black mt-2 flex gap-2 flex-col">
 									<div className='w-full h-fit'>
-										<ChannelTypes
+										<MuteOptions
 											handleTypeChange={handleTypeChange}
-											currentType={currentType}
 										/>
 									</div>
-									{
-										((currentType !== 'protected' && type === 'protected')) && (
-											<div className="text-black mt-2 flex gap-2 flex-col">
-												<div className="text-black w-full h-fit mt-2 flex gap-3 flex-col">
-													<input
-														placeholder='type Channel New Password'
-														required
-														maxLength={8}
-														minLength={4}
-														className='rounded-full w-full h-10 p-2 border-blue-300 border-2 border-solid'
-													/>
-													<input
-														placeholder='Confirm New Password'
-														required
-														maxLength={8}
-														minLength={4}
-														className='rounded-full w-full h-10 p-2 border-blue-300 border-2 border-solid'
-													/>
-													<p className='text-red-700 text-xs'>Password must contain at least 4 characters and a maximum of 8 characters</p>
-												</div>
-											</div>
-										)
-									}
 								</div>
 
 								<div className='flex flex-row justify-end items-center gap-2'>
@@ -137,7 +113,7 @@ function openModal() {
 }
 
 
-export default ChannelType;
+export default MuteUser;
 
 
 

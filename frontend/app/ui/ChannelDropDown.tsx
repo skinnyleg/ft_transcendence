@@ -33,17 +33,17 @@ const ChannelDropDown: FC<ChannelDropDownProps> = ({userRole, showSideBar, chann
   return (
     <div className="z-10">
 		<ChannelName
-		isOpen={openName}
-		setIsOpen={setOpenName}
+			isOpen={openName}
+			setIsOpen={setOpenName}
 		/>
 		<ChannelPic
-		isOpen={openPic}
-		setIsOpen={setOpenPic}
-		currentPic={channelPic}
+			isOpen={openPic}
+			setIsOpen={setOpenPic}
+			currentPic={channelPic}
 		/>
 		<ChannelPass
-		isOpen={openPass}
-		setIsOpen={setOpenPass}
+			isOpen={openPass}
+			setIsOpen={setOpenPass}
 		/>
 		<ChannelType
 			isOpen={openType}

@@ -113,6 +113,7 @@ const CreateChannel: FC<CreateChannelProps> = () => {
 										<h1 className='text-bold text-lg text-blue-900'>Type</h1>
 										<ChannelTypes 
 											handleTypeChange={handleTypeChange}
+											currentType='public'
 										/>
 									</div>
 

@@ -31,6 +31,7 @@ const ChatSideBar: FC<ChatSideBarProps> = ({channelId}) => {
 
 	const handleCloseSideBar = () => {
 		const channelId = searchParams.get('channel')
+		setSearch('');
 		router.replace(`/Chat?channel=${channelId}`);
 	}
 
@@ -53,7 +54,7 @@ const ChatSideBar: FC<ChatSideBarProps> = ({channelId}) => {
 
 		return (
 		<div className={`w-full bg-teal-600 lg:ml-2 rounded-xl flex flex-col p-2 h-full overflow-y-auto`}>
-			<div className={`${isJoined ? '' : 'blur overflow-y-hidden pointer-events-none'}`}>
+			<div className={`${isJoined === 'JOINED' ? '' : 'blur overflow-y-hidden pointer-events-none'}`}>
 				<div className='flex flex-row rounded-xl bg-teal-200 w-full items-center sticky top-0'>
 					<IconWithTooltip
 						icon={IoIosArrowBack}

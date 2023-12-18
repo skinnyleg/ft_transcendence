@@ -28,6 +28,7 @@ const UserCard: FC<UserCardProps> = ({user, userRole}) => {
 				<UserDropDown 
 					userRole={userRole}
 					userCardRole={user.userRole}
+					userNick={user.userNick}
 				/>
 			</div>
 		</div>

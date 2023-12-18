@@ -22,12 +22,15 @@ const ChatTabChannel: FC<ChatTabProps> = ({channelId}) => {
 		return (
 			<div className='w-full h-full bg-teal-600 lg:ml-2 rounded-xl flex flex-col justify-between p-3'>
 				<ChatTopBar
+					// key={channel.id}
 					channel={channel as ChannelInter}
-				/>
+					/>
 				<ChatContent
+					// key={channel.id}
 					channel={channel as ChannelInter}
-				/>
+					/>
 				<ChatTypeBar
+					key={channel.id}
 					channel={channel as ChannelInter}
 				/>
 			</div>

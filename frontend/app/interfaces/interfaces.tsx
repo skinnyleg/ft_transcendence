@@ -94,7 +94,7 @@ export interface ChannelUser {
 
 export interface MessageInter {
 	id: string;
-	senderPic: string,
+	senderPic?: string,
 	senderNick: string;
 	content: string;
 	timeStamp: string;
