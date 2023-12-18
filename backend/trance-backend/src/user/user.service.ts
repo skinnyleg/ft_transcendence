@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { authenticator } from 'otplib';
 import { AchievementStatus, RequestType, Status, UserStatus } from '@prisma/client';
@@ -283,6 +283,21 @@ export class UserService {
 		if (friendStatus)
 			throw new ConflictException('you are already friends or already got a request from this user')
 
+		const sender = await this.prisma.user.findUnique({
+			where: {
+				id: senderId,
+			}
+		})
+		if (!sender)
+		throw new NotFoundException('user Doesn\'t exist')
+
+		const blocked = sender.usersBlocked.find((id) => id === recipientId);
+		if (blocked)
+			throw new BadRequestException('you blocked him')
+		const blockedby = sender.BlockedBy.find((id) => id === recipientId);
+		if (blockedby)
+				throw new BadRequestException('you are blocked')
+
 		const id = await this.generateRequest(senderId, recipientId, RequestType.FRIEND);
 		await this.setNewFriend(senderId, recipientId, Status.PENDING)
 		return id;
@@ -344,6 +359,10 @@ export class UserService {
 			description = "sent you a message"
 		else if (typeOfRequest === RequestType.UNFRIEND)
 			description = "has unfriended you"
+		else if (typeOfRequest === RequestType.BLOCKED)
+			description = "has blocked you"
+		else if (typeOfRequest === RequestType.UNBLOCKED)
+			description = "has unblocked you"
 
 		const request = await this.prisma.request.create({
 		  data: {
@@ -373,6 +392,145 @@ export class UserService {
 			throw new NotFoundException('user Doesn\'t exist')
 		return nick.nickname;
 	}
+
+	async blockUser(senderId: string, recipientId: string)
+	{
+		if (senderId === recipientId)
+			throw new ConflictException('Can\'t block yourself')
+
+		const user = await this.prisma.user.findUnique({
+			where: {
+				id: recipientId,
+			}
+		})
+		if (!user)
+			throw new NotFoundException('user Doesn\'t exist')
+
+		const friendStatus = await this.prisma.friendStatus.findFirst({
+		where: {
+			OR: [
+			{
+				userId: senderId,
+				friendId: recipientId,
+				status: {
+				in: [Status.FRIEND], // Check for FRIEND or PENDING status
+				},
+			},
+			{
+				userId: recipientId,
+				friendId: senderId,
+				status: {
+				in: [Status.FRIEND], // Check for FRIEND or PENDING status
+				},
+			},
+			],
+		},
+		});
+		
+		if (!friendStatus)
+			throw new ConflictException('you need to be friends to block')
+		
+		await this.deleteFriend(senderId)
+		await this.deleteFriend(recipientId)
+		const sender = await this.prisma.user.findUnique({
+			where: {
+				id: senderId,
+			}
+		})
+		if (!sender)
+			throw new NotFoundException('sender Doesn\'t exist')
+		sender.usersBlocked.push(recipientId);
+
+		user.BlockedBy.push(senderId);
+
+
+		await this.prisma.user.update({
+			where: {
+				id: senderId,
+			},
+			data: {
+				usersBlocked: sender.usersBlocked,
+			},
+		})
+
+		await this.prisma.user.update({
+			where: {
+				id: recipientId,
+			},
+			data: {
+				BlockedBy: user.BlockedBy,
+			},
+		})
+
+		const id = await this.generateRequest(senderId, recipientId, RequestType.BLOCKED, true);
+		return id;
+		
+	}
+
+
+
+	async unblockUser(senderId: string, recipientId: string)
+	{
+		if (senderId === recipientId)
+			throw new ConflictException('Can\'t unblock yourself')
+
+		const user = await this.prisma.user.findUnique({
+			where: {
+				id: recipientId,
+			}
+		})
+		if (!user)
+			throw new NotFoundException('user Doesn\'t exist')
+
+
+		const sender = await this.prisma.user.findUnique({
+			where: {
+				id: senderId,
+			}
+		})
+		if (!sender)
+			throw new NotFoundException('sender Doesn\'t exist')
+
+
+		const idExists = sender.usersBlocked.find((id) => id === recipientId)
+
+		if (!idExists)
+			throw new BadRequestException('user is not blocked');
+		const idExistsby = user.BlockedBy.find((id) => id === senderId)
+
+		if (!idExistsby)
+			throw new BadRequestException('user is not blocked');
+
+
+		let index = sender.usersBlocked.indexOf(idExists);
+		sender.usersBlocked.splice(index, 1);
+
+		index = user.BlockedBy.indexOf(idExistsby);
+		user.BlockedBy.splice(index, 1);
+
+		await this.prisma.user.update({
+			where: {
+				id: senderId,
+			},
+			data: {
+				usersBlocked: sender.usersBlocked,
+			},
+		})
+
+		await this.prisma.user.update({
+			where: {
+				id: recipientId,
+			},
+			data: {
+				BlockedBy: user.BlockedBy,
+			},
+		})
+
+		const id = await this.generateRequest(senderId, recipientId, RequestType.UNBLOCKED, true);
+		return id;
+		
+	}
+
 
 	async acceptRequest(senderId: string, recipientId: string, requestId: string)
 	{

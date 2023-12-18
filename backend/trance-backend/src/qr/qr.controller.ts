@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req } from '@nestjs/common';
+import { Body, Controller, Post, Req, Res } from '@nestjs/common';
 import { QrService } from './qr.service';
 import { getId } from 'src/utils/getId';
 import { VerifyQrCodeDto } from './Dto/qrCodeDto';
@@ -9,7 +9,7 @@ export class QrController {
 
 
 	@Post('check')
-	verifyQrcode(@Body() payload: VerifyQrCodeDto, @Req() req, @Req() res) {
+	verifyQrcode(@Body() payload: VerifyQrCodeDto, @Req() req, @Res() res) {
 		const id = getId(req);
 		return this.qrService.checkQrCode(payload.code, id, res);
 	}

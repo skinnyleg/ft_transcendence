@@ -21,6 +21,8 @@ enum RequestType {
   CHALLENGE
   MESSAGE
   UNFRIEND
+  BLOCKED
+  UNBLOCKED
 }
 
 enum Status {
@@ -56,6 +58,8 @@ model User {
   Losses        Int        @default(0)
   FirstLogin    Boolean    @default(true)
 
+  BlockedBy    String[]
+  usersBlocked String[]
   userRequests Request[]
   channels     Channel[]
   Message      Message[]
