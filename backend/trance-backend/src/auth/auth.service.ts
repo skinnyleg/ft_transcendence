@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { Request, Response } from 'express';
@@ -45,7 +45,7 @@ export class AuthService {
 		res.clearCookie('token');
 		res.clearCookie('refresh');
 		res.clearCookie('id');
-		res.redirect(`${process.env.FrontendHost}/`);
+		res.redirect(`${process.env.FrontendHost}/`)
 		// return res.status(200).send({message: "signOut was succefull"})
 	}
 
@@ -83,5 +83,53 @@ export class AuthService {
 		res.cookie('token', token, {maxAge: TOKENEXP * 1000})
 		res.cookie('refresh', refresh, {maxAge: REFRESHEXP * 1000})
 		res.status(200).json(token);
+	}
+
+
+	async checkFirstLogin(id: string)
+	{
+		const user = await this.prisma.user.findUnique({
+			where: {
+				id: id,
+			},
+			select: {
+				FirstLogin: true,
+			}
+		})
+		if (!user)
+			throw new NotFoundException('user not found')
+
+		return user;
+	}
+
+	async updateFirstLogin(id: string)
+	{
+		const user = await this.prisma.user.findUnique({
+			where: {
+				id: id,
+			},
+			select: {
+				id: true,
+				FirstLogin: true,
+			}
+		})
+		if (!user)
+			throw new NotFoundException('user not found')
+		
+		if (user.FirstLogin === false)
+			throw new ConflictException('already updated the value')
+
+
+		const updatedUser = await this.prisma.user.update({
+			where: {
+				id: user.id,
+			},
+			data: {
+				FirstLogin: false,
+			}
+		})
+		if (!updatedUser)
+			throw new NotFoundException('couldn\'t update user')
+		return ({valid: true})
 	}
 }

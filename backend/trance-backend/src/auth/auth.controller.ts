@@ -6,8 +6,7 @@ import { tokenDto } from './Dto/tokenDto';
 import { JwtAuthGuard } from './jwt.guard';
 import { REFRESHEXP, REFRESHSECRET, TOKENEXP, TOKENSECRET } from 'src/classes/classes';
 import { RefreshJwtAuthGuard } from './refresh.guard';
-import { never } from 'rxjs';
-import { toUSVString } from 'util';
+import { getId } from 'src/utils/getId';
 
 @Controller('auth')
 export class AuthController {
@@ -40,13 +39,7 @@ export class AuthController {
 		response.cookie('token', token, {maxAge: TOKENEXP * 1000})
 		response.cookie('refresh', refresh, {maxAge: REFRESHEXP * 1000})
 		if (request.user.FirstLogin === true)
-		{
-			console.log("yooo");
 			response.redirect(`${process.env.FrontendHost}/settings`);
-			console.log("yooo");
-
-			return never;
-		}
 		response.redirect(`${process.env.FrontendHost}/Dashboard`);
 	}
 
@@ -66,6 +59,21 @@ export class AuthController {
 	}
 
 
+	@UseGuards(JwtAuthGuard)
+	@Get('CheckFirstLogin')
+	async CheckFirstLogin(@Req() request)
+	{
+		const id = getId(request);
+		return await this.authService.checkFirstLogin(id);
+	}
+
+	@UseGuards(JwtAuthGuard)
+	@Post('UpdateFirstLogin')
+	async UpdateFirstLogin(@Req() request)
+	{
+		const id = getId(request);
+		return await this.authService.updateFirstLogin(id);
+	}
 
 	@UseGuards(RefreshJwtAuthGuard)
 	@Get('refresh')
