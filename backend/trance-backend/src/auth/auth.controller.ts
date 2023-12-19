@@ -39,7 +39,10 @@ export class AuthController {
 		response.cookie('token', token, {maxAge: TOKENEXP * 1000})
 		response.cookie('refresh', refresh, {maxAge: REFRESHEXP * 1000})
 		if (request.user.FirstLogin === true)
+		{
 			response.redirect(`${process.env.FrontendHost}/settings`);
+			return ;
+		}
 		response.redirect(`${process.env.FrontendHost}/Dashboard`);
 	}
 
@@ -61,18 +64,18 @@ export class AuthController {
 
 	@UseGuards(JwtAuthGuard)
 	@Get('CheckFirstLogin')
-	async CheckFirstLogin(@Req() request)
+	async CheckFirstLogin(@Req() request, @Res() res)
 	{
-		const id = getId(request);
-		return await this.authService.checkFirstLogin(id);
+		const id = request.user.sub;
+		return await this.authService.checkFirstLogin(id, res);
 	}
 
 	@UseGuards(JwtAuthGuard)
 	@Post('UpdateFirstLogin')
-	async UpdateFirstLogin(@Req() request)
+	async UpdateFirstLogin(@Req() request, @Res() res)
 	{
 		const id = getId(request);
-		return await this.authService.updateFirstLogin(id);
+		return await this.authService.updateFirstLogin(id, res);
 	}
 
 	@UseGuards(RefreshJwtAuthGuard)

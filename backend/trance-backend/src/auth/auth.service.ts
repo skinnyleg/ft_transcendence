@@ -86,7 +86,7 @@ export class AuthService {
 	}
 
 
-	async checkFirstLogin(id: string)
+	async checkFirstLogin(id: string, res: Response)
 	{
 		const user = await this.prisma.user.findUnique({
 			where: {
@@ -99,10 +99,10 @@ export class AuthService {
 		if (!user)
 			throw new NotFoundException('user not found')
 
-		return user;
+		res.status(200).send(user)
 	}
 
-	async updateFirstLogin(id: string)
+	async updateFirstLogin(id: string, res: Response)
 	{
 		const user = await this.prisma.user.findUnique({
 			where: {
@@ -130,6 +130,6 @@ export class AuthService {
 		})
 		if (!updatedUser)
 			throw new NotFoundException('couldn\'t update user')
-		return ({valid: true})
+			res.status(200).send({valid: true})
 	}
 }
