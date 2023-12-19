@@ -71,18 +71,18 @@ export class AuthController {
 
 	@UseGuards(JwtAuthGuard)
 	@Get('CheckFirstLogin')
-	async CheckFirstLogin(@Req() request)
+	async CheckFirstLogin(@Req() request, @Res() res)
 	{
-		const id = getId(request);
-		return await this.authService.checkFirstLogin(id);
+		const id = request.user.sub;
+		return await this.authService.checkFirstLogin(id, res);
 	}
 
 	@UseGuards(JwtAuthGuard)
 	@Post('UpdateFirstLogin')
-	async UpdateFirstLogin(@Req() request)
+	async UpdateFirstLogin(@Req() request, @Res() res)
 	{
-		const id = getId(request);
-		return await this.authService.updateFirstLogin(id);
+		const id = request.user.sub;
+		return await this.authService.updateFirstLogin(id, res);
 	}
 
 	@UseGuards(RefreshJwtAuthGuard)
