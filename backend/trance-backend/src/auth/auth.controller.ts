@@ -6,6 +6,7 @@ import { tokenDto } from './Dto/tokenDto';
 import { JwtAuthGuard } from './jwt.guard';
 import { REFRESHEXP, REFRESHSECRET, TOKENEXP, TOKENSECRET } from 'src/classes/classes';
 import { RefreshJwtAuthGuard } from './refresh.guard';
+import { getId } from 'src/utils/getId';
 
 @Controller('auth')
 export class AuthController {
@@ -68,6 +69,21 @@ export class AuthController {
 	}
 
 
+	@UseGuards(JwtAuthGuard)
+	@Get('CheckFirstLogin')
+	async CheckFirstLogin(@Req() request)
+	{
+		const id = getId(request);
+		return await this.authService.checkFirstLogin(id);
+	}
+
+	@UseGuards(JwtAuthGuard)
+	@Post('UpdateFirstLogin')
+	async UpdateFirstLogin(@Req() request)
+	{
+		const id = getId(request);
+		return await this.authService.updateFirstLogin(id);
+	}
 
 	@UseGuards(RefreshJwtAuthGuard)
 	@Get('refresh')
