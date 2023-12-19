@@ -75,8 +75,7 @@ function NavBar ({handleShowMenu}: NavBarProps)
   };
 
 
-  // Debounce the search function to avoid rapid API calls
-  const debouncedSearchBackend = useDebouncedCallback(searchBackend, 500); // 500 milliseconds debounce time
+  const debouncedSearchBackend = useDebouncedCallback(searchBackend, 500);
 
   useEffect(() => {
     if (search) {
@@ -84,10 +83,9 @@ function NavBar ({handleShowMenu}: NavBarProps)
     }
   }, [search, debouncedSearchBackend]);
 
-
   return (
   <div className={`${inter.className}`}>
-    <div className=" lg:hidden bg-nav top-0 text-white md:w-screen h-[8vh] z-10 p-4 flex justify-between items-center border-indigo-600 fixed w-full ">
+    <div className=" lg:hidden bg-nav top-0 text-white md:w-screen h-[10vh] z-10 p-4 flex justify-between items-center border-indigo-600 fixed w-full ">
       <button className="text-white p-2 focus:outline-none">
           <Bars4Icon onClick={() => {setShow(!show); handleShowMenu(!show)}} className="w-6 h-6"/>
       </button>
@@ -97,7 +95,6 @@ function NavBar ({handleShowMenu}: NavBarProps)
         </div>
         <div className="mr-4">
           <MagnifyingGlassIcon onClick={() => {setShowBar(!showBar)}} className="h-8 w-8 rounded-full" />
-          {/* // show when clicked on search icon */}
           <input
             onChange={(e) => {setSearch(e.target.value); if (e.target.value) setSearchShow(true); else {setSearchShow(false); setRes([]);} }}
             type="search"
@@ -118,7 +115,7 @@ function NavBar ({handleShowMenu}: NavBarProps)
       </div>
     </div>
       <div className={`${(searchShow || search) ? 'block' : 'hidden'} flex justify-start
-            mt-[12vh] absolute lg:w-80 md:w-40 w-full bg-white shadow-md transition-transform duration-300 z-10 rounded-b-lg`}>
+            mt-[12vh] absolute lg:w-full md:w-full w-full bg-white shadow-md transition-transform duration-300 z-10 rounded-b-lg`}>
             <div className="flex flex-col"> 
               {searchShow && results.map((result) => (
                 <Link href={`/user/${result.id}`} key={result.id}>
@@ -164,13 +161,13 @@ function NavBar ({handleShowMenu}: NavBarProps)
               <Cog6ToothIcon className="w-10 ml-3 h-6 mr-4 xl:w-20 xl:h-20" />
             </Link>
         </div>
-        <div className="absolute bottom-5 justify-center text-gray-500 xl:mt-15 items-center ml-1">
-          <Link href="/logout" 
-            className={clsx(`flex
+        <div className="absolute bottom-5 justify-center text-gray-500 xl:mt-15 items-center flex w-full ">
+          <Link href="http://localhost:8000/auth/signout" 
+            className={clsx(`flex justify-center w-full 
             hover:text-accents`, {
-          'text-accents'  : currentPath === "/Leaderboard",
+          'text-accents'  : currentPath === "/",
           })}>
-            <ArrowLeftOnRectangleIcon className="w-10 mr-4 xl:w-[80px] lg:w-[50px]" />
+            <ArrowLeftOnRectangleIcon className="xl:w-[75%] lg:w-[60%] md:w-[50%] w-[50%]" />
           </Link>
         </div>
       </div>

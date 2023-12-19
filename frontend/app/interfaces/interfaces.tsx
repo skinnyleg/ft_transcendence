@@ -1,9 +1,9 @@
 import { inter } from "../ui/fonts";
 
 export enum UserStatus {
-    online = 'ONLINE',
-    offline =  'OFFLINE',
-    IN_GAME = 'IN_GAME'
+  online = 'ONLINE',
+  offline =  'OFFLINE',
+  IN_GAME = 'IN_GAME'
 }
 
 export interface dashboardData {
@@ -41,11 +41,14 @@ export interface responseData {
 
 
 export interface NotificationsData {
-  userId: string;
-  userProfilePic: string;
-  description: string;
-  typeOfRequest: any;
-  responded: boolean;
+  requestId: string;
+	notifData: {
+		userId: string;
+		userProfilePic: string;
+		description: string;
+		typeOfRequest: string;
+		responded: boolean;
+	};
 }[];
 
 export interface profileData {

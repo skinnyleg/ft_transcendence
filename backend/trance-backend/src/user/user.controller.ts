@@ -15,7 +15,6 @@ export class UserController {
 	@UseGuards(JwtAuthGuard)
 	@Post('pass')
 	changePassword(@Body() payload: ChangePasswordDto, @Req() req) {
-		console.log("yooosss")
 		const id = getId(req);
 		return this.userService.changePassword(payload.password, id)
 	}

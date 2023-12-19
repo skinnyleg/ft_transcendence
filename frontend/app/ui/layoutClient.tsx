@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import NavBar from "./navBar";
+import { socketContext , socket} from "@/app/context/soketContext";
 
 export default function LayoutClinet({
     children
@@ -16,7 +17,7 @@ export default function LayoutClinet({
     }
 
     return (
-        <>
+        <socketContext.Provider value={socket}>
             <div className={`flex-none md:w-10 w-20 lg:w-20`}>
                 <NavBar handleShowMenu={handleShowMenu} />
             </div>
@@ -24,6 +25,6 @@ export default function LayoutClinet({
                 showMenu  ? 'ml-20 ' : 'ml-5'} transition-margin duration-300`}>
                 {children}
             </div>
-        </>
+        </socketContext.Provider>
     );
 }

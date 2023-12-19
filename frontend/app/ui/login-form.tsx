@@ -111,10 +111,11 @@ export default function LoginForm() {
           <div className="mt-2 mb-5 flex items-center bg-lightQuartze justify-center">
             <Link href="http://localhost:8000/auth/42/">
               <Image
-                className="pointer-events-hover opacity-90 rounded-md hover:opacity-80"
+                className="pointer-events-hover w-full h-full opacity-90 rounded-md hover:opacity-80"
                 src="/42.jpg"
                 width={40}
                 height={40}
+                objectFit='cover'
                 alt="42 Authentication API"
               />
             </Link>

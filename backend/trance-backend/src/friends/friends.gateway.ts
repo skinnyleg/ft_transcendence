@@ -47,8 +47,9 @@ export class FriendsGateway {
 	async acceptRequest(client: Socket, payload: Record<string, any>)
 	{
 		const verify = await validateAndSendError(payload, RequestActionDto);
-		if (verify.valid == true)
+		if (verify.valid == true){
 			this.friendsService.sendWebSocketError(client, verify.error, false);
+		}
 		else
 			await this.friendsService.acceptRequest(client, verify.input.userId, verify.input.requestId);
 	}
