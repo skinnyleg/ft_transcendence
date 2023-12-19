@@ -1,26 +1,54 @@
-import React, { FC } from 'react'
-import { Metadata } from 'next'
-import RightBar from '../ui/RightBar'
-import LeftBar from '../ui/LeftBar'
-import Content from '../ui/Content'
+"use client"
+import React, { FC, useEffect, useState} from 'react'
 import TopBar from '../ui/top'
+import { LeaderboardData } from '../interfaces/interfaces'
 import Leaderboard from '../ui/Leaderboard'
 
-export const metadata: Metadata = {
-  title: 'Chat',
-  description: 'Pong Platform Chat Page',
-  viewport: 'width=device-width, initial-scale=1',
-}
 
-interface ChatProps {}
 
-const chat: FC<ChatProps> = () => {
-	
+
+
+
+interface LeaderboardProps {}
+
+const LeaderboardPage: FC<LeaderboardProps> = () => {
+
+
+	const [ranking, setRanking] = useState<LeaderboardData[]>([])
+
+
+	const getLeaderboard = async () => {
+		let data;
+		try {
+				const leaderboard = await fetch('http://localhost:8000/user/Leaderboard', {
+				method: 'GET',
+				credentials: 'include',
+				headers:{'Content-Type': 'application/json',
+				}
+			});
+			data = await leaderboard.json();
+			setRanking(data);
+		}
+		catch (error)
+		{
+			console.log("error == ", error);
+		}
+		return data;
+	}
+
+
+	useEffect(() => {
+		getLeaderboard();
+	}, [])
+
+
 	return (
 		<div className='h-screen flex flex-col'>
 			<TopBar />
 			<div className='h-[100%] lg:h-[88%] xl:h-[89%] min-[1024px]:h-[90%] w-full flex flex-row  pt-[70px] pb-1 pr-2 pl-4 lg:pb-1 lg:pt-2'>
-				<Leaderboard />
+				<Leaderboard 
+					Ranking={ranking}
+				/>
 			</div>
 		</div>
 	)
@@ -28,4 +56,4 @@ const chat: FC<ChatProps> = () => {
 
 }
 
-export default chat;
+export default LeaderboardPage;

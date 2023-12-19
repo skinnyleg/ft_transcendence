@@ -15,6 +15,7 @@ const LeaderboardCard: FC<LeaderboardCardProps> = ({user}) => {
 						width={50}
 						height={50}
 						alt='user Pic'
+						className='rounded-full text-white'
 					/>
 				</div>
 				<h1 className='hidden lg:flex'>{user.nickname}</h1>

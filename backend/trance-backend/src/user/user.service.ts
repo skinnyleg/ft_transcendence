@@ -102,6 +102,7 @@ export class UserService {
 				profilePic: true,
 				Wins: true,
 				Losses: true,
+				Rank: true,
 			},
 		});
 
@@ -117,6 +118,7 @@ export class UserService {
 				Wins: user.Wins,
 				Losses: user.Losses,
 				winrate,
+				Rank: user.Rank,
 				self: user.id === id,
 			};
 		});
