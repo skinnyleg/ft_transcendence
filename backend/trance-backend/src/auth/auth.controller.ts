@@ -74,7 +74,7 @@ export class AuthController {
 	@Post('UpdateFirstLogin')
 	async UpdateFirstLogin(@Req() request, @Res() res)
 	{
-		const id = getId(request);
+		const id = request.user.sub;
 		return await this.authService.updateFirstLogin(id, res);
 	}
 

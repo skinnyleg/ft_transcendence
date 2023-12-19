@@ -99,7 +99,7 @@ export class AuthService {
 		if (!user)
 			throw new NotFoundException('user not found')
 
-		res.status(200).send(user)
+		res.status(200).send(user);
 	}
 
 	async updateFirstLogin(id: string, res: Response)
@@ -130,6 +130,6 @@ export class AuthService {
 		})
 		if (!updatedUser)
 			throw new NotFoundException('couldn\'t update user')
-			res.status(200).send({valid: true})
+		res.status(200).send({valid: true});
 	}
 }
