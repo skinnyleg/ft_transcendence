@@ -1,7 +1,7 @@
 import { IsBoolean, IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 
-export class joinChannelDto {
+export class joinChannel {
 
     @IsNotEmpty()
     @IsString()
@@ -13,7 +13,7 @@ export class joinChannelDto {
     password: string;
 }
 
-export class responseJoinChannelDto {
+export class resJoinChannel {
 
     @IsNotEmpty()
     @IsString()
@@ -26,4 +26,8 @@ export class responseJoinChannelDto {
     @IsNotEmpty()
     @IsBoolean()
     value: boolean;
+
+    @IsNotEmpty()
+    @IsString()
+    requestId: string
 }

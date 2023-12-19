@@ -6,7 +6,7 @@ enum    channelType {
     PRIVATE = 'PRIVATE'
 }
 
-export class creatChannelDto {
+export class creatChannel {
 
     @IsNotEmpty()
     @IsString()

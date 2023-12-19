@@ -1,9 +1,10 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { creatChannelDto } from '../dto/creat-channel.dto';
+import { creatChannel } from '../dto/creat-channel.dto';
 import { Channel, User, Types, Message, Dm } from '@prisma/client';
 import { ChannelOutils, mutedUsers } from './outils';
 import { DateTime } from 'luxon';
+
 
 @Injectable()
 export class ChannelService {
@@ -13,7 +14,7 @@ export class ChannelService {
         private  outils: ChannelOutils,
         ){}
 
-    async creatChannel(data: creatChannelDto, owner: string): Promise<Channel>
+    async creatChannel(data: creatChannel, owner: string): Promise<Channel>
     {
         const {name, type, picture, password} = data;
         const type_: Types = type as Types;
@@ -34,6 +35,9 @@ export class ChannelService {
                 admins: { connect: [{ nickname: owner }] },
             },
         });
+        if (!newChannel) {
+            throw new InternalServerErrorException('Failed channel creation.');
+        }
         const channel_: mutedUsers = {name, users: []};
         this.outils.mutedList.push(channel_);
         return newChannel;
@@ -72,7 +76,7 @@ export class ChannelService {
     {
         const user = await this.outils.isUserInChannel(channelId, sender);
         if (!user) {
-            throw new NotFoundException(`the user ${sender} is not exist in  channel ${channelId}`);
+            throw new UnauthorizedException(`You are not member of ${channelId}.`);
         }
         const id = await this.outils.getChannelIdByName(channelId);
         const newMessage = await this.prisma.message.create({
@@ -82,6 +86,9 @@ export class ChannelService {
                 channel: {connect: { id, }},
             },
         });
+        if (!newMessage) {
+            throw new InternalServerErrorException('Failed message creation.');
+        }
         return newMessage;
     }
     

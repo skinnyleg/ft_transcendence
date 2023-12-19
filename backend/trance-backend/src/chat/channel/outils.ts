@@ -40,7 +40,6 @@ export class ChannelOutils {
                     select: {
                         id: true,
                         intraId: true,
-                        login: true,
                         profilePic: true,
                         nickname: true,
                         status: true,
@@ -50,7 +49,6 @@ export class ChannelOutils {
                     select : {
                         id: true,
                         intraId: true,
-                        login: true,
                         profilePic: true,
                         nickname: true,
                         status: true,
@@ -223,18 +221,18 @@ export class ChannelOutils {
         return user.id || null;
     }
 
-    async   getUserChannelRole(channelName: string, user: string): Promise<'owner' | 'admin' | 'member'>
+    async   getUserChannelRole(channelName: string, user: string)
     {
         const channel = await this.findChannelByName(channelName);
         if (channel.owner === user) {
-            return 'owner';
+            return 'owner'.toUpperCase();
         }
         const isAdmin = await this.isUserAdministrator(channelName, user);
         if (isAdmin) {
-            return 'admin';
+            return 'admin'.toUpperCase();
         }
         else {
-            return 'member';
+            return 'member'.toUpperCase();
         }
     }
 

@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { DmOutils } from './dm.outils';
 import { User, Types, Message, Dm } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -21,9 +21,11 @@ export class DmService {
                   { id: user2 }
                 ],
               },
-               // You can add messages here if needed
             },
           });
+        if (!dm) {
+            throw new InternalServerErrorException('Dm creation failed.');
+        }
         return dm || null;
     }
 

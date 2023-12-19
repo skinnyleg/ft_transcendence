@@ -348,7 +348,7 @@ export class UserService {
 		return id;
 	}
 
-	async generateRequest(senderId: string, recipientId: string, typeOfRequest: RequestType, respond: boolean = false)
+	async generateRequest(senderId: string, recipientId: string, typeOfRequest: RequestType, respond: boolean = false, channelName?: string)
 	{
 		let description: string;
 		if (typeOfRequest === RequestType.FRIEND)
@@ -363,6 +363,8 @@ export class UserService {
 			description = "has blocked you"
 		else if (typeOfRequest === RequestType.UNBLOCKED)
 			description = "has unblocked you"
+		else if (typeOfRequest === RequestType.JOINCHANNEL)
+			description = "wishes to join your channel"
 
 		const request = await this.prisma.request.create({
 		  data: {
@@ -371,6 +373,7 @@ export class UserService {
 			typeOfRequest: typeOfRequest,
 			descriptionOfRequest: description,
 			responded: respond,
+			channelName,
 		  },
 		});
 		if (!request)
