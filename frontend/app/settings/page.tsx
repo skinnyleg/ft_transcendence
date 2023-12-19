@@ -197,9 +197,9 @@ const settings = () => {
     }
 
     return (
-        <main className="flex flex-col font-white bg-main xl:overflow-y-hidden overflow-y-styled-scrollbar h-full xl:h-screen mr-2">
+        <main className="flex flex-col font-white bg-main xl:overflow-y-hidden overflow-y-styled-scrollbar h-screen xl:h-screen mr-2">
             <TopBar />
-            <div className="flex flex-col w-full h-[90%] justify-between">
+            <div className="flex flex-col w-full h-[90%] justify-between"> 
                 <div className="relative xl:h-[30%] h-[30%] mt-10">
                     <div onClick={handleFileAdd} className="w-[95%] rounded-md relative h-[80%] mx-auto">
                         <img alt="background" src={bgImage} className="w-full rounded-md h-full object-cover"/>
@@ -210,7 +210,9 @@ const settings = () => {
                         </div>
                     </div>
                     <div onClick={handleAvatarAdd} className="absolute bottom-10 lg:bottom-0 left-10 w-[10%] xl:w-[10%] xl:h-[40%] lg:h-[30%] h-[20%]">
-                        <img alt="avatar" src={avatarImage} className="w-full rounded-full h-full xl:max-w-[100%] xl:max-h-[100%] min-w-[100%] min-h-[100%]"/>
+                        <div className="w-full rounded-full h-full xl:max-w-[100%] xl:max-h-[100%] min-w-[100%] min-h-[100%]">
+                            <img alt="avatar" src={avatarImage} className="w-full rounded-full h-full xl:max-w-[100%] xl:max-h-[100%] min-w-[100%] min-h-[100%]"/>
+                        </div>
                         <label htmlFor="file"></label>
                         <input type="file" id="file" className="hidden" ref={avatarRef} onChange={handleAvatarChange}/>
                         <div className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 text-[50px] rounded-full bg-white">

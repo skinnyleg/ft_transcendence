@@ -38,7 +38,7 @@ import checkAuth from "./checktoken";
 export default async function middleware(request: NextRequest){
     const token  = request.cookies.get("token");
     const succes = await checkAuth(token?.value);
-    // const isFirstTime = await checkVerification();
+    const isFirstTime = await checkVerification();
     console.log("hsa", succes);
 
     if (succes){
