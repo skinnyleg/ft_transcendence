@@ -3,25 +3,29 @@
 import React, { use, useRef, useState } from 'react';
 import VerificationInput from '../ui/qrCode';
 import Image from 'next/image'
+import { redirect, useRouter } from 'next/navigation';
 // import useInputRefs from '../ui/useInputRefs';
 
 
 const VerifyCode :  React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const inputRefs =  Array(6).fill(0).map(() => useRef<HTMLInputElement | null>(null));
+  const router = useRouter();
   const handleSubmit = async (code: string) => {
     try {
       // Send the code to the backend for verification
-      const response = await fetch('/api/verify-code', {
+      const response = await fetch('http://localhost:8000/qr/check', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({ code }),
       });
-
+      console.log("result", response);
       if (response.ok) {
         const data = await response.json();
+        router.replace('/Dashboard');
         console.log('Verification successful:', data);
       }
       else if (response.status === 404) {

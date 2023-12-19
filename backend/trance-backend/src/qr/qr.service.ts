@@ -13,6 +13,7 @@ export class QrService {
 
 	async checkQrCode(QrCode: string, id: string, res: Response)
 	{
+		
 		const secret = await this.userservice.getSecret(id);
 		if (!secret)
 			throw new ConflictException('user hasn\'t enabled 2FA')
@@ -33,5 +34,4 @@ export class QrService {
 			throw new UnauthorizedException('not allowed')
 		 }
 	}
-
 }

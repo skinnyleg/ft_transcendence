@@ -39,9 +39,11 @@ export class AuthController {
 		response.cookie('token', token, {maxAge: TOKENEXP * 1000})
 		response.cookie('refresh', refresh, {maxAge: REFRESHEXP * 1000})
 		if (request.user.FirstLogin === true)
+		{
 			response.redirect(`${process.env.FrontendHost}/settings`);
+			return ;
+		}
 		response.redirect(`${process.env.FrontendHost}/Dashboard`);
-		// response.status(200).json(token);
 	}
 
 	@UseGuards(JwtAuthGuard)
@@ -56,33 +58,24 @@ export class AuthController {
 	@Get('CheckToken')
 	CheckToken(@Res() res)
 	{
-		// if (req.signedCookies && 'token' in req.signedCookies) {
-		//   if (req.signedCookies.token.length > 0) {
-		// 	if (payload.token === "")
-		// 		res.status(200).json(req.signedCookies.token);
-		// 	else if (req.signedCookies.token === payload.token)
-		// 		res.status(200).json(payload.token);
-		//   }
-		// }
-		// throw new UnauthorizedException('not allowed')
 		res.status(200).send({message: "true"})
 	}
 
 
 	@UseGuards(JwtAuthGuard)
 	@Get('CheckFirstLogin')
-	async CheckFirstLogin(@Req() request)
+	async CheckFirstLogin(@Req() request, @Res() res)
 	{
-		const id = getId(request);
-		return await this.authService.checkFirstLogin(id);
+		const id = request.user.sub;
+		return await this.authService.checkFirstLogin(id, res);
 	}
 
 	@UseGuards(JwtAuthGuard)
 	@Post('UpdateFirstLogin')
-	async UpdateFirstLogin(@Req() request)
+	async UpdateFirstLogin(@Req() request, @Res() res)
 	{
-		const id = getId(request);
-		return await this.authService.updateFirstLogin(id);
+		const id = request.user.sub;
+		return await this.authService.updateFirstLogin(id, res);
 	}
 
 	@UseGuards(RefreshJwtAuthGuard)

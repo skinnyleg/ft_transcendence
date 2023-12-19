@@ -54,7 +54,7 @@ export class FriendsService {
 		client.emit('notification', `You have ${notifications.length} new notifications`)
 	}
 
-	async emitToFriendsStatus(id: string, status: string)
+	async emitToFriendsStatus(id: string, status: UserStatus)
 	{
 		const friends = await this.userService.getFriends(id);
 		for (const friend of friends) {
@@ -64,7 +64,6 @@ export class FriendsService {
 		  }
 		}
 	}
-
 
 
 	async deleteUser(client: Socket) {
@@ -80,7 +79,7 @@ export class FriendsService {
 		}
 	}
 
-
+	
 
 	async sendRequest(client: Socket, userId: string)
 	{

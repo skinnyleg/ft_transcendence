@@ -2,9 +2,9 @@
 const nextConfig = {images: {
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: 'cdn.intra.42.fr',
-        port: '',
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '8000',
       },
     ],
   },

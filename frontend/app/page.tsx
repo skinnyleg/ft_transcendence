@@ -1,5 +1,4 @@
 'use client';
-import Image from 'next/image'
 // import { Pong } from 'react-pong';
 import LoginForm from '@/app/ui/login-form';
 

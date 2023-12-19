@@ -3,7 +3,7 @@ import LayoutClient from "@/app/ui/layoutClient";
 import { Metadata } from "next";
 
 export const metadata : Metadata = {
-  title: 'Dashboard',
+  title: 'settings',
   description: 'Pong Platform Login Page',
   viewport: 'width=device-width, initial-scale=1',
   icons: ''

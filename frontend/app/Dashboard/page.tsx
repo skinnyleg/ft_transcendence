@@ -6,7 +6,6 @@ import React, { useState, useEffect } from 'react';
 import PowerUps from '../ui/PowerUps';
 import PlayButton from '../ui/PlayButton';
 import axios from 'axios';
-import withAuth from '../withAuth';
 import FriendsList from '../ui/FriendList';
 import { FaRobot } from "react-icons/fa";
 
@@ -27,7 +26,7 @@ function Dashboard() {
     const fetchData = async () => {
       try {
         const response = await axios.get('http://localhost:8000/user/Dashboard', { withCredentials: true});
-        console.log("data", response.data);
+        console.log("Dash", response.status);
         setDashboardData(response.data);
       } catch (error) {
         setError('Error fetching data');
@@ -38,7 +37,7 @@ function Dashboard() {
 
     fetchData();
   }, []);
-  console.log("hello", dashboardData);
+  // console.log("hello", dashboardData);
   const doneAchievements = dashboardData?.doneAchievements || [];
   const notDoneAchievements = dashboardData?.notDoneAchievements || [];
   const friends = dashboardData?.friends || [];
@@ -52,14 +51,12 @@ function Dashboard() {
   }
 
   return (
-    <main className="flex flex-col font-white bg-main overflow-y-hidden mr-2">
+    <main className="flex flex-col font-white bg-main overflow-y-hidden md:overflow-y-auto mr-2">
       <TopBar />
-      <div className="flex flex-col lg:mt-10 md:mt-10 xl:mt-5">
-        <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-5 lg:grid-rows-3 gap-4 w-full h-full mt-4 md:grid-row-5 grid-row-5">
+      <div className="flex flex-col lg:mt-10 h-[95%] md:mt-5 xl:mt-5">
+        <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-5 lg:grid-rows-3 gap-5 w-full h-full mt-4 md:grid-row-5 grid-row-5">
         
           <div className="relative p-20 rounded-md col-span-1 lg:col-span-3 h-[200px] md:h-[300px] xl:h-[370px] lg:w-full shadow-md" style={{backgroundImage: `url(${theme})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
-            {/* todo: add Bot/Quee button */}
-
             <FaRobot className="text-accents w-8 h-8 absolute right-5 top-5"/>
             <QueueListIcon className="text-accents w-8 h-8 absolute right-12 mr-2 top-5" />
             <PlayButton theme = {theme} PowerUp={powerup}/>
@@ -71,7 +68,7 @@ function Dashboard() {
 
           <Themes handleThemeChange={handleThemeChange} />
           
-          <FriendsList friends={friends} />
+          <FriendsList />
 
           <PowerUps handlePowerUpChange={handlePowerUpChange}/>
         </div>
@@ -80,4 +77,4 @@ function Dashboard() {
   );
 }
 
-export default withAuth(Dashboard);
+export default (Dashboard);

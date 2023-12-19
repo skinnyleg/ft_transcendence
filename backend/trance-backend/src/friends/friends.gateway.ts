@@ -19,7 +19,8 @@ export class FriendsGateway {
 
 
 	async handleConnection(client: Socket) {
-		await this.friendsService.saveUser(client)
+		await this.friendsService.saveUser(client);
+		// console.log(client.id);
 	}
 
 	@SubscribeMessage('add-friend')
@@ -29,7 +30,7 @@ export class FriendsGateway {
 		if (verify.valid == true)
 			this.friendsService.sendWebSocketError(client, verify.error, false);
 		else
-			await this.friendsService.sendRequest(client, verify.input.userId)
+			await this.friendsService.sendRequest(client, verify.input.userId);
 	}
 
 	@SubscribeMessage('remove-friend')
@@ -66,8 +67,9 @@ export class FriendsGateway {
 	async acceptRequest(client: Socket, payload: Record<string, any>)
 	{
 		const verify = await validateAndSendError(payload, RequestActionDto);
-		if (verify.valid == true)
+		if (verify.valid == true){
 			this.friendsService.sendWebSocketError(client, verify.error, false);
+		}
 		else
 			await this.friendsService.acceptRequest(client, verify.input.userId, verify.input.requestId);
 	}

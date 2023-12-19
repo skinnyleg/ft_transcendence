@@ -13,7 +13,7 @@ export const metadata : Metadata = {
 export default function Layout({ children }: { children: React.ReactNode }) {
   
   return (
-    <div className="flex bg-main flex-col md:flex-row md:overflow-hidden xl:overflow-hidden h-screen">
+    <div className="flex bg-main flex-col md:flex-row md:overflow-y-auto overflow-y-auto xl:overflow-y-hidden lg:overflow-y-hidden h-screen">
       <LayoutClinet>
         {children}
       </LayoutClinet>

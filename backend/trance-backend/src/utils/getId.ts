@@ -5,6 +5,7 @@ export const getId = (req: Request) => {
 	if (!req || !req.signedCookies)
 		throw new BadRequestException('Error Cookies')
 	const id = req.signedCookies.id;
+	console.log(req.signedCookies);
 	if (id == false)
 		throw new UnauthorizedException('Cookie has been compromised')
 	return (id);

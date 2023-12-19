@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from "react";
+import { useContext, useState } from "react";
 import NavBar from "./navBar";
+import { socket, socketContext } from "../context/soketContext";
 
 export default function LayoutClientDashboard({
     children
@@ -10,13 +11,11 @@ export default function LayoutClientDashboard({
   }) {
 
     const [showMenu, setShowMenu] = useState(false);
-
     const handleShowMenu = (showMenu: boolean) => {
         setShowMenu(showMenu);
     }
-
     return (
-        <>
+        <socketContext.Provider value={socket}>
             <div className={`flex-none md:w-10 w-20 lg:w-20`}>
                 <NavBar handleShowMenu={handleShowMenu} />
             </div>
@@ -25,6 +24,6 @@ export default function LayoutClientDashboard({
                 } transition-margin duration-300`}>
                 {children}
             </div>
-        </>
+        </socketContext.Provider>
     );
 }
