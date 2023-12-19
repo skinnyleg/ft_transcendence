@@ -16,8 +16,8 @@ const ChatContent: FC<ChatContentProps> = ({channel}) => {
 		const scrollableRef = useRef(null);
 		const isJoined = channel?.isJoined;
 		const channelType = channel?.channelType;
-		const addBlur = !isJoined && (channelType === 'PROTECTED' || channelType === 'PRIVATE');
-
+		const addBlur = (isJoined === 'NOTJOINED' || isJoined === 'REQUESTED') && (channelType === 'PROTECTED' || channelType === 'PRIVATE');
+		console.log("joined val == ", isJoined);
 
 		useEffect(() => {
 			console.log("ref obj == ", scrollableRef.current)

@@ -99,3 +99,15 @@ export interface MessageInter {
 	content: string;
 	timeStamp: string;
 }
+
+
+export interface LeaderboardData {
+  id: string;
+  nickname: string;
+  profilePic: string;
+  Wins: number;
+  Losses: number;
+  winrate: number;
+  Rank: number;
+  self: boolean;
+};

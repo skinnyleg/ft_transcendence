@@ -1,4 +1,4 @@
-import { ChannelInter, ChannelUser, DmsInter, MessageInter } from "../interfaces/interfaces";
+import { ChannelInter, ChannelUser, DmsInter, LeaderboardData, MessageInter } from "../interfaces/interfaces";
 
 export const Messages: MessageInter[] = [
 	{
@@ -278,3 +278,107 @@ export const channels: ChannelInter[] = [
   },
   // Add more objects as needed...
 ];
+
+
+export const Ranking : LeaderboardData[] = [
+	{
+		id: '1',
+		nickname: 'haitam',
+		profilePic: '/GroupChat.png',
+		Wins: 5,
+		Losses: 2,
+		winrate: 99.12,
+		Rank: 1,
+		self: true,
+	},
+	{
+		id: '2',
+		nickname: 'daifi',
+		profilePic: '/GroupChat.png',
+		Wins: 5,
+		Losses: 2,
+		winrate: 65.23,
+		Rank: 2,
+		self: false,
+	},
+	{
+		id: '3',
+		nickname: 'doba',
+		profilePic: '/GroupChat.png',
+		Wins: 5,
+		Losses: 2,
+		winrate: 50.4,
+		Rank: 3,
+		self: false,
+	},
+	{
+		id: '4',
+		nickname: 'taha',
+		profilePic: '/GroupChat.png',
+		Wins: 5,
+		Losses: 2,
+		winrate: 45.1,
+		Rank: 4,
+		self: false,
+	},
+	{
+		id: '4',
+		nickname: 'taha',
+		profilePic: '/GroupChat.png',
+		Wins: 5,
+		Losses: 2,
+		winrate: 45.1,
+		Rank: 4,
+		self: false,
+	},
+	{
+		id: '4',
+		nickname: 'taha',
+		profilePic: '/GroupChat.png',
+		Wins: 5,
+		Losses: 2,
+		winrate: 45.1,
+		Rank: 4,
+		self: false,
+	},
+	{
+		id: '4',
+		nickname: 'taha',
+		profilePic: '/GroupChat.png',
+		Wins: 5,
+		Losses: 2,
+		winrate: 45.1,
+		Rank: 4,
+		self: false,
+	},
+	{
+		id: '4',
+		nickname: 'taha',
+		profilePic: '/GroupChat.png',
+		Wins: 5,
+		Losses: 2,
+		winrate: 45.1,
+		Rank: 4,
+		self: false,
+	},
+	{
+		id: '4',
+		nickname: 'taha',
+		profilePic: '/GroupChat.png',
+		Wins: 5,
+		Losses: 2,
+		winrate: 45.1,
+		Rank: 4,
+		self: false,
+	},
+	{
+		id: '4',
+		nickname: 'taha',
+		profilePic: '/GroupChat.png',
+		Wins: 5,
+		Losses: 2,
+		winrate: 45.1,
+		Rank: 4,
+		self: false,
+	}
+]  
