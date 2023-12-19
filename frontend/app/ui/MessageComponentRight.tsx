@@ -33,7 +33,7 @@ const MessageComponentRight: FC<MessageComponentRightProps> = ({message}) => {
 				)
 			}
 				<div className={`pl-5 whitespace-normal break-words bg-slate-200 text-black 
-					${picExists() ? 'rounded-br-none' : ''} rounded-xl flex flex-col w-4/5 h-full p-1 gap-1`}>
+					${picExists() ? 'rounded-br-none' : ''} rounded-2xl flex flex-col w-4/5 h-full p-1 gap-1`}>
 						<h1 className='font-bold text-xs'>{message.senderNick}</h1>
 						<p className='text-xs'>{message.content}asddsadasasjdhsajhd  asjdhsaj asdadamndw qwmenw q </p>
 						<span className='text-gray-400 self-end text-xs'>{message.timeStamp}</span>
