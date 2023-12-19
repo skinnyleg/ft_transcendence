@@ -210,17 +210,6 @@ export class ChannelOutils {
         });
     }
 
-    async   getUserIdByName(nickname: string): Promise<string | null>
-    {
-        const user = await this.prisma.user.findUnique({
-            where : {
-                nickname,
-            },
-        });
-        console.log('user id: ', user.id);
-        return user.id || null;
-    }
-
     async   getUserChannelRole(channelName: string, user: string)
     {
         const channel = await this.findChannelByName(channelName);

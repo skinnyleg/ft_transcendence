@@ -6,12 +6,11 @@ import { UserService } from '../../user/user.service';
 import { creatChannel } from '../dto/creat-channel.dto';
 import { BadRequestException, ForbiddenException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { DmOutils, dmsSide } from '../dm/dm.outils';
-import { creatMessageCh } from '../dto/creat-message.dto';
+import { creatMessageCh, getMessagesCH, sendMessageDm } from '../dto/messages.dto';
 import { ChannelOutils, channelSidebar, channelsSide } from '../channel/outils';
 import { DmService } from '../dm/dm.service';
 import { joinChannel, resJoinChannel } from '../dto/joinChannelDto.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { sendMessageDmDto } from '../dto/sendMessage.dto';
 import { changeNameDto, changeOwnerDto, changePassDto, changeTypeDto, changepicDto } from '../dto/changePramCH.dto';
 import { banUserDto, kickUserDto, muteUserDto } from '../dto/blacklist.dto';
 import { RequestType } from '@prisma/client';
@@ -87,7 +86,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				throw new BadRequestException(`Invalid channel name.`);
 			}
 			if ((await this.Outils.isChannelExist(data.name))) {
-				throw new BadRequestException(`${data.name} is allocated.`);
+				throw new BadRequestException(`${data.name} name is allocated.`);
 			}
 			const newChannel = await this.channelService.creatChannel(data, owner);
 			const buffer: channelsSide = {};
@@ -115,7 +114,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			const {channelName, password} = data;
 			const addUser = await this.channelService.joinChannel(channelName, user.nickname, password);
 			if (addUser[0] === 'PRIVATE') {
-				const ownerId = await this.Outils.getUserIdByName(addUser[1]);
+				const ownerId = await this.DmOutils.getUserIdByName(addUser[1]);
 				const ownerSocket = this.usersSockets.find(user => user.userId === ownerId);
 				const checkRequest = await this.prisma.request.findUnique({
 					where: {
@@ -140,11 +139,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		catch (error)
 		{
 			console.error('Error<joinChannel>: ', error.message);
-			client.emit('Failed', 'Failed to join channel.');
+			if (error instanceof UnauthorizedException) {
+				client.emit('Failed', error.message);
+			} else {
+				client.emit('Failed', 'Failed to join channel.');
+			}
 		}
 	}
 
-	@SubscribeMessage('resJoinChannel')
+	@SubscribeMessage('responseJoin')
 	async	ResponseJoinChannel(@MessageBody() data: resJoinChannel,  @ConnectedSocket() client: Socket)
 	{
 		try
@@ -152,7 +155,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			await  this.DmOutils.validateDtoData(data, resJoinChannel);
 			const {channelName, user, value, requestId} = data;
 			const checkOwner = await this.Outils.getChannelOwner(channelName);
-			if (checkOwner === client.data.user.nickname) {
+			if (checkOwner !== client.data.user.nickname) {
 				throw new ForbiddenException(`Forbidden action.`);
 			}
 			const checkRequest = await this.prisma.request.findUnique({
@@ -163,7 +166,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			if (!checkRequest) {
 				throw new ForbiddenException('Forbidden action.');
 			}
-			const resUserId = await this.Outils.getUserIdByName(user);
+			const resUserId = await this.DmOutils.getUserIdByName(user);
 			const userSocket = this.usersSockets.find(user => user.userId === resUserId);
 			if (!userSocket) {
 				return;
@@ -205,7 +208,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			const user =  client.data.user.nickname;
 			const isUserInBlacklist = await this.Outils.isUserInBlacklist(channelId, user);
 			if (isUserInBlacklist) {
-				throw new UnauthorizedException(`You are not allowed to send message`);
+				throw new UnauthorizedException(`you are not allowed to send message`);
 			}
 			const message = await this.channelService.creatMessageChannel(channelId, user, content);
 			const Id = await this.Outils.getChannelIdByName(channelId);
@@ -226,15 +229,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('sendMessageDM')
-	async	handleSendMessageDm(@MessageBody() data: sendMessageDmDto, @ConnectedSocket() client: Socket)
+	async	handleSendMessageDm(@MessageBody() data: sendMessageDm, @ConnectedSocket() client: Socket)
 	{
 		try
 		{
 			// check if i'm blocked by this users
-			await  this.DmOutils.validateDtoData(data, sendMessageDmDto);
+			await  this.DmOutils.validateDtoData(data, sendMessageDm);
 			const {receiver, content} = data;
 			const user = client.data.user;
-			const user2Id = await this.Outils.getUserIdByName(receiver);
+			const user2Id = await this.DmOutils.getUserIdByName(receiver);
 			let dmId = await this.DmOutils.getDmIdby2User(client.data.user.id, user2Id);
 			if (dmId === null) {
 				await this.DmService.creatDMchat(client.data.user.id, user2Id);
@@ -267,7 +270,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		{
 			const user = client.data.user.nickname;
 			await this.channelService.leaveChannel(channelName, user);
-			client.emit('leaveChannelDone', {msg: 'you are now out of this channel'});
+			client.emit('notification', {msg: 'you are now out of this channel'});
 		}
 		catch(error)
 		{
@@ -545,5 +548,52 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			client.emit('Failed', { error: 'Failed to find channel.' });
 		}
 	}
-	// search for dm for all user friends -> merge with haitam in friend fields
+	
+	@SubscribeMessage('getMessagesCH')
+	async	getAllMessages(@MessageBody() data: getMessagesCH, @ConnectedSocket() client: Socket)
+	{
+		try
+		{
+			await this.DmOutils.validateDtoData(data, getMessagesCH);
+			const user = client.data.user;
+			const { channelName } = data;
+			const isMember = await this.Outils.isUserInChannel(channelName, user.nickname);
+			if (!isMember) {
+				throw new ForbiddenException('forbidden action.');
+			}
+			const channelId = await this.Outils.getChannelIdByName(channelName);
+			const blockedList = await this.DmOutils.getBlockedUsers(user.nickname);
+			// const BlockedBy = await this.DmOutils.isInBlockedList(user.nickname, blockedList.BlockedBy);
+			// const usersBlocked = await this.DmOutils.isInBlockedList(user.nickname, blockedList.usersBlocked);
+			// blockedList.BlockedBy.push('a527dbe7-bd1e-42f8-a258-85eb1a2ac833');
+			// blockedList.usersBlocked.push('a2659f87-2971-4e6d-bc5f-0be6d57a3b84');
+			const allMessages = await this.prisma.message.findMany({
+				where: {
+					channelId: channelId,
+					senderId: {
+						not: {
+							in: [...blockedList.BlockedBy, ...blockedList.usersBlocked],
+						},
+					},
+				},
+				include: {
+					sender: {
+						select: {
+							nickname: true,
+							profilePic: true,
+						},
+					},
+				},
+				orderBy: {
+					createdAt: 'asc',
+				},
+			});
+			client.emit('notification', {msg: 'message are listed, check if all clean.', allMessages})
+		}
+		catch (error)
+		{
+			console.error('Error<getMessages>: ', error.message);
+			client.emit('Failed', 'Failed to get messages.');
+		}
+	}
 }

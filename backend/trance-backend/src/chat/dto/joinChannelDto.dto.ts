@@ -10,7 +10,7 @@ export class joinChannel {
     @IsOptional()
     @IsNotEmpty()
     @IsString()
-    password: string;
+    password?: string;
 }
 
 export class resJoinChannel {
