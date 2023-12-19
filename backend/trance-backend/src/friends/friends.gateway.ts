@@ -1,12 +1,17 @@
 import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { FriendsService } from './friends.service';
 import { Server, Socket } from 'socket.io';
-import { FriendRequestDto } from './Dto/userIdDto';
+import { BlockRequestDto, FriendRequestDto } from './Dto/userIdDto';
 import { Record } from '@prisma/client/runtime/library';
 import { RequestActionDto } from './Dto/requestDto';
 import { validateAndSendError } from 'src/utils/validateInputWebsocket';
 
-@WebSocketGateway({ namespace: 'friendsGateway' })
+@WebSocketGateway({ namespace: 'friendsGateway', cors: {
+		origin: process.env.FrontendHost,
+		allowedHeaders: ["token"],
+		credentials: true
+	}
+})
 export class FriendsGateway {
   constructor(private readonly friendsService: FriendsService) {}
   @WebSocketServer()
@@ -35,6 +40,26 @@ export class FriendsGateway {
 			this.friendsService.sendWebSocketError(client, verify.error, false);
 		else
 			await this.friendsService.deleteRequest(client, verify.input.userId)
+	}
+
+	@SubscribeMessage('block-friend')
+	async blockFriend(client: Socket, payload: Record<string, any>)
+	{
+		const verify = await validateAndSendError(payload, BlockRequestDto);
+		if (verify.valid == true)
+			this.friendsService.sendWebSocketError(client, verify.error, false);
+		else
+			await this.friendsService.blockFriend(client, verify.input.userId)
+	}
+
+	@SubscribeMessage('unblock-friend')
+	async unblockFriend(client: Socket, payload: Record<string, any>)
+	{
+		const verify = await validateAndSendError(payload, BlockRequestDto);
+		if (verify.valid == true)
+			this.friendsService.sendWebSocketError(client, verify.error, false);
+		else
+			await this.friendsService.unblockFriend(client, verify.input.userId)
 	}
 
 	@SubscribeMessage('accept-request')

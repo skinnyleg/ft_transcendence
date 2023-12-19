@@ -29,7 +29,7 @@ export class FriendsService {
 			user = await this.userService.findOneById(payload.sub);
 			await this.userService.updateStatus(user.id, UserStatus.ONLINE)
 			this.Users.push({ id: user.id, socket: client });
-			await this.emitToFriendsStatus(user.id, "ONLINE");
+			await this.emitToFriendsStatus(user.id, UserStatus.ONLINE);
 		}
 		catch (error)
 		{
@@ -60,7 +60,7 @@ export class FriendsService {
 		for (const friend of friends) {
 		  const friendUser = this.getUserById(friend.friendId);
 		  if (friendUser) {
-			friendUser.socket.emit('statusChange', { id: friendUser.id, status });
+			friendUser.socket.emit('statusChange', { id: id, status });
 		  }
 		}
 	}
@@ -72,7 +72,7 @@ export class FriendsService {
 			const user = this.getUserBySocketId(client.id);
 			await this.userService.updateStatus(user.id, UserStatus.OFFLINE)
 			this.Users = this.Users.filter((u) => u.socket.id !== client.id);
-			await this.emitToFriendsStatus(user.id, "OFFLINE");
+			await this.emitToFriendsStatus(user.id, UserStatus.OFFLINE);
 		}
 		catch (error)
 		{
@@ -111,7 +111,8 @@ export class FriendsService {
 			if (toSend !== undefined)
 			{
 				const notif = await this.userService.generateNotifData(requestId);
-				toSend.socket.emit('notifHistory', notif);
+				const nick = await this.userService.getNickById(sender.id)
+				toSend.socket.emit('notification', `${nick} has unfriended you`);
 			}
 			client.emit('notification', 'Unfriend request sent successfully');
 		}
@@ -122,6 +123,46 @@ export class FriendsService {
 	}
 
 
+	async blockFriend(client: Socket, userId: string)
+	{
+		const toSend = this.getUserById(userId);
+		const sender = this.getUserBySocketId(client.id);
+		try {
+			const requestId = await this.userService.blockUser(sender.id, userId);
+			if (toSend !== undefined)
+			{
+				const notif = await this.userService.generateNotifData(requestId);
+				const nick = await this.userService.getNickById(sender.id)
+				toSend.socket.emit('notification', `${nick} has blocked you`);
+			}
+			client.emit('notification', 'block request sent successfully');
+		}
+		catch(error)
+		{
+			this.sendWebSocketError(sender.socket, error.message, false);
+		}
+	}
+
+
+	async unblockFriend(client: Socket, userId: string)
+	{
+		const toSend = this.getUserById(userId);
+		const sender = this.getUserBySocketId(client.id);
+		try {
+			const requestId = await this.userService.unblockUser(sender.id, userId);
+			if (toSend !== undefined)
+			{
+				const notif = await this.userService.generateNotifData(requestId);
+				const nick = await this.userService.getNickById(sender.id)
+				toSend.socket.emit('notification', `${nick} has unblocked you`);
+			}
+			client.emit('notification', 'unblock request sent successfully');
+		}
+		catch(error)
+		{
+			this.sendWebSocketError(sender.socket, error.message, false);
+		}
+	}
 
 	async refuseRequest(client: Socket, userId: string, requestId: string)
 	{

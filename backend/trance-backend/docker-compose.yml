@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:13
+    restart: always
+    container_name: tranceDB
+    ports:
+      - "5555:5432"
+    environment:
+      - POSTGRES_USER=tranceuser
+      - POSTGRES_PASSWORD=trancePass
+      - POSTGRES_DB=ft_transcendence
+    volumes:
+      - my-db:/var/lib/postgresql/data
+volumes:
+  my-db:
+
+
+# DATABASE_URL="postgresql://tranceuser:trancePass@localhost:5432/ft_transcendence

@@ -25,9 +25,9 @@ export class QrService {
 		 if (isValid)
 		{
 			const token = await this.authService.createToken(user.id, user.nickname, TOKENEXP, TOKENSECRET)
-			res.cookie('token', token, {signed: true});
 			const refresh = await this.authService.createToken(user.id, user.nickname, REFRESHEXP, REFRESHSECRET)
-			res.cookie('refresh', refresh, {signed: true})
+			res.cookie('token', token, {maxAge: TOKENEXP * 1000})
+			res.cookie('refresh', refresh, {maxAge: REFRESHEXP * 1000})
 			res.status(200).json(token);
 		 } else {
 			throw new UnauthorizedException('not allowed')
