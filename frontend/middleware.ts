@@ -42,7 +42,7 @@ export default async function middleware(request: NextRequest){
         return NextResponse.next();
     }
     if (isFirstTime)
-        return NextResponse.redirect(new URL("http://localhost:3000/settings"));
+      return NextResponse.redirect(new URL("http://localhost:3000/settings"));
 
     return NextResponse.redirect(new URL("/", "http://localhost:3000"));
 }

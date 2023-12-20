@@ -28,7 +28,7 @@ const imgObj: Record<string, string> = {
 
 const Achievements = ({doneAchievements, notDoneAchievements}: AchievementsDataProps)=> {
   return (
-    <div className="bg-accents p-5 rounded-md lg:col-span-2 col-span-1 lg:col-start-4 lg:col-end-6 md:row-start-4 md:row-end-5 lg:row-start-1 lg:row-end-2 w-full h-[350px] xl:h-[370px] lg:h-[300px] shadow-md">
+    <div className="bg-accents p-5 rounded-md lg:col-span-2 col-span-1 lg:col-start-4 lg:col-end-6 md:row-start-4 md:row-end-5 lg:row-start-1 lg:row-end-2 w-full md:h-[350px] h-[350px] xl:h-[33vh] lg:h-[33vh] shadow-md">
       <h4 className="text-xl font-bold text-white mb-0">ACHIEVEMENTS</h4> 
       <div className="flex-col space-y-4 p-4 overflow-y-scroll h-5/6 lg:h-5/6 w-full styled-scrollbar">
       {/* Not done achievements */}

@@ -53,10 +53,9 @@ function Dashboard() {
   return (
     <main className="flex flex-col font-white bg-main overflow-y-hidden md:overflow-y-auto mr-2">
       <TopBar />
-      <div className="flex flex-col lg:mt-10 h-[95%] md:mt-5 xl:mt-5">
+      <div className="flex flex-col lg:mt-5 h-[95%] md:mt-10 xl:mt-5">
         <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-5 lg:grid-rows-3 gap-5 w-full h-full mt-4 md:grid-row-5 grid-row-5">
-        
-          <div className="relative p-20 rounded-md col-span-1 lg:col-span-3 h-[200px] md:h-[300px] xl:h-[370px] lg:w-full shadow-md" style={{backgroundImage: `url(${theme})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+          <div className="relative p-20 rounded-md col-span-1 lg:col-span-3 lg:h-[33vh] md:h-[300px] h-[300px] xl:h-[33vh] lg:w-full shadow-md" style={{backgroundImage: `url(${theme})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
             <FaRobot className="text-accents w-8 h-8 absolute right-5 top-5"/>
             <QueueListIcon className="text-accents w-8 h-8 absolute right-12 mr-2 top-5" />
             <PlayButton theme = {theme} PowerUp={powerup}/>

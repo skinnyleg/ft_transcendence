@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import {responseData} from "@/app/interfaces/interfaces";
 import { useDebouncedCallback } from "use-debounce";
 import { BellAlertIcon } from "@heroicons/react/20/solid";
+import Notifications from "./Notification";
 const inter = Inter({ subsets: ['latin'] })
 
 
@@ -85,13 +86,13 @@ function NavBar ({handleShowMenu}: NavBarProps)
 
   return (
   <div className={`${inter.className}`}>
-    <div className=" lg:hidden bg-nav top-0 text-white md:w-screen h-[10vh] z-10 p-4 flex justify-between items-center border-indigo-600 fixed w-full ">
+    <div className="lg:hidden xl:hidden bg-nav top-0 text-white md:w-screen h-20 z-10 p-4 flex justify-between items-center border-indigo-600 fixed w-full ">
       <button className="text-white p-2 focus:outline-none">
           <Bars4Icon onClick={() => {setShow(!show); handleShowMenu(!show)}} className="w-6 h-6"/>
       </button>
       <div className="flex flex-row justify-between">
         <div className="mr-4">
-          <BellIcon onClick={() => {setShowNotif(!showNotif)}} className="h-8 w-8 rounded-full" />
+          <Notifications />
         </div>
         <div className="mr-4">
           <MagnifyingGlassIcon onClick={() => {setShowBar(!showBar)}} className="h-8 w-8 rounded-full" />
@@ -100,7 +101,7 @@ function NavBar ({handleShowMenu}: NavBarProps)
             type="search"
             placeholder="Search..."
             className={`p-1 ${showBar ? '' : 'hidden'}  w-full h-10 border border-gray-300 text-black 
-             focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-transparent fixed mt-[2vh] left-0 right-0 z-10`}
+             focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-transparent fixed mt-3 left-0 right-0 z-10`}
           />
         </div>
         <Link href={`http://localhost:3000/profile/` + nickname }>
@@ -114,20 +115,20 @@ function NavBar ({handleShowMenu}: NavBarProps)
         </Link>
       </div>
     </div>
-      <div className={`${(searchShow || search) ? 'block' : 'hidden'} flex justify-start
-            mt-[12vh] absolute lg:w-full md:w-full w-full bg-white shadow-md transition-transform duration-300 z-10 rounded-b-lg`}>
-            <div className="flex flex-col"> 
-              {searchShow && results.map((result) => (
-                <Link href={`/user/${result.id}`} key={result.id}>
-                  <div className="flex items-center p-2 hover:bg-gray-100 cursor-pointer z-10">
-                    <img src={result.profilePic} alt="profile" className="w-10 h-10 rounded-full" />
-                    <p className="ml-2">{result.nickname}</p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-        </div>
-    <nav className={`flex flex-col lg:ml-2 lg:mt-2 lg:block mt-[8vh] fixed lg:h-[98%] h-[92vh] bg-nav w-20 ${show ? '' : 'hidden'} lg:rounded-xl border border-blackpink transition-transform duration-300 `}>
+    <div className={`${(searchShow || search) ? 'block' : 'hidden'} flex justify-start
+          mt-[14vh] absolute w-screen bg-white shadow-md transition-transform duration-300 z-10 rounded-b-lg`}>
+          <div className="flex w-full flex-col"> 
+            {searchShow && results.map((result) => (
+              <Link href={`/profile/${result.nickname}`} key={result.id}>
+                <div className="flex items-center p-2 hover:bg-gray-100 cursor-pointer z-10">
+                  <img src={result.profilePic} alt="profile" className="w-10 h-10 rounded-full" />
+                  <p className="ml-5">{result.nickname}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+    </div>
+    <nav className={`flex flex-col lg:ml-2 lg:mt-2 xl:mt-2 lg:block md:mt-20 mt-20 fixed lg:h-[98%] h-[93%] bg-nav w-20 ${show ? '' : 'hidden'} lg:rounded-xl border border-blackpink transition-transform duration-300 `}>
       <div className="flex flex-col flex-grow">
         <div className="flex items-center justify-center mt-6 h-16 w-10 mx-auto xl:h-30 xl:w-30 font-medium hover:opacity">
           <Image

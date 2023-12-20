@@ -90,8 +90,7 @@ export default function TopBar () {
 
   console.log("here", profileData?.profilePic);
   return (
-    <socketContext.Provider value={socket}>
-      <div className="flex lg:flex-row justify-between flex-col xl:mt-6 mt-20 lg:mt-3 w-full bg-transparent p-0">
+      <div className="flex lg:flex-row justify-between flex-col mt-0 w-full bg-transparent p-0">
         <div className="lg:flex md:hidden hidden xl:flex">
           <h1 className="lg:text-2xl text-gray-500 md:text-xl text-lg font-bold">Welcome Back ....!</h1>
         </div>
@@ -117,13 +116,12 @@ export default function TopBar () {
             </div>
           </div>
         </div>
-          <div className="flex flex-col lg:flex-row pr-2 lg:space-x-4">
+          <div className="lg:flex xl:flex md:hidden hidden pr-2 lg:space-x-4">
                 <Notifications/>
             <Link href={`http://localhost:3000/profile/` + profileData?.nickname}> {/* pass nickname for profile link */}
               <img src={profileData?.profilePic} alt="yo" className="w-[60px] h-[60px] rounded-full border-accents border-[2px] hidden lg:flex" />
             </Link>
           </div>
       </div>
-    </socketContext.Provider>
   );
 }
