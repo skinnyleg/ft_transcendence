@@ -492,25 +492,23 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	{
 		try {
 			let picture, name, lastMsg, status, receiver;
-			const user = client.data.user.nickname;
-			const ls = await this.DmOutils.getBlockedUsers(user);
-			const userDms = await this.DmService.getUserDms(user);
-			// console.log('content: ', userDms)
+			const user = client.data.user;
+			const ls = await this.DmOutils.getBlockedUsers(user.nickname);
+			const userDms = await this.DmService.getUserDms(user.nickname);
 			for (const dm of userDms) {
 				name = dm.members[0].nickname;
 				picture = dm.members[0].profilePic;
-				if (user === dm.members[0].nickname) {
+				if (user.nickname === dm.members[0].nickname) {
 					name = dm.members[1].nickname;
 					picture = dm.members[1].profilePic;
 				}
-				// console.log('content: ', dm.messages[0])
 				lastMsg = dm.messages[0]?.content || '';
-				receiver = dm.members[0].nickname === user ? dm.members[1].nickname: user;
+				receiver = (dm.members[0].id === user.id) ? dm.members[1].id : dm.members[0].id;
 				status = (this.DmOutils.isInBlockedList(receiver, 
-					[...ls.BlockedBy, ...ls.usersBlocked]) === true ? 'BOLOCKED':'ACTIVE');
+					[...ls.BlockedBy, ...ls.usersBlocked]) === true ? 'BLOCKED' : 'ACTIVE');
 				this.dmSide.push({name, lastMsg, picture, status});	
 			}
-			client.emit('UserDms', this.dmSide);
+			client.emit('userDms', this.dmSide);
 			this.dmSide.length = 0;
 		}
 		catch(error) {
