@@ -102,6 +102,7 @@ export class UserService {
 				profilePic: true,
 				Wins: true,
 				Losses: true,
+				Rank: true,
 			},
 		});
 
@@ -117,6 +118,7 @@ export class UserService {
 				Wins: user.Wins,
 				Losses: user.Losses,
 				winrate,
+				Rank: user.Rank,
 				self: user.id === id,
 			};
 		});
@@ -409,32 +411,32 @@ export class UserService {
 		if (!user)
 			throw new NotFoundException('user Doesn\'t exist')
 
-		const friendStatus = await this.prisma.friendStatus.findFirst({
-		where: {
-			OR: [
-			{
-				userId: senderId,
-				friendId: recipientId,
-				status: {
-				in: [Status.FRIEND], // Check for FRIEND or PENDING status
-				},
-			},
-			{
-				userId: recipientId,
-				friendId: senderId,
-				status: {
-				in: [Status.FRIEND], // Check for FRIEND or PENDING status
-				},
-			},
-			],
-		},
-		});
+		// const friendStatus = await this.prisma.friendStatus.findFirst({
+		// where: {
+		// 	OR: [
+		// 	{
+		// 		userId: senderId,
+		// 		friendId: recipientId,
+		// 		status: {
+		// 		in: [Status.FRIEND], // Check for FRIEND or PENDING status
+		// 		},
+		// 	},
+		// 	{
+		// 		userId: recipientId,
+		// 		friendId: senderId,
+		// 		status: {
+		// 		in: [Status.FRIEND], // Check for FRIEND or PENDING status
+		// 		},
+		// 	},
+		// 	],
+		// },
+		// });
 		
-		if (!friendStatus)
-			throw new ConflictException('you need to be friends to block')
+		// if (!friendStatus)
+		// 	throw new ConflictException('you need to be friends to block')
 		
-		await this.deleteFriend(senderId)
-		await this.deleteFriend(recipientId)
+		// await this.deleteFriend(senderId)
+		// await this.deleteFriend(recipientId)
 		const sender = await this.prisma.user.findUnique({
 			where: {
 				id: senderId,
@@ -872,15 +874,15 @@ export class UserService {
 				id: id,
 			},
 			select: {
-			id: true,
-			nickname: true,
-			wallet: true,
-			Rank:true,
-			profilePic: true,
-			BackgroundPic: true,
-			level: true,
-			status: true,
-			isEnabled: true,
+				id: true,
+				nickname: true,
+				wallet: true,
+				Rank:true,
+				profilePic: true,
+				BackgroundPic: true,
+				level: true,
+				status: true,
+				isEnabled: true,
 			},
 		})
 		if (!user)
@@ -902,7 +904,7 @@ export class UserService {
 			throw new NotFoundException('user not found')
 
 		if (currentUser.nickname === nickname)
-			return {userData: await this.privateProfile(id), isfriend: false, privateProfile: true};
+			return {userData: await this.privateProfile(id), isfriend: false, privateProfile: true, isBlocked: false};
 		else
 			return await this.publicProfile(nickname, id);
 	}
@@ -912,19 +914,22 @@ export class UserService {
 	async publicProfile(nick: string, id: string) {
 		let isfriend = false;
 		let userProfile = false;
+		let isBlocked = false;
     	const user = await this.prisma.user.findUnique({
 			where: {
 				nickname: nick,
 			},
 			select: {
-			id: true,
-			nickname: true,
-			wallet: true,
-			Rank:true,
-			profilePic: true,
-			BackgroundPic: true,
-			level: true,
-			status: true,
+				id: true,
+				nickname: true,
+				wallet: true,
+				Rank:true,
+				profilePic: true,
+				BackgroundPic: true,
+				level: true,
+				status: true,
+				BlockedBy: true,
+				usersBlocked: true,
 			},
 		})
 		if (!user)
@@ -938,9 +943,12 @@ export class UserService {
 		});
 		if (friendStatus)
 			isfriend = true;
+		if (user.BlockedBy.find((bo) => bo === id))
+			isBlocked = true;
 		// if (user.id === id)
 		// 	userProfile = true;
-		return {userData: user, isfriend, privateProfile: userProfile};
+		const {BlockedBy, usersBlocked , ...userSend} = user;
+		return {userData: userSend, isfriend, privateProfile: userProfile, isBlocked};
   }
 
 	async getProfiles(searchInput: string) {
