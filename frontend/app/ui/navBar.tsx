@@ -144,8 +144,8 @@ function NavBar ({handleShowMenu}: NavBarProps)
             })}>
               <HomeIcon className="w-10 ml-3 h-6 mr-4 xl:w-20 xl:h-20" />
             </Link>
-            <Link href="/chat" className={clsx(`flex items-center mt-10 justify-center xl:mt-15 xl:w-20 xl:h-20 px-15 font-medium text-gray-400
-              hover:text-accents`, {'text-accents'  : currentPath === "/chat",
+            <Link href="/Chat" className={clsx(`flex items-center mt-10 justify-center xl:mt-15 xl:w-20 xl:h-20 px-15 font-medium text-gray-400
+              hover:text-accents`, {'text-accents'  : currentPath === "/Chat",
             })}>
               <ChatBubbleBottomCenterIcon className="w-10 ml-3 h-6 mr-4 xl:w-20 xl:h-20" />
             </Link>

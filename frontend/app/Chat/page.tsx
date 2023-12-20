@@ -18,7 +18,7 @@ const chat: FC<ChatProps> = () => {
 	return (
 		<div className='h-screen flex flex-col'>
 			<TopBar />
-			<div className='h-[100%] lg:h-[88%] xl:h-[89%] min-[1024px]:h-[90%] w-full flex flex-row  pt-[70px] pb-1 pr-2 pl-4 lg:pb-1 lg:pt-2'>
+			<div className='h-[100%] lg:h-[87%] xl:h-[90%] xl:pb-3 w-full flex flex-row  pt-[70px] pb-1 pr-2 pl-4 lg:pb-2 lg:pt-2'>
 				<RightBar />
 				<Content />
 				<LeftBar />
