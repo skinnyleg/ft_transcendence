@@ -495,6 +495,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			const user = client.data.user.nickname;
 			const ls = await this.DmOutils.getBlockedUsers(user);
 			const userDms = await this.DmService.getUserDms(user);
+			// console.log('content: ', userDms)
 			for (const dm of userDms) {
 				name = dm.members[0].nickname;
 				picture = dm.members[0].profilePic;
@@ -502,11 +503,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 					name = dm.members[1].nickname;
 					picture = dm.members[1].profilePic;
 				}
-				lastMsg = dm.messages[0].content;
+				// console.log('content: ', dm.messages[0])
+				lastMsg = dm.messages[0]?.content || '';
 				receiver = dm.members[0].nickname === user ? dm.members[1].nickname: user;
 				status = (this.DmOutils.isInBlockedList(receiver, 
 					[...ls.BlockedBy, ...ls.usersBlocked]) === true ? 'BOLOCKED':'ACTIVE');
-				this.dmSide.push({name, lastMsg, picture});	
+				this.dmSide.push({name, lastMsg, picture, status});	
 			}
 			client.emit('UserDms', this.dmSide);
 			this.dmSide.length = 0;

@@ -8,6 +8,7 @@ export interface dmsSide {
 	name?: string,
 	lastMsg?: string,
 	picture?: string
+	status?: string
 }
 
 export interface dmMessages {
