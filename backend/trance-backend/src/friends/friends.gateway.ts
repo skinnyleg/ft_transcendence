@@ -55,6 +55,7 @@ export class FriendsGateway {
 	@SubscribeMessage('unblock-friend')
 	async unblockFriend(client: Socket, payload: Record<string, any>)
 	{
+		
 		const verify = await validateAndSendError(payload, BlockRequestDto);
 		if (verify.valid == true)
 			this.friendsService.sendWebSocketError(client, verify.error, false);

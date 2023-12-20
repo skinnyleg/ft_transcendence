@@ -1,9 +1,4 @@
-import { IsString, IsNotEmpty, IsOptional, IsEnum } from "class-validator";
-
-// enum    model {
-//     CHANNEL = 'CHANNEL',
-//     DM = 'DM',
-// }
+import { IsString, IsNotEmpty, IsOptional} from "class-validator";
 
 export class creatMessageCh {
 
@@ -30,8 +25,14 @@ export class sendMessageDm {
 
 export class getMessagesCH {
 
-    // @IsEnum(model)
     @IsNotEmpty()
     @IsString()
     channelName: string;
+}
+
+export class getMessagesDm {
+
+    @IsNotEmpty()
+    @IsString()
+    dmId: string;
 }

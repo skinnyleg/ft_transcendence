@@ -2,11 +2,19 @@ import { BadRequestException, Injectable, NotFoundException } from "@nestjs/comm
 import { PrismaService } from "src/prisma/prisma.service";
 import { Channel, User, Types, Message, Dm } from '@prisma/client';
 import { ValidationError, validate } from "class-validator";
+import { Socket } from "socket.io";
 
 export interface dmsSide {
 	name?: string,
 	lastMsg?: string,
 	picture?: string
+}
+
+export interface dmMessages {
+	id?: string
+	sender?: string,
+	message?: string,
+	time?: string
 }
 
 @Injectable()
@@ -74,7 +82,7 @@ export class DmOutils {
 		return userBlockedBy;
 	}
 
-	async	isInBlockedList(username: string, blockedList: string[])
+	isInBlockedList(username: string, blockedList: string[])
 	{
 		for(const user of blockedList) {
 			if (user === username) {
@@ -92,5 +100,18 @@ export class DmOutils {
 				updatedAt
 			},
 		});
+	}
+
+	dateTime2String(datetime: Date)
+	{
+		const time = datetime.toString().split(' ')[4];
+		const tm = time.substring(0, time.lastIndexOf(':'))
+		return tm;
+	}
+
+	Error(client: Socket, event: string, error: any, msg: any)
+	{
+		console.error(`error<${event}>: `, error);
+		client.emit(`failed`, msg);
 	}
 }

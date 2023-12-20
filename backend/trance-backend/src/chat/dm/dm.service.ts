@@ -70,7 +70,7 @@ export class DmService {
                                     },
                                 },
                                 createdAt: true,
-                                chatId: true
+                                dmId: true
                             },
                             orderBy: { 
                                 createdAt: 'desc',
@@ -88,5 +88,41 @@ export class DmService {
             throw new NotFoundException(`${user} user not fout.`);
         }
        return findUser?.Dm || []; 
+    }
+
+    async   getDmMessages(dmId: string)
+    {
+        const allMessages = await this.prisma.dm.findUnique({
+            where: {
+                id: dmId,
+            },
+            include: {
+                members: {
+                    select: {
+                        nickname: true,
+                        profilePic: true,
+                    },
+                },
+                messages: {
+                    select: {
+                        id: true,
+                        content: true,
+                        createdAt: true,
+                        sender: {
+                            select: {
+                                nickname: true,
+                            },
+                        },
+                    },
+                    orderBy: {
+                        createdAt: 'asc',
+                    },
+                },
+            },
+        });
+        if (!allMessages) {
+            throw new NotFoundException('DM not found.');
+        }
+        return allMessages;
     }
 }

@@ -4,6 +4,7 @@ import { creatChannel } from '../dto/creat-channel.dto';
 import { Channel, User, Types, Message, Dm } from '@prisma/client';
 import { ChannelOutils, mutedUsers } from './outils';
 import { DateTime } from 'luxon';
+import { DmOutils } from '../dm/dm.outils';
 
 
 @Injectable()
@@ -11,8 +12,9 @@ export class ChannelService {
     
     constructor(
         private readonly prisma: PrismaService,
-        private  outils: ChannelOutils,
-        ){}
+        private readonly outils: ChannelOutils,
+        private readonly dmOutils: DmOutils,
+    ){}
 
     async creatChannel(data: creatChannel, owner: string): Promise<Channel>
     {
@@ -416,5 +418,37 @@ export class ChannelService {
             return [];
         }
         return channels;
+    }
+
+    async   getMessagesCH(username: string, channelName: string)
+    {
+        const isMember = await this.outils.isUserInChannel(channelName, username);
+        if (!isMember) {
+            throw new ForbiddenException('forbidden action.');
+        }
+        const channelId = await this.outils.getChannelIdByName(channelName);
+        const blockedList = await this.dmOutils.getBlockedUsers(username);
+        const allMessages = await this.prisma.message.findMany({
+            where: {
+                channelId: channelId,
+                senderId: {
+                    not: {
+                        in: [...blockedList.BlockedBy, ...blockedList.usersBlocked],
+                    },
+                },
+            },
+            include: {
+                sender: {
+                    select: {
+                        nickname: true,
+                        profilePic: true,
+                    },
+                },
+            },
+            orderBy: {
+                createdAt: 'asc',
+            },
+        });
+        return allMessages || [];
     }
 }

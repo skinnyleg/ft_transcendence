@@ -123,6 +123,31 @@ model FriendStatus {
   friendId String
 }
 
+// Define an Achievement model (you can further customize this)
+
+// Define a Match model
+model Match {
+  id      String @id @default(uuid())
+  title   String
+  wins    Int
+  losses  Int
+  score   Int
+  against User   @relation(fields: [userId], references: [id])
+  userId  String
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  content   String
+  sender    User     @relation(fields: [senderId], references: [id])
+  senderId  String
+  createdAt DateTime @default(now())
+  channel   Channel? @relation(fields: [channelId], references: [id])
+  channelId String?
+  Dm        Dm?      @relation(fields: [dmId], references: [id])
+  dmId    String?
+}
+
 model Channel {
   id        String      @id @default(uuid())
   name      String      @unique
@@ -137,6 +162,13 @@ model Channel {
   updatedAt DateTime    @default(now()) @updatedAt
 }
 
+model Dm {
+  id          String    @id @default(uuid())
+  updatedAt   DateTime    @default(now()) @updatedAt
+  members     User[]     @relation("directmessage")
+  messages    Message[]
+}
+
 model Blacklist {
   id          String     @id @default(uuid())
   nickname    String
@@ -144,39 +176,4 @@ model Blacklist {
   expiredAt   DateTime?
   channelName String
   channel     Channel    @relation(fields: [channelName], references: [name])
-}
-
-model Message {
-  id        String   @id @default(uuid())
-  content   String
-  sender    User     @relation(fields: [senderId], references: [id])
-  senderId  String
-  createdAt DateTime @default(now())
-  channel   Channel? @relation(fields: [channelId], references: [id])
-  channelId String?
-  Dm        Dm?      @relation(fields: [chatId], references: [id])
-  chatId    String?
-}
-
-// Define an Achievement model (you can further customize this)
-
-// Define a Match model
-model Match {
-  id      String @id @default(uuid())
-  title   String
-  wins    Int
-  losses  Int
-  score   Int
-  against User   @relation(fields: [userId], references: [id])
-  userId  String
-}
-
-// Define a Chat model
-model Dm {
-  id          String    @id @default(uuid())
-  updatedAt   DateTime    @default(now()) @updatedAt
-  //user1Id     String
-  //user2Id     String
-  members     User[]     @relation("directmessage")
-  messages    Message[]
 }

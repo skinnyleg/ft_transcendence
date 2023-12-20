@@ -22,6 +22,14 @@ export interface mutedUsers {
     users: string[];
 }
 
+export interface messsagesCH {
+    id?: string,
+    sender?: string,
+    picture?: string,
+    message?: string,
+    time?: string
+}
+
 @Injectable()
 export class ChannelOutils {
 
@@ -267,5 +275,18 @@ export class ChannelOutils {
                 }
             }
         }
+    }
+
+    onePic4msgSender(chMessages: &messsagesCH[])
+    {
+        for (let i = 0 ; i < chMessages.length - 1; i++)
+        {
+            let currentMsg = chMessages[i];
+            let nextMsg = chMessages[i + 1];
+
+            if (currentMsg.sender === nextMsg.sender)
+                currentMsg.picture = null;
+        }
+        return chMessages;
     }
 }
