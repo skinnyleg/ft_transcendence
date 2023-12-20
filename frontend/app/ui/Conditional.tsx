@@ -33,12 +33,15 @@ const Conditional = ({isfriend, privateProfile, userId} : DataProps ) => {
     if (isfriend && !privateProfile)
     {
         return (
-            <div className="flex flex-row mx-auto"> 
-                <div className="flex hover:bg-white text-white px-2 text-sm lg:ml-6 xl:ml-10 rounded-full" onClick={handleAddFriend}>
-                    <NoSymbolIcon className="text-button w-8 h-8"/>
+            <div className="flex flex-row rounded-3xl justify-between text-white mx-auto xl:w-[80%] w-[100%]">
+                <div className="flex hover:bg-accents text-white px-2 text-sm rounded-full" onClick={handleAddFriend}>
+                    <NoSymbolIcon className="text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8"/>
                 </div>
-                <div className="flex hover:bg-white text-white text-sm rounded-full px-2 lg:ml-6 xl:ml-10" onClick={handleDeleteFriend}>
-                    <UserMinusIcon className="text-button w-8 h-8"/>
+                <div className="flex hover:bg-accents text-white text-sm rounded-full px-2" onClick={handleDeleteFriend}>
+                    <UserMinusIcon className="text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8"/>
+                </div>
+                <div className="hover:bg-accents text-white text-sm rounded-full px-2" onClick={() => {}}>
+                    <ChatBubbleLeftEllipsisIcon className="text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8"/>
                 </div>
             </div>
         );
@@ -46,26 +49,26 @@ const Conditional = ({isfriend, privateProfile, userId} : DataProps ) => {
     if (!isfriend && !privateProfile)
     {
         return (
-            <div className="flex flex-row mx-auto">
-                <div className="hover:bg-white text-white px-2 text-sm lg:ml-10 rounded-full" onClick={handleAddFriend}>
-                    <NoSymbolIcon className="text-button w-8 h-8"/>
+            <div className="flex flex-row rounded-3xl justify-between text-white mx-auto xl:w-[80%] w-[100%]">
+                <div className="hover:bg-accents text-white px-2 text-sm rounded-full" onClick={handleAddFriend}>
+                    <NoSymbolIcon className="text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8"/>
                 </div>
-                <div className="hover:bg-white text-white px-2 text-sm lg:ml-10 rounded-full" onClick={handleAddFriend}>
-                    <UserPlusIcon className="text-button w-8 h-8"/>
+                <div className="hover:bg-accents text-white px-2 text-sm rounded-full" onClick={handleAddFriend}>
+                    <UserPlusIcon className="text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8"/>
                 </div>
-                <div className="hover:bg-white text-white text-sm rounded-full px-2 lg:ml-6 " onClick={() => {}}>
-                    <ChatBubbleLeftEllipsisIcon className="text-button w-8 h-8"/>
+                <div className="hover:bg-accents text-white text-sm rounded-full px-2" onClick={() => {}}>
+                    <ChatBubbleLeftEllipsisIcon className="text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8"/>
                 </div>
             </div>
         );
     }
     return (
-        <div className="flex flex-row mx-auto">
-            <div className="hover:bg-white text-white text-sm rounded-full px-2 lg:ml-6 " onClick={() => {router.push("/settings")}}>
-                <IoSettingsSharp className="text-button w-8 h-8"/>
+        <div className="flex flex-row h-full justify-between items-center text-white w-[100%]">
+            <div className="hover:bg-accents text-white items-center text-sm rounded-full px-2" onClick={() => {router.push("/settings")}}>
+                <IoSettingsSharp className="text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:"/>
             </div>
-            <div className="hover:bg-white text-white px-2 text-sm lg:ml-10 rounded-full" onClick={() => {router.push("/Dashboard")}}>
-                <HomeIcon className="text-button w-8 h-8" />
+            <div className="hover:bg-accents text-white items-center px-2 text-sm rounded-full" onClick={() => {router.push("/Dashboard")}}>
+                <HomeIcon className="text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:" />
             </div>
         </div>
     );

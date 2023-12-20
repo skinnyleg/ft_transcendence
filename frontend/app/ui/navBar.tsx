@@ -31,8 +31,10 @@ function NavBar ({handleShowMenu}: NavBarProps)
   const [error, setError] = useState<string | null>(null);
   const [results, setRes] = useState<responseData[]>([]);
   const [showBar, setShowBar] = useState(false); // show search barr
-  const [nickname, setNickname] = useState(''); 
+  const [nickname, setNickname] = useState('');
+  const [ProfilePic, setProfilePic] = useState('');
   const [showNotif, setShowNotif] = useState(false);
+  
 
   useEffect(() => {
     const getnickname = async () => {
@@ -45,6 +47,7 @@ function NavBar ({handleShowMenu}: NavBarProps)
         if (res.ok) {
           const nickname = await res.json();
           setNickname(nickname.nickname);
+          setProfilePic(nickname.profilePic)
         }
       } catch (error) {
         setError('Error fetching data');
@@ -86,7 +89,7 @@ function NavBar ({handleShowMenu}: NavBarProps)
 
   return (
   <div className={`${inter.className}`}>
-    <div className="lg:hidden xl:hidden bg-nav top-0 text-white md:w-screen h-20 z-10 p-4 flex justify-between items-center border-indigo-600 fixed w-full ">
+    <div className="lg:hidden xl:hidden bg-nav top-0 text-white md:w-screen h-15 z-10 p-4 flex justify-between items-center border-indigo-600 fixed w-full ">
       <button className="text-white p-2 focus:outline-none">
           <Bars4Icon onClick={() => {setShow(!show); handleShowMenu(!show)}} className="w-6 h-6"/>
       </button>
@@ -95,19 +98,19 @@ function NavBar ({handleShowMenu}: NavBarProps)
           <Notifications />
         </div>
         <div className="mr-4">
-          <MagnifyingGlassIcon onClick={() => {setShowBar(!showBar)}} className="h-8 w-8 rounded-full" />
+          <MagnifyingGlassIcon onClick={() => {setShowBar(!showBar); setSearch('')}} className="h-8 w-8 rounded-full" />
           <input
             onChange={(e) => {setSearch(e.target.value); if (e.target.value) setSearchShow(true); else {setSearchShow(false); setRes([]);} }}
             type="search"
             placeholder="Search..."
-            className={`p-1 ${showBar ? '' : 'hidden'}  w-full h-10 border border-gray-300 text-black 
-             focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-transparent fixed mt-3 left-0 right-0 z-10`}
+            className={`p-1 ${showBar ? '' : 'hidden'}  w-full h-[5%] border border-gray-300 text-black 
+             focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-transparent fixed xs:mt-[4%] md:mt-[1%] left-0 right-0 z-10`}
           />
         </div>
-        <Link href={`http://localhost:3000/profile/` + nickname }>
-          <Image
+        <Link href={`http://localhost:3000/profile/${nickname}`}>
+          <img
               className="h-8 w-auto rounded-full mr-2"
-              src="/logo.png"
+              src={ProfilePic}
               alt="Logo"
               width={100}
               height={40}
@@ -115,8 +118,8 @@ function NavBar ({handleShowMenu}: NavBarProps)
         </Link>
       </div>
     </div>
-    <div className={`${(searchShow || search) ? 'block' : 'hidden'} flex justify-start
-          mt-[14vh] absolute w-screen bg-white shadow-md transition-transform duration-300 z-10 rounded-b-lg`}>
+    <div className={`${(search ) ? 'block' : 'hidden'} lg:hidden xl:hidden flex justify-start
+          md:mt-[15%] mt-[26%]  absolute w-screen bg-white shadow-md transition-transform duration-300 z-10 rounded-b-lg`}>
           <div className="flex w-full flex-col"> 
             {searchShow && results.map((result) => (
               <Link href={`/profile/${result.nickname}`} key={result.id}>
@@ -128,7 +131,7 @@ function NavBar ({handleShowMenu}: NavBarProps)
             ))}
           </div>
     </div>
-    <nav className={`flex flex-col lg:ml-2 lg:mt-2 xl:mt-2 lg:block md:mt-20 mt-20 fixed lg:h-[98%] h-[93%] bg-nav w-20 ${show ? '' : 'hidden'} lg:rounded-xl border border-blackpink transition-transform duration-300 `}>
+    <nav className={`flex flex-col lg:ml-2 lg:mt-2 xl:mt-2 lg:block md:mt-20 mt-[6vh] fixed lg:h-[98%] h-[94%] bg-nav w-20 ${show ? '' : 'hidden'} lg:rounded-xl border border-blackpink transition-transform duration-300 `}>
       <div className="flex flex-col flex-grow">
         <div className="flex items-center justify-center mt-6 h-16 w-10 mx-auto xl:h-30 xl:w-30 font-medium hover:opacity">
           <Image

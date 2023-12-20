@@ -129,7 +129,10 @@ const settings = () => {
                 credentials: 'include',
                 method: 'POST',
                 body: formData,})
+                console.log ("file === ", results);
+
                 if (results.ok){
+                    console.log ("file === ", file);
                     setBgImage(URL.createObjectURL(file));
                 }
                 else {

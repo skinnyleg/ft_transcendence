@@ -51,6 +51,7 @@ export class UploadController {
 	@UseGuards(JwtAuthGuard)
 	@Get('/background/:filename')
 	serveBackgroundPic(@Param('filename') filename: string, @Res() res: Response) {
+		console.log("ddddddd")
 		const newDir =  path.join(__dirname, '..', '..', 'uploads', 'background')
     	res.sendFile(filename, { root: newDir });
 	}

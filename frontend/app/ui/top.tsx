@@ -101,7 +101,7 @@ export default function TopBar () {
             onAuxClickCapture={(e) =>{setSearch(''); setShow(false); setRes([]);}}
             type="search"
             placeholder="Search..."
-            className={`p-1 lg:h-10 lg:w-80 md:w-40 w-80 mx-auto bg-accents h-6 border border-gray-300 lg:pl-12 md:pl-12 pl-4 text-white rounded-t-xl ${show ? '' : 'rounded-b-xl'} focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-transparent`}
+            className={`p-2 lg:h-10 lg:w-80 md:w-40 w-80 mx-auto bg-accents h-6 border border-gray-300 lg:pl-12 md:pl-12 pl-4 text-white rounded-t-xl ${show ? '' : 'rounded-b-xl'} focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-transparent`}
           />
           <div className={`${(show || search) ? 'block' : 'hidden'} absolute top-10 lg:w-80 md:w-40 w-80 mx-auto bg-white shadow-md transition-transform duration-300 z-10 rounded-b-lg`}>
             <div className="flex flex-col">
@@ -119,7 +119,7 @@ export default function TopBar () {
           <div className="lg:flex xl:flex md:hidden hidden pr-2 lg:space-x-4">
                 <Notifications/>
             <Link href={`http://localhost:3000/profile/` + profileData?.nickname}> {/* pass nickname for profile link */}
-              <img src={profileData?.profilePic} alt="yo" className="w-[60px] h-[60px] rounded-full border-accents border-[2px] hidden lg:flex" />
+              <img src={profileData?.profilePic} alt="yo" className="w-[50px] h-[50px] rounded-full border-accents border-[2px] hidden lg:flex" />
             </Link>
           </div>
       </div>
