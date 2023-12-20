@@ -208,20 +208,47 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		{
 			await  this.DmOutils.validateDtoData(data, creatMessageCh);
 			const {channelId, content} = data;
-			const user =  client.data.user.nickname;
-			const isUserInBlacklist = await this.Outils.isUserInBlacklist(channelId, user);
+			const user =  client.data.user;
+			const isUserInBlacklist = await this.Outils.isUserInBlacklist(channelId, user.nickname);
 			if (isUserInBlacklist) {
 				throw new UnauthorizedException(`you are not allowed to send message`);
 			}
-			const message = await this.channelService.creatMessageChannel(channelId, user, content);
+			const message = await this.channelService.creatMessageChannel(channelId, user.nickname, content);
+			const blockedList = await this.DmOutils.getBlockedUsers(user.nickname);
+			const channelusers = await this.channelService.getChannelUsers(channelId);
 			const Id = await this.Outils.getChannelIdByName(channelId);
-			for (const user  of this.usersSockets) {
+			for (const userSocket  of this.usersSockets) {
 				//check blocked user
-				user.socket.join(Id);
+				const inCH = channelusers.find((u) => u.id === userSocket.userId);
+				if (inCH) {
+					if (blockedList.BlockedBy.length === 0 && blockedList.usersBlocked.length === 0)
+						userSocket.socket.join(Id);
+					for (const blocked of [...blockedList.BlockedBy, ...blockedList.usersBlocked])
+					{
+						console.log('inch: ', inCH);
+						if (blocked !== inCH.id) {
+							console.log('rgsg')
+							userSocket.socket.join(Id);
+						}
+					}
+				}
 			}
 			this.server.to(Id).emit('messageDone', message);
-			for (const user  of this.usersSockets) {
-				user.socket.leave(Id);
+			for (const userSocket  of this.usersSockets) {
+				//check blocked user
+				const inCH = channelusers.find((u) => u.id === userSocket.userId);
+				if (inCH) {
+					if (blockedList.BlockedBy.length === 0 && blockedList.usersBlocked.length === 0)
+						userSocket.socket.leave(Id);
+					for (const blocked of [...blockedList.BlockedBy, ...blockedList.usersBlocked])
+					{
+						console.log('inch: ', inCH);
+						if (blocked !== inCH.id) {
+							console.log('rgsg')
+							userSocket.socket.leave(Id);
+						}
+					}
+				}
 			}
 		}
 		catch (error)
@@ -249,16 +276,24 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			}
 			console.log('msg: ', content);
 			if (content) {
-				const message = await this.DmService.creatMessageDm(dmId, user.nickname, content);
-				await this.DmOutils.updateDmupdatedAt(dmId, message.createdAt);
-				const receiverSocket = this.usersSockets.find(user => user.userId === user2Id);
-				if (receiverSocket) {
-					client.join(dmId);
-					receiverSocket.socket.join(dmId);
-					this.server.to(dmId).emit('messageDone', message);
-					client.leave(dmId);
-					receiverSocket.socket.leave(dmId);
+				const blockedList = await this.DmOutils.getBlockedUsers(user.nickname);
+				const blockedArr = [...blockedList.BlockedBy, ...blockedList.usersBlocked];
+				const isblocked = blockedArr.find((blockUser => blockUser === user2Id))
+				if (!isblocked)
+				{
+					const message = await this.DmService.creatMessageDm(dmId, user.nickname, content);
+					await this.DmOutils.updateDmupdatedAt(dmId, message.createdAt);
+					const receiverSocket = this.usersSockets.find(user => user.userId === user2Id);
+					if (receiverSocket) {
+						client.join(dmId);
+						receiverSocket.socket.join(dmId);
+						this.server.to(dmId).emit('messageDone', message);
+						client.leave(dmId);
+						receiverSocket.socket.leave(dmId);
+					}
 				}
+				else
+					client.emit('failed', 'block case');
 			}
 		}
 		catch (error)
@@ -491,7 +526,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	async	GetUserDm(@ConnectedSocket() client: Socket)
 	{
 		try {
-			let picture, name, lastMsg, status, receiver;
+			let picture, name, lastMsg, status, receiver: string;
 			const user = client.data.user;
 			const ls = await this.DmOutils.getBlockedUsers(user.nickname);
 			const userDms = await this.DmService.getUserDms(user.nickname);
