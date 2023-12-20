@@ -29,10 +29,9 @@ const Themes = ({ handleThemeChange }: ThemesProps) => {
   }
 
   return (
-    <div className="bg-accents p-0 rounded-md col-span-1  row-start-2 row-end-3 lg:col-span-3 h-full lg:space-x-4 lg:flex-row">
-        <h4 className="text-xl font-bold  mb-0 font-white">
-         Choose Themes</h4>
-        <div className="flex overflow-x-auto mt-2 lg:h-[260px] h-[190px]">
+    <div className="bg-accents p-0 rounded-md col-span-1 row-start-2 row-end-3 lg:col-span-3 md:h-[350px] h-[350px] xl:h-[33vh] lg:h-[33vh] lg:flex-row">
+        <h4 className="text-xl font-bold p-5 text-gray-200">Choose Themes</h4>
+        <div className="flex overflow-x-auto mt-2 p-2 h-[200px] md:h-[200px] xl:h-[20vh] lg:h-[20vh] ">
           <Swiper
           spaceBetween={10}
           slidesPerView={3}

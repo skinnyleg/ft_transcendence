@@ -108,29 +108,31 @@ const Notifications = () => {
 
     return (
         <>
-        <div className="z-10 relative">
             <ToastContainer />
-            <BellAlertIcon onClick={()=>{setShowNotifications(!showNotifications)}} className= "h-[60px] hidden lg:flex w-[60px] p-2 bg-gray-100 text-accents rounded-full"/>
-            <span className={clsx(`absolute text-s text-white font-bold rounded-full h-5 w-5 items-center md:hidden hidden xl:flex lg:flex justify-center bottom-0 right-0 transform translate-x-[8px]`
-            , {'hidden' : showNotifications},
-            {'bg-red-500 ' : (notificationNumber > 0),
-             'bg-gray-500' : (notificationNumber === 0),})}>{notificationNumber}
-            </span>
-            <div className={`${showNotifications ? 'block' : 'hidden'} absolute top-12 right-3 lg:w-80 md:w-40 w-80 mx-auto bg-white shadow-md transition-transform duration-300 z-10 rounded-b-lg`}>
-                <div className="flex flex-col">
-                {showNotifications && notifications.map((notification) => (
-                    <div key={notification.requestId} className="flex justify-between items-center p-2 hover:bg-gray-100 z-10">
-                        <img src={notification.notifData.userProfilePic} alt="profile" className="w-1/7 h-10 rounded-full" />
-                        <p className="ml-1 w-1/2">{notification.notifData.description}</p>
-                        <div className="flex w-1/4 h-10 justify-between rounded-full bg-slate-100">
-                            <CheckIcon className={`${notification.notifData.typeOfRequest === 'FRIEND' ? 'block' : 'hidden'}w-full h-10 text-green-600 cursor-pointer `} onClick={() => {handleAcceptReq(notification)}}/>
-                            <XMarkIcon className={`${notification.notifData.typeOfRequest === 'FRIEND' ? 'block' : 'hidden'}w-full h-10 text-red-600 cursor-pointer `} onClick={() => {handleRefuseReq(notification)}}/>
+            <socketContext.Provider value={socket}>
+            <div className="z-10 relative">
+                <BellAlertIcon onClick={()=>{setShowNotifications(!showNotifications)}} className= "lg:h-[60px] lg:w-[60px] xl:h-[60px] xl:w-[60px] h-[35px] w-[35px] lg:flex lg:p-2 lg:bg-gray-100 text-accents rounded-full"/>
+                <span className={clsx(`absolute text-sm text-white font-bold rounded-full h-5 w-5 items-center text-center flex justify-center bottom-0 right-0 transform translate-x-[8px]`
+                , {'hidden' : showNotifications},
+                {'bg-red-500 ' : (notificationNumber > 0),
+                'bg-gray-500' : (notificationNumber === 0),})}>{notificationNumber}
+                </span>
+                <div className={`${showNotifications ? 'block' : 'hidden'} absolute lg:top-12 xl:top-12 top-8 right-3 lg:w-80 w-80 mx-auto bg-white shadow-md transition-transform duration-300 z-10 rounded-b-lg`}>
+                    <div className="flex flex-col">
+                    {showNotifications && notifications.map((notification) => (
+                        <div key={notification.requestId} className="flex justify-between items-center p-2 hover:bg-gray-100 z-10">
+                            <img src={notification.notifData.userProfilePic} alt="profile" className="w-1/7 h-10 rounded-full" />
+                            <p className="ml-1 w-1/2 text-black text-sm">{notification.notifData.description}</p>
+                            <div className="flex w-1/4 h-10 justify-between rounded-full bg-slate-100">
+                                <CheckIcon className={`${notification.notifData.typeOfRequest === 'FRIEND' ? 'block' : 'hidden'}w-full h-10 text-green-600 cursor-pointer `} onClick={() => {handleAcceptReq(notification)}}/>
+                                <XMarkIcon className={`${notification.notifData.typeOfRequest === 'FRIEND' ? 'block' : 'hidden'}w-full h-10 text-red-600 cursor-pointer `} onClick={() => {handleRefuseReq(notification)}}/>
+                            </div>
                         </div>
+                    ))}
                     </div>
-                ))}
-                </div>
-          </div>
-        </div>
+            </div>
+            </div>
+            </socketContext.Provider>
         </>
     );
 }
