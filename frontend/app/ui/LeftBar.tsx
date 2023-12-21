@@ -20,7 +20,7 @@ const LeftBar: FC<LeftBarProps> = ({}) => {
 					</div>
 			)}
 			{renderTab === 'channel' &&  (
-					<div className={`lg:flex md:w-[50%] lg:w-[50%] xl:w-[40%] w-full h-full pb-0
+					<div className={`lg:flex md:w-[50%] lg:w-[50%] xl:w-[40%] w-full h-full pb-0 transition ease-in-out duration-700
 					${barOpen ? '' : 'hidden'}`}>
 						<ChatSideBar
 							channelId={searchParams.get('channel')}

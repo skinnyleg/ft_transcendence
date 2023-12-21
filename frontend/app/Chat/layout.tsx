@@ -14,10 +14,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
 
   return (
-    <div className="flex bg-main flex-col overflow-y-hidden h-screen">
+    <main className="flex h-screen bg-main flex-col overflow-y-hidden">
       <LayoutChat>
         {children}
       </LayoutChat>
-    </div>
+    </main>
   );
 }

@@ -18,7 +18,7 @@ const Content: FC<ContentProps> = ({}) => {
 					</div>
 			)}
 			{renderTab === 'channel' &&  (
-					<div className={`lg:flex lg:flex-grow w-full pb-0 ${barOpen ? 'hidden md:flex' : ''}`}>
+					<div className={`lg:flex lg:flex-grow w-full pb-0 ${barOpen ? 'hidden md:flex' : ''} transition ease-in-out duration-700`}>
 						<ChatTabChannel
 							channelId={searchParams.get('channel')}
 						/>
