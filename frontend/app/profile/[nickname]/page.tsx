@@ -160,42 +160,43 @@ const Profile = () => {
     return (
     <main className="flex flex-col">
         <TopBar />
-        <div className="grid grid-cols-4 xl:mt-15 mt-20 lg:mt-5 lg:auto-rows-min xl:gap-5 gap-4 w-full md:grid-row-6 grid-row-6 ">
-            <div className="bg-white relative col-start-1 col-end-5 xl:h-[33vh] lg:h-[33vh] md:h-[400px] h-[400px] row-start-1 row-end-2 w-full shadow-md rounded-xl">
-                <div className="flex flex-col rounded-xl xl:h-[33vh] lg:h-[33vh] md:h-[400px] h-[400px]" style={{backgroundImage: `url(${profileData?.userData.BackgroundPic})`, backgroundSize: 'cover', backgroundPosition: 'center'}}>
-                    <h1 className="pt-20 mt-10 p-5 text-5xl text-white text-bold-900">{profileData?.userData.nickname}</h1>
+        <div className="grid grid-cols-4 xl:mt-15 mt-20 lg:mt-5 lg:auto-rows-min xl:gap-5 gap-3 w-full md:grid-row-6 grid-row-6 ">
+            <div className="relative col-start-1 col-end-5 xl:h-[33vh] lg:h-[33vh] md:h-[200px] h-[200px] bg-red-500 row-start-1 row-end-2 w-full shadow-md rounded-xl">
+                <div className="flex relative flex-col text-4xl text-white text-bold-900 rounded-xl xl:h-[33vh] lg:h-[33vh] md:h-[200px] h-[200px]">
+                    <img src={profileData?.userData.BackgroundPic} className="w-full rounded-md h-full object-cover" alt="background Image"></img>
+                    <h2 className="absolute top-2 left-0 pl-3 text-gray-300">{profileData?.userData.nickname}</h2>
                 </div>
                 <div  className="rounded-full lg:w-[100px] md:w-[90px] w-[80px] xl:h-[150px] xl:w-[150px] absolute bottom-0 left-0 transform  xl:translate-x-[10px] xl:translate-y-[55px] translate-x-[8px] translate-y-[32px] border-2">
                     <img src={profileData?.userData.profilePic} alt="profile Picture" className="lg:w-[100px] md:w-[90px] w-[80px] xl:h-[150px] xl:w-[150px] rounded-full" />
                 </div>
             </div>
-            <div className="bg-lightblue lg:col-start-2 lg:col-end-4 w-full lg:row-start-2 lg:mt-0 mt-10 lg:row-end-3 col-start-1 col-end-4 row-start-3 row-end-4
-            h-[30px] xl:h-[40px] rounded-2xl lg:w-[100%] flex shadow-md">
+            <div className="bg-lightblue lg:col-start-2 lg:col-end-4 lg:row-start-2 lg:mt-0 mt-2 md:mt-4 lg:row-end-3 col-start-1 col-end-4 row-start-3 row-end-4
+            h-[30px] xl:h-[40px] rounded-2xl lg:w-[100%] md:w-[100%] w-[90%] flex shadow-md">
                 <ProgressBar level={level} />
             </div>
-            <div className="relative col-start-4 col-end-5 mt-10 mb-1 lg:mt-0 lg:row-start-2 h-[30px] lg:row-end-3 row-start-3 row-end-4 flex w-full">
+            <div className="relative col-start-4 col-end-5 mt-2 md:mt-4 bg-accents rounded-2xl lg:mt-0 lg:row-start-2 mx-auto h-[30px] xl:h-[40px] lg:row-end-3 row-start-3 row-end-4 flex w-[50%]">
                 <Conditional isfriend={profileData?.isfriend} privateProfile = {profileData?.privateProfile} userId= {profileData?.userData?.id}/>
             </div>
             {/* 4 cards */}
-            <div  className="bg-accents col-span-1 lg:row-start-3 row-start-4 row-end-5 flex justify-between lg:row-end-4 w-full xl:h-[12vh] lg:h-[12vh] h-[180px] shadow-md rounded-xl">
+            <div  className="bg-accents col-span-1 lg:row-start-3 row-start-4 row-end-5 flex justify-between lg:row-end-4 w-full xl:h-[12vh] lg:h-[12vh] md:h-[180px] h-[120px] shadow-md rounded-3xl">
                 <div className="flex lg:flex-row flex-col h-full">
-                    <WalletIcon className="text-white xl:w-[60px] xl:h-[60px] lg:w-[80px] mb-4 md:w-[80px] w-[70px] xl:mt-8 mt-4 lg:ml-2 md:ml-2 ml-0"/>
+                    <WalletIcon className="text-white xl:w-[60px] xl:h-[60px] lg:w-[80px] mb-4 md:w-[80px] w-[40px] xl:mt-8 mt-4 lg:ml-2 md:ml-2 ml-0"/>
                     <p className="lg:text-2xl xl:text-3xl lg:block md:block hidden text-lg text-center xl:mt-12 lg:w-20 w-10 lg:ml-5 ml-7 pb-2 lg:mt-10 mt-3 text-bold-900">Wallet</p>
                 </div>
                 <h2 className="lg:text-2xl xl:text-5xl md:text-2xl text-lg mt-7 xl:mt-10 lg:mt-12 md:mt-10 text-bold-900 mr-3 md:mr-3 lg:mr-4">{profileData?.userData.wallet}</h2>
             </div>
-            <div  className="bg-accents col-span-1 flex justify-between lg:row-start-3 xl:h-[12vh] lg:h-[12vh] h-[180px] row-start-4 row-end-5 lg:row-end-4 w-full` shadow-md rounded-xl">
+            <div  className="bg-accents col-span-1 flex justify-between lg:row-start-3 xl:h-[12vh] lg:h-[12vh] h-[120px] row-start-4 row-end-5 lg:row-end-4 w-full` shadow-md rounded-3xl">
             <div className="flex lg:flex-row flex-col h-full">
                     <TrophyIcon className="text-white xl:w-[60px] xl:h-[60px] lg:w-[80px] mb-4 md:w-[80px] w-[70px] xl:mt-8 mt-4 lg:ml-2 md:ml-2 ml-0"/>
                     <p className="lg:text-2xl xl:text-3xl lg:block md:block hidden text-lg text-center xl:mt-12 lg:w-20 w-10 lg:ml-5 ml-7 pb-2 lg:mt-10 mt-3 text-bold-900">Rank</p>
                 </div>
                 <h2 className="lg:text-2xl xl:text-5xl md:text-2xl text-lg mt-7 xl:mt-10 lg:mt-12 md:mt-10 text-bold-900 mr-3 md:mr-3 lg:mr-4">2</h2>
             </div>
-            <div className="bg-accents col-span-1 lg:row-start-3 row-start-4 row-end-5 lg:row-end-4 w-full xl:h-[12vh] lg:h-[12vh] h-[180px] shadow-md flex justify-between rounded-xl">
+            <div className="bg-accents col-span-1 lg:row-start-3 row-start-4 row-end-5 lg:row-end-4 w-full xl:h-[12vh] lg:h-[12vh] h-[120px] shadow-md flex justify-between rounded-3xl">
                 <HandThumbUpIcon width={150} height={100} className="text-white text-2xl xl:mt-5 lg:mt-5 mt-2"/>
                 <span className="center text-black text-bold xl:mt-10 lg:mt-10 md:mt-5 mt-5 lg:mr-20 mr-5 ml-2 lg:text-5xl text-3xl" >2</span>
             </div>
-            <div  className="bg-accents col-span-1 lg:row-start-3 row-start-4 row-end-5 lg:row-end-4 w-full xl:h-[12vh] lg:h-[12vh] h-[180px] shadow-md flex justify-between rounded-xl">
+            <div  className="bg-accents col-span-1 lg:row-start-3 row-start-4 row-end-5 lg:row-end-4 w-full xl:h-[12vh] lg:h-[12vh] h-[120px] shadow-md flex justify-between rounded-3xl">
                 <HandThumbDownIcon width={150} height={100} className="text-white text-2xl xl:mt-5 lg:mt-5 mt-2"/>
                 <span className="center text-black text-bold xl:mt-10 lg:mt-10 md:mt-5 mt-5 lg:mr-20 mr-5 ml-2 lg:text-5xl text-3xl" >2</span>
             </div>

@@ -31,8 +31,10 @@ function NavBar ({handleShowMenu}: NavBarProps)
   const [error, setError] = useState<string | null>(null);
   const [results, setRes] = useState<responseData[]>([]);
   const [showBar, setShowBar] = useState(false); // show search barr
-  const [nickname, setNickname] = useState(''); 
+  const [nickname, setNickname] = useState('');
+  const [ProfilePic, setProfilePic] = useState('');
   const [showNotif, setShowNotif] = useState(false);
+  
 
   useEffect(() => {
     const getnickname = async () => {
@@ -45,6 +47,7 @@ function NavBar ({handleShowMenu}: NavBarProps)
         if (res.ok) {
           const nickname = await res.json();
           setNickname(nickname.nickname);
+          setProfilePic(nickname.profilePic)
         }
       } catch (error) {
         setError('Error fetching data');
@@ -95,19 +98,19 @@ function NavBar ({handleShowMenu}: NavBarProps)
           <Notifications />
         </div>
         <div className="mr-4">
-          <MagnifyingGlassIcon onClick={() => {setShowBar(!showBar)}} className="h-8 w-8 rounded-full" />
+          <MagnifyingGlassIcon onClick={() => {setShowBar(!showBar); setSearch('')}} className="h-8 w-8 rounded-full" />
           <input
             onChange={(e) => {setSearch(e.target.value); if (e.target.value) setSearchShow(true); else {setSearchShow(false); setRes([]);} }}
             type="search"
             placeholder="Search..."
-            className={`p-1 ${showBar ? '' : 'hidden'}  w-full h-10 border border-gray-300 text-black 
-             focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-transparent fixed mt-3 left-0 right-0 z-10`}
+            className={`p-1 ${showBar ? '' : 'hidden'}  w-full h-[5%] border border-gray-300 text-black 
+             focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-transparent fixed xs:mt-[4%] md:mt-[1%] left-0 right-0 z-10`}
           />
         </div>
-        <Link href={`http://localhost:3000/profile/` + nickname }>
-          <Image
+        <Link href={`http://localhost:3000/profile/${nickname}`}>
+          <img
               className="h-8 w-auto rounded-full mr-2"
-              src="/logo.png"
+              src={ProfilePic}
               alt="Logo"
               width={100}
               height={40}
@@ -115,8 +118,8 @@ function NavBar ({handleShowMenu}: NavBarProps)
         </Link>
       </div>
     </div>
-    <div className={`${(searchShow || search) ? 'block' : 'hidden'} flex justify-start
-          mt-[14vh] absolute w-screen bg-white shadow-md transition-transform duration-300 z-10 rounded-b-lg`}>
+    <div className={`${(search ) ? 'block' : 'hidden'} lg:hidden xl:hidden flex justify-start
+          md:mt-[15%] mt-[26%]  absolute w-screen bg-white shadow-md transition-transform duration-300 z-10 rounded-b-lg`}>
           <div className="flex w-full flex-col"> 
             {searchShow && results.map((result) => (
               <Link href={`/profile/${result.nickname}`} key={result.id}>

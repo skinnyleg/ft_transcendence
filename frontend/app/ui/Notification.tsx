@@ -111,7 +111,7 @@ const Notifications = () => {
             <ToastContainer />
             <socketContext.Provider value={socket}>
             <div className="z-10 relative">
-                <BellAlertIcon onClick={()=>{setShowNotifications(!showNotifications)}} className= "lg:h-[60px] lg:w-[60px] xl:h-[60px] xl:w-[60px] h-[35px] w-[35px] lg:flex lg:p-2 lg:bg-gray-100 text-accents rounded-full"/>
+                <BellAlertIcon onClick={()=>{setShowNotifications(!showNotifications)}} className= "lg:h-[50px] lg:w-[50px] xl:h-[50px] xl:w-[50px] h-[35px] w-[35px] lg:flex lg:p-2 lg:bg-gray-100 text-accents rounded-full"/>
                 <span className={clsx(`absolute text-sm text-white font-bold rounded-full h-5 w-5 items-center text-center flex justify-center bottom-0 right-0 transform translate-x-[8px]`
                 , {'hidden' : showNotifications},
                 {'bg-red-500 ' : (notificationNumber > 0),

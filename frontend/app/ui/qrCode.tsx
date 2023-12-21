@@ -10,7 +10,6 @@ interface VerificationInputProps {
 }
 
 
-
 const VerificationInput: React.FC<VerificationInputProps> = ({ inputRefs, onSubmit }) => {
 
   const [code, setCode] = useState<string>('');
@@ -30,7 +29,8 @@ const VerificationInput: React.FC<VerificationInputProps> = ({ inputRefs, onSubm
 
   // Handle Delete
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
-    if (e.key === 'Backspace' && index > 0) {
+    if (e.key === '46' || e.key === '8' && index > 0) {
+      console.log("im here")
       let newCode = code;
       newCode = newCode.substring(0, index - 1) + newCode.substring(index);
       setCode(newCode);
@@ -39,12 +39,13 @@ const VerificationInput: React.FC<VerificationInputProps> = ({ inputRefs, onSubm
   };
 
   return (
-    <div className="flex space-x-2">
+    <div className="flex space-x-2 justify-center">
       {[...Array(6)].map((_, index) => (
         <input
           key={index}
           type="text"
           value={code[index] || ''}
+          onKeyDown={(e) => handleKeyDown}
           onChange={(e) => handleChange(e, index)}
           ref={inputRefs[index]}
           className="w-10 h-10 text-center border border-gray-300 rounded focus:outline-none focus:ring focus:border-blue-500 hover:border-blue-500"

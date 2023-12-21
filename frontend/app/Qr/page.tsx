@@ -2,7 +2,6 @@
 // pages/VerifyCode.tsx
 import React, { use, useRef, useState } from 'react';
 import VerificationInput from '../ui/qrCode';
-import Image from 'next/image'
 import { redirect, useRouter } from 'next/navigation';
 // import useInputRefs from '../ui/useInputRefs';
 
@@ -40,17 +39,22 @@ const VerifyCode :  React.FC = () => {
   };
 
   return (
-    <div className="bg-signin flex flex-col justify-center items-center h-screen">
-      <div className={`bg-signin flex flex-col justify-center items-center h-screen ${!error ? 'hidden' : ''} mx-auto`}>
-        <h1 className="text-2xl font-bold mb-4 font-serif">Verification failed</h1>
+    <main className="flex items-center justify-center bg-main h-screen overflow-hidden">
+        <div className="relative flex h-full bg-main lg:w-4/5 max-w-[600px] mx-auto flex-col space-y-2.5 p-4 mt-60 md:w-1/2">
+          <div className="flex flex-col rounded-lg bg-accents border h-[50%] border-gray-300 px-6 pb-4 mx-auto pt-8 w-[full] mt-10">
+            <div className={`bg-main flex justify-center items-center ${!error ? 'hidden' : ''} mx-auto w-full`}>
+              <h1 className="text-5xl font-bold-700 mb-4 font-serif">Verification failed</h1>
+            </div>
+            <div className={`${error ? 'hidden' : ''} mx-auto flex flex-col justify-between h-[60%] mt-10 w-[80%]`}>
+              <h1 className="text-4xl h-10 font-bold mb-4 text-center font-serif">Enter Verification Code</h1>
+              <div className='mt-10 flex flex-col justify-between h-[60%]'>
+                <p className="md:text-sm lg:text-lg text-center text-lg">Please enter the 6-digit code from your authenticator app.</p>
+                <VerificationInput inputRefs={inputRefs} onSubmit={handleSubmit} />
+              </div>
+            </div>
+          </div>
       </div>
-      <div className={`${error ? 'hidden' : ''}`}>
-        <h1 className="text-2xl font-bold mb-4 font-serif">Enter Verification Code</h1>
-        <p className="md:text-sm lg:text-lg mb-1 text-xs">Please enter the 6-digit code from your authenticator app.</p>
-        <VerificationInput inputRefs={inputRefs} onSubmit={handleSubmit} />
-      </div>
-    </div>
-
+    </main>
       
   );
 };

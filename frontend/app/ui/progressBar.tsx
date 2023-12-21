@@ -6,9 +6,9 @@ interface ProgressBarProps {
 
 const  ProgressBar = ({ level }: ProgressBarProps) => {
     return(
-        <div className="w-full bg-white rounded-xl">
+        <div className="w-full bg-white rounded-3xl">
   <div
-    className="h-full bg-green-400 rounded-xl text-white text-center"
+    className="h-full bg-green-400 rounded-3xl text-white text-center w-full"
     style={{
         background: `linear-gradient(to right, #3af8c7 ${level}%, #00ced1 ${level}%)`,
       }}
