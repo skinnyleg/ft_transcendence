@@ -1,8 +1,11 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { Channel, User, Types, Message, Dm } from '@prisma/client';
 import { ValidationError, validate } from "class-validator";
 import { Socket } from "socket.io";
+// import { ChannelOutils } from "../channel/outils";
+// import { ChannelService } from "../channel/channel.service";
+// import { DmService } from "./dm.service";
 
 export interface dmsSide {
 	name?: string,
@@ -23,7 +26,10 @@ export class DmOutils {
   
 	constructor(
 		private readonly prisma: PrismaService,
-		){}
+		// private readonly channelOutils: ChannelOutils,
+		// private readonly channelService: ChannelService,
+		// private readonly dmService: DmService,
+	){}
 
 	async	getDmIdby2User(user1Id: string, user2Id: string):Promise<string | null>
     {
@@ -68,7 +74,7 @@ export class DmOutils {
 	async	getBlockedUsers(username: string)
 	{
 		const userId = await this.getUserIdByName(username);
-		const  userBlockedBy = await this.prisma.user.findUnique({
+		const  blockedList = await this.prisma.user.findUnique({
 			where: {
 				id: userId,
 			},
@@ -77,10 +83,10 @@ export class DmOutils {
 				usersBlocked: true
 			},
 		});
-		if (!userBlockedBy) {
+		if (!blockedList) {
 			throw new NotFoundException('user not found.');
 		}
-		return userBlockedBy;
+		return [...blockedList.BlockedBy, ...blockedList.usersBlocked] || [];
 	}
 
 	isInBlockedList(username: string, blockedList: string[])
@@ -112,7 +118,24 @@ export class DmOutils {
 
 	Error(client: Socket, event: string, error: any, msg: any)
 	{
-		console.error(`error<${event}>: `, error);
-		client.emit(`failed`, msg);
+		console.error(`error<${event}>: `, error.message);
+		if (error instanceof NotFoundException || error instanceof BadRequestException || 
+			error instanceof UnauthorizedException || error instanceof ForbiddenException || 
+			error instanceof InternalServerErrorException) {
+			client.emit(`failed`, error.message);
+		}
+		else {
+			client.emit(`failed`, msg);
+		}
+	}
+
+	fillBuffer(message: any, nickname: string)
+	{
+		const buffer: dmMessages = {};
+		buffer.id = message.id;
+		buffer.sender = nickname;
+		buffer.message = message.content;
+		buffer.time = this.dateTime2String(message.createdAt);
+		return buffer;
 	}
 }

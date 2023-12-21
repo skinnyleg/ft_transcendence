@@ -125,4 +125,15 @@ export class DmService {
         }
         return allMessages;
     }
+
+    async   generateDm(receiver: string , senderId: string)
+    {
+        const receiverId = await this.dmOutils.getUserIdByName(receiver);
+        let dmId = await this.dmOutils.getDmIdby2User(senderId, receiverId);
+        if (dmId === null) {
+        	await this.creatDMchat(senderId, receiverId);
+        	dmId = await this.dmOutils.getDmIdby2User(senderId, receiverId);
+        }
+        return {dmId, receiverId} || {};
+    }
 }

@@ -1,7 +1,10 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { Blacklist, Channel, Membership, User, Dm } from '@prisma/client';
 import { Cron, CronExpression } from "@nestjs/schedule";
+import { DmOutils } from "../dm/dm.outils";
+import { ChannelService } from "./channel.service";
+import { Server } from "socket.io";
 
 export interface channelsSide {
     channelName?: string,
@@ -30,11 +33,21 @@ export interface messsagesCH {
     time?: string
 }
 
+export interface notif2user {
+    channelName?: string,
+    admin?: string,
+    notif?: any,
+    user2notify?: string,
+    server?: Server,
+    usersSockets?: {userId: string, socket: any}[],
+}
+
 @Injectable()
 export class ChannelOutils {
 
     constructor(
         private readonly prisma: PrismaService,
+        private readonly dmOutils: DmOutils, 
     ){}
 
     public readonly mutedList: mutedUsers[] = [];
@@ -138,7 +151,7 @@ export class ChannelOutils {
             },
         });
         if(!isUserInBlacklist) {
-            return false;
+           return false;
         }
         return true;
     }
@@ -288,5 +301,20 @@ export class ChannelOutils {
                 currentMsg.picture = null;
         }
         return chMessages;
+    }
+
+    async   checkRequest(data: any, ownerId: string, senderId: string)
+    {
+        const checkRequest = await this.prisma.request.findUnique({
+            where: {
+                channelName: data.channelName,
+                typeOfRequest: 'JOINCHANNEL',
+                senderId,
+                userId: ownerId
+            },
+        });
+        if (checkRequest) {
+            throw new UnauthorizedException('Only one request accepted for channel.');
+        }
     }
 }

@@ -10,6 +10,6 @@ import { ChannelOutils } from './channel/outils';
 
 @Module({
   controllers: [ChatController],
-  providers: [DmOutils, ChannelOutils, PrismaService, UserService, ChannelService, DmService, ChatGateway]
+  providers: [ChannelOutils, DmOutils, PrismaService, UserService, ChannelService, DmService, ChatGateway]
 })
 export class ChatModule {}
