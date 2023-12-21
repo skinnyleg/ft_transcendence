@@ -173,7 +173,7 @@ const Profile = () => {
             h-[30px] xl:h-[40px] rounded-2xl lg:w-[100%] md:w-[100%] w-[90%] flex shadow-md">
                 <ProgressBar level={level} />
             </div>
-            <div className="relative col-start-4 col-end-5 mt-2 md:mt-4 bg-accents rounded-2xl lg:mt-0 lg:row-start-2 mx-auto h-[30px] xl:h-[40px] lg:row-end-3 row-start-3 row-end-4 flex w-[50%]">
+            <div className="relative col-start-4 col-end-5 mt-2 md:mt-4 bg-accents rounded-2xl lg:mt-0 lg:row-start-2 mx-auto h-[30px] xl:h-[40px] lg:row-end-3 row-start-3 row-end-4 flex w-[50%] lg:w-[70%] xl:w-[70%]">
                 <Conditional isfriend={profileData?.isfriend} privateProfile = {profileData?.privateProfile} userId= {profileData?.userData?.id}/>
             </div>
             {/* 4 cards */}

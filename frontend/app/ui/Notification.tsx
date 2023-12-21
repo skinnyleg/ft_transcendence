@@ -12,14 +12,10 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const Notifications = () => {
     const [notifications, setNotifications] = useState<NotificationsData[]>([]);
-    const [notifSent, setNotifSent] = useState< | null>(null)
     const [showNotifications, setShowNotifications] = useState(false);
     const [notificationNumber, setNotificationNumber] = useState(0);
     const [newNotification, setNewNotification] = useState<NotificationsData | null>(null);
-    const [notifPopUP, setNotifPopUp] = useState <NotificationsData | null>(null);
     const socket = useContext(socketContext);
-    const [userId, setUserId] = useState<string>('');
-    const [ReqId ,setReqId] = useState<string>('');
 
     useEffect( () => {
         const notif = async() => {
@@ -49,7 +45,6 @@ const Notifications = () => {
     useEffect(() => {
         socket.on("notification", (notif) => {
             console.log("ni=otif sent" ,notif);
-            // setNotifSent(notif);
             toast.success(notif, {
                 position: "top-right",
                 autoClose: 4000,
@@ -64,16 +59,7 @@ const Notifications = () => {
 
         socket.on("error", (error) => {
             console.log("error sent" ,error);
-            toast.error(error.message, {
-                position: "top-right",
-                autoClose: 4000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
+            toast.error(error.message);
         });
 
         socket.on("notifHistory", (data: NotificationsData) => {
@@ -96,6 +82,7 @@ const Notifications = () => {
         setNotifications(notifications);
         setNotificationNumber(notificationNumber - 1);
     }
+    
     const handleRefuseReq = (data: NotificationsData) => {
         let useId = data.notifData.userId;
         let reqId = data.requestId;

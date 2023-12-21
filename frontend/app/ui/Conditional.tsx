@@ -50,10 +50,10 @@ const Conditional = ({isfriend, privateProfile, userId} : DataProps ) => {
     {
         return (
             <div className="flex flex-row rounded-3xl justify-between text-white mx-auto xl:w-[80%] w-[100%]">
-                <div className="hover:bg-accents text-white px-2 text-sm rounded-full" onClick={handleAddFriend}>
+                <div className="flex hover:bg-accents text-white px-2 text-sm rounded-full" onClick={handleAddFriend}>
                     <NoSymbolIcon className="text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8"/>
                 </div>
-                <div className="hover:bg-accents text-white px-2 text-sm rounded-full" onClick={handleAddFriend}>
+                <div className="flex hover:bg-accents text-white text-sm rounded-full px-2" onClick={handleAddFriend}>
                     <UserPlusIcon className="text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8"/>
                 </div>
                 <div className="hover:bg-accents text-white text-sm rounded-full px-2" onClick={() => {}}>
