@@ -37,7 +37,7 @@ const ChatTopBar: FC<ChatTopBarProps> = ({channel}) => {
 				<div className='flex gap-1 flex-row lg:flex-row-reverse items-center'>
 					<IconWithTooltip
 						icon={IoIosArrowBack}
-						styles='w-8 h-8 hover:cursor-pointer block lg:hidden'
+						styles='w-8 h-8 hover:cursor-pointer block md:hidden'
 						tooltipId="backToolTip"
 						tooltipContent="Go Back"
 						clickBehavior={handleBack}

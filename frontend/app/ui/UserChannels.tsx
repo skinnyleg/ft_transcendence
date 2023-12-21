@@ -7,7 +7,7 @@ interface UserChannelsProps {}
 
 const UserChannels: FC<UserChannelsProps> = ({}) => {
 		return (
-			<>
+			<div className=''>
 				{
 				  channels.length > 0 && (
 					channels.map((channel) => (
@@ -18,7 +18,7 @@ const UserChannels: FC<UserChannelsProps> = ({}) => {
 					))
 				  )
 				}
-			</>
+			</div>
 	);
 }
 export default UserChannels;

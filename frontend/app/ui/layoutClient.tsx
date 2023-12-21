@@ -18,7 +18,7 @@ export default function LayoutClinet({
 
     return (
         <socketContext.Provider value={socket}>
-            <div className={`flex-none md:w-10 w-20 lg:w-20`}>
+            <div className={`flex-none md:w-0 w-20 lg:w-20`}>
                 <NavBar handleShowMenu={handleShowMenu} />
             </div>
             <div className={`flex-grow p-6 md:overflow-y-auto xl:overflow-y-hidden lg:overflow-y-hidden md:p-2 xl:mr-2 ${

@@ -42,7 +42,7 @@ const CreateChannel: FC<CreateChannelProps> = () => {
 		<button
 			type="button"
 			onClick={openModal}
-			className="text-black bg-teal-200 text-center w-1/6 rounded-e-xl"
+			className="text-black bg-cyan-100 text-center w-1/6 rounded-e-xl"
 		>
 			<CreateChannelIcon
 			style='w-full h-6 focus:ring-0 focus:outline-none'
@@ -123,6 +123,8 @@ const CreateChannel: FC<CreateChannelProps> = () => {
 											type='password'
 											className='rounded-2xl w-full border-solid border-teal-200 focus:border-teal-500'
 											required
+											minLength={4}
+											maxLength={8}
 										/>
 									</div>
 								</div>

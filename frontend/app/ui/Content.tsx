@@ -14,11 +14,11 @@ const Content: FC<ContentProps> = ({}) => {
 	return (
 		<>
 			{renderTab === 'none' &&  (
-					<div className='w-full h-full hidden lg:block pb-1'>
+					<div className='w-full h-full hidden lg:block pb-0'>
 					</div>
 			)}
 			{renderTab === 'channel' &&  (
-					<div className={`lg:flex lg:flex-grow w-full pb-1 ${barOpen ? 'hidden' : ''}`}>
+					<div className={`lg:flex lg:flex-grow w-full pb-0 ${barOpen ? 'hidden md:flex' : ''}`}>
 						<ChatTabChannel
 							channelId={searchParams.get('channel')}
 						/>

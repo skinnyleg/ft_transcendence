@@ -16,9 +16,9 @@ interface ChatProps {}
 const chat: FC<ChatProps> = () => {
 	
 	return (
-		<div className='h-screen flex flex-col'>
+		<div className='h-screenflex flex-col overflow-y-hidden'>
 			<TopBar />
-			<div className='h-[100%] lg:h-[87%] xl:h-[90%] xl:pb-3 w-full flex flex-row  pt-[70px] pb-1 pr-2 pl-4 lg:pb-2 lg:pt-2'>
+			<div className='h-[100vh] min-[1024px]:h-[89vh]  xl:h-[91vh] xl:pb-0 w-full md:justify-between flex flex-row  md:gap-2 min-[1024px]:gap-0 pt-[85px] pr-1 pl-1 lg:pb-0 lg:pt-1'>
 				<RightBar />
 				<Content />
 				<LeftBar />
