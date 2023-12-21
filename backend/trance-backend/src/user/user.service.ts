@@ -128,6 +128,12 @@ export class UserService {
 		return (sortedUsers);
 	}
 
+	async getAchievements(id: string)
+	{
+		const acheivements = await this.getDoneAchievements(id);
+		return ({doneAchievements: acheivements});
+	}
+
 	async getNotDoneAchievements(id: string)
 	{
 		const notDoneAchievements = await this.prisma.achievement.findMany({
