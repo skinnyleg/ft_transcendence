@@ -23,7 +23,6 @@ export class UserController {
 	@Post('nick')
 	changeNickname(@Body() payload: NicknameDto, @Req() req) {
 		const id = getId(req);
-		console.log("sa", payload)
 		return this.userService.changeNickname(payload.nickname, id)
 	}
 

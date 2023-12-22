@@ -1,21 +1,28 @@
 "use client"
 import { Dialog, Transition } from '@headlessui/react'
-import { FC, Fragment, useState } from 'react'
+import { FC, Fragment, useContext, useState } from 'react'
 import { CreateChannelIcon } from './CustomIcons'
 import Image from 'next/image'
 import ChannelTypes from './ChannelTypeSelect'
+import { chatSocketContext } from '../context/soketContext'
 
 interface CreateChannelProps {}
 
 const CreateChannel: FC<CreateChannelProps> = () => {
 
-  let [isOpen, setIsOpen] = useState(false)
-  let [img, setImg] = useState('/GroupChat.png')
-  let [type, setType] = useState('public')
+	let [isOpen, setIsOpen] = useState(false)
+	const [channelName, setChannelName] = useState<string>('');
+	const [channelPass, setChannelPass] = useState<string>('');
+	let [img, setImg] = useState('/GroupChat.png')
+	let [type, setType] = useState('public')
+	const chatSocket = useContext(chatSocketContext)
+
 
   function closeModal() {
 	setType('public')
 	setImg('/GroupChat.png')
+	setChannelName('')
+	setChannelPass('')
     setIsOpen(false)
   }
 
@@ -27,8 +34,38 @@ const CreateChannel: FC<CreateChannelProps> = () => {
 	setType(type);
   }
 
-  	const handleSubmit = (e) => {
+  	const handleSubmit = async (e: React.ChangeEvent<HTMLInputElement>) => {
 		e.preventDefault();
+		const file = e.target.files?.[0];
+		if (file) {
+			const formData = new FormData();
+			formData.append("file", file);
+			try {
+				const results = await fetch(`http://localhost:8000/upload/ChannelPic`, {
+					credentials: 'include',
+					method: 'POST',
+					body: formData,
+				})
+				if (results.ok) {
+				console.log ("file === ", file);
+					// setBgImage(URL.createObjectURL(file));
+				}
+				else {
+					// setError("Unable To change Picture Please try again");
+					console.log("error")
+				}
+			}
+			catch (error : any) {
+				// setError(error.response.data.message[0]);
+				console.log("error from catch")
+			}
+		}
+		chatSocket.emit('creatChannel', {
+		name: channelName,
+		picture: img,
+		type: type.toUpperCase(),
+		password: (type === 'protected' ? channelPass : undefined)
+		})
 		closeModal();
 	}
   const updateImg = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -108,6 +145,7 @@ const CreateChannel: FC<CreateChannelProps> = () => {
 										className='rounded-2xl border-solid border-teal-200 focus:border-teal-500'
 										maxLength={10}
 										required
+										onChange={(e) => setChannelName(e.target.value)}
 									/>
 									<div className='w-full h-fit'>
 										<h1 className='text-bold text-lg text-blue-900'>Type</h1>
@@ -125,6 +163,7 @@ const CreateChannel: FC<CreateChannelProps> = () => {
 											required
 											minLength={4}
 											maxLength={8}
+											onChange={(e) => setChannelPass(e.target.value)}
 										/>
 									</div>
 								</div>

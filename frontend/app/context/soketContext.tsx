@@ -20,5 +20,20 @@ socket.on("connect", () => {
     console.log("heeheh", socket);
 });
 
+export const chatSocket = io("http://localhost:8000/chatGateway", {
+    withCredentials: true,
+    transportOptions: {
+        polling: {
+            extraHeaders: {
+                "token": token
+            }
+        }
+    }
+});
+
+chatSocket.on('failed', (data: string) => {
+    console.log('got error from backend == ', data);
+})
 
 export const socketContext = createContext(socket);
+export const chatSocketContext = createContext(chatSocket);

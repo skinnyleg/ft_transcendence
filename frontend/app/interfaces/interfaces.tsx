@@ -73,13 +73,22 @@ export interface profileData {
 // Chat Interfaces
 
 export interface ChannelInter {
-	id: string,
-	channelName: string,
-	channelPic: string,
-	isJoined: string,
-	channelType: string;
-	userRole?: string;
+  channelId?: string,
+  channelName?: string,
+  channelPicture?: string,
+  userRole?: string,
+  lastMsg?: string,
+  channelType?: string
 }
+
+// export interface ChannelInter {
+// 	id: string,
+// 	channelName: string,
+// 	channelPic: string,
+// 	isJoined: string,
+// 	channelType: string;
+// 	userRole?: string;
+// }
 
 export interface DmsInter {
 	id: string,
