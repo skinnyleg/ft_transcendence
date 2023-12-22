@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { Request, Response } from 'express';
@@ -33,10 +33,10 @@ export class AuthService {
 		res.cookie('id', user.id, {signed: true})
 		if (user.isEnabled == true)
 			res.redirect(`${process.env.FrontendHost}/Qr`);
-		const token = await this.createToken(user.id, user.login, TOKENEXP, TOKENSECRET)
-		res.cookie('token', token, {signed: true});
-		const refresh = await this.createToken(user.id, user.login, REFRESHEXP, REFRESHSECRET)
-		res.cookie('refresh', refresh, {signed: true})
+		const token = await this.createToken(user.id, user.nickname, TOKENEXP, TOKENSECRET)
+		const refresh = await this.createToken(user.id, user.nickname, REFRESHEXP, REFRESHSECRET)
+		res.cookie('token', token, {maxAge: TOKENEXP * 1000})
+		res.cookie('refresh', refresh, {maxAge: REFRESHEXP * 1000})
 		console.log("token == ", token)
 		res.status(200).json(token);
 	}
@@ -45,7 +45,8 @@ export class AuthService {
 		res.clearCookie('token');
 		res.clearCookie('refresh');
 		res.clearCookie('id');
-		return res.send({message: "signOut was succefull"})
+		res.redirect(`${process.env.FrontendHost}/`)
+		// return res.status(200).send({message: "signOut was succefull"})
 	}
 
 
@@ -77,10 +78,58 @@ export class AuthService {
 			throw new NotFoundException("User Doesn't Exits")
 		res.clearCookie('token');
 		res.clearCookie('refresh');
-		const token = await this.createToken(user.id, user.login, TOKENEXP, TOKENSECRET)
-		res.cookie('token', token, {signed: true});
-		const refresh = await this.createToken(user.id, user.login, REFRESHEXP, REFRESHSECRET)
-		res.cookie('refresh', refresh, {signed: true})
+		const token = await this.createToken(user.id, user.nickname, TOKENEXP, TOKENSECRET)
+		const refresh = await this.createToken(user.id, user.nickname, REFRESHEXP, REFRESHSECRET)
+		res.cookie('token', token, {maxAge: TOKENEXP * 1000})
+		res.cookie('refresh', refresh, {maxAge: REFRESHEXP * 1000})
 		res.status(200).json(token);
+	}
+
+
+	async checkFirstLogin(id: string, res: Response)
+	{
+		const user = await this.prisma.user.findUnique({
+			where: {
+				id: id,
+			},
+			select: {
+				FirstLogin: true,
+			}
+		})
+		if (!user)
+			throw new NotFoundException('user not found')
+
+		res.status(200).send(user);
+	}
+
+	async updateFirstLogin(id: string, res: Response)
+	{
+		const user = await this.prisma.user.findUnique({
+			where: {
+				id: id,
+			},
+			select: {
+				id: true,
+				FirstLogin: true,
+			}
+		})
+		if (!user)
+			throw new NotFoundException('user not found')
+		
+		if (user.FirstLogin === false)
+			throw new ConflictException('already updated the value')
+
+
+		const updatedUser = await this.prisma.user.update({
+			where: {
+				id: user.id,
+			},
+			data: {
+				FirstLogin: false,
+			}
+		})
+		if (!updatedUser)
+			throw new NotFoundException('couldn\'t update user')
+		res.status(200).send({valid: true});
 	}
 }

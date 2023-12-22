@@ -1,7 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { DmOutils } from './dm.outils';
 import { User, Types, Message, Dm } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { Socket } from 'socket.io';
 
 @Injectable()
 export class DmService {
@@ -21,9 +22,11 @@ export class DmService {
                   { id: user2 }
                 ],
               },
-               // You can add messages here if needed
             },
           });
+        if (!dm) {
+            throw new InternalServerErrorException('Dm creation failed.');
+        }
         return dm || null;
     }
 
@@ -68,7 +71,7 @@ export class DmService {
                                     },
                                 },
                                 createdAt: true,
-                                chatId: true
+                                dmId: true
                             },
                             orderBy: { 
                                 createdAt: 'desc',
@@ -86,5 +89,53 @@ export class DmService {
             throw new NotFoundException(`${user} user not fout.`);
         }
        return findUser?.Dm || []; 
+    }
+
+    async   getDmMessages(dmId: string)
+    {
+        const allMessages = await this.prisma.dm.findUnique({
+            where: {
+                id: dmId,
+            },
+            include: {
+                members: {
+                    select: {
+                        nickname: true,
+                        profilePic: true,
+                    },
+                },
+                messages: {
+                    select: {
+                        id: true,
+                        content: true,
+                        createdAt: true,
+                        sender: {
+                            select: {
+                                nickname: true,
+                            },
+                        },
+                    },
+                    orderBy: {
+                        createdAt: 'asc',
+                    },
+                },
+            },
+        });
+        if (!allMessages) {
+            throw new NotFoundException('DM not found.');
+        }
+        return allMessages;
+    }
+
+    async   generateDm(receiver: string , senderId: string, receiverSocket: Socket)
+    {
+        const receiverId = await this.dmOutils.getUserIdByName(receiver);
+        let dmId = await this.dmOutils.getDmIdby2User(senderId, receiverId);
+        if (dmId === null) {
+        	await this.creatDMchat(senderId, receiverId);
+        	dmId = await this.dmOutils.getDmIdby2User(senderId, receiverId);
+            receiverSocket.emit('refreshDms');
+        }
+        return {dmId, receiverId} || {};
     }
 }

@@ -6,6 +6,7 @@ import { tokenDto } from './Dto/tokenDto';
 import { JwtAuthGuard } from './jwt.guard';
 import { REFRESHEXP, REFRESHSECRET, TOKENEXP, TOKENSECRET } from 'src/classes/classes';
 import { RefreshJwtAuthGuard } from './refresh.guard';
+import { getId } from 'src/utils/getId';
 
 @Controller('auth')
 export class AuthController {
@@ -33,10 +34,12 @@ export class AuthController {
 			response.redirect(`${process.env.FrontendHost}/Qr`);
 			return;
 		}
-		const token = await this.authService.createToken(request.user.id, request.user.login, TOKENEXP, TOKENSECRET)
-		response.cookie('token', token, {signed: true})
-		const refresh = await this.authService.createToken(request.user.id, request.user.login, REFRESHEXP, REFRESHSECRET)
-		response.cookie('refresh', refresh, {signed: true})
+		const token = await this.authService.createToken(request.user.id, request.user.nickname, TOKENEXP, TOKENSECRET)
+		const refresh = await this.authService.createToken(request.user.id, request.user.nickname, REFRESHEXP, REFRESHSECRET)
+		response.cookie('token', token, {maxAge: TOKENEXP * 1000})
+		response.cookie('refresh', refresh, {maxAge: REFRESHEXP * 1000})
+		if (request.user.FirstLogin === true)
+			response.redirect(`${process.env.FrontendHost}/settings`);
 		response.redirect(`${process.env.FrontendHost}/Dashboard`);
 		// response.status(200).json(token);
 	}
@@ -49,19 +52,38 @@ export class AuthController {
 	}
 
 
-	@Post('CheckToken')
-	CheckToken(@Body() payload: tokenDto, @Req() req, @Res() res)
+	@UseGuards(JwtAuthGuard)
+	@Get('CheckToken')
+	CheckToken(@Res() res)
 	{
-		if (req.signedCookies && 'token' in req.signedCookies) {
-		  if (req.signedCookies.token.length > 0) {
-				if (req.signedCookies.token === payload.token)
-					res.status(200).json(payload.token);
-		  }
-		}
-		throw new UnauthorizedException('not allowed')
+		// if (req.signedCookies && 'token' in req.signedCookies) {
+		//   if (req.signedCookies.token.length > 0) {
+		// 	if (payload.token === "")
+		// 		res.status(200).json(req.signedCookies.token);
+		// 	else if (req.signedCookies.token === payload.token)
+		// 		res.status(200).json(payload.token);
+		//   }
+		// }
+		// throw new UnauthorizedException('not allowed')
+		res.status(200).send({message: "true"})
 	}
 
 
+	@UseGuards(JwtAuthGuard)
+	@Get('CheckFirstLogin')
+	async CheckFirstLogin(@Req() request, @Res() res)
+	{
+		const id = request.user.sub;
+		return await this.authService.checkFirstLogin(id, res);
+	}
+
+	@UseGuards(JwtAuthGuard)
+	@Post('UpdateFirstLogin')
+	async UpdateFirstLogin(@Req() request, @Res() res)
+	{
+		const id = request.user.sub;
+		return await this.authService.updateFirstLogin(id, res);
+	}
 
 	@UseGuards(RefreshJwtAuthGuard)
 	@Get('refresh')
