@@ -2,7 +2,8 @@
 import { Socket } from 'socket.io'
 
 
-export const TOKENEXP: number = 1 * 60 * 60;
+// export const TOKENEXP: number = 1 * 60 * 60;
+export const TOKENEXP: number = 1 * 60 * 500;
 
 export const REFRESHEXP: number = 7 * 24 * 60 * 60;
 
@@ -13,7 +14,7 @@ export class gatewayUser {
 	id: string;
 	socket: Socket;
 }
-
+ 
 
 export class NotificationData {
 	requestId: string;

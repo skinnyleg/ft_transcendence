@@ -23,6 +23,7 @@ enum RequestType {
   UNFRIEND
   BLOCKED
   UNBLOCKED
+  JOINCHANNEL
 }
 
 enum Status {
@@ -34,6 +35,26 @@ enum Status {
 enum AchievementStatus {
   DONE
   NOTDONE
+}
+
+enum Membership {
+  BLOCKED
+  MUTED
+  KICK
+  BAN
+  ACTIVE
+}
+
+enum Role {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum Types {
+  PRIVATE
+  PUBLIC
+  PROTECTED
 }
 
 model User {
@@ -57,13 +78,15 @@ model User {
   Losses        Int        @default(0)
   FirstLogin    Boolean    @default(true)
 
+  adminIn Channel[] @relation("Admins")
+
   BlockedBy    String[]
   usersBlocked String[]
   userRequests Request[]
   channels     Channel[]
   Message      Message[]
   Match        Match[]
-  Chat         Chat[]
+  Dm           Dm[] @relation("directmessage")
   users        FriendStatus[]
   achievements Achievement[]
 }
@@ -77,6 +100,7 @@ model Request {
   descriptionOfRequest String
   emitted              Boolean     @default(false)
   responded            Boolean     @default(false)
+  channelName          String?     @unique    
 }
 
 model Achievement {
@@ -98,26 +122,6 @@ model FriendStatus {
   friendId String
 }
 
-model Channel {
-  id       String    @id @default(uuid())
-  type     String
-  users    User[]
-  messages Message[]
-  // Define other fields for the channel as needed
-}
-
-model Message {
-  id        String   @id @default(uuid())
-  content   String
-  sender    User     @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-  channel   Channel? @relation(fields: [channelId], references: [id])
-  channelId String?
-  userId    String
-  Chat      Chat?    @relation(fields: [chatId], references: [id])
-  chatId    String?
-}
-
 // Define an Achievement model (you can further customize this)
 
 // Define a Match model
@@ -131,10 +135,44 @@ model Match {
   userId  String
 }
 
-// Define a Chat model
-model Chat {
-  id       String    @id @default(uuid())
-  toUser   User      @relation(fields: [userId], references: [id])
-  messages Message[]
-  userId   String
+model Message {
+  id        String   @id @default(uuid())
+  content   String
+  sender    User     @relation(fields: [senderId], references: [id])
+  senderId  String
+  createdAt DateTime @default(now())
+  channel   Channel? @relation(fields: [channelId], references: [id])
+  channelId String?
+  Dm        Dm?      @relation(fields: [dmId], references: [id])
+  dmId    String?
+}
+
+model Channel {
+  id        String      @id @default(uuid())
+  name      String      @unique
+  picture   String      @default("")
+  owner     String
+  type      Types
+  password  String?
+  users     User[]
+  admins    User[]      @relation("Admins")
+  blacklist Blacklist[]
+  messages  Message[]
+  updatedAt DateTime    @default(now()) @updatedAt
+}
+
+model Dm {
+  id          String    @id @default(uuid())
+  updatedAt   DateTime    @default(now()) @updatedAt
+  members     User[]     @relation("directmessage")
+  messages    Message[]
+}
+
+model Blacklist {
+  id          String     @id @default(uuid())
+  nickname    String
+  status      Membership
+  expiredAt   DateTime?
+  channelName String
+  channel     Channel    @relation(fields: [channelName], references: [name])
 }

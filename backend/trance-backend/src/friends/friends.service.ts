@@ -4,11 +4,17 @@ import { gatewayUser } from 'src/classes/classes';
 import { UserService } from 'src/user/user.service';
 import { Socket } from 'socket.io';
 import { User, UserStatus } from '@prisma/client';
+import { DmService } from 'src/chat/dm/dm.service';
+import { DmOutils } from 'src/chat/dm/dm.outils';
 
 @Injectable()
 export class FriendsService {
-	constructor(private jwtService: JwtService,
-				private userService: UserService){}
+	constructor(
+		private jwtService: JwtService,
+		private userService: UserService,
+		private dmService: DmService,
+		private dmOutils: DmOutils
+	){}
 
 	private Users: gatewayUser[] = [];
 
@@ -193,6 +199,10 @@ export class FriendsService {
 			{
 				const nick = await this.userService.getNickById(sender.id)
 				toSend.socket.emit('notification', `${nick} accepted your request`);
+			}
+			const dmId = await this.dmOutils.getDmIdby2User(sender.id, userId);
+			if (!dmId) {
+				await this.dmService.creatDMchat(sender.id, userId)
 			}
 		}
 		catch(error)
