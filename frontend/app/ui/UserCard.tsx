@@ -25,7 +25,7 @@ const UserCard: FC<UserCardProps> = ({user, userRole}) => {
 				<h1 className='font-bold text-xl'>
 					{user.userNick}
 				</h1>
-				<UserDropDown 
+				<UserDropDown
 					userRole={userRole}
 					userCardRole={user.userRole}
 					userNick={user.userNick}
