@@ -6,7 +6,6 @@ import { Response } from 'express';
 import { UploadService } from './upload.service';
 import { getId } from 'src/utils/getId';
 import { JwtAuthGuard } from 'src/auth/jwt.guard';
-import * as fs from 'fs';
 
 @Controller('upload')
 export class UploadController {
@@ -74,19 +73,4 @@ export class UploadController {
 	  return { valid:true, filename: filePath };
 	}
 
-	@UseGuards(JwtAuthGuard)
-	@Delete('/channel/:filename')
-	deleteChannelPic(@Param('filename') filename: string, @Res() res: Response) {
-		const newDir =  path.join(__dirname, '..', '..', 'uploads', 'channels')
-		const fileToDelete = newDir + '/' + filename;
-		fs.unlink(fileToDelete, (err) => {
-			if (err) {
-				throw new ConflictException('Can\'t delete resource')
-			  console.error(err);
-			} else {
-			  console.log('File is deleted.');
-			}
-		  });
-    	res.status(204).send({msg: 'Deleted Successfully'});
-	}
 }
