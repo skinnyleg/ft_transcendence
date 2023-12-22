@@ -2,6 +2,7 @@ import { BadRequestException, Injectable, InternalServerErrorException, NotFound
 import { DmOutils } from './dm.outils';
 import { User, Types, Message, Dm } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { Socket } from 'socket.io';
 
 @Injectable()
 export class DmService {
@@ -126,13 +127,14 @@ export class DmService {
         return allMessages;
     }
 
-    async   generateDm(receiver: string , senderId: string)
+    async   generateDm(receiver: string , senderId: string, receiverSocket: Socket)
     {
         const receiverId = await this.dmOutils.getUserIdByName(receiver);
         let dmId = await this.dmOutils.getDmIdby2User(senderId, receiverId);
         if (dmId === null) {
         	await this.creatDMchat(senderId, receiverId);
         	dmId = await this.dmOutils.getDmIdby2User(senderId, receiverId);
+            receiverSocket.emit('refreshDms');
         }
         return {dmId, receiverId} || {};
     }

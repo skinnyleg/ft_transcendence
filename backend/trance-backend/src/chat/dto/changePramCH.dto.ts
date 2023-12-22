@@ -64,3 +64,10 @@ export class changeOwnerDto {
     @IsString()
     newOwner: string;
 }
+
+export class stringDto {
+    
+    @IsNotEmpty()
+    @IsString()
+    channelName: string;
+}

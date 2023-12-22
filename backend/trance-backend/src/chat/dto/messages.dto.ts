@@ -8,7 +8,7 @@ export class creatMessageCh {
 
     @IsNotEmpty()
     @IsString()
-    channelId: string;
+    channelName: string;
 }
 
 export class sendMessageDm {

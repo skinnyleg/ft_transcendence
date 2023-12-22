@@ -1,6 +1,6 @@
 import { Controller, Post, UseInterceptors, UploadedFile, Get, Param, Res, Req, BadRequestException, UseGuards } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { backgroundPicMulterOptions, profilePicMulterOptions } from './multer.config';
+import { backgroundPicMulterOptions, channelPicMulterOptions, profilePicMulterOptions } from './multer.config';
 import * as path from 'path';
 import { Response } from 'express';
 import { UploadService } from './upload.service';
@@ -41,6 +41,25 @@ export class UploadController {
   }
 
 
+  @UseGuards(JwtAuthGuard)
+  @Post('ChannelPic')
+  @UseInterceptors(FileInterceptor('file', channelPicMulterOptions))
+  async uploadChannelPic(@UploadedFile() file: Express.Multer.File, @Req() req) {
+
+	if (file === undefined)
+		throw new BadRequestException('Server doesn\'t this upload')
+	const id = getId(req);
+	const channelName = req.headers.channelname;
+	console.log("channel Name == ", channelName);
+	if (channelName === undefined || channelName === '')
+		throw new BadRequestException('No Channel Name Given')
+	const newDir =  'http://localhost:8000/' + 'upload/Channel/'
+	const filePath = newDir + file.filename
+	await this.uploadService.updateChannelPic(filePath, channelName)
+    return { valid:true, filename: filePath };
+  }
+
+
 	@UseGuards(JwtAuthGuard)
 	@Get('/profile/:filename')
 	serveProfilePic(@Param('filename') filename: string, @Res() res: Response) {
@@ -52,6 +71,13 @@ export class UploadController {
 	@Get('/background/:filename')
 	serveBackgroundPic(@Param('filename') filename: string, @Res() res: Response) {
 		const newDir =  path.join(__dirname, '..', '..', 'uploads', 'background')
+    	res.sendFile(filename, { root: newDir });
+	}
+
+	@UseGuards(JwtAuthGuard)
+	@Get('/channel/:filename')
+	serveChannelPic(@Param('filename') filename: string, @Res() res: Response) {
+		const newDir =  path.join(__dirname, '..', '..', 'uploads', 'channels')
     	res.sendFile(filename, { root: newDir });
 	}
 }

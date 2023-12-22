@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ConflictException, ForbiddenException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { creatChannel } from '../dto/creat-channel.dto';
 import { Channel, User, Types, Message, Dm } from '@prisma/client';
@@ -7,6 +7,7 @@ import { DateTime } from 'luxon';
 import { DmOutils } from '../dm/dm.outils';
 import { DmService } from '../dm/dm.service';
 import { Server } from 'socket.io';
+import { compareHash, hashPass } from 'src/utils/bcryptUtils';
 
 
 @Injectable()
@@ -21,13 +22,16 @@ export class ChannelService {
 
     async creatChannel(data: creatChannel, owner: string): Promise<Channel>
     {
-        const {name, type, picture, password} = data;
+        const {name, type, picture, password } = data;
+        console.log('password == ', password);
         const type_: Types = type as Types;
-        if (type === 'PROTECTED' && (!password || password.length < 4 || password.length > 8)) {
+        let hashedPass = password;
+        if (type === 'PROTECTED' && (!password || password.length < 4 || password.length > 8))
             throw new BadRequestException('Invalid password.');
-        }
-        else if ((type === 'PUBLIC' || type === 'PRIVATE') && password) {
+        else if ((type === 'PUBLIC' || type === 'PRIVATE') && password)
             throw new BadRequestException('Private & public channels don\'t require password.');
+        if (type === 'PROTECTED') {
+            hashedPass = await hashPass(password);
         }
         const newChannel = await this.prisma.channel.create({
             data: {
@@ -35,14 +39,13 @@ export class ChannelService {
                 picture,
                 type: type_,
                 owner,
-                password,
+                password: hashedPass,
                 users: { connect: [{ nickname: owner }] },
                 admins: { connect: [{ nickname: owner }] },
             },
         });
-        if (!newChannel) {
+        if (!newChannel)
             throw new InternalServerErrorException('Failed channel creation.');
-        }
         const channel_: mutedUsers = {name, users: []};
         this.outils.mutedList.push(channel_);
         return newChannel;
@@ -51,16 +54,17 @@ export class ChannelService {
     async   joinChannel(channelName: string, username: string, password?: string)
     {
         const isUserInChannel =  await this.outils.isUserInChannel(channelName, username);
-        if (isUserInChannel) {
+        if (isUserInChannel)
             throw new UnauthorizedException(`You are already member of ${channelName}.`);
-        }
         const isClean = await this.outils.isUserInBlacklist(channelName, username);
-        if(isClean) {
+        if(isClean)
             throw new UnauthorizedException(`You are blacklisted in ${channelName}.`);
-        }
         const type = await this.outils.getChannelType(channelName);
-        if (type === 'PROTECTED' && (await this.outils.getChannelPass(channelName) !== password)) {
-            throw new UnauthorizedException('Password incorrect.');
+        if (type === 'PROTECTED') {
+            const channelPass = await this.outils.getChannelPass(channelName);
+            const val = compareHash(password, channelPass);
+            if (!val)
+                throw new UnauthorizedException('Password incorrect.');
         }
         if (type === 'PRIVATE') {
             const owner = await this.outils.getChannelOwner(channelName);
@@ -69,15 +73,13 @@ export class ChannelService {
         await this.prisma.channel.update({
             where: { name: channelName },
             data: {
-                users: {
-                    connect: { nickname: username },
-                },
+                users: {  connect: { nickname: username } },
             },
         });
         return ['Done'];
     } 
 
-    async   creatMessageChannel(channelId: string, sender: string, content: string): Promise<Message | null>
+    async   creatMessageChannel(channelId: string, sender: string, content: string)
     {
         const user = await this.outils.isUserInChannel(channelId, sender);
         if (!user) {
@@ -121,9 +123,8 @@ export class ChannelService {
                 },
             },
         });
-        if (!user) {
+        if (!user) 
             throw new NotFoundException(`${nickname} user not found.`);
-        }
         return user.channels || [];
     }
 
@@ -151,14 +152,12 @@ export class ChannelService {
 
     async   changeOwnerOfChannel(channelName: string, oldOwner: string, newOwner: string)
     {
-        const isMemberOld = await this.outils.isUserInChannel(channelName, newOwner);
-        if (!isMemberOld) {
-            throw new NotFoundException(`${oldOwner} not found in ${channelName}.`);
-        }
+        const isOwner = await this.outils.getChannelOwner(channelName);
+        if (isOwner !== oldOwner) 
+            throw new ForbiddenException(`you are not allowed`);
         const isMemberNew = await this.outils.isUserInChannel(channelName, newOwner);
-        if (!isMemberNew) {
-            throw new NotFoundException(`${newOwner} not found in ${channelName}.`);
-        }
+        if (!isMemberNew)
+            throw new NotFoundException(`${newOwner} not found in ${channelName}`);
         await   this.prisma.channel.update({
             where: { name: channelName },
             data: {
@@ -239,23 +238,18 @@ export class ChannelService {
     {
         //check user to ban if it is baned
         const isCientMember = await this.outils.isUserInChannel(channelName, client);
-        if(!isCientMember) {
+        if(!isCientMember)
             throw new NotFoundException(`${client} not found in ${channelName}.`);
-        }
         const isUser2muteMember = await this.outils.isUserInChannel(channelName, user2mute);
-        if(!isUser2muteMember) {
+        if(!isUser2muteMember)
             throw new NotFoundException(`${user2mute} not found in ${channelName}.`);
-        }
         const isClientAdmin = await this.outils.isUserAdministrator(channelName, client);
-        if(!isClientAdmin) {
+        if(!isClientAdmin)
             throw new ForbiddenException('Only admins can mute users.');
-        }
         const isNotAdmin = await this.outils.isUserAdministrator(channelName, user2mute);
-        if(isNotAdmin) {
-            if((await this.outils.getChannelOwner(channelName)) !== client) {
+        if(isNotAdmin)
+            if((await this.outils.getChannelOwner(channelName)) !== client)
                 throw new ForbiddenException('Only owner can mute admins.')
-            }
-        }
         expirationTime *= 60;
         const expiredAt = DateTime.now().plus({ seconds: expirationTime }).toJSDate();
         await this.prisma.blacklist.create({
@@ -267,9 +261,8 @@ export class ChannelService {
             },
         });
         const channel = this.outils.mutedList.find((c) => c.name == channelName);
-        if (channel) {
+        if (channel)
             channel.users.push(user2mute);
-        }
         else {
             const ch: mutedUsers = {name: channelName, users: [user2mute]};
             this.outils.mutedList.push(ch);
@@ -278,13 +271,16 @@ export class ChannelService {
 
     async   changeChannelType(channelName: string, owner: string, newType: Types, password?: string)
     {
+        const isOwner = await this.outils.getChannelOwner(channelName);
+        if (isOwner !== owner) 
+            throw new ForbiddenException(`you are not allowed`);
         const channel2update = await this.outils.findChannelByName(channelName);
-        if (channel2update.type === newType) {
+        if (channel2update.type === newType) 
             throw new BadRequestException('Chanel already with this type.');
-        }
-        if (newType !== 'PROTECTED') {
+        if (newType !== 'PROTECTED')
             password = null;
-        }
+        else
+            password = await hashPass(password);
         await this.prisma.channel.update({
             where: { 
                 name: channelName,
@@ -300,13 +296,14 @@ export class ChannelService {
     async   changeChannelName(channelName: string, owner: string, newName: string)
     {
         const channel2update = await this.outils.findChannelByName(channelName);
-        if (!channel2update) {
+        if (!channel2update)
             throw new NotFoundException(`${channelName} not found.`);
-        }
         const channelOwner = await this.outils.getChannelOwner(channelName);
-        if (channelOwner !== owner) {
+        if (channelOwner !== owner)
             throw new UnauthorizedException('You are not allowed to make changes in this channel.');
-        }
+        const isAllocated = await this.outils.isChannelExist(newName);
+        if (!isAllocated)
+            throw new ConflictException(`${channelName} is already taken`);
         const id: string = await this.outils.getChannelIdByName(channelName);
         await this.prisma.channel.update({
             where: {
@@ -322,25 +319,23 @@ export class ChannelService {
     async   changeChannelPass(channelName: string, owner: string, newPassword: string)
     {
         const channel2update = await this.outils.findChannelByName(channelName);
-        if (!channel2update) {
+        if (!channel2update)
             throw new NotFoundException(`${channelName} not found.`);
-        }
         const channelOwner = await this.outils.getChannelOwner(channelName);
-        if (channelOwner !== owner) {
+        if (channelOwner !== owner)
             throw new UnauthorizedException('You are not allowed to make changes in this channel.');
-        }
         if (channel2update.type === 'PROTECTED') {
+            const hasPassword = await hashPass(newPassword);
             await this.prisma.channel.update({
                 where: {
                     name: channelName,
                     owner,
                 },
-                data: { password: newPassword },
+                data: { password: hasPassword },
             });
         }
-        else {
+        else
             throw new BadRequestException('Change password only allowed in PROTECTED channels.');
-        }
     }
 
     async   changeChannelPicture(channelName: string, newPicture: string, owner: string)
@@ -351,12 +346,12 @@ export class ChannelService {
         }
         const channelOwner = await this.outils.getChannelOwner(channelName);
         if (channelOwner !== owner) {
-            throw new UnauthorizedException('You are not allowed to make changes in this channel.');
+            throw new UnauthorizedException('You are not allowed to make changes in this channel');
         }
-        await this.prisma.channel.update({
-            where: { name: channelName},
-            data: { picture: newPicture },
-        });
+        // await this.prisma.channel.update({
+        //     where: { name: channelName},
+        //     data: { picture: newPicture },
+        // });
     }
 
     async   getChannelUsers(channelName: string): Promise<User[]>
@@ -392,18 +387,16 @@ export class ChannelService {
                 },
             },
         });
-        if (!channels) {
+        if (!channels)
             return [];
-        }
         return channels;
     }
 
     async   getMessagesCH(username: string, channelName: string)
     {
         const isMember = await this.outils.isUserInChannel(channelName, username);
-        if (!isMember) {
+        if (!isMember)
             throw new ForbiddenException('forbidden action.');
-        }
         const channelId = await this.outils.getChannelIdByName(channelName);
         const blockedList = await this.dmOutils.getBlockedUsers(username);
         const allMessages = await this.prisma.message.findMany({
@@ -448,7 +441,7 @@ export class ChannelService {
         return allowedUsers;
     }
 
-    async   emitNotif2channelUsers(data: notif2user)
+    async   emitNotif2channelUsers(data: notif2user, values: string[], dataObj: any = {})
     {
         const {channelName, admin, notif, user2notify, server, usersSockets} = data;
         const user2notifyId = await this.dmOutils.getUserIdByName(user2notify);
@@ -456,11 +449,12 @@ export class ChannelService {
         const channelUsers = await this.getChannelUsers(channelName);
         for (const userSocket  of usersSockets) {
             if (user2notifyId === userSocket.userId)
-                userSocket.socket.emit('outDone');
+                userSocket.socket.emit(values[0], dataObj);
             if (channelUsers.find(userIn => userIn.id === userSocket.userId))
                 userSocket.socket.join(channelId);
         }
-        server.to(channelId).emit('refreshSidebar');
+        // if (!value)
+        server.to(channelId).emit(values[1]);
         server.to(channelId).emit('notification', notif);
         for (const userSocket  of usersSockets)
             if (channelUsers.find(userIn => userIn.id === userSocket.userId))

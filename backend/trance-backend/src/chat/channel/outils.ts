@@ -7,6 +7,7 @@ import { ChannelService } from "./channel.service";
 import { Server } from "socket.io";
 
 export interface channelsSide {
+    channelId?: string,
     channelName?: string,
     channelPicture?: string,
     userRole?: string,
@@ -26,7 +27,8 @@ export interface mutedUsers {
 }
 
 export interface messsagesCH {
-    id?: string,
+    channelId?: string,
+    messageId?: string,
     sender?: string,
     picture?: string,
     message?: string,
@@ -95,9 +97,8 @@ export class ChannelOutils {
             },
         });
         
-        if(!channel) {
+        if(!channel) 
             throw new  NotFoundException(`${name} channel not found.`);
-        }
         return channel;
     }
 
@@ -107,9 +108,8 @@ export class ChannelOutils {
             where: { name: channelName },
             select: { users: { where: { nickname }, take: 1}},
         });
-        if(!channel || !channel.users || channel.users.length === 0) {
+        if(!channel || !channel.users || channel.users.length === 0)
             return false;
-        }
         return true;
     }
 
@@ -136,9 +136,8 @@ export class ChannelOutils {
         const channel = await this.prisma.channel.findUnique({
             where: { name },
         });
-        if (!channel) {
+        if (!channel)
             return false;
-        }
         return true;
     }
 
@@ -234,13 +233,11 @@ export class ChannelOutils {
     async   getUserChannelRole(channelName: string, user: string)
     {
         const channel = await this.findChannelByName(channelName);
-        if (channel.owner === user) {
+        if (channel.owner === user) 
             return 'owner'.toUpperCase();
-        }
         const isAdmin = await this.isUserAdministrator(channelName, user);
-        if (isAdmin) {
+        if (isAdmin)
             return 'admin'.toUpperCase();
-        }
         else {
             return 'member'.toUpperCase();
         }
@@ -257,6 +254,7 @@ export class ChannelOutils {
     @Cron(CronExpression.EVERY_10_SECONDS)
     async MuteExpiration() {
         try {
+            // console.log('im here');
             for (const channel of this.mutedList) {
                 for (const mutedUser of channel.users) {
                     const expiredAt = await this.getExpiredAtOfUser(channel.name, mutedUser);
@@ -274,14 +272,14 @@ export class ChannelOutils {
     async   pushMutedUsers()
     {
         const array = await this.getMuteBlacklist()
+        // console.log('muted: ',array);
         if (array)
         {
             for (const element of array)
             {
                 const channel = this.mutedList.find((c) => c.name == element.channelName);
-                if (channel) {
+                if (channel)
                     channel.users.push(element.nickname);
-                }
                 else {
                     const ch: mutedUsers = {name: element.channelName, users: [element.nickname]};
                     this.mutedList.push(ch);

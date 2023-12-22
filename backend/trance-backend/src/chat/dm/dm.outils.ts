@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from "@nestjs/common";
+import { BadRequestException, ConflictException, ForbiddenException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { Channel, User, Types, Message, Dm } from '@prisma/client';
 import { ValidationError, validate } from "class-validator";
@@ -8,6 +8,7 @@ import { Socket } from "socket.io";
 // import { DmService } from "./dm.service";
 
 export interface dmsSide {
+	dmId?: string,
 	name?: string,
 	lastMsg?: string,
 	picture?: string
@@ -15,7 +16,8 @@ export interface dmsSide {
 }
 
 export interface dmMessages {
-	id?: string
+	dmId?: string,
+	messageId?: string,
 	sender?: string,
 	message?: string,
 	time?: string
@@ -121,7 +123,7 @@ export class DmOutils {
 		console.error(`error<${event}>: `, error.message);
 		if (error instanceof NotFoundException || error instanceof BadRequestException || 
 			error instanceof UnauthorizedException || error instanceof ForbiddenException || 
-			error instanceof InternalServerErrorException) {
+			error instanceof InternalServerErrorException || error instanceof ConflictException) {
 			client.emit(`failed`, error.message);
 		}
 		else {
@@ -129,10 +131,11 @@ export class DmOutils {
 		}
 	}
 
-	fillBuffer(message: any, nickname: string)
+	fillBuffer(message: any, nickname: string, dmId: string)
 	{
 		const buffer: dmMessages = {};
-		buffer.id = message.id;
+		buffer.dmId = dmId;
+		buffer.messageId = message.id;
 		buffer.sender = nickname;
 		buffer.message = message.content;
 		buffer.time = this.dateTime2String(message.createdAt);
