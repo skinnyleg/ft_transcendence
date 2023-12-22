@@ -114,6 +114,29 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 		}
 	}
 
+	@SubscribeMessage('channelData')
+	async	channelInformation(data: stringDto, @ConnectedSocket() client: Socket)
+	{
+		try
+		{
+			await  this.DmOutils.validateDtoData(data, creatChannel);
+			const user = client.data.user.nickname;
+			const { channelName } = data;
+			const channel = await this.Outils.findChannelByName(channelName);
+			let buffer: channelsSide = {};
+			buffer.channelId = channel.id;
+			buffer.channelName = channel.name;
+			buffer.channelPicture = channel.picture;
+			const isMember = await this.Outils.isUserInChannel(channelName, user);
+			buffer.userRole = (isMember === false ? '')await this.Outils.getUserChannelRole(channel.name, user);
+			buffer.lastMsg = await this.channelService.getChannelUsers(channelName);
+			buffer.channelType = channel.type;
+		}
+		catch (error) {
+			this.DmOutils.Error(client, 'channelInfo', error.message, 'get channel data failed');
+		}
+	}
+
 	@SubscribeMessage('joinChannel')
 	async	joinChannel(@MessageBody() data: joinChannel,  @ConnectedSocket() client: Socket)
 	{
