@@ -128,8 +128,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			buffer.channelName = channel.name;
 			buffer.channelPicture = channel.picture;
 			const isMember = await this.Outils.isUserInChannel(channelName, user);
-			buffer.userRole = (isMember === false ? '')await this.Outils.getUserChannelRole(channel.name, user);
-			buffer.lastMsg = await this.channelService.getChannelUsers(channelName);
+			buffer.userRole = isMember === false ? 'none' : (await this.Outils.getUserChannelRole(channel.name, user));
+			const chUsers = (await this.channelService.getChannelUsers(channelName)).map(userCh => userCh.nickname);
+			buffer.lastMsg = chUsers.slice(0, 3).join(', ');
 			buffer.channelType = channel.type;
 		}
 		catch (error) {
@@ -163,7 +164,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			notif2users.notif = `${user.nickname} has joined`;
 			notif2users.user2notify = user.nickname;
 			await this.channelService.emitNotif2channelUsers(notif2users, ['joinDone', 'refreshSide']);
-			// client.emit('joinDone');
 		}
 		catch (error) {
 			this.DmOutils.Error(client, 'joinChannel', error, 'join channel failed');
