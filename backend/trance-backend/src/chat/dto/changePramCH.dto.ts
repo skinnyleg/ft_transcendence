@@ -54,7 +54,7 @@ export class changepicDto {
     newPicture: string;
 }
 
-export class changeOwnerDto {
+export class changeAdminsDto {
 
     @IsNotEmpty()
     @IsString()
@@ -62,12 +62,12 @@ export class changeOwnerDto {
     
     @IsNotEmpty()
     @IsString()
-    newOwner: string;
+    newAdmin: string;
 }
 
 export class stringDto {
     
-    @IsNotEmpty()
     @IsString()
+    @IsNotEmpty()
     channelName: string;
 }
