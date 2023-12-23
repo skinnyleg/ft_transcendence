@@ -5,14 +5,17 @@ import { CreateChannelIcon } from './CustomIcons'
 import Image from 'next/image'
 import ChannelTypes from './ChannelTypeSelect'
 import { chatSocketContext } from '../context/soketContext'
+import axios from 'axios'
 
 interface CreateChannelProps {}
 
 const CreateChannel: FC<CreateChannelProps> = () => {
 
 	let [isOpen, setIsOpen] = useState(false)
+	let [isRequired, setIsRequired] = useState(false)
 	const [channelName, setChannelName] = useState<string>('');
 	const [channelPass, setChannelPass] = useState<string>('');
+	const [imgData, setImgData] = useState<File | undefined>(undefined);
 	let [img, setImg] = useState('/GroupChat.png')
 	let [type, setType] = useState('public')
 	const chatSocket = useContext(chatSocketContext)
@@ -24,54 +27,64 @@ const CreateChannel: FC<CreateChannelProps> = () => {
 	setChannelName('')
 	setChannelPass('')
     setIsOpen(false)
+	setIsRequired(false);
   }
 
   function openModal() {
     setIsOpen(true)
   }
   const handleTypeChange = (type: string) => {
-	console.log("type is ", type);
+	if (type === 'protected')
+		setIsRequired(true);
+	else
+		setIsRequired(false);
 	setType(type);
   }
 
-  	const handleSubmit = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		const file = e.target.files?.[0];
-		if (file) {
-			const formData = new FormData();
-			formData.append("file", file);
-			try {
-				const results = await fetch(`http://localhost:8000/upload/ChannelPic`, {
-					credentials: 'include',
-					method: 'POST',
-					body: formData,
-				})
-				if (results.ok) {
-				console.log ("file === ", file);
-					// setBgImage(URL.createObjectURL(file));
-				}
-				else {
-					// setError("Unable To change Picture Please try again");
-					console.log("error")
-				}
-			}
-			catch (error : any) {
-				// setError(error.response.data.message[0]);
-				console.log("error from catch")
-			}
-		}
 		chatSocket.emit('creatChannel', {
-		name: channelName,
-		picture: img,
-		type: type.toUpperCase(),
-		password: (type === 'protected' ? channelPass : undefined)
+			name: channelName,
+			picture: img,
+			type: type.toUpperCase(),
+			password: (type === 'protected' ? channelPass : undefined)
+		})
+		chatSocket.on('channelDone', async () => {
+			if (imgData) {
+				const formData = new FormData();
+				formData.append("file", imgData);
+				try {
+					const url = process.env.NEXT_PUBLIC_BACKEND_URL;
+					console.log('url == ', url);
+	
+					const results = await fetch(`${url}/upload/ChannelPic`, {
+						credentials: 'include',
+						method: 'POST',
+						headers: {
+							'channelname': channelName.toString(),
+						},
+						body: formData,
+					})
+					if (results) {
+					}
+					else {
+						console.log("error")
+					}
+				}
+				catch (error : any) {
+					console.log("error from catch == ", error)
+				}
+			}
 		})
 		closeModal();
 	}
   const updateImg = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const selectedFile = e.target.files?.[0];
 		if (selectedFile)
+		{
+			setImgData(selectedFile);
 			setImg(URL.createObjectURL(selectedFile))
+		}
   };
 
   return (
@@ -87,7 +100,7 @@ const CreateChannel: FC<CreateChannelProps> = () => {
 		</button>
 
 		<Transition appear show={isOpen} as={Fragment}>
-			<Dialog as="form" className="relative z-30" onClose={closeModal}>
+			<Dialog as="form" className="relative z-30" onClose={closeModal} onSubmit={handleSubmit}>
 				<Transition.Child
 					as={Fragment}
 					enter="ease-out duration-300"
@@ -142,8 +155,11 @@ const CreateChannel: FC<CreateChannelProps> = () => {
 									<h1 className='text-bold text-lg text-blue-900'>Name</h1>
 									<input placeholder='Channel Name'
 										type='text'
+										id='channelName'
+										name='channelName'
 										className='rounded-2xl border-solid border-teal-200 focus:border-teal-500'
 										maxLength={10}
+										minLength={2}
 										required
 										onChange={(e) => setChannelName(e.target.value)}
 									/>
@@ -159,8 +175,10 @@ const CreateChannel: FC<CreateChannelProps> = () => {
 										<h1 className={`text-bold text-lg text-blue-900`}>Password</h1>
 										<input placeholder='Channel Password'
 											type='password'
+											id='password'
+											name='password'
 											className='rounded-2xl w-full border-solid border-teal-200 focus:border-teal-500'
-											required
+											required={isRequired}
 											minLength={4}
 											maxLength={8}
 											onChange={(e) => setChannelPass(e.target.value)}
@@ -173,7 +191,6 @@ const CreateChannel: FC<CreateChannelProps> = () => {
 										<button
 											type="submit"
 											className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-green-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-											onClick={handleSubmit}
 										>
 										Submit
 										</button>

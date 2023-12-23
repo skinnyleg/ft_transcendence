@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -22,6 +22,14 @@ export class UploadService {
 
 	async updateChannelPic(pic: string, channelName: string)
 	{
+		const channel = await this.prisma.channel.findUnique({
+			where: {
+				name: channelName,
+			}
+		})
+		if (!channel)
+			throw new NotFoundException('resource not found')
+
 		await this.prisma.channel.update({
 			where: { name: channelName},
 			data: { picture: pic },

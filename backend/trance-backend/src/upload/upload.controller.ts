@@ -52,7 +52,7 @@ export class UploadController {
 	const channelName = req.headers.channelname;
 	if (channelName === undefined || channelName === '')
 		throw new BadRequestException('No Channel Name Given')
-	const newDir =  'http://localhost:8000/' + 'upload/Channel/'
+	const newDir =  'http://localhost:8000/' + 'upload/channel/'
 	const filePath = newDir + file.filename
 	await this.uploadService.updateChannelPic(filePath, channelName)
     return { valid:true, filename: filePath };
@@ -77,6 +77,8 @@ export class UploadController {
 	@UseGuards(JwtAuthGuard)
 	@Get('/channel/:filename')
 	serveChannelPic(@Param('filename') filename: string, @Res() res: Response) {
+
+		console.log("sjaddas")
 		const newDir =  path.join(__dirname, '..', '..', 'uploads', 'channels')
     	res.sendFile(filename, { root: newDir });
 	}
