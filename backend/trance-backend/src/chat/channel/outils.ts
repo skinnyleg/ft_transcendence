@@ -17,6 +17,7 @@ export interface channelsSide {
 
 export interface channelSidebar {
     username?: string,
+    userId?: string,
     channelRole?: string,
     userPicture?: string
 }
@@ -119,15 +120,12 @@ export class ChannelOutils {
             where: {
                 name: channelName,
                 admins: {
-                    some: {
-                        nickname,
-                    },
+                    some: { nickname }
                 },
             },
         });
-        if (!isUserAdmin) {
+        if (!isUserAdmin)
             return false;
-        }
         return true;
     }
 
@@ -149,9 +147,8 @@ export class ChannelOutils {
                 nickname,
             },
         });
-        if(!isUserInBlacklist) {
+        if(!isUserInBlacklist)
            return false;
-        }
         return true;
     }
 
@@ -193,18 +190,16 @@ export class ChannelOutils {
     async   getBlacklistId(channelName: string, user: string):Promise<string>
     {
         const blacklist = await this.getBlacklist(channelName, user);
-        if(!blacklist) {
+        if(!blacklist)
             throw new NotFoundException('blacklist not found.');
-        }
         return blacklist.id;
     }
 
     async   getStatusInBlacklist(channelName: string, user: string):Promise<string>
     {
         const isUserInBlacklis = await this.isUserInBlacklist(channelName, user);
-        if(!isUserInBlacklis) {
-            throw new NotFoundException('The user is not found in blacklist for this channel.');
-        }
+        if(!isUserInBlacklis)
+            throw new NotFoundException(`${user} not found in blacklist`);
         const id = await this.getBlacklistId(channelName, user);
         const blacklist = await this.prisma.blacklist.findUnique({
             where: { id },
@@ -215,9 +210,8 @@ export class ChannelOutils {
     async   getExpiredAtOfUser(channelName: string, mutedUser: string)
     {
         const blacklist = await this.getBlacklist(channelName, mutedUser);
-        if(!blacklist) {
+        if(!blacklist)
             return null;
-        }
         return blacklist.expiredAt;
     }
 
@@ -238,9 +232,8 @@ export class ChannelOutils {
         const isAdmin = await this.isUserAdministrator(channelName, user);
         if (isAdmin)
             return 'admin'.toUpperCase();
-        else {
+        else
             return 'member'.toUpperCase();
-        }
     }
 
     async   updateStatusInBlacklist(channelName: string, mutedUser: string)
@@ -251,10 +244,25 @@ export class ChannelOutils {
         });
     }
 
+    // fillInteface<T>(data: Partial<T>): T
+    // {
+    //     const dataFields: T = {} as T;
+    //     const fillData: T = {...dataFields, ...data};
+    //     return fillData;
+    // }
+    fillInterface<T>(...args: any): T {
+        const intefaceType: T = {} as T;
+        const fields = Object.keys(intefaceType) as (keyof T)[];
+        fields.forEach((key, index) => {
+            intefaceType[key] = args[index] as T[keyof T] || undefined;
+        });
+        console.log('fill: ', intefaceType);
+        return intefaceType;
+    }
+
     @Cron(CronExpression.EVERY_10_SECONDS)
     async MuteExpiration() {
         try {
-            // console.log('im here');
             for (const channel of this.mutedList) {
                 for (const mutedUser of channel.users) {
                     const expiredAt = await this.getExpiredAtOfUser(channel.name, mutedUser);
@@ -272,7 +280,6 @@ export class ChannelOutils {
     async   pushMutedUsers()
     {
         const array = await this.getMuteBlacklist()
-        // console.log('muted: ',array);
         if (array)
         {
             for (const element of array)
@@ -311,8 +318,7 @@ export class ChannelOutils {
                 userId: ownerId
             },
         });
-        if (checkRequest) {
-            throw new UnauthorizedException('Only one request accepted for channel.');
-        }
+        if (checkRequest)
+            throw new UnauthorizedException('only one request accepted for channel');
     }
 }

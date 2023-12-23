@@ -3,9 +3,6 @@ import { PrismaService } from "src/prisma/prisma.service";
 import { Channel, User, Types, Message, Dm } from '@prisma/client';
 import { ValidationError, validate } from "class-validator";
 import { Socket } from "socket.io";
-// import { ChannelOutils } from "../channel/outils";
-// import { ChannelService } from "../channel/channel.service";
-// import { DmService } from "./dm.service";
 
 export interface dmsSide {
 	dmId?: string,
@@ -28,25 +25,24 @@ export class DmOutils {
   
 	constructor(
 		private readonly prisma: PrismaService,
-		// private readonly channelOutils: ChannelOutils,
-		// private readonly channelService: ChannelService,
-		// private readonly dmService: DmService,
 	){}
 
-	async	getDmIdby2User(user1Id: string, user2Id: string):Promise<string | null>
+	async	getDmIdby2User(user1Id: string, user2Id: string)
     {
-      const dm: Dm | null = await this.prisma.dm.findFirst({
-        where: {
-          members: {
-            every: {
-              id: {
-                in: [user1Id, user2Id],
-              },
-            },
-          },
-        },
-      });
-      return dm ? dm.id : null;
+		const dm = await this.prisma.dm.findFirst({
+			where: {
+				members: {
+					every: {
+						id: {
+							in: [user1Id, user2Id],
+						},
+					},
+				},
+			},
+		});
+		if (!dm)
+			throw new NotFoundException('dm not found');
+		return dm.id;
     }
     
   	async	validateDtoData(data: any, dtoClass: any)
@@ -58,18 +54,16 @@ export class DmOutils {
 			console.error('ValidationErrors: ', ValidationError);
 			throw new BadRequestException('Invalide data');
 		}
+		// return data as typeof dtoClass;
 	}
 
 	async   getUserIdByName(nickname: string): Promise<string | null>
     {
         const user = await this.prisma.user.findUnique({
-            where : {
-                nickname,
-            },
+            where : { nickname },
         });
-        if (!user) {
-            throw new NotFoundException('user not found.');
-        }
+        if (!user)
+            throw new NotFoundException(`${nickname} not found`);
         return user.id || null;
     }
 
@@ -77,26 +71,22 @@ export class DmOutils {
 	{
 		const userId = await this.getUserIdByName(username);
 		const  blockedList = await this.prisma.user.findUnique({
-			where: {
-				id: userId,
-			},
+			where: { id: userId },
 			select: {
 				BlockedBy: true,
 				usersBlocked: true
 			},
 		});
-		if (!blockedList) {
+		if (!blockedList)
 			throw new NotFoundException('user not found.');
-		}
 		return [...blockedList.BlockedBy, ...blockedList.usersBlocked] || [];
 	}
 
 	isInBlockedList(username: string, blockedList: string[])
 	{
 		for(const user of blockedList) {
-			if (user === username) {
+			if (user === username)
 				return true;
-			}
 		}
 		return false;
 	}
@@ -104,10 +94,8 @@ export class DmOutils {
 	async	updateDmupdatedAt(dmId: string, updatedAt: Date)
 	{
 		await this.prisma.dm.update({
-			where: {id: dmId},
-			data: {
-				updatedAt
-			},
+			where: { id: dmId },
+			data: { updatedAt },
 		});
 	}
 

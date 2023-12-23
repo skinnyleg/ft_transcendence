@@ -20,19 +20,17 @@ export class ChannelService {
         private readonly dmService: DmService,
     ){}
 
-    async creatChannel(data: creatChannel, owner: string): Promise<Channel>
+    async   creatChannel(data: creatChannel, owner: string): Promise<Channel>
     {
         const {name, type, picture, password } = data;
-        console.log('password == ', password);
         const type_: Types = type as Types;
         let hashedPass = password;
         if (type === 'PROTECTED' && (!password || password.length < 4 || password.length > 8))
             throw new BadRequestException('Invalid password.');
         else if ((type === 'PUBLIC' || type === 'PRIVATE') && password)
-            throw new BadRequestException('Private & public channels don\'t require password.');
-        if (type === 'PROTECTED') {
+            throw new BadRequestException('Private & public channels don\'t require password');
+        if (type === 'PROTECTED')
             hashedPass = await hashPass(password);
-        }
         const newChannel = await this.prisma.channel.create({
             data: {
                 name,
@@ -45,7 +43,7 @@ export class ChannelService {
             },
         });
         if (!newChannel)
-            throw new InternalServerErrorException('Failed channel creation.');
+            throw new InternalServerErrorException('channel creation failed');
         const channel_: mutedUsers = {name, users: []};
         this.outils.mutedList.push(channel_);
         return newChannel;
@@ -163,6 +161,27 @@ export class ChannelService {
             data: {
                 owner: newOwner,
                 admins: { disconnect: [{ nickname: oldOwner}] },
+            },
+        });
+    }
+
+    async   setAdmin2Channel(channelName: string, owner: string, newAdmin: string)
+    {
+        const isOwner = await this.outils.getChannelOwner(channelName);
+        if (isOwner !== owner) 
+        throw new ForbiddenException(`you are not allowed`);
+        if (owner === newAdmin)
+            throw new UnauthorizedException(`you can\'t set youself`);
+        const isMember = await this.outils.isUserInChannel(channelName, newAdmin);
+        if (!isMember)
+            throw new NotFoundException(`${newAdmin} not found in ${channelName}`);
+        const isAdmin = await this.outils.isUserAdministrator(channelName, newAdmin);
+        if (isAdmin)
+            throw new NotFoundException(`${newAdmin} already admin in ${channelName}`);
+        await   this.prisma.channel.update({
+            where: { name: channelName, owner },
+            data: {
+                admins: { connect: [{ nickname: newAdmin}] },
             },
         });
     }
@@ -341,17 +360,11 @@ export class ChannelService {
     async   changeChannelPicture(channelName: string, newPicture: string, owner: string)
     {
         const channel2update = await this.outils.findChannelByName(channelName);
-        if (!channel2update) {
+        if (!channel2update)
             throw new NotFoundException(`${channelName} not found.`);
-        }
         const channelOwner = await this.outils.getChannelOwner(channelName);
-        if (channelOwner !== owner) {
+        if (channelOwner !== owner)
             throw new UnauthorizedException('You are not allowed to make changes in this channel');
-        }
-        // await this.prisma.channel.update({
-        //     where: { name: channelName},
-        //     data: { picture: newPicture },
-        // });
     }
 
     async   getChannelUsers(channelName: string): Promise<User[]>
@@ -360,9 +373,8 @@ export class ChannelService {
             where: { name: channelName },
             include: { users: true },
         });
-        if (!channel) {
+        if (!channel)
             throw new NotFoundException(`${channelName} not found.`);
-        }
         const users: User[] = channel?.users || [];
         return users;
     }
@@ -371,18 +383,12 @@ export class ChannelService {
     {
         const channels = await this.prisma.channel.findMany({
             where: {
-                name: {
-                    contains: channelName,
-                },
+                name: { contains: channelName }
             },
             include: {
                 messages: {
-                    select: {
-                        content: true,
-                    },
-                    orderBy: {
-                        createdAt: 'desc',
-                    },
+                    select: { content: true },
+                    orderBy: { createdAt: 'desc' },
                     take: 1,
                 },
             },
@@ -403,9 +409,7 @@ export class ChannelService {
             where: {
                 channelId: channelId,
                 senderId: {
-                    not: {
-                        in: blockedList,
-                    },
+                    not: { in: blockedList },
                 },
             },
             include: {
@@ -416,9 +420,7 @@ export class ChannelService {
                     },
                 },
             },
-            orderBy: {
-                createdAt: 'asc',
-            },
+            orderBy: { createdAt: 'asc' },
         });
         return allMessages || [];
     }
@@ -430,12 +432,14 @@ export class ChannelService {
         const allowedUsers: {userId: string, socket: any}[] = [];
         for (const userSocket of usersSockets) {
             const inChannel = channelusers.find((usr) => usr.id === userSocket.userId);
-            if (inChannel) {
+            if (inChannel)
+            {
                 if (blockedList.length === 0)
                     allowedUsers.push(userSocket);
-                for (const blocked of blockedList)
-					if (blocked !== inChannel.id)
+                for (const blocked of blockedList) {
+                    if (blocked !== inChannel.id)
                         allowedUsers.push(userSocket);
+                }
             }
         }
         return allowedUsers;
@@ -453,7 +457,6 @@ export class ChannelService {
             if (channelUsers.find(userIn => userIn.id === userSocket.userId))
                 userSocket.socket.join(channelId);
         }
-        // if (!value)
         server.to(channelId).emit(values[1]);
         server.to(channelId).emit('notification', notif);
         for (const userSocket  of usersSockets)
