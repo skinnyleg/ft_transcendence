@@ -39,11 +39,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 	server: Server;
 
 	private readonly usersSockets: {userId: string, socket: any}[] = [];
-	private readonly dmSide: dmsSide[] = [];
-	private readonly channelSide: channelsSide[] = [];
-	private readonly membershipCH: channelSidebar[] = [];
-	private readonly dmMessages: dmMessages[] = [];
-	private readonly chMessages: messsagesCH[] = [];
+	// private readonly dmSide: dmsSide[] = [];
+	// private channelSide: channelsSide[] = [];
+	// private membershipCH: channelSidebar[] = [];
+	// private dmMessages: dmMessages[] = [];
+	// private chMessages: messsagesCH[] = [];
 
 
 	async onModuleInit() {
@@ -100,7 +100,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 				throw new BadRequestException(`${data.name} name is taken`);
 			const newChannel = await this.channelService.creatChannel(data, owner);
 			const buffer: channelsSide = {};
-			// const buffer = this.Outils.fillInterface<channelsSide>(newChannel.id, newChannel.name, newChannel.picture, 'OWNER', '');
 			buffer.channelId = newChannel.id;
 			buffer.channelName = newChannel.name;
 			buffer.channelPicture = newChannel.picture;
@@ -177,7 +176,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 		try
 		{
 			await  this.DmOutils.validateDtoData(data, resJoinChannel);
-			const {channelName, user, value, requestId} = data;
+			const { channelName, user, value, requestId } = data;
 			const checkOwner = await this.Outils.getChannelOwner(channelName);
 			if (checkOwner !== client.data.user.nickname)
 				throw new ForbiddenException(`Forbidden action`);
@@ -282,7 +281,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 	@SubscribeMessage('sendMsgDM')
 	async	handleSendMessageDm(@MessageBody() data: sendMessageDm, @ConnectedSocket() client: Socket)
 	{
-		//todo send notif2user in case not connected 'you have unseen messages' 
 		try
 		{
 			await  this.DmOutils.validateDtoData(data, sendMessageDm);
@@ -296,7 +294,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			if (data.content) {
 				const message = await this.DmService.creatMessageDm(dmId, user.nickname, data.content);
 				await this.DmOutils.updateDmupdatedAt(dmId, message.createdAt);
-				const buffer = this.DmOutils.fillBuffer(message, user.nickname, dmId);
+				const buffer = this.DmOutils.fillDmsBuffer(message, user.nickname, dmId);
 				if (receiverSocket) {
 					client.join(dmId);
 					receiverSocket.socket.join(dmId);
@@ -447,13 +445,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			const {channelName, newName} = data;
 			const owner = client.data.user.nickname;
 			await this.channelService.changeChannelName(channelName, owner, newName);
-			const notif2users: notif2user = {channelName};
+			const notif2users: notif2user = {channelName: newName};
 			notif2users.admin = owner;
 			notif2users.server = this.server;
 			notif2users.usersSockets = this.usersSockets; 
 			notif2users.notif = `${newName} is the new name of channel`;
-			notif2users.user2notify = '';
-			await this.channelService.emitNotif2channelUsers(notif2users, ['', 'newName'], {channelName});
+			notif2users.user2notify = owner;
+			await this.channelService.emitNotif2channelUsers(notif2users, ['', 'newName']);
 		}
 		catch (error) {
 			this.DmOutils.Error(client, 'changeNameCH', error, 'change channel name failed');
@@ -524,16 +522,16 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			if (!(await this.Outils.isUserInChannel(channelName, user)))
 				throw new UnauthorizedException('Forbidden action.');
 			const channel = await this.Outils.findChannelByName(channelName);
+			const membershipCH: channelSidebar[] = [];
 			for (const user of channel.users) {
 				let buffer: channelSidebar = {};
 				buffer.username = user.nickname;
 				buffer.userId = user.id;
 				buffer.userPicture = user.profilePic;
 				buffer.channelRole = await this.Outils.getUserChannelRole(channel.name, user.nickname);
-				this.membershipCH.push(buffer);
+				membershipCH.push(buffer);
 			}
-			client.emit('channelSidebar', this.membershipCH);
-			this.membershipCH.length = 0;
+			client.emit('channelSidebar', membershipCH);
 		}
 		catch (error) {
 			this.DmOutils.Error(client, 'getChSidebar', error, 'get channel sidebar failed');
@@ -543,9 +541,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 	@SubscribeMessage('getUserChannels')
 	async	GetUserChannels(@ConnectedSocket() client: Socket)
 	{
-		try {
+		try
+		{
 			const user = client.data.user.nickname;
 			const userChannels = await this.channelService.getUserChannels(user);
+			const channelSide: channelsSide[] = [];
 			for(const channel of userChannels) {
 				let buffer: channelsSide = {};
 				buffer.channelId = channel.id;
@@ -554,10 +554,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 				buffer.userRole = await this.Outils.getUserChannelRole(channel.name, user);
 				buffer.lastMsg = channel.messages[0]?.content || '';
 				buffer.channelType = channel.type;
-				this.channelSide.push(buffer);
+				channelSide.push(buffer);
 			}
-			client.emit('UserChannels', this.channelSide);
-			this.channelSide.length = 0;
+			client.emit('UserChannels', channelSide);
 		}
 		catch(error) {
 			this.DmOutils.Error(client, 'getUserChannels', error, 'get user channels failed');
@@ -567,11 +566,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 	@SubscribeMessage('getUserDms')
 	async	GetUserDm(@ConnectedSocket() client: Socket)
 	{
-		try {
+		try
+		{
 			let picture, name, lastMsg, status, receiver: string;
 			const user = client.data.user;
 			const ls = await this.DmOutils.getBlockedUsers(user.nickname);
 			const userDms = await this.DmService.getUserDms(user.nickname);
+			const dmSide: dmsSide[] = [];
 			for (const dm of userDms) {
 				name = dm.members[0].nickname;
 				picture = dm.members[0].profilePic;
@@ -582,10 +583,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 				lastMsg = dm.messages[0]?.content || '';
 				receiver = (dm.members[0].id === user.id) ? dm.members[1].id : dm.members[0].id;
 				status = (this.DmOutils.isInBlockedList(receiver, ls) === true ? 'BLOCKED' : 'ACTIVE');
-				this.dmSide.push({dmId: dm.id, name, lastMsg, picture, status});	
+				dmSide.push({dmId: dm.id, name, lastMsg, picture, status});	
 			}
-			client.emit('userDms', this.dmSide);
-			this.dmSide.length = 0;
+			client.emit('userDms', dmSide);
 		}
 		catch(error) {
 			this.DmOutils.Error(client, 'getUserDms', error, 'get user DMs failed');
@@ -600,6 +600,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			await  this.DmOutils.validateDtoData(data, stringDto);
 			const {channelName} = data;
 			const channels = await this.channelService.searchChannels(channelName);
+			const channelSide: channelsSide[] = [];
 			for (const channel of channels) {
 				const buffer: channelsSide = {};
 				buffer.channelId = channel.id;
@@ -613,10 +614,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 					buffer.userRole = await this.Outils.getUserChannelRole(channel.name, client.data.user.nickname);
 					buffer.lastMsg = channel.messages[0]?.content || '';
 				}
-				this.channelSide.push(buffer);
+				channelSide.push(buffer);
 			}
-			client.emit('queryChannels', this.channelSide);
-			this.channelSide.length = 0;
+			client.emit('queryChannels', channelSide);
 		}
 		catch (error) {
 			this.DmOutils.Error(client, 'searchChannel', error, 'find channel failed');
@@ -631,6 +631,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			await this.DmOutils.validateDtoData(data, getMessagesCH);
 			const user = client.data.user;
 			const allMessages = await this.channelService.getMessagesCH(user.nickname, data.channelName);
+			const chMessages: messsagesCH[] = [];
 			for (const msg of allMessages) {
 				const buffer: messsagesCH = {};
 				buffer.messageId = msg.id;
@@ -638,10 +639,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 				buffer.picture = msg.sender.profilePic;
 				buffer.message = msg.content;
 				buffer.time = this.DmOutils.dateTime2String(msg.createdAt);
-				this.chMessages.push(buffer);
+				chMessages.push(buffer);
 			}
-			client.emit('messagesCH', this.Outils.onePic4msgSender(this.chMessages))
-			this.chMessages.length = 0;
+			client.emit('messagesCH', this.Outils.onePic4msgSender(chMessages))
 		}
 		catch (error) {
 			this.DmOutils.Error(client, 'getMessagesCH', error, 'get channel messages failed');
@@ -655,17 +655,19 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 		{
 			await this.DmOutils.validateDtoData(data, getMessagesDm);
 			const allMessages = await this.DmService.getDmMessages(data.dmId);
+			const dmMessages: dmMessages[] = [];
 			for (const chat of allMessages.messages) {
-				const buffer: dmMessages = {};
-				buffer.dmId = allMessages.id;
-				buffer.messageId = chat.id;
-				buffer.sender = chat.sender.nickname;
-				buffer.message = chat.content;
-				buffer.time = this.DmOutils.dateTime2String(chat.createdAt);
-				this.dmMessages.push(buffer);
+				const buffer: dmMessages = 
+				this.DmOutils.fillDmsBuffer(allMessages, client.data.user.nickname, data.dmId);
+				// const buffer: dmMessages = {};
+				// buffer.dmId = allMessages.id;
+				// buffer.messageId = chat.id;
+				// buffer.sender = chat.sender.nickname;
+				// buffer.message = chat.content;
+				// buffer.time = this.DmOutils.dateTime2String(chat.createdAt);
+				dmMessages.push(buffer);
 			}
-			client.emit('messagesDM', this.dmMessages);
-			this.dmMessages.length = 0;
+			client.emit('messagesDM', dmMessages);
 		}
 		catch (error) {
 			this.DmOutils.Error(client, 'getMessagesDM', error, 'get DM messages failed');

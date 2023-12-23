@@ -99,7 +99,7 @@ export class ChannelOutils {
         });
         
         if(!channel) 
-            throw new  NotFoundException(`${name} channel not found.`);
+            throw new  NotFoundException(`${name} channel not found2.`);
         return channel;
     }
 
@@ -131,6 +131,7 @@ export class ChannelOutils {
 
     async   isChannelExist(name: string): Promise<boolean>
     {
+        console.log('channel is exist: ', name);
         const channel = await this.prisma.channel.findUnique({
             where: { name },
         });
@@ -154,12 +155,16 @@ export class ChannelOutils {
 
     async   getChannelOwner(channelName: string): Promise<string | null>
     {
+        // console.log('channel owner: ', channelName);
+        // console.log('channel name 01: ', newName);
         const channel = await this.findChannelByName(channelName);
         return channel?.owner || null;
     }
 
     async   getChannelIdByName(channelName: string):Promise<string | null>
     {
+        console.log('get channel id: ', channelName);
+        // console.log('channel name 01: ', newName);
         const channel = await this.findChannelByName(channelName);
         return channel?.id || null;
     }
@@ -242,22 +247,6 @@ export class ChannelOutils {
         await this.prisma.blacklist.delete({
             where: {id},
         });
-    }
-
-    // fillInteface<T>(data: Partial<T>): T
-    // {
-    //     const dataFields: T = {} as T;
-    //     const fillData: T = {...dataFields, ...data};
-    //     return fillData;
-    // }
-    fillInterface<T>(...args: any): T {
-        const intefaceType: T = {} as T;
-        const fields = Object.keys(intefaceType) as (keyof T)[];
-        fields.forEach((key, index) => {
-            intefaceType[key] = args[index] as T[keyof T] || undefined;
-        });
-        console.log('fill: ', intefaceType);
-        return intefaceType;
     }
 
     @Cron(CronExpression.EVERY_10_SECONDS)
