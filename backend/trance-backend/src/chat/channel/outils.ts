@@ -17,6 +17,7 @@ export interface channelsSide {
 
 export interface channelSidebar {
     username?: string,
+    userId?: string,
     channelRole?: string,
     userPicture?: string
 }
@@ -119,9 +120,7 @@ export class ChannelOutils {
             where: {
                 name: channelName,
                 admins: {
-                    some: {
-                        nickname,
-                    },
+                    some: { nickname }
                 },
             },
         });
@@ -200,7 +199,7 @@ export class ChannelOutils {
     {
         const isUserInBlacklis = await this.isUserInBlacklist(channelName, user);
         if(!isUserInBlacklis)
-            throw new NotFoundException('The user is not found in blacklist for this channel.');
+            throw new NotFoundException(`${user} not found in blacklist`);
         const id = await this.getBlacklistId(channelName, user);
         const blacklist = await this.prisma.blacklist.findUnique({
             where: { id },
@@ -243,6 +242,22 @@ export class ChannelOutils {
         await this.prisma.blacklist.delete({
             where: {id},
         });
+    }
+
+    // fillInteface<T>(data: Partial<T>): T
+    // {
+    //     const dataFields: T = {} as T;
+    //     const fillData: T = {...dataFields, ...data};
+    //     return fillData;
+    // }
+    fillInterface<T>(...args: any): T {
+        const intefaceType: T = {} as T;
+        const fields = Object.keys(intefaceType) as (keyof T)[];
+        fields.forEach((key, index) => {
+            intefaceType[key] = args[index] as T[keyof T] || undefined;
+        });
+        console.log('fill: ', intefaceType);
+        return intefaceType;
     }
 
     @Cron(CronExpression.EVERY_10_SECONDS)
@@ -303,8 +318,7 @@ export class ChannelOutils {
                 userId: ownerId
             },
         });
-        if (checkRequest) {
-            throw new UnauthorizedException('Only one request accepted for channel.');
-        }
+        if (checkRequest)
+            throw new UnauthorizedException('only one request accepted for channel');
     }
 }

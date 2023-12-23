@@ -3,9 +3,6 @@ import { PrismaService } from "src/prisma/prisma.service";
 import { Channel, User, Types, Message, Dm } from '@prisma/client';
 import { ValidationError, validate } from "class-validator";
 import { Socket } from "socket.io";
-// import { ChannelOutils } from "../channel/outils";
-// import { ChannelService } from "../channel/channel.service";
-// import { DmService } from "./dm.service";
 
 export interface dmsSide {
 	dmId?: string,
