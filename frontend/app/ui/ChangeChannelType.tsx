@@ -1,10 +1,13 @@
 "use client"
 import { Dialog, Transition } from '@headlessui/react'
-import { Dispatch, FC, Fragment, SetStateAction, useState } from 'react'
+import React, { Dispatch, FC, Fragment, SetStateAction, useContext, useEffect, useState } from 'react'
 import { CreateChannelIcon, IconWithTooltip } from './CustomIcons'
 import { Menu } from '@headlessui/react'
 import { BiSolidEditAlt } from "react-icons/bi";
 import ChannelTypes from './ChannelTypeSelect'
+import { chatSocketContext } from '../context/soketContext'
+import { ChatContext } from '../Chat/page'
+import { setDefaultAutoSelectFamily } from 'net'
 
 
 
@@ -17,6 +20,12 @@ interface ChannelTypeProps {
 const ChannelType: FC<ChannelTypeProps> = ({isOpen, setIsOpen, currentType}) => {
 
 	let [type, setType] = useState(currentType)
+	const [isRequired, setIsRequired] = useState<boolean>(false)
+	const [password, setPassword] = useState<string>('')
+	const [confPassword, setConfPassword] = useState<string>('')
+	const chatSocket = useContext(chatSocketContext);
+	const {channelId, setChannelId} = useContext(ChatContext);
+	const [error, setError] = useState<string>('')
 
 	const handleTypeChange = (type: string) => {
 		console.log("type is ", type);
@@ -25,25 +34,65 @@ const ChannelType: FC<ChannelTypeProps> = ({isOpen, setIsOpen, currentType}) => 
 
   function closeModal() {
     console.log("closing")
+	setType(currentType)
+	setError('');
     setIsOpen(false)
+	setPassword('')
+	setConfPassword('')
 }
 
 function openModal() {
     console.log("opening")
     setIsOpen(true)
+	setPassword('')
+	setConfPassword('')
   }
 
+  useEffect(() => {
+		if (currentType !== 'protected' && type === 'protected')
+			setIsRequired(true);
+		else
+			setIsRequired(false);
 
-  	const handleSubmit = (e) => {
+  }, [type])
+
+
+  	const handleSubmit = (e: React.ChangeEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		closeModal();
+
+		if (password !== confPassword)
+		{
+			setError('Passwords Don\'t Match');
+			return ;
+		}
+		if (type === 'protected')
+		{
+			chatSocket.emit('changeTypeCH', {
+				channelName: channelId,
+				newType: type.toUpperCase(),
+				password: password,
+			})
+		}
+		else
+		{
+			chatSocket.emit('changeTypeCH', {
+				channelName: channelId,
+				newType: type?.toUpperCase()
+			})
+		}
+		chatSocket.on('changeDone', () => {
+			chatSocket.emit('getDataCH', {
+				channelName: channelId,
+			})
+		})
+		setIsOpen(false)
 	}
 
 
   return (
 	<>
 		<Transition appear show={isOpen} as={Fragment}>
-			<Dialog as="form" className="relative z-30" onClose={closeModal}>
+			<Dialog as="form" className="relative z-30" onClose={closeModal} onSubmit={handleSubmit}>
 				<Transition.Child
 					as={Fragment}
 					enter="ease-out duration-300"
@@ -87,19 +136,26 @@ function openModal() {
 												<div className="text-black w-full h-fit mt-2 flex gap-3 flex-col">
 													<input
 														placeholder='type Channel New Password'
-														required
+														type='password'
+														required={isRequired}
 														maxLength={8}
 														minLength={4}
 														className='rounded-full w-full h-10 p-2 border-blue-300 border-2 border-solid'
-													/>
+														onChange={(e) => setPassword(e.target.value)}
+														value={password}
+														/>
 													<input
 														placeholder='Confirm New Password'
-														required
+														type='password'
+														required={isRequired}
 														maxLength={8}
 														minLength={4}
 														className='rounded-full w-full h-10 p-2 border-blue-300 border-2 border-solid'
+														onChange={(e) => setConfPassword(e.target.value)}
+														value={confPassword}
 													/>
-													<p className='text-red-700 text-xs'>Password must contain at least 4 characters and a maximum of 8 characters</p>
+													<p className={`text-red-700 text-xs ${(password !== '' || confPassword !== '') ? 'hidden' : ''} `}>Password must contain at least 4 characters and a maximum of 8 characters</p>
+													<p className={`text-red-700 text-2xl self-center  ${error === '' ? 'hidden' : ''}`}>{error}</p>
 												</div>
 											</div>
 										)
@@ -111,7 +167,7 @@ function openModal() {
 										<button
 											type="submit"
 											className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-green-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-											onClick={handleSubmit}
+											// onClick={handleSubmit}
 										>
 										Submit
 										</button>

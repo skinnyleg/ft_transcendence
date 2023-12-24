@@ -1,9 +1,11 @@
 "use client"
 import { Dialog, Transition } from '@headlessui/react'
-import { Dispatch, FC, Fragment, SetStateAction, useState } from 'react'
+import React, { Dispatch, FC, Fragment, SetStateAction, useContext, useState } from 'react'
 import { CreateChannelIcon, IconWithTooltip } from './CustomIcons'
 import { Menu } from '@headlessui/react'
 import { BiSolidEditAlt } from "react-icons/bi";
+import { chatSocketContext } from '../context/soketContext'
+import { ChatContext } from '../Chat/page'
 
 
 
@@ -15,11 +17,18 @@ interface ChannelPassProps {
 const ChannelPass: FC<ChannelPassProps> = ({isOpen, setIsOpen}) => {
 
 //   let [isOpen, setIsOpen] = useState(false)
-
+	const [password, setPassword] = useState<string>('')
+	const [confPassword, setConfPassword] = useState<string>('')
+	const chatSocket = useContext(chatSocketContext);
+	const {channelId, setChannelId} = useContext(ChatContext);
+	const [error, setError] = useState<string>('')
 
   function closeModal() {
     console.log("closing")
     setIsOpen(false)
+	setPassword('')
+	setConfPassword('')
+	setError('')
 }
 
 function openModal() {
@@ -28,8 +37,17 @@ function openModal() {
   }
 
 
-  	const handleSubmit = (e) => {
+  	const handleSubmit = (e: React.ChangeEvent<HTMLFormElement>) => {
 		e.preventDefault();
+		if (password !== confPassword)
+		{
+			setError('Passwords Don\'t Match');
+			return ;
+		}
+		chatSocket.emit('changePassCH', {
+			channelName: channelId,
+			newPassword: password
+		})
 		closeModal();
 	}
 
@@ -37,7 +55,7 @@ function openModal() {
   return (
 	<>
 		<Transition appear show={isOpen} as={Fragment}>
-			<Dialog as="form" className="relative z-30" onClose={closeModal}>
+			<Dialog as="form" className="relative z-30" onClose={closeModal} onSubmit={handleSubmit}>
 				<Transition.Child
 					as={Fragment}
 					enter="ease-out duration-300"
@@ -76,16 +94,30 @@ function openModal() {
                                             maxLength={8}
                                             minLength={4}
                                             className='rounded-full w-full h-10 p-2 border-blue-300 border-2 border-solid'
-                                        />
+											value={password}
+											onChange={(e) => {
+												setPassword(e.target.value);
+												setError('')
+											}}
+											type='password'
+										/>
 										<input
                                             placeholder='Confirm New Password'
                                             required
+											type='password'
                                             maxLength={8}
                                             minLength={4}
                                             className='rounded-full w-full h-10 p-2 border-blue-300 border-2 border-solid'
-                                        />
-                                        <p className='text-red-700 text-xs'>Password must contain at least 4 characters and a maximum of 8 characters</p>
-                                    </div>
+											value={confPassword}
+											onChange={(e) => {
+													setConfPassword(e.target.value);
+													setError('');		
+												}
+											}
+										/>
+										<p className={`text-red-700 text-xs ${(password !== '' || confPassword !== '') ? 'hidden' : ''} `}>Password must contain at least 4 characters and a maximum of 8 characters</p>
+										<p className={`text-red-700 text-2xl self-center  ${(error === '') ? 'hidden' : ''}`}>{error}</p>
+									</div>
 								</div>
 
 								<div className='flex flex-row justify-end items-center gap-2'>
@@ -93,7 +125,7 @@ function openModal() {
 										<button
 											type="submit"
 											className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-green-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-											onClick={handleSubmit}
+											// onClick={handleSubmit}
 										>
 										Submit
 										</button>

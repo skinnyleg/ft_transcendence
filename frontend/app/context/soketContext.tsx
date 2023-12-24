@@ -1,5 +1,5 @@
 'use client'
-import { createContext } from "react";
+import { createContext, useState } from "react";
 import { Cookies } from "react-cookie";
 import io from 'socket.io-client';
 
@@ -34,6 +34,7 @@ export const chatSocket = io("http://localhost:8000/chatGateway", {
 chatSocket.on('failed', (data: string) => {
     console.log('got error from backend == ', data);
 })
+
 
 export const socketContext = createContext(socket);
 export const chatSocketContext = createContext(chatSocket);

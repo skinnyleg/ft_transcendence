@@ -25,3 +25,16 @@ export const isBarOpen = (searchParams: ReadonlyURLSearchParams) => {
 		return true;
 	return false;
 }
+
+
+export const getChannelName = (searchParams: ReadonlyURLSearchParams) => {
+	if (searchParams.has('channel'))
+		return (searchParams.get('channel'))
+	return '';
+}
+
+export const getPersonalName = (searchParams: ReadonlyURLSearchParams) => {
+	if (searchParams.has('personal'))
+		return (searchParams.get('personal'))
+	return '';
+}

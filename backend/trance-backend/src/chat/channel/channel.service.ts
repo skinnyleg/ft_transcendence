@@ -321,8 +321,8 @@ export class ChannelService {
         if (channelOwner !== owner)
             throw new UnauthorizedException('You are not allowed to make changes in this channel.');
         const isAllocated = await this.outils.isChannelExist(newName);
-        if (!isAllocated)
-            throw new ConflictException(`${channelName} is already taken`);
+        if (isAllocated)
+            throw new ConflictException(`${newName} is already taken`);
         const id: string = await this.outils.getChannelIdByName(channelName);
         await this.prisma.channel.update({
             where: {

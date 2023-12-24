@@ -1,9 +1,13 @@
 "use client"
 import { Dialog, Transition } from '@headlessui/react'
-import React, { Dispatch, FC, Fragment, SetStateAction, useState } from 'react'
+import React, { Dispatch, FC, Fragment, SetStateAction, useContext, useState } from 'react'
 import { CreateChannelIcon, IconWithTooltip } from './CustomIcons'
 import { Menu } from '@headlessui/react'
 import { BiSolidEditAlt } from "react-icons/bi";
+import { chatSocketContext } from '../context/soketContext'
+import { getChannelName } from './ChatUtils'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { ChatContext } from '../Chat/page'
 
 
 
@@ -14,23 +18,35 @@ interface ChannelNameProps {
 
 const ChannelName: FC<ChannelNameProps> = ({isOpen, setIsOpen}) => {
 
-//   let [isOpen, setIsOpen] = useState(false)
-
+	const [name, setName] = useState<string>('');
+	const searchParams = useSearchParams();
+	const router = useRouter();
+	const chatSocket = useContext(chatSocketContext);
+	const {channelId, setChannelId} = useContext(ChatContext);
 
   function closeModal() {
-    console.log("closing")
+	setName('');
     setIsOpen(false)
 }
 
 function openModal() {
-    console.log("opening")
     setIsOpen(true)
   }
 
 
-  	const handleSubmit = (e) => {
-		e.preventDefault();
+  const setChannelQuery = (newName: string) => {
+	  router.replace(`/Chat?channel=${newName}`);
+  }
 
+
+  	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		chatSocket.emit('changeNameCH', {
+			channelName: channelId,
+			newName: name,
+		})
+		setChannelId(name);
+		// setChannelQuery(name)
 		closeModal();
 	}
 
@@ -38,7 +54,7 @@ function openModal() {
   return (
 	<>
 		<Transition appear show={isOpen} as={Fragment}>
-			<Dialog as="form" className="relative z-30" onClose={closeModal}>
+			<Dialog as="form" className="relative z-30" onClose={closeModal} onSubmit={handleSubmit}>
 				<Transition.Child
 					as={Fragment}
 					enter="ease-out duration-300"
@@ -77,7 +93,9 @@ function openModal() {
                                             maxLength={10}
                                             minLength={4}
                                             className='rounded-full w-full border-blue-300 border-2 border-solid h-10 p-2'
-                                        />
+											onChange={(e) => setName(e.target.value)}
+											value={name}
+										/>
                                     </div>
 								</div>
 
@@ -86,7 +104,6 @@ function openModal() {
 										<button
 											type="submit"
 											className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-green-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-											onClick={handleSubmit}
 										>
 										Submit
 										</button>

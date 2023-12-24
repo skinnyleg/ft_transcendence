@@ -6,6 +6,7 @@ import Image from 'next/image'
 import ChannelTypes from './ChannelTypeSelect'
 import { chatSocketContext } from '../context/soketContext'
 import axios from 'axios'
+import { ChatContext } from '../Chat/page'
 
 interface CreateChannelProps {}
 

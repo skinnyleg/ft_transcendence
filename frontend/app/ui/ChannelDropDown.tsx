@@ -1,6 +1,6 @@
 "use client"
 import { Menu, Transition } from '@headlessui/react'
-import { FC, Fragment, useState } from 'react'
+import { FC, Fragment, useContext, useState } from 'react'
 import { IconWithTooltip } from './CustomIcons'
 import { HiDotsVertical } from "react-icons/hi";
 import { HiLogout } from "react-icons/hi";
@@ -13,6 +13,8 @@ import ChannelName from './ChangeChannelName';
 import ChannelPic from './ChangeChannelPic';
 import ChannelPass from './ChangeChannelPass';
 import ChannelType from './ChangeChannelType';
+import { ChatContext } from '../Chat/page';
+import { chatSocketContext } from '../context/soketContext';
 
 
 interface ChannelDropDownProps {
@@ -28,7 +30,15 @@ const ChannelDropDown: FC<ChannelDropDownProps> = ({userRole, showSideBar, chann
 	let [openPic, setOpenPic] = useState(false)
 	let [openPass, setOpenPass] = useState(false)
 	let [openType, setOpenType] = useState(false)
+	const chatSocket = useContext(chatSocketContext);
+	const {channelId, setChannelId} = useContext(ChatContext);
+	const [error, setError] = useState<string>('')
 
+	const leaveChannel = () => {
+		chatSocket.emit('leaveChannel', {
+			channelName: channelId
+		})
+	}
 
   return (
     <div className="z-10">
@@ -187,6 +197,7 @@ const ChannelDropDown: FC<ChannelDropDownProps> = ({userRole, showSideBar, chann
               <Menu.Item>
                 {({ active }) => (
                   <button
+					onClick={leaveChannel}
                     className={`${
                       active ? 'bg-violet-500 text-white' : 'text-gray-900'
                     } group flex w-full items-center gap-4 rounded-md px-2 py-2 text-sm`}

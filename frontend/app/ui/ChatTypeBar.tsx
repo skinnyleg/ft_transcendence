@@ -12,9 +12,7 @@ interface ChatTypeBarProps {
 
 const ChatTypeBar: FC<ChatTypeBarProps> = ({channel}) => {
 
-	const val = channel.isJoined === 'NOTJOINED' ? 'Join' : 'Your Request Has Been Sent';
-	console.log("val == ", val);
-	const [barValue, setBarValue] = useState(val);
+	const [barValue, setBarValue] = useState('Join');
 
 
 		const handleChannelJoin = () => {
@@ -27,7 +25,7 @@ const ChatTypeBar: FC<ChatTypeBarProps> = ({channel}) => {
 				setBarValue('Your Request Has Been Sent')
 		}
 
-		if (channel.isJoined === 'JOINED')
+		if (channel && channel.userRole !== 'none')
 		{
 			return (
 				<div className='text-black h-9 rounded-xl p-0 flex flex-row justify-between items-center gap-2'>
@@ -50,7 +48,7 @@ const ChatTypeBar: FC<ChatTypeBarProps> = ({channel}) => {
 			)
 		}
 
-		if (channel.channelType === 'PROTECTED' && channel.isJoined === 'NOTJOINED')
+		if (channel && channel.channelType === 'PROTECTED' && channel.userRole === 'none')
 		{
 			return (
 					<div className='text-black h-9 rounded-xl p-0 flex flex-row justify-between items-center gap-2'>

@@ -1,47 +1,79 @@
 "use client"
-import { useState, type FC } from 'react';
+import { useState, type FC, useContext, useEffect } from 'react';
 import { ChannelInter, ChannelUser } from '../interfaces/interfaces';
 import UserCard from './UserCard';
 import { CiSearch } from "react-icons/ci";
 import { useRouter, useSearchParams } from 'next/navigation';
 import { IoIosArrowBack } from "react-icons/io";
 import { IconWithTooltip } from './CustomIcons';
-import { channelUsers, channels, user } from './ChatConstants';
+import { ChatContext } from '../Chat/page';
+import { chatSocket } from '../context/soketContext';
 
-interface ChatSideBarProps {
-	channelId: string | null;
-}
+interface ChatSideBarProps {}
 
-const ChatSideBar: FC<ChatSideBarProps> = ({channelId}) => {
+const ChatSideBar: FC<ChatSideBarProps> = () => {
+
+
+	const {channelId, setChannelId, user, channel} = useContext(ChatContext);
 
 	const searchParams = useSearchParams()
 	const router = useRouter();
-	const channel = channels.find((c) => c.id === channelId);
-	const isJoined = channel?.isJoined ?? false;
+	const val = channel?.userRole as string;
+	const isJoined = val !== 'none' ? true : false;
+	const [channelUsers, setChannelsUsers] = useState<ChannelUser[]>([])
 	const [search, setSearch] = useState('');
 
+
+
+	useEffect(() => {
+		chatSocket.emit('getChSidebar', {
+			channelName: channelId
+		})
+
+		chatSocket.on('channelSidebar', (data: ChannelUser[]) => {
+			setChannelsUsers(data);
+		})
+
+		
+		return () => {
+			chatSocket.off('channelSidebar')
+		}
+	}, [])
+
+	useEffect(() => {
+		chatSocket.emit('getChSidebar', {
+			channelName: channelId
+		})
+
+		chatSocket.on('channelSidebar', (data: ChannelUser[]) => {
+			setChannelsUsers(data);
+		})
+
+		return () => {
+			chatSocket.off('channelSidebar')
+		}
+	}, [chatSocket])
 
 	const filteredUsers = () => {
 		if (search === '')
 			return (channelUsers);
-		const searchUsers = channelUsers.filter(user => user.userNick.toLowerCase().includes(search.toLowerCase()));
+		const searchUsers = channelUsers.filter(user => user.username?.toLowerCase().includes(search.toLowerCase()));
 		return searchUsers;
 	}
 
 
 	const handleCloseSideBar = () => {
-		const channelId = searchParams.get('channel')
 		setSearch('');
 		router.replace(`/Chat?channel=${channelId}`);
 	}
 
 	const renderBar = (channelUsers: ChannelUser[], userRole: string[]) => {
-		const users = channelUsers.filter((user) => userRole.includes(user.userRole));
+		const users = channelUsers.filter((user) => userRole.includes(user.channelRole as string));
 
 		if (users.length === 0)
 			return null;
-		if (users.length === 1 && users[0].userNick === user.userNick)
-			return null;
+		// if (users.length === 1 && users[0].username === user.userNick)
+		// 	return null;
 		return (
 			<div className='flex items-center gap-1 h-7 mt-2 p-1'>
 				<h1 className='text-teal-800 font-bold font-sans w-fit text-xs'>
@@ -54,7 +86,7 @@ const ChatSideBar: FC<ChatSideBarProps> = ({channelId}) => {
 
 		return (
 		<div className={`w-full bg-teal-600 lg:ml-2 rounded-xl flex flex-col p-2 h-full overflow-y-auto`}>
-			<div className={`${isJoined === 'JOINED' ? '' : 'blur overflow-y-hidden pointer-events-none'}`}>
+			<div className={`${isJoined === true ? '' : 'blur overflow-y-hidden pointer-events-none'}`}>
 				<div className='flex flex-row rounded-xl bg-teal-200 w-full items-center sticky top-0'>
 					<IconWithTooltip
 						icon={IoIosArrowBack}
@@ -76,17 +108,17 @@ const ChatSideBar: FC<ChatSideBarProps> = ({channelId}) => {
 				{renderBar(filteredUsers(), ['ADMIN', 'OWNER'])}
 				{
 					filteredUsers()
-					.filter((u) => (u.userRole === 'ADMIN' || u.userRole === 'OWNER') && user.userNick !== u.userNick)
+					.filter((u) => (u.channelRole === 'ADMIN' || u.channelRole === 'OWNER') && user.nickname !== u.username)
 					.map((admin) => (
-						<UserCard key={admin.id} user={admin} userRole={channel?.userRole} />
+						<UserCard key={admin.userId} user={admin} userRole={channel?.userRole} />
 					))
 				}
 				{renderBar(filteredUsers(), ['MEMBER'])}
 				{
 					filteredUsers()
-					.filter((u) => u.userRole === 'MEMBER' && u.userNick !== user.userNick)
+					.filter((u) => u.channelRole === 'MEMBER' && u.username !== user.nickname)
 					.map((member) => (
-						<UserCard key={member.id} user={member} userRole={channel?.userRole}/>
+						<UserCard key={member.userId} user={member} userRole={channel?.userRole}/>
 					))
 				}
 			</div>

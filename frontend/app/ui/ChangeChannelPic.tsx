@@ -1,10 +1,12 @@
 "use client"
 import { Dialog, Transition } from '@headlessui/react'
-import { Dispatch, FC, Fragment, SetStateAction, useState } from 'react'
+import { Dispatch, FC, Fragment, SetStateAction, useContext, useState } from 'react'
 import { CreateChannelIcon, IconWithTooltip } from './CustomIcons'
 import { Menu } from '@headlessui/react'
 import { BiSolidEditAlt } from "react-icons/bi";
 import Image from 'next/image'
+import { chatSocketContext } from '../context/soketContext'
+import { ChatContext } from '../Chat/page'
 
 
 
@@ -16,7 +18,11 @@ interface ChannelPicProps {
 
 const ChannelPic: FC<ChannelPicProps> = ({isOpen, setIsOpen, currentPic}) => {
 
-  let [img, setImg] = useState(currentPic)
+	let [img, setImg] = useState(currentPic)
+	const chatSocket = useContext(chatSocketContext);
+	const {channelId, setChannelId} = useContext(ChatContext);
+	const [imgData, setImgData] = useState<File | undefined>(undefined);
+
 
 
   function closeModal() {
@@ -30,21 +36,64 @@ function openModal() {
   }
 
 
-  	const handleSubmit = (e) => {
+  	const handleSubmit = (e: React.ChangeEvent<HTMLFormElement>) => {
 		e.preventDefault();
+		chatSocket.emit('changePicCH', {
+			channelName: channelId,
+			newPicture: img
+		})
+		chatSocket.on('allowPicture', async () => {
+			if (imgData) {
+				const formData = new FormData();
+				formData.append("file", imgData);
+				try {
+					const url = process.env.NEXT_PUBLIC_BACKEND_URL;
+					console.log('url == ', url);
+	
+					const results = await fetch(`${url}/upload/ChannelPic`, {
+						credentials: 'include',
+						method: 'POST',
+						headers: {
+							'channelname': channelId,
+						},
+						body: formData,
+					})
+					if (results) {
+					}
+					else {
+						console.log("error")
+					}
+				}
+				catch (error : any) {
+					console.log("error from catch == ", error)
+				}
+			}
+			chatSocket.emit('refreshPicture', {
+				channelName: channelId
+			});
+			chatSocket.on('PicDone', () => {
+				chatSocket.emit('getUserChannels')
+				chatSocket.emit('getDataCH', {
+					channelName: channelId,
+				})
+			})
+		})
 		closeModal();
 	}
 
 	const updateImg = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const selectedFile = e.target.files?.[0];
 		if (selectedFile)
+		{
+			setImgData(selectedFile);
 			setImg(URL.createObjectURL(selectedFile))
+		}
   };
 
   return (
 	<>
 		<Transition appear show={isOpen} as={Fragment}>
-			<Dialog as="form" className="relative z-30" onClose={closeModal}>
+			<Dialog as="form" className="relative z-30" onClose={closeModal} onSubmit={handleSubmit}>
 				<Transition.Child
 					as={Fragment}
 					enter="ease-out duration-300"
@@ -103,7 +152,7 @@ function openModal() {
 										<button
 											type="submit"
 											className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-green-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-											onClick={handleSubmit}
+											// onClick={handleSubmit}
 										>
 										Submit
 										</button>

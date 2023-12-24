@@ -9,7 +9,6 @@ export default function LayoutChat({
   }: {
     children: React.ReactNode
   }) {
-
     const [showMenu, setShowMenu] = useState(false);
 
     const handleShowMenu = (showMenu: boolean) => {

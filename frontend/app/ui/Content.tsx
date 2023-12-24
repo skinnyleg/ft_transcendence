@@ -1,10 +1,11 @@
 "use client"
-import type { FC } from 'react';
+import { useState, type FC } from 'react';
 import { useSearchParams } from 'next/navigation';
 import ChatTabChannel from './ChatTabChannel';
 import { isBarOpen, whichTab } from './ChatUtils';
 
 interface ContentProps {}
+
 
 const Content: FC<ContentProps> = ({}) => {
 	const searchParams = useSearchParams();
@@ -19,9 +20,7 @@ const Content: FC<ContentProps> = ({}) => {
 			)}
 			{renderTab === 'channel' &&  (
 					<div className={`lg:flex lg:flex-grow w-full pb-0 ${barOpen ? 'hidden md:flex' : ''} transition ease-in-out duration-700`}>
-						<ChatTabChannel
-							channelId={searchParams.get('channel')}
-						/>
+						<ChatTabChannel />
 					</div>
 			)}
 		</>

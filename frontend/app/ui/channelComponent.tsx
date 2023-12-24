@@ -1,8 +1,9 @@
 "use client"
-import type { FC } from 'react';
+import { useContext, type FC } from 'react';
 import { ChannelInter } from '../interfaces/interfaces';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { ChatContext } from '../Chat/page';
 
 interface channelComponentProps {
 	channel : ChannelInter
@@ -11,7 +12,11 @@ interface channelComponentProps {
 const ChannelComponent: FC<channelComponentProps> = ({channel}) => {
 	const router = useRouter();
 
+	const {channelId, setChannelId} = useContext(ChatContext);
+
+
 	const setChannelQuery = () => {
+		setChannelId(channel.channelName);
 		router.replace(`/Chat?channel=${channel.channelName}`);
 	}
 	return (

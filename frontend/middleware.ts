@@ -33,6 +33,7 @@ const checkVerification = async (token:string | undefined) => {
 export default async function middleware(request: NextRequest){
     const token  = request.cookies.get("token");
     const succes = await checkAuth(token?.value);
+
     let isFirstTime = await checkVerification(token?.value);
     if (request.nextUrl.pathname === '/settings')
         isFirstTime = false;

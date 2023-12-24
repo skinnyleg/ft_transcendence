@@ -1,5 +1,5 @@
 "use client"
-import type { FC } from 'react';
+import { useContext, type FC } from 'react';
 import Image from 'next/image'
 import { ChannelInter } from '../interfaces/interfaces';
 import { IoMdSettings } from "react-icons/io";
@@ -12,6 +12,7 @@ import { HiLogout } from "react-icons/hi";
 import { HiDotsVertical } from "react-icons/hi";
 import { useRouter, useSearchParams } from 'next/navigation';
 import ChannelDropDown from './ChannelDropDown';
+import { ChatContext } from '../Chat/page';
 
 
 interface ChatTopBarProps {
@@ -22,12 +23,12 @@ const ChatTopBar: FC<ChatTopBarProps> = ({channel}) => {
 
 	const router = useRouter();
 	const searchParams = useSearchParams()
+	const {channelId, setChannelId} = useContext(ChatContext);
 
 	const handleBack = () => {
 		router.replace('/Chat');
 	}
 	const showSideBar = () => {
-		const channelId = searchParams.get('channel');
 		router.replace(`/Chat?channel=${channelId}&bar=open`);
 	}
 
@@ -42,28 +43,30 @@ const ChatTopBar: FC<ChatTopBarProps> = ({channel}) => {
 						tooltipContent="Go Back"
 						clickBehavior={handleBack}
 					/>
-					<Image
-						src={channel.channelPic}
-						width={45}
-						height={45}
-						alt='channel picture'
-						className='rounded-full border border-teal-600'
-					/>
+					<div className='max-w-[45px] max-h-[45px] min-w-[45px] min-h-[45px] flex justify-center'>
+						<Image
+							src={channel?.channelPicture as string}
+							width={45}
+							height={45}
+							alt='channel picture'
+							className='rounded-full border border-teal-600'
+						/>
+					</div>
 				</div>
 				<div className='flex flex-col'>
-					<h1 className='font-bold text-lg'>{channel?.channelName}</h1>
-					<p className='text-gray-500'>{channel?.channelName}</p>
+					<h1 className='font-bold text-lg'>{channelId}</h1>
+					<p className='text-gray-500'>{channel?.lastMsg}...</p>
 				</div>
 			</div>
 			{
-				channel.isJoined === "JOINED" && (
+				(channel && channel.userRole !== "none") && (
 					<div className='flex flex-row items-center justify-end gap-3 p-2 w-fit'>
 						<ChannelDropDown
-							key={channel.id}
+							key={channel.channelId}
 							userRole={channel.userRole}
 							showSideBar={showSideBar}
 							channelType={channel.channelType}
-							channelPic={channel.channelPic}
+							channelPic={channel.channelPicture}
 						/>
 					</div>
 				)

@@ -40,7 +40,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
 	private readonly usersSockets: {userId: string, socket: any}[] = [];
 	private readonly dmSide: dmsSide[] = [];
-	private readonly channelSide: channelsSide[] = [];
+	private channelSide: channelsSide[] = [];
 	private readonly membershipCH: channelSidebar[] = [];
 	private readonly dmMessages: dmMessages[] = [];
 	private readonly chMessages: messsagesCH[] = [];
@@ -432,6 +432,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			const {channelName, newType, password} = data;
 			const owner = client.data.user.nickname;
 			await this.channelService.changeChannelType(channelName, owner, newType, password);
+			client.emit('changeDone');
 		}
 		catch (error) {
 			this.DmOutils.Error(client, 'changeTypeCH', error, 'change channel type failed');
@@ -447,13 +448,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			const {channelName, newName} = data;
 			const owner = client.data.user.nickname;
 			await this.channelService.changeChannelName(channelName, owner, newName);
-			const notif2users: notif2user = {channelName};
+			const notif2users: notif2user = {channelName: newName};
 			notif2users.admin = owner;
 			notif2users.server = this.server;
 			notif2users.usersSockets = this.usersSockets; 
 			notif2users.notif = `${newName} is the new name of channel`;
-			notif2users.user2notify = '';
-			await this.channelService.emitNotif2channelUsers(notif2users, ['', 'newName'], {channelName});
+			notif2users.user2notify = owner;
+			await this.channelService.emitNotif2channelUsers(notif2users, ['', 'newName'], {newName});
 		}
 		catch (error) {
 			this.DmOutils.Error(client, 'changeNameCH', error, 'change channel name failed');
@@ -505,7 +506,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			notif2users.server = this.server;
 			notif2users.usersSockets = this.usersSockets; 
 			notif2users.notif = `new channel picture`;
-			notif2users.user2notify = '';
+			notif2users.user2notify = owner;
 			await this.channelService.emitNotif2channelUsers(notif2users, ['', 'PicDone'], {channelName});
 		}
 		catch (error) {
@@ -543,21 +544,30 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 	@SubscribeMessage('getUserChannels')
 	async	GetUserChannels(@ConnectedSocket() client: Socket)
 	{
-		try {
+		try 
+		{
 			const user = client.data.user.nickname;
 			const userChannels = await this.channelService.getUserChannels(user);
+			this.channelSide = [];
+			// console.log('userchannels == ', userChannels)
+			let buffer: channelsSide[] = [];
 			for(const channel of userChannels) {
-				let buffer: channelsSide = {};
-				buffer.channelId = channel.id;
-				buffer.channelName = channel.name;
-				buffer.channelPicture = channel.picture;
-				buffer.userRole = await this.Outils.getUserChannelRole(channel.name, user);
-				buffer.lastMsg = channel.messages[0]?.content || '';
-				buffer.channelType = channel.type;
-				this.channelSide.push(buffer);
-			}
-			client.emit('UserChannels', this.channelSide);
-			this.channelSide.length = 0;
+				// await userChannels.forEach(async (channel) => {
+					const bufferin: channelsSide = {
+					  channelId: channel.id,
+					  channelName: channel.name,
+					  channelPicture: channel.picture,
+					  userRole: await this.Outils.getUserChannelRole(channel.name, user),
+					  lastMsg: channel.messages[0]?.content || '',
+					  channelType: channel.type,
+					};
+					buffer.push(bufferin);
+					// this.channelSide.push(buffer);
+					// console.log('buffer == ', buffer)
+				// });
+				}
+				// console.log('channelsout == ', buffer)
+			client.emit('UserChannels', buffer);
 		}
 		catch(error) {
 			this.DmOutils.Error(client, 'getUserChannels', error, 'get user channels failed');
@@ -615,6 +625,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 				}
 				this.channelSide.push(buffer);
 			}
+			console.log("entered here = ", this.channelSide);
 			client.emit('queryChannels', this.channelSide);
 			this.channelSide.length = 0;
 		}
@@ -640,6 +651,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 				buffer.time = this.DmOutils.dateTime2String(msg.createdAt);
 				this.chMessages.push(buffer);
 			}
+			// console.log('messages == ', this.chMessages);
 			client.emit('messagesCH', this.Outils.onePic4msgSender(this.chMessages))
 			this.chMessages.length = 0;
 		}

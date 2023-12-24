@@ -96,21 +96,39 @@ export interface DmsInter {
 	userNick: string,
 }
 
+
 export interface ChannelUser {
-	id: string;
-	userPic: string,
-	userNick: string;
-	userRole: string;
+  username?: string,
+  userId?: string,
+  channelRole?: string,
+  userPicture?: string
 }
+
+// export interface ChannelUser {
+// 	id: string;
+// 	userPic: string,
+// 	userNick: string;
+// 	userRole: string;
+// }
+
 
 
 export interface MessageInter {
-	id: string;
-	senderPic?: string,
-	senderNick: string;
-	content: string;
-	timeStamp: string;
+  channelId?: string,
+  messageId?: string,
+  sender?: string,
+  picture?: string,
+  message?: string,
+  time?: string
 }
+
+// export interface MessageInter {
+// 	id: string;
+// 	senderPic?: string,
+// 	senderNick: string;
+// 	content: string;
+// 	timeStamp: string;
+// }
 
 
 export interface LeaderboardData {
