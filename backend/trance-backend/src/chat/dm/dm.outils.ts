@@ -119,7 +119,7 @@ export class DmOutils {
 		}
 	}
 
-	fillDmsBuffer(message: any, nickname: string, dmId: string)
+	 fillDmsBuffer(message: any, nickname: string, dmId: string)
 	{
 		const buffer: dmMessages = {};
 		buffer.dmId = dmId;

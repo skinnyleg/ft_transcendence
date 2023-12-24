@@ -4,7 +4,7 @@ import { Server, Socket } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../../user/user.service';
 import { creatChannel } from '../dto/creat-channel.dto';
-import { BadRequestException, ForbiddenException, OnModuleInit, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, OnModuleInit, UnauthorizedException, UsePipes, ValidationPipe } from '@nestjs/common';
 import { DmOutils, dmMessages, dmsSide } from '../dm/dm.outils';
 import { creatMessageCh, getMessagesCH, getMessagesDm, sendMessageDm } from '../dto/messages.dto';
 import { ChannelOutils, channelSidebar, channelsSide, messsagesCH, notif2user } from '../channel/outils';
@@ -103,7 +103,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			buffer.channelId = newChannel.id;
 			buffer.channelName = newChannel.name;
 			buffer.channelPicture = newChannel.picture;
-			buffer.userRole = 'OWNER';
+			buffer.userRole = 'OWNER'; 
 			buffer.lastMsg = '';
 			buffer.channelType = newChannel.type;
 			client.emit('channelDone', buffer);
