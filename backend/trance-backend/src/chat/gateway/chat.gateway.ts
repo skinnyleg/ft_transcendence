@@ -519,6 +519,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 	{
 		try
 		{
+			console.log('entered')
 			await  this.DmOutils.validateDtoData(data, stringDto);
 			const {channelName} = data;
 			const user = client.data.user.nickname;
@@ -533,6 +534,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 				buffer.channelRole = await this.Outils.getUserChannelRole(channel.name, user.nickname);
 				this.membershipCH.push(buffer);
 			}
+			console.log('channelsUsers == ', this.membershipCH)
 			client.emit('channelSidebar', this.membershipCH);
 			this.membershipCH.length = 0;
 		}
@@ -625,7 +627,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 				}
 				this.channelSide.push(buffer);
 			}
-			console.log("entered here = ", this.channelSide);
 			client.emit('queryChannels', this.channelSide);
 			this.channelSide.length = 0;
 		}

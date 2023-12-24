@@ -74,11 +74,9 @@ export class UploadController {
     	res.sendFile(filename, { root: newDir });
 	}
 
-	// @UseGuards(JwtAuthGuard)
+	@UseGuards(JwtAuthGuard)
 	@Get('/channel/:filename')
 	serveChannelPic(@Param('filename') filename: string, @Res() res: Response) {
-
-		console.log("sjaddas")
 		const newDir =  path.join(__dirname, '..', '..', 'uploads', 'channels')
     	res.sendFile(filename, { root: newDir });
 	}
