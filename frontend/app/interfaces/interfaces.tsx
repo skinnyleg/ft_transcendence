@@ -65,4 +65,5 @@ export interface profileData {
     };
     isfriend: boolean;
     privateProfile: boolean;
+    isBlocked: boolean;
 };

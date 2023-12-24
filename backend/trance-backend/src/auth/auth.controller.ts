@@ -36,8 +36,8 @@ export class AuthController {
 		}
 		const token = await this.authService.createToken(request.user.id, request.user.nickname, TOKENEXP, TOKENSECRET)
 		const refresh = await this.authService.createToken(request.user.id, request.user.nickname, REFRESHEXP, REFRESHSECRET)
-		response.cookie('token', token, {maxAge: TOKENEXP * 1000})
-		response.cookie('refresh', refresh, {maxAge: REFRESHEXP * 1000})
+		response.cookie('token', token)
+		response.cookie('refresh', refresh)
 		if (request.user.FirstLogin === true)
 		{
 			response.redirect(`${process.env.FrontendHost}/settings`);
@@ -82,7 +82,8 @@ export class AuthController {
 	@Get('refresh')
 	refreshTokens(@Req() req, @Res() res)
 	{
-		return this.authService.refreshTokens(req, res);
+		const id = req.user.sub;
+		return this.authService.refreshTokens(req, res, id);
 	}
 
 

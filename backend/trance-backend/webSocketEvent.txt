@@ -10,6 +10,10 @@ accept-request: when a user accept a friend request
 
 refuse-request: when a user refuse a friend request
 
+block: block user/friend (chat/game)
+
+unblock: unblock user/friend
+
 listened Events:
 
 statusChange : when a user status change to something else

@@ -37,11 +37,11 @@ const Notifications = () => {
         notif();
     }, [newNotification]);
 
-
     const handleNewNotification = (data: NotificationsData) => {
         setNewNotification(data);
         setNotificationNumber(notificationNumber);
     }
+    
     useEffect(() => {
         socket.on("notification", (notif) => {
             console.log("ni=otif sent" ,notif);
@@ -104,7 +104,7 @@ const Notifications = () => {
                 {'bg-red-500 ' : (notificationNumber > 0),
                 'bg-gray-500' : (notificationNumber === 0),})}>{notificationNumber}
                 </span>
-                <div className={`${showNotifications ? 'block' : 'hidden'} absolute lg:top-12 xl:top-12 top-8 right-3 lg:w-80 w-80 mx-auto bg-white shadow-md transition-transform duration-300 z-10 rounded-b-lg`}>
+                <div className={`${showNotifications ? 'block' : 'hidden'} absolute lg:top-12 xl:top-12 top-8 right-3 lg:w-80 w-60 mx-auto bg-white shadow-md transition-transform duration-300 z-10 rounded-b-lg`}>
                     <div className="flex flex-col">
                     {showNotifications && notifications.map((notification) => (
                         <div key={notification.requestId} className="flex justify-between items-center p-2 hover:bg-gray-100 z-10">

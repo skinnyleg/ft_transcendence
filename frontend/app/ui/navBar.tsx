@@ -89,7 +89,7 @@ function NavBar ({handleShowMenu}: NavBarProps)
 
   return (
   <div className={`${inter.className}`}>
-    <div className="lg:hidden xl:hidden bg-nav top-0 text-white md:w-screen h-15 z-10 p-4 flex justify-between items-center border-indigo-600 fixed w-full ">
+    <div className="lg:hidden xl:hidden bg-nav top-0 text-white md:w-screen h-15 z-10 p-4 flex justify-between items-center border-indigo-600 fixed w-full">
       <button className="text-white p-2 focus:outline-none">
           <Bars4Icon onClick={() => {setShow(!show); handleShowMenu(!show)}} className="w-6 h-6"/>
       </button>
@@ -131,7 +131,7 @@ function NavBar ({handleShowMenu}: NavBarProps)
             ))}
           </div>
     </div>
-    <nav className={`flex flex-col lg:ml-2 lg:mt-2 xl:mt-2 lg:block md:mt-20 mt-[6vh] fixed lg:h-[98%] h-[94%] bg-nav w-20 ${show ? '' : 'hidden'} lg:rounded-xl border border-blackpink transition-transform duration-300 `}>
+    <nav className={`flex flex-col lg:ml-2 lg:mt-2 xl:mt-2 lg:block md:mt-20 mt-[6vh] fixed lg:h-[98%] h-[94%] bg-nav w-15 ${show ? '' : 'hidden'} lg:rounded-xl border border-blackpink transition-transform duration-300 w-20`}>
       <div className="flex flex-col flex-grow">
         <div className="flex items-center justify-center mt-6 h-16 w-10 mx-auto xl:h-30 xl:w-30 font-medium hover:opacity">
           <Image

@@ -6,7 +6,7 @@ import { use, useEffect, useRef, useState } from "react";
 import Link from 'next/link';
 import Notifications from './Notification';
 import {responseData, profileNickPic} from "@/app/interfaces/interfaces";
-import { socket , socketContext} from '../context/soketContext';
+import { socket , profilePicContext, avatarImage} from '../context/soketContext';
 import { toast } from 'react-toastify';
 
 export default function TopBar () {
@@ -84,6 +84,8 @@ export default function TopBar () {
   }, [search, debouncedSearchBackend]);
 
   return (
+    <>
+      <profilePicContext.Provider value={avatarImage}>
       <div className="flex lg:flex-row justify-between flex-col w-full bg-transparent">
         <div className="lg:flex md:hidden hidden xl:flex">
           <h1 className="lg:text-2xl text-gray-500 text-lg font-bold-800">Welcome Back ....!</h1>
@@ -117,5 +119,7 @@ export default function TopBar () {
             </Link>
           </div>
       </div>
+    </profilePicContext.Provider>
+    </>
   );
 }

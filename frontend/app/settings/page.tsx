@@ -29,21 +29,6 @@ const settings = () => {
     const [QrEnabled, setQrEnabled] = useState<boolean>(false);
     
     useEffect(() => {
-        const getnickname = async () => {
-          try {
-            const res = await fetch(`http://localhost:8000/user/Nickname`, {
-              method: "GET",
-              credentials: "include",
-              headers: { "Content-Type": "application/json" },
-            });
-            if (res.ok) {
-                const nickname : profileNickPic = await res.json();
-                setAvatarImage(nickname.profilePic);
-            }
-          } catch (error : any) {
-            setError(error.response.data.message[0]);
-          }
-        };
         const checkVerification = async () => {
             try {      
               const res = await fetch("http://localhost:8000/auth/CheckFirstLogin", {
@@ -93,7 +78,7 @@ const settings = () => {
                 });
             }
         };  
-        getnickname();
+        // getnickname();
         checkVerification();
 
       }, []);

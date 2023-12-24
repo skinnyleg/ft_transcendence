@@ -44,7 +44,7 @@ function Dashboard() {
   }
 
   return (
-    <main className="flex flex-col font-white bg-main overflow-y-hidden md:overflow-y-auto mr-2">
+    <main className="flex flex-col font-white bg-main mr-2">
       <ToastContainer />
       <TopBar />
       <div className="flex flex-col lg:mt-5 h-[95%] md:mt-10 mt-10 xl:mt-5">
