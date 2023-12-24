@@ -8,7 +8,7 @@ import { channels } from './ChatConstants';
 import { chatSocketContext } from '../context/soketContext';
 import { getChannelName } from './ChatUtils';
 import { useSearchParams } from 'next/navigation';
-import { ChatContext } from '../Chat/page';
+import { ChatContext } from '../context/soketContext';
 
 
 
@@ -16,8 +16,8 @@ interface ChatTabProps {}
 
 
 const ChatTabChannel: FC<ChatTabProps> = () => {
-	const chatSocket = useContext(chatSocketContext);
 	const searchParams = useSearchParams();
+	const chatSocket = useContext(chatSocketContext);
 	const {channelId, setChannelId, setChannel, channel} = useContext(ChatContext);
 
 
@@ -27,9 +27,9 @@ const ChatTabChannel: FC<ChatTabProps> = () => {
 			channelName: channelId,
 		})
 		chatSocket.on('channelData', (data: ChannelInter) => {
-			console.log('channel data == ', data);
+			// console.log('channel data == ', data);
 			setChannel(data);
-			setChannelId(data.channelName);
+			// setChannelId(data.channelName);
 		})
 
 		return () => {
@@ -69,7 +69,6 @@ const ChatTabChannel: FC<ChatTabProps> = () => {
 					/>
 				<ChatTypeBar
 					key={channel?.channelId}
-					channel={channel as ChannelInter}
 				/>
 			</div>
 		);

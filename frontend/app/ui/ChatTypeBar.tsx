@@ -1,28 +1,38 @@
 "use client"
-import { useState, type FC, useEffect } from 'react';
+import { useState, type FC, useEffect, useContext } from 'react';
 import { IconWithTooltip } from './CustomIcons';
 import { IoMdSend } from "react-icons/io";
 import { ChannelInter } from '../interfaces/interfaces';
 import ChannelPassword from './SubmitChannelPassword';
+import { chatSocketContext } from '../context/soketContext';
+import { ChatContext } from '../context/soketContext';
 
-interface ChatTypeBarProps {
-	channel: ChannelInter;
-}
+interface ChatTypeBarProps {}
 
 
-const ChatTypeBar: FC<ChatTypeBarProps> = ({channel}) => {
+const ChatTypeBar: FC<ChatTypeBarProps> = () => {
 
 	const [barValue, setBarValue] = useState('Join');
+	const chatSocket = useContext(chatSocketContext);
+	const {channelId, setChannelId, setChannel, channel} = useContext(ChatContext);
 
 
 		const handleChannelJoin = () => {
 			if (channel.channelType === 'PUBLIC')
 			{
 				setBarValue('Joining');
-				// setBarValue('Join');
 			}
 			else
 				setBarValue('Your Request Has Been Sent')
+			chatSocket.emit('joinChannel', {
+				channelName: channelId
+			})
+			chatSocket.on('joinDone', () => {
+				chatSocket.emit('getUserChannels');
+				chatSocket.emit('getDataCH', {
+					channelName: channelId,
+				})
+			})
 		}
 
 		if (channel && channel.userRole !== 'none')

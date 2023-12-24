@@ -6,29 +6,30 @@ import LeftBar from '../ui/LeftBar'
 import Content from '../ui/Content'
 import TopBar from '../ui/top'
 import { createContext } from 'vm'
-import { useRouter } from 'next/navigation'
-import { chatSocketContext } from '../context/soketContext'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { ChatContext, chatSocketContext } from '../context/soketContext'
 import { ChannelInter, responseData } from '../interfaces/interfaces'
 
 
 interface ChatProps {}
 
-export const ChatContext = React.createContext<any>({});
+
 
 const chat: FC<ChatProps> = () => {
 	const [channelId, setChannelId] = useState<string>('')
+	const searchParams = useSearchParams();
 	const [user, setUser] = useState<responseData | null>(null);
 	const [channel, setChannel] = useState<ChannelInter | null>(null);
 	const router = useRouter();
 	const chatSocket = useContext(chatSocketContext);
 
 	const setChannelQuery = (newName: string) => {
+		// console.log('newName == ', newName)
 		if (newName === '')
 		{
 			deleteChannelQuery();
 			return ;
 		}
-		console.log('newName == ', newName);
 		router.replace(`/Chat?channel=${newName}`);
 	}
 
@@ -36,6 +37,15 @@ const chat: FC<ChatProps> = () => {
 		router.replace(`/Chat`);
 	}
 	useEffect(() => {
+		let newName: string;
+		if (channelId === '')
+		{
+			if (searchParams.has('channel') && searchParams.get('channel') !== '')
+			{
+				newName = searchParams.get('channel') as string
+				setChannelId(newName);
+			}
+		}
 		setChannelQuery(channelId);
 	}, [channelId])
 
@@ -67,6 +77,13 @@ const chat: FC<ChatProps> = () => {
 			}
 		}
 		fetchUser();
+		let newName;
+		if (searchParams.has('channel') && searchParams.get('channel') !== '')
+		{
+			newName = searchParams.get('channel') as string
+			// console.log('newName in root == ', newName);
+			setChannelId(newName);
+		}
 	}, [])
 
 	return (

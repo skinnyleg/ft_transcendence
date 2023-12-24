@@ -5,7 +5,7 @@ import MessageComponentLeft from './MessageComponentLeft';
 import MessageComponentRight from './MessageComponentRight';
 import { user } from './ChatConstants';
 import { chatSocket, chatSocketContext } from '../context/soketContext';
-import { ChatContext } from '../Chat/page';
+import { ChatContext } from '../context/soketContext';
 
 
 

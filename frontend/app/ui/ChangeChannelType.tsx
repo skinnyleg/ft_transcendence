@@ -5,9 +5,7 @@ import { CreateChannelIcon, IconWithTooltip } from './CustomIcons'
 import { Menu } from '@headlessui/react'
 import { BiSolidEditAlt } from "react-icons/bi";
 import ChannelTypes from './ChannelTypeSelect'
-import { chatSocketContext } from '../context/soketContext'
-import { ChatContext } from '../Chat/page'
-import { setDefaultAutoSelectFamily } from 'net'
+import { ChatContext, chatSocketContext } from '../context/soketContext'
 
 
 

@@ -12,7 +12,7 @@ import { HiLogout } from "react-icons/hi";
 import { HiDotsVertical } from "react-icons/hi";
 import { useRouter, useSearchParams } from 'next/navigation';
 import ChannelDropDown from './ChannelDropDown';
-import { ChatContext } from '../Chat/page';
+import { ChatContext } from '../context/soketContext';
 
 
 interface ChatTopBarProps {

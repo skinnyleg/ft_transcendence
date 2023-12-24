@@ -47,7 +47,7 @@ export default function TopBar () {
         if (res.ok) {
           const nickname = await res.json();
           setProfileData(nickname);
-          console.log("nick:", nickname.nickname);
+          // console.log("nick:", nickname.nickname);
         }
       } catch (error) {
         setError('Error fetching data');
@@ -88,7 +88,7 @@ export default function TopBar () {
     }
   }, [search, debouncedSearchBackend]);
 
-  console.log("here", profileData?.profilePic);
+  // console.log("here", profileData?.profilePic);
   return (
       <div className="flex lg:flex-row justify-between flex-col mt-0 w-full pl-2">
         <div className="lg:flex md:hidden hidden xl:flex">

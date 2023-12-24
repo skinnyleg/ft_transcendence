@@ -4,8 +4,7 @@ import React, { Dispatch, FC, Fragment, SetStateAction, useContext, useState } f
 import { CreateChannelIcon, IconWithTooltip } from './CustomIcons'
 import { Menu } from '@headlessui/react'
 import { BiSolidEditAlt } from "react-icons/bi";
-import { chatSocketContext } from '../context/soketContext'
-import { ChatContext } from '../Chat/page'
+import { ChatContext, chatSocketContext } from '../context/soketContext'
 
 
 

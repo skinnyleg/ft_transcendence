@@ -6,7 +6,7 @@ import { CiSearch } from "react-icons/ci";
 import { useRouter, useSearchParams } from 'next/navigation';
 import { IoIosArrowBack } from "react-icons/io";
 import { IconWithTooltip } from './CustomIcons';
-import { ChatContext } from '../Chat/page';
+import { ChatContext } from '../context/soketContext';
 import { chatSocket } from '../context/soketContext';
 
 interface ChatSideBarProps {}
@@ -26,11 +26,13 @@ const ChatSideBar: FC<ChatSideBarProps> = () => {
 
 
 	useEffect(() => {
+		console.log('load time users channels')
 		chatSocket.emit('getChSidebar', {
 			channelName: channelId
 		})
 
 		chatSocket.on('channelSidebar', (data: ChannelUser[]) => {
+			console.log('data of users == ', data);
 			setChannelsUsers(data);
 		})
 
@@ -41,16 +43,21 @@ const ChatSideBar: FC<ChatSideBarProps> = () => {
 	}, [])
 
 	useEffect(() => {
-		chatSocket.emit('getChSidebar', {
-			channelName: channelId
-		})
+		// chatSocket.emit('getChSidebar', {
+		// 	channelName: channelId
+		// })
 
 		chatSocket.on('channelSidebar', (data: ChannelUser[]) => {
 			setChannelsUsers(data);
 		})
-
+		chatSocket.on('refreshSide', () => {
+			chatSocket.emit('getChSidebar', {
+				channelName: channelId
+			})
+		})
 		return () => {
 			chatSocket.off('channelSidebar')
+			chatSocket.off('refreshSide')
 		}
 	}, [chatSocket])
 

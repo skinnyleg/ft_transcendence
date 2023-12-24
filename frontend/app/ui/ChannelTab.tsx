@@ -21,7 +21,7 @@ const ChannelTab = () => {
 	useEffect(() => {
 		chatSocket.emit('getUserChannels');
 		chatSocket.on('UserChannels', (data: ChannelInter[]) => {
-			console.log("channels == ", data);
+			// console.log("channels == ", data);
 			setUserChannels(data);
 		})
 		// chatSocket.on('queryChannels', (data: ChannelInter[]) => {

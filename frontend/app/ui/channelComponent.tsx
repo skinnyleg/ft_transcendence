@@ -3,7 +3,7 @@ import { useContext, type FC } from 'react';
 import { ChannelInter } from '../interfaces/interfaces';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { ChatContext } from '../Chat/page';
+import { ChatContext } from '../context/soketContext';
 
 interface channelComponentProps {
 	channel : ChannelInter
@@ -16,8 +16,8 @@ const ChannelComponent: FC<channelComponentProps> = ({channel}) => {
 
 
 	const setChannelQuery = () => {
-		setChannelId(channel.channelName);
 		router.replace(`/Chat?channel=${channel.channelName}`);
+		setChannelId(channel.channelName);
 	}
 	return (
 		<div onClick={setChannelQuery} className='gap-2 rounded-[15px] w-full h-12 mb-1 text-black p-0 flex justify-between items-center hover:cursor-pointer'>

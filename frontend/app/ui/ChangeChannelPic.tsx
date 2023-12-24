@@ -5,8 +5,7 @@ import { CreateChannelIcon, IconWithTooltip } from './CustomIcons'
 import { Menu } from '@headlessui/react'
 import { BiSolidEditAlt } from "react-icons/bi";
 import Image from 'next/image'
-import { chatSocketContext } from '../context/soketContext'
-import { ChatContext } from '../Chat/page'
+import { ChatContext, chatSocketContext } from '../context/soketContext'
 
 
 
@@ -68,10 +67,12 @@ function openModal() {
 					console.log("error from catch == ", error)
 				}
 			}
+			// setImgData(undefined);
 			chatSocket.emit('refreshPicture', {
 				channelName: channelId
 			});
 			chatSocket.on('PicDone', () => {
+				console.log('channelName == ', channelId)
 				chatSocket.emit('getUserChannels')
 				chatSocket.emit('getDataCH', {
 					channelName: channelId,

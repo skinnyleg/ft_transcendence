@@ -15,7 +15,7 @@ const UserCard: FC<UserCardProps> = ({user, userRole}) => {
 		return (
 		<div className='w-full h-11 mb-1 text-black flex gap-2 justify-between items-center'>
 			<Image
-				src={user.userPic}
+				src={user.userPicture as string}
 				alt='user Image'
 				width='45'
 				height='45'
@@ -23,12 +23,12 @@ const UserCard: FC<UserCardProps> = ({user, userRole}) => {
 			/>
 			<div className='flex bg-teal-100 rounded-xl items-center p-2 w-full h-full justify-between'>
 				<h1 className='font-bold text-xl'>
-					{user.userNick}
+					{user.username}
 				</h1>
 				<UserDropDown
 					userRole={userRole}
-					userCardRole={user.userRole}
-					userNick={user.userNick}
+					userCardRole={user.channelRole as string}
+					userNick={user.username as string}
 				/>
 			</div>
 		</div>

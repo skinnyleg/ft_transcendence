@@ -1,5 +1,5 @@
 'use client'
-import { createContext, useState } from "react";
+import React, { createContext, useState } from "react";
 import { Cookies } from "react-cookie";
 import io from 'socket.io-client';
 
@@ -38,3 +38,4 @@ chatSocket.on('failed', (data: string) => {
 
 export const socketContext = createContext(socket);
 export const chatSocketContext = createContext(chatSocket);
+export const ChatContext = React.createContext<any>({});

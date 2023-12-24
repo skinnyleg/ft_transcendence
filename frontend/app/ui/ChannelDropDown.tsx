@@ -13,7 +13,7 @@ import ChannelName from './ChangeChannelName';
 import ChannelPic from './ChangeChannelPic';
 import ChannelPass from './ChangeChannelPass';
 import ChannelType from './ChangeChannelType';
-import { ChatContext } from '../Chat/page';
+import { ChatContext } from '../context/soketContext';
 import { chatSocketContext } from '../context/soketContext';
 
 
