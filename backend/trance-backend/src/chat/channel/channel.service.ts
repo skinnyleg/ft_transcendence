@@ -317,6 +317,8 @@ export class ChannelService {
         const channel2update = await this.outils.findChannelByName(channelName);
         if (!channel2update)
             throw new NotFoundException(`${channelName} not found.`);
+        // console.log('channel name 00: ', channelName);
+        // console.log('channel name 01: ', newName);
         const channelOwner = await this.outils.getChannelOwner(channelName);
         if (channelOwner !== owner)
             throw new UnauthorizedException('You are not allowed to make changes in this channel.');
@@ -374,7 +376,7 @@ export class ChannelService {
             include: { users: true },
         });
         if (!channel)
-            throw new NotFoundException(`${channelName} not found.`);
+            throw new NotFoundException(`${channelName} not found3.`);
         const users: User[] = channel?.users || [];
         return users;
     }
@@ -448,6 +450,7 @@ export class ChannelService {
     async   emitNotif2channelUsers(data: notif2user, values: string[], dataObj: any = {})
     {
         const {channelName, admin, notif, user2notify, server, usersSockets} = data;
+        console.log('new name ? == ', channelName)
         const user2notifyId = await this.dmOutils.getUserIdByName(user2notify);
         const channelId = await this.outils.getChannelIdByName(channelName);
         const channelUsers = await this.getChannelUsers(channelName);

@@ -63,7 +63,7 @@ export class DmOutils {
             where : { nickname },
         });
         if (!user)
-            throw new NotFoundException(`${nickname} not found`);
+            throw new NotFoundException(`${nickname} not found1`);
         return user.id || null;
     }
 
@@ -119,7 +119,7 @@ export class DmOutils {
 		}
 	}
 
-	fillBuffer(message: any, nickname: string, dmId: string)
+	 fillDmsBuffer(message: any, nickname: string, dmId: string)
 	{
 		const buffer: dmMessages = {};
 		buffer.dmId = dmId;
