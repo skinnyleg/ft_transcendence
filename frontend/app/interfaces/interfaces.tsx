@@ -101,10 +101,10 @@ export interface DmsInter {
 
 
 export interface ChannelUser {
-  username?: string,
-  userId?: string,
-  channelRole?: string,
-  userPicture?: string
+  username: string,
+  userId: string,
+  channelRole: string,
+  userPicture: string
 }
 
 // export interface ChannelUser {
@@ -117,12 +117,12 @@ export interface ChannelUser {
 
 
 export interface MessageInter {
-  channelId?: string,
-  messageId?: string,
-  sender?: string,
-  picture?: string,
-  message?: string,
-  time?: string
+  channelId: string,
+  messageId: string,
+  sender: string,
+  picture: string,
+  message: string,
+  time: string
 }
 
 // export interface MessageInter {

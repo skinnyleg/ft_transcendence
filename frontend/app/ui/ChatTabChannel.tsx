@@ -41,20 +41,22 @@ const ChatTabChannel: FC<ChatTabProps> = () => {
 
 	useEffect(() => {
 		chatSocket.on('newName', (data: {newName: string}) => {
-			console.log('herere, ' , channelId);
+			// console.log('herere, ' , channelId);
 			chatSocket.emit('getUserChannels');
 			chatSocket.emit('getDataCH', {
 				channelName: data.newName
 			})
 			setChannelId(data.newName);
 		})
-
-		chatSocket.on('PicDone', () => {
-			console.log('channelName == ', channelId)
+		
+		chatSocket.on('PicDone', (data: {channelName: string}) => {
+			// console.log('herere newname pic ');
+			// console.log('channelName == ', channelId)
 			chatSocket.emit('getUserChannels')
 			chatSocket.emit('getDataCH', {
-				channelName: channelId,
+				channelName: data.channelName,
 			})
+			// setChannelId(data.channelName);
 		})
 
 		// chatSocket.on('joinDone', () => {
@@ -82,11 +84,9 @@ const ChatTabChannel: FC<ChatTabProps> = () => {
 			<div className='w-full h-full bg-teal-600 lg:ml-2 rounded-xl flex flex-col justify-between p-3'>
 				<ChatTopBar
 					// key={channel.id}
-					channel={channel as ChannelInter}
 					/>
 				<ChatContent
 					// key={channel.id}
-					channel={channel as ChannelInter}
 					/>
 				<ChatTypeBar
 					key={channel?.channelId}

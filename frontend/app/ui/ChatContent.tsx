@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, type FC, useRef, useContext, useState } from 'react';
+import { useEffect, type FC, useRef, useContext, useState, useLayoutEffect } from 'react';
 import { ChannelInter, ChannelUser, MessageInter, responseData } from '../interfaces/interfaces';
 import MessageComponentLeft from './MessageComponentLeft';
 import MessageComponentRight from './MessageComponentRight';
@@ -9,50 +9,62 @@ import { ChatContext } from '../context/soketContext';
 
 
 
-interface ChatContentProps {
-	channel: ChannelInter;
-}
+interface ChatContentProps {}
 
-const ChatContent: FC<ChatContentProps> = ({channel}) => {
+const ChatContent: FC<ChatContentProps> = () => {
 
 		const scrollableRef = useRef(null);
+		const {channelId, setChannelId, user, channel} = useContext(ChatContext);
 		const [messages, setMessages] = useState<MessageInter[]>([])
 		const isJoined = channel?.userRole;
 		const channelType = channel?.channelType;
 		const addBlur = (isJoined === 'none') && (channelType === 'PROTECTED' || channelType === 'PRIVATE');
 		const chatSocket = useContext(chatSocketContext);
-		const {channelId, setChannelId, user} = useContext(ChatContext);
 
 		useEffect(() => {
-			// console.log("ref obj == ", scrollableRef.current)
+			console.log("ref obj == ", scrollableRef.current)
 			if (scrollableRef.current) {
 				// Scroll to the bottom when Messages or addBlur change
 				scrollableRef.current.scrollTop = scrollableRef.current.scrollHeight;
+				// scrollableRef.current?.scrollIntoView({ behavior: "smooth" })
 			}
-			return () => {
-				// console.log("cleanup")
-				scrollableRef.current = null;
-			}
+			// return () => {
+			// 	// console.log("cleanup")
+			// 	scrollableRef.current = null;
+			// }
 		}, [messages]);
 
-		// useEffect(() => {
-		// 		socket.on('messagesCH', (data: MessageInter[]) => {
-		// 				setMessages(data);
-		// 		})
-		// 		socket.emit('getMessagesCH', {
-		// 			channelName: channel?.channelName,
-		// 		})
-		// }, [chatSocket])
 
 		useEffect(() => {
+			let isMounted = true;
 			chatSocket.on('messagesCH', (data: MessageInter[]) => {
 				// console.log("message Data == ", data);
-				setMessages(data);
+					setMessages(data);
 			})
 			chatSocket.emit('getMessagesCH', {
 				channelName: channelId,
 			})
+			return () => {
+				chatSocket.off('messagesCH')
+				isMounted = false;
+			}
 		}, [channelId])
+
+
+		useEffect(() => {
+			let isMounted = true;
+				chatSocket.on('messageDoneCH', (data: MessageInter) => {
+					// console.log('got new message == ', data);
+					chatSocket.emit('getUserChannels');
+					setMessages((prevMessages) => {
+						return [...prevMessages, data]
+					})
+
+				})
+			return () => {
+				chatSocket.off('messageDoneCH')
+			}
+		},[chatSocket])
 
 
 

@@ -249,7 +249,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			notif2users.usersSockets = this.usersSockets; 
 			notif2users.notif = `${newAdmin} added to channel admins`;
 			notif2users.user2notify = newAdmin;
-			await this.channelService.emitNotif2channelUsers(notif2users, ['refreshSide','newAdmin'], {channelName});
+			await this.channelService.emitNotif2channelUsers(notif2users, ['newAdmin', 'refreshSide'], {channelName});
 		}
 		catch (error) {
 			this.DmOutils.Error(client, 'setAdmin', error, 'set admin to channel failed');
@@ -425,7 +425,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			notif2users.usersSockets = this.usersSockets; 
 			notif2users.notif = `${newAdmin} is the new owner`;
 			notif2users.user2notify = newAdmin;
-			await this.channelService.emitNotif2channelUsers(notif2users, ['refreshSide','newOwner'], {channelName});
+			await this.channelService.emitNotif2channelUsers(notif2users, ['newOwner', 'refreshSide'], {channelName});
 		}
 		catch(error) {
 			this.DmOutils.Error(client, 'changeOwnerCH', error, 'change channel owner failed');

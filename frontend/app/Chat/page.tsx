@@ -25,8 +25,10 @@ const chat: FC<ChatProps> = () => {
 			// console.log('newName in root == ', newName);
 			// setChannelId(newName);
 		}
+		console.log('newName == ', newName)
 		return newName
 	}
+	// const [channelId, setChannelId] = useState<string>(extractChannelName())
 	const [channelId, setChannelId] = useState<string>(extractChannelName())
 	const [user, setUser] = useState<responseData>();
 	const [channel, setChannel] = useState<ChannelInter | null>(null);
@@ -48,6 +50,7 @@ const chat: FC<ChatProps> = () => {
 		router.replace(`/Chat`);
 	}
 	useEffect(() => {
+		console.log('entered useEffect channelId == ', channelId)
 		let newName: string;
 		if (channelId === '')
 		{
@@ -55,6 +58,8 @@ const chat: FC<ChatProps> = () => {
 			{
 				newName = searchParams.get('channel') as string
 				setChannelId(newName);
+				setChannelQuery(newName);
+				return ;
 			}
 		}
 		setChannelQuery(channelId);
@@ -71,8 +76,17 @@ const chat: FC<ChatProps> = () => {
 			console.log('channelId == ', channelId)
 			if (channelId !== '')
 			{
+				console.log('here1');
 				chatSocket.emit('getDataCH', {
 					channelName: channelId,
+				})
+			}
+			else
+			{
+				console.log('here2');
+				console.log('channelId == ', extractChannelName())
+				chatSocket.emit('getDataCH', {
+					channelName: extractChannelName(),
 				})
 			}
 		})

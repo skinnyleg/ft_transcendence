@@ -1,5 +1,5 @@
 import { Menu, Transition } from '@headlessui/react'
-import { FC, Fragment, useState } from 'react'
+import { FC, Fragment, useContext, useState } from 'react'
 import { IconWithTooltip } from './CustomIcons'
 import { HiDotsVertical } from "react-icons/hi";
 import { HiLogout } from "react-icons/hi";
@@ -18,6 +18,7 @@ import { FaUserXmark } from "react-icons/fa6";
 import { GiThroneKing } from "react-icons/gi";
 import { useRouter } from 'next/navigation';
 import MuteUser from './muteUser';
+import { ChatContext, chatSocketContext } from '../context/soketContext';
 
 
 
@@ -31,6 +32,8 @@ const UserDropDown: FC<UserDropDownProps> = ({userRole, userCardRole, userNick})
 
 
 	const [muteOptions, setMuteOptions] = useState(false);
+	const {channelId, setChannelId} = useContext(ChatContext);
+	const chatSocket = useContext(chatSocketContext);
 
 	const router = useRouter();
 
@@ -44,6 +47,59 @@ const UserDropDown: FC<UserDropDownProps> = ({userRole, userCardRole, userNick})
 		if (userRole === 'ADMIN' && (userCardRole === 'ADMIN' || userCardRole === 'OWNER'))
 			return (false);
 		return (true);
+	}
+
+
+	const kickUser = () => {
+		chatSocket.emit('kickUser', {
+			channelName: channelId,
+			user2kick: userNick,
+		})
+		chatSocket.on('failed', () => {
+			return ;
+		})
+	}
+
+	const banUser = () => {
+		chatSocket.emit('banUser', {
+			channelName: channelId,
+			user2ban: userNick,
+		})
+		chatSocket.on('failed', () => {
+			return ;
+		})
+	}
+
+	const demoteUser = () => {
+		// chatSocket.emit('demoteUser', {
+		// 	channelName: channelId,
+		// 	user2demote: userNick,
+		// })
+		chatSocket.on('failed', () => {
+			return ;
+		})
+	}
+
+
+	const setAdmin = () => {
+		chatSocket.emit('setAdmin', {
+			channelName: channelId,
+			newAdmin: userNick,
+		})
+		chatSocket.on('failed', () => {
+			return ;
+		})
+		chatSocket.emit('getDataCH');
+	}
+
+	const setOwner = () => {
+		chatSocket.emit('changeOwnerCH', {
+			channelName: channelId,
+			newAdmin: userNick,
+		})
+		chatSocket.on('failed', () => {
+			return ;
+		})
 	}
 
   return (
@@ -142,6 +198,7 @@ const UserDropDown: FC<UserDropDownProps> = ({userRole, userCardRole, userNick})
 						  <Menu.Item>
 							{({ active }) => (
 							  <button
+								onClick={kickUser}
 								className={`${
 								  active ? 'bg-violet-500 text-white' : 'text-gray-900'
 								} group flex w-full items-center gap-4 rounded-md px-2 py-2 text-sm`}
@@ -162,6 +219,7 @@ const UserDropDown: FC<UserDropDownProps> = ({userRole, userCardRole, userNick})
 						  <Menu.Item>
 							{({ active }) => (
 							  <button
+								onClick={banUser}
 								className={`${
 								  active ? 'bg-violet-500 text-white' : 'text-gray-900'
 								} group flex w-full items-center ml-0 gap-4 rounded-md px-2 py-2 text-sm`}
@@ -184,6 +242,7 @@ const UserDropDown: FC<UserDropDownProps> = ({userRole, userCardRole, userNick})
 								  <Menu.Item>
 									{({ active }) => (
 									  <button
+										onClick={demoteUser}
 										className={`${
 										  active ? 'bg-violet-500 text-white' : 'text-gray-900'
 										} group flex w-full items-center gap-4 rounded-md px-2 py-2 text-sm`}
@@ -208,6 +267,7 @@ const UserDropDown: FC<UserDropDownProps> = ({userRole, userCardRole, userNick})
 								  <Menu.Item>
 									{({ active }) => (
 									  <button
+										onClick={setAdmin}
 										className={`${
 										  active ? 'bg-violet-500 text-white' : 'text-gray-900'
 										} group flex w-full items-center gap-4 rounded-md px-2 py-2 text-sm`}
@@ -235,6 +295,7 @@ const UserDropDown: FC<UserDropDownProps> = ({userRole, userCardRole, userNick})
 							<Menu.Item>
 							{({ active }) => (
 								<button
+								onClick={setOwner}
 								className={`${
 									active ? 'bg-violet-500 text-white' : 'text-gray-900'
 								} group flex w-full items-center gap-4 rounded-md px-2 py-2 text-sm`}

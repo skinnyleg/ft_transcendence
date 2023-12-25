@@ -131,7 +131,7 @@ export class ChannelOutils {
 
     async   isChannelExist(name: string): Promise<boolean>
     {
-        console.log('channel is exist: ', name);
+        // console.log('channel is exist: ', name);
         const channel = await this.prisma.channel.findUnique({
             where: { name },
         });
