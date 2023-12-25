@@ -256,6 +256,28 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 		}
 	}
 
+	@SubscribeMessage('demoteAdmin')
+	async	demoteUser(@MessageBody() data: changeAdminsDto,  @ConnectedSocket() client: Socket)
+	{
+		try
+		{
+			await  this.DmOutils.validateDtoData(data, changeAdminsDto);
+			const {channelName, newAdmin} = data;
+			const owner = client.data.user.nickname;
+			await this.channelService.demoteUser(channelName, owner, newAdmin);
+			const notif2users: notif2user = {channelName};
+			notif2users.admin = owner;
+			notif2users.server = this.server;
+			notif2users.usersSockets = this.usersSockets; 
+			notif2users.notif = `${newAdmin} demoted from channel admins`;
+			notif2users.user2notify = newAdmin;
+			await this.channelService.emitNotif2channelUsers(notif2users, ['refreshSide','newAdmin'], {channelName});
+		}
+		catch (error) {
+			this.DmOutils.Error(client, 'setAdmin', error, 'demote user from channel admins failed');
+		}
+	}
+
 	@SubscribeMessage('sendMsgCH')
 	async	sendMessageCh(@MessageBody() data: creatMessageCh, @ConnectedSocket() client: Socket)
 	{

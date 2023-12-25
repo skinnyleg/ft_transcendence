@@ -40,9 +40,9 @@ export class DmOutils {
 				},
 			},
 		});
-		if (!dm)
-			throw new NotFoundException('dm not found');
-		return dm.id;
+		// if (!dm)
+		// 	throw new NotFoundException('dm not found');
+		return dm?.id || null;
     }
     
   	async	validateDtoData(data: any, dtoClass: any)
