@@ -60,7 +60,7 @@ export class ChannelService {
         const type = await this.outils.getChannelType(channelName);
         if (type === 'PROTECTED') {
             const channelPass = await this.outils.getChannelPass(channelName);
-            const val = compareHash(password, channelPass);
+            const val = await compareHash(password, channelPass);
             if (!val)
                 throw new UnauthorizedException('Password incorrect.');
         }
