@@ -40,13 +40,27 @@ const ChatTabChannel: FC<ChatTabProps> = () => {
 
 
 	useEffect(() => {
-		chatSocket.on('newName', () => {
+		chatSocket.on('newName', (data: {newName: string}) => {
 			console.log('herere, ' , channelId);
 			chatSocket.emit('getUserChannels');
-
+			chatSocket.emit('getDataCH', {
+				channelName: data.newName
+			})
+			setChannelId(data.newName);
 		})
+
+		chatSocket.on('PicDone', () => {
+			console.log('channelName == ', channelId)
+			chatSocket.emit('getUserChannels')
+			chatSocket.emit('getDataCH', {
+				channelName: channelId,
+			})
+		})
+
+
 		return () => {
 			chatSocket.off('newName')
+			chatSocket.off('PicDone')
 		}
 	}, [chatSocket])
 

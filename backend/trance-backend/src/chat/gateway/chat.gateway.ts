@@ -147,6 +147,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			const user = client.data.user;
 			const addUser = await this.channelService.joinChannel(data.channelName, user.nickname, data.password);
 			if (addUser[0] === 'PRIVATE') {
+				console.log("case private")
 				const ownerId = await this.DmOutils.getUserIdByName(addUser[1]);
 				const ownerSocket = this.usersSockets.find(user => user.userId === ownerId);
 				await this.Outils.checkRequest(data, ownerId, user.id);
@@ -166,6 +167,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			await this.channelService.emitNotif2channelUsers(notif2users, ['joinDone', 'refreshSide']);
 		}
 		catch (error) {
+			console.log('entered error ')
 			this.DmOutils.Error(client, 'joinChannel', error, 'join channel failed');
 		}
 	}
@@ -452,7 +454,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			notif2users.usersSockets = this.usersSockets; 
 			notif2users.notif = `${newName} is the new name of channel`;
 			notif2users.user2notify = owner;
-			await this.channelService.emitNotif2channelUsers(notif2users, ['', 'newName']);
+			await this.channelService.emitNotif2channelUsers(notif2users, ['', 'newName'], {newName});
 		}
 		catch (error) {
 			this.DmOutils.Error(client, 'changeNameCH', error, 'change channel name failed');
@@ -517,7 +519,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 	{
 		try
 		{
-			console.log('entered')
 			await  this.DmOutils.validateDtoData(data, stringDto);
 			const {channelName} = data;
 			const user = client.data.user.nickname;
@@ -533,7 +534,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 				buffer.channelRole = await this.Outils.getUserChannelRole(channel.name, user.nickname);
 				membershipCH.push(buffer);
 			}
-			console.log("user channels == ", membershipCH)
 			client.emit('channelSidebar', membershipCH);
 		}
 		catch (error) {

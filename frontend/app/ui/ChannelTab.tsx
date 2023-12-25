@@ -34,6 +34,8 @@ const ChannelTab = () => {
 				return [...prevuserChannels, data]
 			})
 		})
+
+		
 		return () => {
 			chatSocket.off('channelDone').off()
 			chatSocket.off('UserChannels').off()
@@ -43,18 +45,21 @@ const ChannelTab = () => {
 
 
 	const debouncedSearchWebSocket = useDebouncedCallback((searchInput) => {
-		console.log('asdjhas')
-		chatSocket.emit('searchChannel', {
-			channelName: searchInput
-		})
-		chatSocket.on('queryChannels', (data: ChannelInter[]) => {
-			console.log('query channels2 == ', data)
-			setUserChannels(data);
-		})
-	}, 500); // 500 milliseconds debounce time
+		if (searchInput !== '')
+		{
+			// console.log("searchInput in emit == &", searchInput, "&")
+			chatSocket.emit('searchChannel', {
+				channelName: searchInput
+			})
+			chatSocket.on('queryChannels', (data: ChannelInter[]) => {
+				// console.log('query channels2 == ', data)
+				setUserChannels(data);
+			})
+		}
+	}, 15); // 500 milliseconds debounce time
 
 	useEffect(() => {
-	  if (searchInput) {
+	  if (searchInput && searchInput !== '') {
 		debouncedSearchWebSocket(searchInput);
 		setInfo('No Channel Found!!')
 	  }

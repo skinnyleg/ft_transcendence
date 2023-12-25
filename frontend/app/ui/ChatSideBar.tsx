@@ -6,7 +6,7 @@ import { CiSearch } from "react-icons/ci";
 import { useRouter, useSearchParams } from 'next/navigation';
 import { IoIosArrowBack } from "react-icons/io";
 import { IconWithTooltip } from './CustomIcons';
-import { ChatContext } from '../context/soketContext';
+import { ChatContext, chatSocketContext } from '../context/soketContext';
 import { chatSocket } from '../context/soketContext';
 
 interface ChatSideBarProps {}
@@ -21,18 +21,19 @@ const ChatSideBar: FC<ChatSideBarProps> = () => {
 	const val = channel?.userRole as string;
 	const isJoined = val !== 'none' ? true : false;
 	const [channelUsers, setChannelsUsers] = useState<ChannelUser[]>([])
+	const chatSocket = useContext(chatSocketContext);
 	const [search, setSearch] = useState('');
 
 
 
 	useEffect(() => {
-		console.log('load time users channels')
+		// console.log('load time users channels')
 		chatSocket.emit('getChSidebar', {
 			channelName: channelId
 		})
 
 		chatSocket.on('channelSidebar', (data: ChannelUser[]) => {
-			console.log('data of users == ', data);
+			// console.log('data of users == ', data);
 			setChannelsUsers(data);
 		})
 
@@ -43,11 +44,12 @@ const ChatSideBar: FC<ChatSideBarProps> = () => {
 	}, [])
 
 	useEffect(() => {
-		// chatSocket.emit('getChSidebar', {
-		// 	channelName: channelId
-		// })
+		chatSocket.emit('getChSidebar', {
+			channelName: channelId
+		})
 
 		chatSocket.on('channelSidebar', (data: ChannelUser[]) => {
+			// console.log('here')
 			setChannelsUsers(data);
 		})
 		chatSocket.on('refreshSide', () => {
@@ -59,7 +61,7 @@ const ChatSideBar: FC<ChatSideBarProps> = () => {
 			chatSocket.off('channelSidebar')
 			chatSocket.off('refreshSide')
 		}
-	}, [chatSocket])
+	}, [chatSocket, channelId])
 
 	const filteredUsers = () => {
 		if (search === '')
@@ -79,8 +81,8 @@ const ChatSideBar: FC<ChatSideBarProps> = () => {
 
 		if (users.length === 0)
 			return null;
-		// if (users.length === 1 && users[0].username === user.userNick)
-		// 	return null;
+		if (users.length === 1 && (user && (users[0].username === user.nickname as string)))
+			return null;
 		return (
 			<div className='flex items-center gap-1 h-7 mt-2 p-1'>
 				<h1 className='text-teal-800 font-bold font-sans w-fit text-xs'>
@@ -115,7 +117,7 @@ const ChatSideBar: FC<ChatSideBarProps> = () => {
 				{renderBar(filteredUsers(), ['ADMIN', 'OWNER'])}
 				{
 					filteredUsers()
-					.filter((u) => (u.channelRole === 'ADMIN' || u.channelRole === 'OWNER') && user.nickname !== u.username)
+					.filter((u) => (u.channelRole === 'ADMIN' || u.channelRole === 'OWNER') && (user && (user.nickname !== u.username)))
 					.map((admin) => (
 						<UserCard key={admin.userId} user={admin} userRole={channel?.userRole} />
 					))
@@ -123,7 +125,7 @@ const ChatSideBar: FC<ChatSideBarProps> = () => {
 				{renderBar(filteredUsers(), ['MEMBER'])}
 				{
 					filteredUsers()
-					.filter((u) => u.channelRole === 'MEMBER' && u.username !== user.nickname)
+					.filter((u) => u.channelRole === 'MEMBER' && (user && (u.username !== user.nickname)))
 					.map((member) => (
 						<UserCard key={member.userId} user={member} userRole={channel?.userRole}/>
 					))

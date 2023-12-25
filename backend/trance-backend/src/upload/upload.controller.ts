@@ -46,6 +46,7 @@ export class UploadController {
   @UseInterceptors(FileInterceptor('file', channelPicMulterOptions))
   async uploadChannelPic(@UploadedFile() file: Express.Multer.File, @Req() req) {
 
+	console.log('entered upload channel')
 	if (file === undefined)
 		throw new BadRequestException('Server doesn\'t this upload')
 	const id = getId(req);
@@ -69,7 +70,6 @@ export class UploadController {
 	@UseGuards(JwtAuthGuard)
 	@Get('/background/:filename')
 	serveBackgroundPic(@Param('filename') filename: string, @Res() res: Response) {
-		console.log("ddddddd")
 		const newDir =  path.join(__dirname, '..', '..', 'uploads', 'background')
     	res.sendFile(filename, { root: newDir });
 	}

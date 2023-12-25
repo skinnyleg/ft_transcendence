@@ -60,7 +60,7 @@ export class ChannelService {
         const type = await this.outils.getChannelType(channelName);
         if (type === 'PROTECTED') {
             const channelPass = await this.outils.getChannelPass(channelName);
-            const val = compareHash(password, channelPass);
+            const val = await compareHash(password, channelPass);
             if (!val)
                 throw new UnauthorizedException('Password incorrect.');
         }
@@ -450,17 +450,17 @@ export class ChannelService {
     async   emitNotif2channelUsers(data: notif2user, values: string[], dataObj: any = {})
     {
         const {channelName, admin, notif, user2notify, server, usersSockets} = data;
-        console.log('new name ? == ', channelName)
         const user2notifyId = await this.dmOutils.getUserIdByName(user2notify);
         const channelId = await this.outils.getChannelIdByName(channelName);
         const channelUsers = await this.getChannelUsers(channelName);
+        // console.log('channelUsers -== ', channelUsers)
         for (const userSocket  of usersSockets) {
             if (user2notifyId === userSocket.userId)
                 userSocket.socket.emit(values[0], dataObj);
             if (channelUsers.find(userIn => userIn.id === userSocket.userId))
                 userSocket.socket.join(channelId);
         }
-        server.to(channelId).emit(values[1]);
+        server.to(channelId).emit(values[1], dataObj);
         server.to(channelId).emit('notification', notif);
         for (const userSocket  of usersSockets)
             if (channelUsers.find(userIn => userIn.id === userSocket.userId))

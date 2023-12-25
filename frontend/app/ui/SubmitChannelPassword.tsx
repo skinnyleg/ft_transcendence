@@ -1,17 +1,23 @@
 "use client"
 import { Dialog, Transition } from '@headlessui/react'
-import { FC, Fragment, useState } from 'react'
+import React, { FC, Fragment, useContext, useState } from 'react'
 import { CreateChannelIcon } from './CustomIcons'
+import { ChatContext, chatSocketContext } from '../context/soketContext'
 
 interface ChannelPasswordProps {}
 
 const ChannelPassword: FC<ChannelPasswordProps> = () => {
 
   let [isOpen, setIsOpen] = useState(false)
+  const [password, setPassword] = useState<string>('')
+  const chatSocket = useContext(chatSocketContext);
+  const {channelId, setChannelId} = useContext(ChatContext);
+  const [error, setError] = useState<string>('')
 
 
   function closeModal() {
-
+	setPassword('')
+	setError('')
     setIsOpen(false)
   }
 
@@ -20,9 +26,22 @@ const ChannelPassword: FC<ChannelPasswordProps> = () => {
   }
 
 
-  	const handleSubmit = (e) => {
+  	const handleSubmit = (e: React.ChangeEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		closeModal();
+		chatSocket.emit('joinChannel', {
+			channelName: channelId,
+			password: password
+		})
+		chatSocket.on('joinDone', () => {
+			chatSocket.emit('getUserChannels');
+			chatSocket.emit('getDataCH', {
+				channelName: channelId,
+			})
+		})
+		chatSocket.on('failed', (data: string) => {
+			setError(data);
+		})
+		// closeModal();
 	}
 
 
@@ -37,7 +56,7 @@ const ChannelPassword: FC<ChannelPasswordProps> = () => {
         </div>
 
 		<Transition appear show={isOpen} as={Fragment}>
-			<Dialog as="form" className="relative z-30" onClose={closeModal}>
+			<Dialog as="form" className="relative z-30" onClose={closeModal} onSubmit={handleSubmit}>
 				<Transition.Child
 					as={Fragment}
 					enter="ease-out duration-300"
@@ -77,8 +96,14 @@ const ChannelPassword: FC<ChannelPasswordProps> = () => {
                                             maxLength={8}
                                             minLength={4}
                                             className='rounded-full w-full h-10 p-2'
+											value={password}
+											onChange={(e) => {
+												setPassword(e.target.value);
+												setError('');
+											}}
                                         />
-                                        <p className='text-red-700 text-xs'>Password must contain at least 4 characters and a maximum of 8 characters</p>
+                                        <p className={`text-red-700 text-xs ${(password !== '') ? 'hidden' : ''} `}>Password must contain at least 4 characters and a maximum of 8 characters</p>
+										<p className={`text-red-700 text-2xl self-center  ${(error === '') ? 'hidden' : ''}`}>{error}</p>
 
                                     </div>
 								</div>
@@ -88,7 +113,7 @@ const ChannelPassword: FC<ChannelPasswordProps> = () => {
 										<button
 											type="submit"
 											className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-green-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-											onClick={handleSubmit}
+											// onClick={handleSubmit}
 										>
 										Submit
 										</button>

@@ -16,12 +16,23 @@ interface ChatProps {}
 
 
 const chat: FC<ChatProps> = () => {
-	const [channelId, setChannelId] = useState<string>('')
 	const searchParams = useSearchParams();
-	const [user, setUser] = useState<responseData | null>(null);
+	const extractChannelName = () => {
+		let newName = '';
+		if (searchParams.has('channel') && searchParams.get('channel') !== '')
+		{
+			newName = searchParams.get('channel') as string
+			// console.log('newName in root == ', newName);
+			// setChannelId(newName);
+		}
+		return newName
+	}
+	const [channelId, setChannelId] = useState<string>(extractChannelName())
+	const [user, setUser] = useState<responseData>();
 	const [channel, setChannel] = useState<ChannelInter | null>(null);
 	const router = useRouter();
 	const chatSocket = useContext(chatSocketContext);
+
 
 	const setChannelQuery = (newName: string) => {
 		// console.log('newName == ', newName)
@@ -77,13 +88,7 @@ const chat: FC<ChatProps> = () => {
 			}
 		}
 		fetchUser();
-		let newName;
-		if (searchParams.has('channel') && searchParams.get('channel') !== '')
-		{
-			newName = searchParams.get('channel') as string
-			// console.log('newName in root == ', newName);
-			setChannelId(newName);
-		}
+
 	}, [])
 
 	return (

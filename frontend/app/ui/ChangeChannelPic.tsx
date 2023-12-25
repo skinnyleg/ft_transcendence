@@ -12,7 +12,7 @@ import { ChatContext, chatSocketContext } from '../context/soketContext'
 interface ChannelPicProps {
     isOpen: boolean;
     setIsOpen: Dispatch<SetStateAction<boolean>>;
-	currentPic: string | undefined;
+	currentPic: string;
 }
 
 const ChannelPic: FC<ChannelPicProps> = ({isOpen, setIsOpen, currentPic}) => {
@@ -71,13 +71,6 @@ function openModal() {
 			chatSocket.emit('refreshPicture', {
 				channelName: channelId
 			});
-			chatSocket.on('PicDone', () => {
-				console.log('channelName == ', channelId)
-				chatSocket.emit('getUserChannels')
-				chatSocket.emit('getDataCH', {
-					channelName: channelId,
-				})
-			})
 		})
 		closeModal();
 	}
@@ -129,7 +122,8 @@ function openModal() {
 									<div className='flex flex-row gap-3 items-end p-3'>
 										<div className='w-[80px] h-[80px] '>
 											<Image
-												src={img as string}
+												unoptimized={process.env.ENVIRONMENT !== "PRODUCTION"}
+												src={img}
 												width={80}
 												height={80}
 												alt='Channel Picture'

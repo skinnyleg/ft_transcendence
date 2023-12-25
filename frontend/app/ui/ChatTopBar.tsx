@@ -15,15 +15,13 @@ import ChannelDropDown from './ChannelDropDown';
 import { ChatContext } from '../context/soketContext';
 
 
-interface ChatTopBarProps {
-	channel: ChannelInter;
-}
+interface ChatTopBarProps {}
 
-const ChatTopBar: FC<ChatTopBarProps> = ({channel}) => {
+const ChatTopBar: FC<ChatTopBarProps> = () => {
 
 	const router = useRouter();
 	const searchParams = useSearchParams()
-	const {channelId, setChannelId} = useContext(ChatContext);
+	const {channelId, setChannelId, channel} = useContext(ChatContext);
 
 	const handleBack = () => {
 		router.replace('/Chat');
@@ -45,7 +43,8 @@ const ChatTopBar: FC<ChatTopBarProps> = ({channel}) => {
 					/>
 					<div className='max-w-[45px] max-h-[45px] min-w-[45px] min-h-[45px] flex justify-center'>
 						<Image
-							src={channel?.channelPicture as string}
+							unoptimized={process.env.ENVIRONMENT !== "PRODUCTION"}
+							src={channel?.channelPicture}
 							width={45}
 							height={45}
 							alt='channel picture'

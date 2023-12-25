@@ -44,7 +44,7 @@ function openModal() {
 			channelName: channelId,
 			newName: name,
 		})
-		setChannelId(name);
+		// setChannelId(name);
 		// setChannelQuery(name)
 		closeModal();
 	}

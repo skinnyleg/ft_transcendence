@@ -163,7 +163,7 @@ export class ChannelOutils {
 
     async   getChannelIdByName(channelName: string):Promise<string | null>
     {
-        console.log('get channel id: ', channelName);
+        // console.log('get channel id: ', channelName);
         // console.log('channel name 01: ', newName);
         const channel = await this.findChannelByName(channelName);
         return channel?.id || null;

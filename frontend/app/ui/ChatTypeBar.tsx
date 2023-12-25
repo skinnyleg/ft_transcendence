@@ -14,6 +14,7 @@ const ChatTypeBar: FC<ChatTypeBarProps> = () => {
 
 	const [barValue, setBarValue] = useState('Join');
 	const chatSocket = useContext(chatSocketContext);
+	const [isDisabled, setIsDisabled] = useState(false)
 	const {channelId, setChannelId, setChannel, channel} = useContext(ChatContext);
 
 
@@ -23,7 +24,10 @@ const ChatTypeBar: FC<ChatTypeBarProps> = () => {
 				setBarValue('Joining');
 			}
 			else
+			{
+				setIsDisabled(true);
 				setBarValue('Your Request Has Been Sent')
+			}
 			chatSocket.emit('joinChannel', {
 				channelName: channelId
 			})
@@ -32,6 +36,9 @@ const ChatTypeBar: FC<ChatTypeBarProps> = () => {
 				chatSocket.emit('getDataCH', {
 					channelName: channelId,
 				})
+			})
+			chatSocket.on('failed' , (data: string) => {
+				setBarValue(data);
 			})
 		}
 
@@ -71,6 +78,7 @@ const ChatTypeBar: FC<ChatTypeBarProps> = () => {
 		<div className='text-black h-9 rounded-xl p-0 flex flex-row justify-between items-center gap-2'>
 			<div className={`bg-sky-700 w-[100%] rounded-3xl h-full flex items-center justify-center hover:cursor-pointer animate-pulse`}>
 				<button
+					disabled={isDisabled}
 					onClick={handleChannelJoin}
 					className='w-full h-full text-center text-xl font-bold text-teal-200 focus:outline-none'>
 					{barValue}

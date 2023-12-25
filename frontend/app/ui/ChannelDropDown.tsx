@@ -21,7 +21,7 @@ interface ChannelDropDownProps {
 	userRole: string | undefined;
 	showSideBar: () => void;
 	channelType: string | undefined;
-	channelPic: string | undefined;
+	channelPic: string;
 }
 
 const ChannelDropDown: FC<ChannelDropDownProps> = ({userRole, showSideBar, channelType, channelPic}) => {
