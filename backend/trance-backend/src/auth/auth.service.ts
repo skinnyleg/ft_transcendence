@@ -80,10 +80,9 @@ export class AuthService {
 		// res.clearCookie('refresh');
 		const token = await this.createToken(user.id, user.nickname, TOKENEXP, TOKENSECRET)
 		const refresh = await this.createToken(user.id, user.nickname, REFRESHEXP, REFRESHSECRET)
-		console.log("new token == ", token);
 		res.cookie('token', token)
 		res.cookie('refresh', refresh)
-		res.status(200).json(token);
+		res.status(200).json({token: token, refresh: refresh});
 	}
 
 

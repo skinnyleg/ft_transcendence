@@ -57,10 +57,17 @@ const ChatTabChannel: FC<ChatTabProps> = () => {
 			})
 		})
 
+		// chatSocket.on('joinDone', () => {
+		// 	chatSocket.emit('getUserChannels');
+		// 	chatSocket.emit('getDataCH', {
+		// 		channelName: channelId,
+		// 	})
+		// })
 
 		return () => {
 			chatSocket.off('newName')
 			chatSocket.off('PicDone')
+			// chatSocket.off('joinDone')
 		}
 	}, [chatSocket])
 

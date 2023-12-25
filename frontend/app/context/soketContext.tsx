@@ -18,10 +18,10 @@ export const socket = io("http://localhost:8000/friendsGateway", {
         }
     }
 });
-socket.connect;
-socket.on("connect", () => {
-    console.log("heeheh", socket);
-});
+// socket.connect;
+// socket.on("connect", () => {
+//     console.log("heeheh", socket);
+// });
 
 export const chatSocket = io("http://localhost:8000/chatGateway", {
     withCredentials: true,

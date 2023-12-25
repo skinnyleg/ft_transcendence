@@ -2,7 +2,7 @@ import { BellAlertIcon } from "@heroicons/react/24/outline";
 import { NotificationsData } from "@/app/interfaces/interfaces"
 import { useContext, useEffect, useState } from 'react';
 import clsx from "clsx";
-import { socketContext } from "../context/soketContext";
+import { chatSocketContext, socketContext } from "../context/soketContext";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import React from 'react';
 import { toast, ToastContainer } from 'react-toastify';
@@ -16,6 +16,7 @@ const Notifications = () => {
     const [notificationNumber, setNotificationNumber] = useState(0);
     const [newNotification, setNewNotification] = useState<NotificationsData | null>(null);
     const socket = useContext(socketContext);
+    const chatSocket = useContext(chatSocketContext);
 
     useEffect( () => {
         const notif = async() => {
@@ -27,6 +28,7 @@ const Notifications = () => {
             });
             if (res.status === 200) {
                 const notification = await res.json();
+                console.log('notifications == ', notification)
                 setNotifications(notification);
                 setNotificationNumber(notificationNumber + notification.length);
             }
@@ -42,19 +44,37 @@ const Notifications = () => {
         setNotificationNumber(notificationNumber);
     }
     
+
+
+    useEffect(() => {
+
+
+        chatSocket.on("notification", (notif) => {
+            console.log("ni=otif sent" ,notif);
+            toast.success(notif);
+        });
+
+
+        chatSocket.on("notifHistory", (data: NotificationsData) => {
+            console.log("data chatSocket == ", data);
+            setNotifications((prevNotifications) => {
+                return [...prevNotifications, data];
+            });
+            handleNewNotification(data);
+        });
+
+        return () => {
+            chatSocket.off('notification');
+            chatSocket.off('notif');
+        }
+    }, [chatSocket])
+
+
+
     useEffect(() => {
         socket.on("notification", (notif) => {
             console.log("ni=otif sent" ,notif);
-            toast.success(notif, {
-                position: "top-right",
-                autoClose: 4000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
+            toast.success(notif);
         });
 
         socket.on("error", (error) => {
@@ -63,20 +83,36 @@ const Notifications = () => {
         });
 
         socket.on("notifHistory", (data: NotificationsData) => {
-            console.log("there", data);
+            console.log("data socket == ", data);
             console.log(socket.connected, data);
             setNotifications((prevNotifications) => {
                 return [...prevNotifications, data];
             });
             handleNewNotification(data);
         });
+
+
+        return () => {
+            socket.off('error').off()
+            socket.off('notification').off()
+            socket.off('notifHistory').off()
+        }
     }, [socket]);
 
     const handleAcceptReq = (data: NotificationsData) => {
         let useId = data.notifData.userId;
         let reqId = data.requestId;
-
-        socket.emit("accept-request", {userId : useId , requestId : reqId});
+        if (data.notifData.typeOfRequest === 'JOINCHANNEL')
+        {
+            chatSocket.emit('responseJoin', {
+                channelName: data.notifData.channelName,
+                user: data.notifData.user,
+                value: true,
+                requestId: data.requestId
+            })
+        }
+        else
+            socket.emit("accept-request", {userId : useId , requestId : reqId});
         var i = notifications.indexOf(data);
         notifications.splice(i, 1);
         setNotifications(notifications);
@@ -86,7 +122,18 @@ const Notifications = () => {
     const handleRefuseReq = (data: NotificationsData) => {
         let useId = data.notifData.userId;
         let reqId = data.requestId;
-        socket.emit("refuse-request", {userId : useId , requestId : reqId});
+
+        if (data.notifData.typeOfRequest === 'JOINCHANNEL')
+        {
+            chatSocket.emit('responseJoin', {
+                channelName: data.notifData.channelName,
+                user: data.notifData.user,
+                value: false,
+                requestId: data.requestId
+            })
+        }
+        else
+            socket.emit("refuse-request", {userId : useId , requestId : reqId});
         var i = notifications.indexOf(data);
         notifications.splice(i, 1);
         setNotifications(notifications);
@@ -95,9 +142,7 @@ const Notifications = () => {
 
     return (
         <>
-            <ToastContainer />
-            <socketContext.Provider value={socket}>
-            <div className="z-10 relative">
+            <div className="z-30 relative">
                 <BellAlertIcon onClick={()=>{setShowNotifications(!showNotifications)}} className= "lg:h-[50px] lg:w-[50px] xl:h-[50px] xl:w-[50px] h-[35px] w-[35px] lg:flex lg:p-2 lg:bg-gray-100 text-accents rounded-full"/>
                 <span className={clsx(`absolute text-sm text-white font-bold rounded-full h-5 w-5 items-center text-center flex justify-center bottom-0 right-0 transform translate-x-[8px]`
                 , {'hidden' : showNotifications},
@@ -111,15 +156,15 @@ const Notifications = () => {
                             <img src={notification.notifData.userProfilePic} alt="profile" className="w-1/7 h-10 rounded-full" />
                             <p className="ml-1 w-1/2 text-black text-sm">{notification.notifData.description}</p>
                             <div className="flex w-1/4 h-10 justify-between rounded-full bg-slate-100">
-                                <CheckIcon className={`${notification.notifData.typeOfRequest === 'FRIEND' ? 'block' : 'hidden'}w-full h-10 text-green-600 cursor-pointer `} onClick={() => {handleAcceptReq(notification)}}/>
-                                <XMarkIcon className={`${notification.notifData.typeOfRequest === 'FRIEND' ? 'block' : 'hidden'}w-full h-10 text-red-600 cursor-pointer `} onClick={() => {handleRefuseReq(notification)}}/>
+                            {/* ${notification.notifData.typeOfRequest === 'FRIEND' ? 'block' : 'hidden'} */}
+                                <CheckIcon className={`w-full h-10 text-green-600 cursor-pointer `} onClick={() => {handleAcceptReq(notification)}}/>
+                                <XMarkIcon className={`w-full h-10 text-red-600 cursor-pointer `} onClick={() => {handleRefuseReq(notification)}}/>
                             </div>
                         </div>
                     ))}
                     </div>
             </div>
             </div>
-            </socketContext.Provider>
         </>
     );
 }

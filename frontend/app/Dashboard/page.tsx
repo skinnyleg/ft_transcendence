@@ -45,7 +45,6 @@ function Dashboard() {
 
   return (
     <main className="flex flex-col font-white bg-main mr-2">
-      <ToastContainer />
       <TopBar />
       <div className="flex flex-col lg:mt-5 h-[95%] md:mt-10 mt-10 xl:mt-5">
         <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-5 lg:grid-rows-3 gap-5 w-full h-full mt-4 md:grid-row-5 grid-row-5">

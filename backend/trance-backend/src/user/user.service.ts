@@ -629,6 +629,7 @@ export class UserService {
 					descriptionOfRequest: true,
 					typeOfRequest: true,
 					responded:true,
+					channelName: true,
 				},
 			});
 
@@ -665,6 +666,8 @@ export class UserService {
 				description: `${userData.nickname}` + " " + notifData.descriptionOfRequest,
 				typeOfRequest: notifData.typeOfRequest,
 				responded: notifData.responded,
+				channelName: notifData.channelName,
+				user: userData.nickname,
 			},
 		}
 		return combinedData;

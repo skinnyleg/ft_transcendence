@@ -264,7 +264,6 @@ const settings = () => {
 
     return (
         <>
-            <ToastContainer />
             <main className="flex flex-col font-white bg-main xl:overflow-y-hidden overflow-y-styled-scrollbar lg:h-screen xl:h-screen h-full mr-2">
                 <TopBar />
                 <div className="flex flex-col w-full h-full mt-10 justify-between"> 

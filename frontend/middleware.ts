@@ -62,13 +62,16 @@ const refreshToken = async (refreshtoken : string) => {
 export default async function middleware(request: NextRequest){
     let token  = request.cookies.get("token")?.value;
     const refreshtoken  = request.cookies.get("refresh");
-    const IsExpired = isJwtExpired(token);
-    // let response: NextResponse = new NextResponse;
+    // const IsExpired = isJwtExpired(token as string);
+    // let response: NextResponse = NextResponse.next();
     // if (IsExpired){
-    //   const refresh = await refreshToken(refreshtoken?.value as string);
-    //   token  = refresh;
+    //   const {token , refresh} = await refreshToken(refreshtoken?.value as string);
+    //   console.log('token == ', token)
+    //   console.log('refresh == ', refresh)
+    //   // token  = refresh;
     //   response.cookies.set("token", token as string);
-    //   console.log("token new response: ", token);
+    //   response.cookies.set("refresh", refresh as string);
+    //   return response;
     // }
     const succes = await checkAuth(token);
     let isFirstTime = await checkVerification(token);

@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { socket , socketContext} from './context/soketContext'
+import { ToastContainer } from 'react-toastify'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -18,12 +19,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+
       <head >
         <link rel='icon' href='/logo.png' />
       </head>
       <body className={inter.className}>
-          {children}
-        </body>
+        {children}
+      </body>
     </html>
   )
 }

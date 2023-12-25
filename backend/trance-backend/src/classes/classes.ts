@@ -2,7 +2,7 @@
 import { Socket } from 'socket.io'
 
 
-// export const TOKENEXP: number = 1 * 60 * 60;
+// export const TOKENEXP: number = 15;
 export const TOKENEXP: number = 1 * 60 * 500;
 
 export const REFRESHEXP: number = 7 * 24 * 60 * 60;
@@ -24,5 +24,7 @@ export class NotificationData {
 		description: string;
 		typeOfRequest: string;
 		responded: boolean;
+		channelName?: string;
+		user?: string;
 	};
 }

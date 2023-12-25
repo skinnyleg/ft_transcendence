@@ -48,6 +48,8 @@ export interface NotificationsData {
 		description: string;
 		typeOfRequest: string;
 		responded: boolean;
+    channelName?: string;
+    user?: string;
 	};
 }[];
 

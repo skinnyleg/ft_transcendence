@@ -14,6 +14,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { changeNameDto, changeAdminsDto, changePassDto, changeTypeDto, changepicDto, stringDto } from '../dto/changePramCH.dto';
 import { banUserDto, kickUserDto, muteUserDto } from '../dto/blacklist.dto';
 import { RequestType } from '@prisma/client';
+import { exit } from 'process';
+import { error } from 'console';
 
 
 @WebSocketGateway({ 
@@ -38,18 +40,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 	@WebSocketServer()
 	server: Server;
 
-	private readonly usersSockets: {userId: string, socket: any}[] = [];
-	// private readonly dmSide: dmsSide[] = [];
-	// private channelSide: channelsSide[] = [];
-	// private membershipCH: channelSidebar[] = [];
-	// private dmMessages: dmMessages[] = [];
-	// private chMessages: messsagesCH[] = [];
-
+	private usersSockets: {userId: string, socket: any}[] = [];
 
 	async onModuleInit() {
 		try
 		{
 			console.log('------ WebSocket Gateway started ------');
+			this.usersSockets.length = 0;
 			await this.Outils.pushMutedUsers();
 			await this.Outils.MuteExpiration();
 		}
@@ -61,11 +58,16 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 	async	handleConnection(@ConnectedSocket() client: Socket)
 	{
 		try
-		{
+		{	
 			const token: string = client.handshake.headers.token as string;
 			const payload = await this.jwtService.verifyAsync(token, { secret: process.env.jwtsecret })
 			const user = await this.userService.findOneById(payload.sub);
 			client.data.user = user;
+			// this.usersSockets.find((isExist) => { isExist.userId === user.id ? (throw new error('ffff')) : null});
+			for(const isExist of this.usersSockets) {
+				if (isExist.userId === user.id)
+					throw new ForbiddenException('only one tab allowed for connection');
+			}
 			console.log(`------ coonect: ${user.nickname} ------`);
 			this.usersSockets.push({userId: user.id, socket: client});
 		}
@@ -79,7 +81,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 	{
 		try
 		{
-			console.log(`------ User disconnect ------`);
+			console.log(`------ User disconnect ${client.data.user.nickname}------`);
+			const array: {userId: string, socket: any}[] = [];
+			for (const user of this.usersSockets) {
+				if (user.userId !== client.data.user.id)
+					array.push(user);
+			}
+			this.usersSockets = array;
 			client.disconnect();
 		}
 		catch (error) {
@@ -147,14 +155,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			const user = client.data.user;
 			const addUser = await this.channelService.joinChannel(data.channelName, user.nickname, data.password);
 			if (addUser[0] === 'PRIVATE') {
-				console.log("case private")
 				const ownerId = await this.DmOutils.getUserIdByName(addUser[1]);
 				const ownerSocket = this.usersSockets.find(user => user.userId === ownerId);
 				await this.Outils.checkRequest(data, ownerId, user.id);
 				const reqID = await this.userService.generateRequest(user.id, ownerId, 
 					RequestType.JOINCHANNEL, false, data.channelName);
-				if (ownerSocket)
-					ownerSocket.socket.emit('notifHistory', (await this.userService.generateNotifData(reqID)));
+				if (ownerSocket) {
+					const obj = (await this.userService.generateNotifData(reqID))
+					ownerSocket.socket.emit('notifHistory', obj);
+				}
 				return client.emit('notification', 'request to join channel send to owner.');
 			}
 			const notif2users: notif2user = {};

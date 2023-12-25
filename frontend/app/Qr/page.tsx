@@ -36,7 +36,7 @@ const VerifyCode :  React.FC = () => {
 
   return (
     <main className="flex items-center justify-center bg-main h-screen overflow-hidden">
-      <ToastContainer />
+      {/* <ToastContainer /> */}
         <div className="relative flex h-full bg-main lg:w-4/5 max-w-[600px] mx-auto flex-col space-y-2.5 p-4 mt-60 md:w-1/2">
           <div className="flex flex-col rounded-lg bg-accents border h-[50%] border-gray-300 px-6 pb-4 mx-auto pt-8 w-[full] mt-10">
             <div className={`bg-main flex justify-center items-center ${!error ? 'hidden' : ''} mx-auto w-full`}>

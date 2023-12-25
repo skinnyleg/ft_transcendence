@@ -32,12 +32,6 @@ const ChannelPassword: FC<ChannelPasswordProps> = () => {
 			channelName: channelId,
 			password: password
 		})
-		chatSocket.on('joinDone', () => {
-			chatSocket.emit('getUserChannels');
-			chatSocket.emit('getDataCH', {
-				channelName: channelId,
-			})
-		})
 		chatSocket.on('failed', (data: string) => {
 			setError(data);
 		})

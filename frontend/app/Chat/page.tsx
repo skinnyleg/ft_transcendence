@@ -7,7 +7,7 @@ import Content from '../ui/Content'
 import TopBar from '../ui/top'
 import { createContext } from 'vm'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { ChatContext, chatSocketContext } from '../context/soketContext'
+import { ChatContext, socketContext, socket, chatSocketContext } from '../context/soketContext'
 import { ChannelInter, responseData } from '../interfaces/interfaces'
 
 
@@ -66,8 +66,19 @@ const chat: FC<ChatProps> = () => {
 			chatSocket.emit('getUserChannels');
 		})
 
+		chatSocket.on('joinDone', () => {
+			chatSocket.emit('getUserChannels');
+			console.log('channelId == ', channelId)
+			if (channelId !== '')
+			{
+				chatSocket.emit('getDataCH', {
+					channelName: channelId,
+				})
+			}
+		})
 		return () => {
 			chatSocket.off('outDone')
+			chatSocket.off('joinDone')
 		}
 	}, [chatSocket])
 
@@ -93,7 +104,7 @@ const chat: FC<ChatProps> = () => {
 
 	return (
 		<div className='flex flex-col font-white bg-main overflow-y-hidden md:overflow-y-auto mr-0'>
-			<TopBar />
+				<TopBar />
 		<ChatContext.Provider value={{channelId, setChannelId, user, setUser, channel, setChannel}}>
 			<div className='h-[100vh] md:h-[99vh] min-[1024px]:h-[88vh] mt-0 xl:mt-2 lg:mt-2 xl:h-[90vh] xl:pb-0 w-full md:justify-between flex flex-row  md:gap-2 min-[1024px]:gap-0 pt-[70px] pr-1 pl-1 lg:pb-0 lg:pt-1'>
 				<RightBar />

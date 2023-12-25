@@ -25,17 +25,11 @@ const ChatTypeBar: FC<ChatTypeBarProps> = () => {
 			}
 			else
 			{
-				setIsDisabled(true);
+				// setIsDisabled(true);
 				setBarValue('Your Request Has Been Sent')
 			}
 			chatSocket.emit('joinChannel', {
 				channelName: channelId
-			})
-			chatSocket.on('joinDone', () => {
-				chatSocket.emit('getUserChannels');
-				chatSocket.emit('getDataCH', {
-					channelName: channelId,
-				})
 			})
 			chatSocket.on('failed' , (data: string) => {
 				setBarValue(data);
