@@ -169,7 +169,7 @@ export class ChannelService {
     {
         const isOwner = await this.outils.getChannelOwner(channelName);
         if (isOwner !== owner) 
-        throw new ForbiddenException(`you are not allowed`);
+            throw new ForbiddenException(`you are not allowed`);
         if (owner === newAdmin)
             throw new UnauthorizedException(`you can\'t set youself`);
         const isMember = await this.outils.isUserInChannel(channelName, newAdmin);
@@ -185,6 +185,28 @@ export class ChannelService {
             },
         });
     }
+    //
+    async   demoteUser(channelName: string, owner: string, demoteUser: string)
+    {
+        const isOwner = await this.outils.getChannelOwner(channelName);
+        if (isOwner !== owner) 
+            throw new ForbiddenException(`you are not allowed`);
+        if (owner === demoteUser)
+            throw new UnauthorizedException(`you can\'t demote youself`);
+        const isMember = await this.outils.isUserInChannel(channelName, demoteUser);
+        if (!isMember)
+            throw new NotFoundException(`${demoteUser} not found in ${channelName}`);
+        const isAdmin = await this.outils.isUserAdministrator(channelName, demoteUser);
+        if (!isAdmin)
+            throw new NotFoundException(`${demoteUser} not admin in ${channelName}`);
+        await   this.prisma.channel.update({
+            where: { name: channelName, owner },
+            data: {
+                admins: { disconnect: [{ nickname: demoteUser}] },
+            },
+        });
+    }
+    //
 
     async   kickUser(channelName: string, admin: string, user2kick: string)
     {
