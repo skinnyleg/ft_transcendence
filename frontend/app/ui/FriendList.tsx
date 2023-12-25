@@ -4,6 +4,7 @@ import { GiPingPongBat } from "react-icons/gi";
 import { UserStatus } from "@/app/interfaces/interfaces";
 import { useEffect, useState } from "react";
 import { socket, socketContext } from "../context/soketContext";
+import { toast } from "react-toastify";
 
 
 interface FriendsData {
@@ -14,12 +15,10 @@ interface FriendsData {
 }[];
 
 
-
-
 const FriendsList = () => {
     const [friendsList, setFriendList] = useState<FriendsData[]>([]);
-    const [status, setStatus] = useState<UserStatus>();
-    useEffect( () => {
+    
+    useEffect(() => {
         const friendsGet = async() => {
         try{
             const res = await fetch(`http://localhost:8000/user/Friends`, {
@@ -31,8 +30,8 @@ const FriendsList = () => {
                 const data = await res.json();
                 setFriendList(data)
             }
-        }catch(error){
-            console.error(error);
+        } catch(error){
+            toast.error(error as string);
         }
         }
         friendsGet();
@@ -40,12 +39,10 @@ const FriendsList = () => {
 
     useEffect(() => {
         const handleStatusChange = (stat : {id : string, status : UserStatus}) => {
-          console.log("status", stat);
           if (stat.status !== undefined) {
             setFriendList((prevFriendsList) => {
               return prevFriendsList.map((friend) => {
                 if (friend.id === stat.id) {
-                  // Update only the status of the corresponding friend
                   return { ...friend, status: stat.status };
                 }
                 return friend;
@@ -53,11 +50,7 @@ const FriendsList = () => {
             });
           }
         };
-      
-        // Register the event listener
         socket.on("statusChange", handleStatusChange);
-      
-        // Cleanup the event listener on component unmount
         return () => {
           socket.off("statusChange", handleStatusChange);
         };
@@ -65,9 +58,9 @@ const FriendsList = () => {
       
 
     return (
-        <div className="bg-accents p-2 rounded-md col-span-1 lg:col-span-2 lg:col-start-4 lg:col-end-6  
-        row-start-5 row-end-6 lg:row-start-2 lg:row-end-4 lg:w-full  xl:w-full md:h-[350px] h-[350px] xl:h-[55vh] lg:h-[55vh] shadow-md">
-            <h4 className="text-xl font-bold text-white m-2">FRIENDS</h4>
+        <div className="bg-accents rounded-md col-span-1 lg:col-span-2 lg:col-start-4 lg:col-end-6  
+        row-start-5 row-end-6 lg:row-start-2 lg:row-end-4 lg:w-full xl:w-full md:h-[350px] h-[350px] xl:h-[55h] lg:h-[55vh] shadow-md">
+            <h4 className="text-xl font-bold text-white p-4">FRIENDS</h4>
             <div className={`${(friendsList.length == 0) ? 'block' : 'hidden'}  w-full h-1/2 mt-20`}><h5 className="w-1/2 mt-10 mx-auto text-bold-900 text-3xl">Go socialize</h5></div>
             <div className={`${(friendsList.length > 0) ? 'block' : 'hidden'} flex-col space-y-4 p-4 overflow-y-scroll h-5/6 w-full styled-scrollbar`}>
                 {friendsList.map((friend) => (
@@ -85,12 +78,11 @@ const FriendsList = () => {
                                 {friend.nickname}</div>
                             </div>
                         </div>
-                        <div className="flex">
-                            
-                            <button className="ml-2 bg-button rounded-md px-2 py-1 text-white text-xs  lg:block md:block xs:hidden ">Challenge</button>
+                        <div className="flex flex-row justify-between">
+                            <button className="ml-2 bg-button rounded-md px-2 py-1 text-white text-xs lg:block md:block xs:hidden">Challenge</button>
                             <GiPingPongBat  className="w-8 h-6 ml-2 hidden md:hidden text-button xs:block" />
-                            <button className="ml-2 bg-button rounded-md px-2 py-1 text-white text-xs lg:block md:block xs:hidden ">Chat</button>
-                            <ChatBubbleBottomCenterIcon className="w-8 h-6 ml-2 hidden text-button md:hidden xs:block" />
+                            <button className="bg-button rounded-md px-2 py-1 text-white text-xs lg:block md:block xs:hidden">Chat</button>
+                            <ChatBubbleBottomCenterIcon className="w-8 h-6 hidden text-button md:hidden xs:block" />
                         </div>
                     </div>
                 ))}

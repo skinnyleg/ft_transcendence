@@ -11,16 +11,14 @@ import { FaRobot } from "react-icons/fa";
 
 import {dashboardData, profileData} from '../interfaces/interfaces';
 import { QuestionMarkCircleIcon, QueueListIcon } from '@heroicons/react/24/outline';
+import { ToastContainer, toast } from 'react-toastify';
 
 
 function Dashboard() {
 
   const [dashboardData, setDashboardData] = useState<dashboardData | undefined>(undefined);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
   const [theme, setTheme] = useState('yo1.jpg');
   const [powerup, setPowerup] = useState('FireBall');
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -29,20 +27,15 @@ function Dashboard() {
         console.log("Dash", response.status);
         setDashboardData(response.data);
       } catch (error) {
-        setError('Error fetching data');
-      } finally {
-        setLoading(false);
+        toast.error('Error fetching data');
       }
     };
 
     fetchData();
   }, []);
-  // console.log("hello", dashboardData);
   const doneAchievements = dashboardData?.doneAchievements || [];
   const notDoneAchievements = dashboardData?.notDoneAchievements || [];
-  const friends = dashboardData?.friends || [];
-  const notifications = dashboardData?.notifications || [];
-
+  
   const handleThemeChange = (newtheme: string) => {
     setTheme(newtheme);
   }
@@ -51,7 +44,8 @@ function Dashboard() {
   }
 
   return (
-    <main className="flex flex-col font-white bg-main overflow-y-hidden md:overflow-y-auto mr-2">
+    <main className="flex flex-col font-white bg-main mr-2">
+      <ToastContainer />
       <TopBar />
       <div className="flex flex-col lg:mt-5 h-[95%] md:mt-10 mt-10 xl:mt-5">
         <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-5 lg:grid-rows-3 gap-5 w-full h-full mt-4 md:grid-row-5 grid-row-5">

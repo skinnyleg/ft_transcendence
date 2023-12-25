@@ -12,14 +12,10 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const Notifications = () => {
     const [notifications, setNotifications] = useState<NotificationsData[]>([]);
-    const [notifSent, setNotifSent] = useState< | null>(null)
     const [showNotifications, setShowNotifications] = useState(false);
     const [notificationNumber, setNotificationNumber] = useState(0);
     const [newNotification, setNewNotification] = useState<NotificationsData | null>(null);
-    const [notifPopUP, setNotifPopUp] = useState <NotificationsData | null>(null);
     const socket = useContext(socketContext);
-    const [userId, setUserId] = useState<string>('');
-    const [ReqId ,setReqId] = useState<string>('');
 
     useEffect( () => {
         const notif = async() => {
@@ -41,15 +37,14 @@ const Notifications = () => {
         notif();
     }, [newNotification]);
 
-
     const handleNewNotification = (data: NotificationsData) => {
         setNewNotification(data);
         setNotificationNumber(notificationNumber);
     }
+    
     useEffect(() => {
         socket.on("notification", (notif) => {
             console.log("ni=otif sent" ,notif);
-            // setNotifSent(notif);
             toast.success(notif, {
                 position: "top-right",
                 autoClose: 4000,
@@ -64,16 +59,7 @@ const Notifications = () => {
 
         socket.on("error", (error) => {
             console.log("error sent" ,error);
-            toast.error(error.message, {
-                position: "top-right",
-                autoClose: 4000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
+            toast.error(error.message);
         });
 
         socket.on("notifHistory", (data: NotificationsData) => {
@@ -96,6 +82,7 @@ const Notifications = () => {
         setNotifications(notifications);
         setNotificationNumber(notificationNumber - 1);
     }
+    
     const handleRefuseReq = (data: NotificationsData) => {
         let useId = data.notifData.userId;
         let reqId = data.requestId;
@@ -117,7 +104,7 @@ const Notifications = () => {
                 {'bg-red-500 ' : (notificationNumber > 0),
                 'bg-gray-500' : (notificationNumber === 0),})}>{notificationNumber}
                 </span>
-                <div className={`${showNotifications ? 'block' : 'hidden'} absolute lg:top-12 xl:top-12 top-8 right-3 lg:w-80 w-80 mx-auto bg-white shadow-md transition-transform duration-300 z-10 rounded-b-lg`}>
+                <div className={`${showNotifications ? 'block' : 'hidden'} absolute lg:top-12 xl:top-12 top-8 right-3 lg:w-80 w-60 mx-auto bg-white shadow-md transition-transform duration-300 z-10 rounded-b-lg`}>
                     <div className="flex flex-col">
                     {showNotifications && notifications.map((notification) => (
                         <div key={notification.requestId} className="flex justify-between items-center p-2 hover:bg-gray-100 z-10">

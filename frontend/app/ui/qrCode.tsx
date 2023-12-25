@@ -18,7 +18,6 @@ const VerificationInput: React.FC<VerificationInputProps> = ({ inputRefs, onSubm
     let newCode = code;
     newCode = newCode.substring(0, index) + e.target.value + newCode.substring(index + 1);
     setCode(newCode);
-    console.log(newCode);
     if (newCode.length < 6 && e.target.value !== '') {
       inputRefs[index + 1]?.current?.focus();
     }

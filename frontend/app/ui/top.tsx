@@ -6,21 +6,19 @@ import { use, useEffect, useRef, useState } from "react";
 import Link from 'next/link';
 import Notifications from './Notification';
 import {responseData, profileNickPic} from "@/app/interfaces/interfaces";
-import { socket , socketContext} from '../context/soketContext';
+import { socket , profilePicContext, avatarImage} from '../context/soketContext';
+import { toast } from 'react-toastify';
 
 export default function TopBar () {
 
   const [search, setSearch] = useState('');
   const [show, setShow] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [results, setRes] = useState<responseData[]>([]);
   const [profileData, setProfileData] = useState<profileNickPic | undefined>(undefined);
   const searchRef = useRef<HTMLDivElement>(null);
 
-
   const handleClickOutside = (e: MouseEvent) => {
     if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
-      // Click is outside the search area
       setShow(false);
       setRes([]);
     }
@@ -29,7 +27,6 @@ export default function TopBar () {
   useEffect(() => {
     // Attach the event listener when the component mounts
     document.addEventListener('click', handleClickOutside);
-
     // Detach the event listener when the component unmounts
     return () => {
       document.removeEventListener('click', handleClickOutside);
@@ -50,7 +47,7 @@ export default function TopBar () {
           // console.log("nick:", nickname.nickname);
         }
       } catch (error) {
-        setError('Error fetching data');
+        toast.error('Error fetching data');
       }
     };
     getnickname();
@@ -73,14 +70,12 @@ export default function TopBar () {
         throw new Error(`HTTP error! Status: ${results.status}`);
       }    
     } catch (error) {
-      setError('Error searching:' + error);
+      toast.error('Error searching: ' + error);
     } finally {
     }
   };
 
-
-  // Debounce the search function to avoid rapid API calls
-  const debouncedSearchBackend = useDebouncedCallback(searchBackend, 500); // 500 milliseconds debounce time
+  const debouncedSearchBackend = useDebouncedCallback(searchBackend, 500);
 
   useEffect(() => {
     if (search) {
@@ -88,11 +83,12 @@ export default function TopBar () {
     }
   }, [search, debouncedSearchBackend]);
 
-  // console.log("here", profileData?.profilePic);
   return (
-      <div className="flex lg:flex-row justify-between flex-col mt-0 w-full pl-2">
+    <>
+      <profilePicContext.Provider value={avatarImage}>
+      <div className="flex lg:flex-row justify-between flex-col w-full bg-transparent">
         <div className="lg:flex md:hidden hidden xl:flex">
-          <h1 className="lg:text-2xl text-gray-500 md:text-xl text-lg font-bold">Welcome Back ....!</h1>
+          <h1 className="lg:text-2xl text-gray-500 text-lg font-bold-800">Welcome Back ....!</h1>
         </div>
         <div className="relative lg:flex md:hidden hidden bg-accent" ref={searchRef}>
           <MagnifyingGlassIcon className="h-8 w-8 pl-3 rounded-full absolute top-1/3 left transform -translate-y-1/2" />
@@ -116,12 +112,14 @@ export default function TopBar () {
             </div>
           </div>
         </div>
-          <div className="lg:flex xl:flex md:hidden hidden pr-2 lg:space-x-4">
-                <Notifications/>
-            <Link href={`http://localhost:3000/profile/` + profileData?.nickname}> {/* pass nickname for profile link */}
+          <div   className="lg:flex xl:flex md:hidden hidden pr-2 lg:space-x-4">
+            <Notifications/>
+            <Link href={`http://localhost:3000/profile/${profileData?.nickname}`}>
               <img src={profileData?.profilePic} alt="yo" className="w-[50px] h-[50px] rounded-full border-accents border-[2px] hidden lg:flex" />
             </Link>
           </div>
       </div>
+    </profilePicContext.Provider>
+    </>
   );
 }

@@ -101,5 +101,12 @@ export class UserController {
 		const id = getId(req);
 		return this.userService.getLeaderboard(id);
 	}
+
+	@Get('Achievements')
+	@UseGuards(JwtAuthGuard)
+ 	getAchievements(@Req() req) {
+		const id = getId(req);
+		return this.userService.getAchievements(id);
+	}
 }
 

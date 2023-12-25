@@ -5,13 +5,14 @@ import {
   UserIcon,
   KeyIcon,
 } from '@heroicons/react/24/outline';
-import { cookies } from 'next/headers';
+import 'react-toastify/dist/ReactToastify.css';
 import Image from 'next/image';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { useFormState, useFormStatus } from 'react-dom';
 import Link  from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { ToastContainer, toast } from 'react-toastify';
  
 export default function LoginForm() {
   const [error, setError] = useState('');
@@ -35,29 +36,24 @@ export default function LoginForm() {
       
       if (response.ok) {
         const res = await response.json();
-        localStorage.setItem('token', res);
+        toast.success("Welcome ...!");
         router.push('/Dashboard', undefined);
       } else if (response.status === 401) {
-        setError('Invalid credentials. Please check your username and password.');
-      } else if (response.status === 400) {
-        setError('User not found. Please check your credentials.');
+        toast.error('Invalid credentials. Please check your username and password.');
+      } else if (response.status === 404) {
+        toast.error('User not found. Please check your credentials.');
       } else {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+        toast.error(`HTTP error! Status: ${response.status}`);
       }
     } catch (error) {
-      console.error('Error during login:', error);
-      setError('An unexpected error occurred. Please try again later.');
-    } finally {
-      setTimeout(() => {
-        setError('');
-        setIsErrorVisible(false);
-      }, 3000);
+      toast.error('An unexpected error occurred. Please try again later.');
     }
     };
   
 
   return (
     <form className="space-y-3" onSubmit={handleSubmit}>
+      <ToastContainer />
       <div className="flex-1 rounded-lg bg-accents border border-gray-300 px-6 pb-4 pt-8 mt-10">
         <h1 className={`${lusitana.className} mb-3 lg:text-2xl md:text-xl text-xl`}>
           Please log in to continue.
@@ -101,7 +97,6 @@ export default function LoginForm() {
           </div>
         </div>
         <LoginButton />
-        {error && isErrorVisible &&  <p className="text-red-500 bg-white rounded-md mt-2 p-2 time-300">{error}</p>}
         <div className="text-center mt-5">
           <div className="flex items-center justify-center">
             <div className="border-t border-black w-1/2"></div>

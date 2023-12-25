@@ -34,7 +34,6 @@ const config: Config = {
         lightblue: '#B0D6F5',
       },
       screens: {
-        'lg': '980px',
         'xs': '360px',
       },
     },
