@@ -62,7 +62,7 @@ export class changeAdminsDto {
     
     @IsNotEmpty()
     @IsString()
-    newAdmin: string;
+    newAdminId: string;
 }
 
 export class stringDto {

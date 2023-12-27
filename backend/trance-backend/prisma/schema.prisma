@@ -173,6 +173,6 @@ model Blacklist {
   nickname    String
   status      Membership
   expiredAt   DateTime?
-  channelName String
-  channel     Channel    @relation(fields: [channelName], references: [name])
+  channelId String
+  channel     Channel    @relation(fields: [channelId], references: [id])
 }

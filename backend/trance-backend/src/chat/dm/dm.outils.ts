@@ -3,6 +3,7 @@ import { PrismaService } from "src/prisma/prisma.service";
 import { Channel, User, Types, Message, Dm } from '@prisma/client';
 import { ValidationError, validate } from "class-validator";
 import { Socket } from "socket.io";
+import { UserService } from "src/user/user.service";
 
 export interface dmsSide {
 	dmId?: string,
@@ -25,6 +26,7 @@ export class DmOutils {
   
 	constructor(
 		private readonly prisma: PrismaService,
+		private readonly userService: UserService
 	){}
 
 	async	getDmIdby2User(user1Id: string, user2Id: string)
@@ -67,9 +69,8 @@ export class DmOutils {
         return user.id || null;
     }
 
-	async	getBlockedUsers(username: string)
-	{
-		const userId = await this.getUserIdByName(username);
+	async	getBlockedUsers(userId: string)
+	{ 
 		const  blockedList = await this.prisma.user.findUnique({
 			where: { id: userId },
 			select: {
@@ -119,12 +120,12 @@ export class DmOutils {
 		}
 	}
 
-	 fillDmsBuffer(message: any, nickname: string, dmId: string)
+	async fillDmsBuffer(message: any, nicknameId: string, dmId: string)
 	{
 		const buffer: dmMessages = {};
 		buffer.dmId = dmId;
 		buffer.messageId = message.id;
-		buffer.sender = nickname;
+		buffer.sender = await this.userService.getNickById(nicknameId);
 		buffer.message = message.content;
 		buffer.time = this.dateTime2String(message.createdAt);
 		return buffer;

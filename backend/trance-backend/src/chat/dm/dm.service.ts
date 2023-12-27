@@ -30,7 +30,7 @@ export class DmService {
         return dm || null;
     }
 
-    async   creatMessageDm(dmId: string, sender: string, content: string): Promise<Message | null>
+    async   creatMessageDm(dmId: string, senderId: string, content: string): Promise<Message | null>
     {
         if(!dmId) {
             throw new BadRequestException('the dm id is indefined');
@@ -38,7 +38,7 @@ export class DmService {
         const newMessage = await this.prisma.message.create({
             data: {
                 content,
-                sender: {connect: { nickname: sender }},
+                sender: {connect: { id: senderId }},
                 Dm: { connect: {id: dmId} },
             },
         });
@@ -46,10 +46,10 @@ export class DmService {
         return newMessage;
     }
 
-    async   getUserDms(user: string)
+    async   getUserDms(userId: string)
     {
         const findUser = await this.prisma.user.findUnique({
-            where: { nickname: user },
+            where: { id: userId },
             select: {
                 Dm: {
                     include: { 
@@ -86,7 +86,7 @@ export class DmService {
             },
         });
         if (!findUser) {
-            throw new NotFoundException(`${user} user not fout.`);
+            throw new NotFoundException(`user not fout.`);
         }
        return findUser?.Dm || []; 
     }
@@ -127,9 +127,9 @@ export class DmService {
         return allMessages;
     }
 
-    async   generateDm(receiver: string , senderId: string, receiverSocket: Socket)
+    async   generateDm(receiverId: string , senderId: string, receiverSocket: Socket)
     {
-        const receiverId = await this.dmOutils.getUserIdByName(receiver);
+        // const receiverId = await this.dmOutils.getUserIdByName(receiver);
         let dmId = await this.dmOutils.getDmIdby2User(senderId, receiverId);
         if (dmId === null) {
         	await this.creatDMchat(senderId, receiverId);
