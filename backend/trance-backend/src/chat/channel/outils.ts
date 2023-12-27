@@ -85,7 +85,7 @@ export class ChannelOutils {
                         nickname: true,
                         status: true,
                         expiredAt: true,
-                        channelName: true,
+                        channelId: true,
                         channel: {
                             select: {
                                 id: true,
@@ -142,9 +142,10 @@ export class ChannelOutils {
 
     async   isUserInBlacklist(channelName: string, nicknameId: string): Promise<boolean>
     {
+        const channelId = await this.getChannelIdByName(channelName);
         const isUserInBlacklist = await this.prisma.blacklist.count({
             where: {
-                channelName,
+                channelId,
                 nickname: nicknameId,
             },
         });
