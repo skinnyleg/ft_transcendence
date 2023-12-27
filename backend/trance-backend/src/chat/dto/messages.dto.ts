@@ -15,7 +15,7 @@ export class sendMessageDm {
 
     @IsNotEmpty()
     @IsString()
-    receiver: string;
+    receiverId: string;
     
     @IsOptional()
     @IsNotEmpty()

@@ -11,6 +11,7 @@ export interface channelsSide {
     channelName?: string,
     channelPicture?: string,
     userRole?: string,
+    userStatus?: string,
     lastMsg?: string,
     channelType?: string
 }
@@ -23,7 +24,7 @@ export interface channelSidebar {
 }
 
 export interface mutedUsers {
-    name: string;
+    channelId: string;
     users: string[];
 }
 
@@ -103,24 +104,24 @@ export class ChannelOutils {
         return channel;
     }
 
-    async   isUserInChannel(channelName: string, nickname: string): Promise<boolean>
+    async   isUserInChannel(channelName: string, nicknameId: string): Promise<boolean>
     {
         const channel = await this.prisma.channel.findUnique({
             where: { name: channelName },
-            select: { users: { where: { nickname }, take: 1}},
+            select: { users: { where: { id: nicknameId }, take: 1}},
         });
         if(!channel || !channel.users || channel.users.length === 0)
             return false;
         return true;
     }
 
-    async   isUserAdministrator(channelName: string , nickname: string): Promise<boolean>
+    async   isUserAdministrator(channelName: string , nicknameId: string): Promise<boolean>
     {
         const isUserAdmin = await this.prisma.channel.count({
             where: {
                 name: channelName,
                 admins: {
-                    some: { nickname }
+                    some: { id: nicknameId }
                 },
             },
         });
@@ -131,7 +132,6 @@ export class ChannelOutils {
 
     async   isChannelExist(name: string): Promise<boolean>
     {
-        // console.log('channel is exist: ', name);
         const channel = await this.prisma.channel.findUnique({
             where: { name },
         });
@@ -140,12 +140,12 @@ export class ChannelOutils {
         return true;
     }
 
-    async   isUserInBlacklist(channelName: string, nickname: string): Promise<boolean>
+    async   isUserInBlacklist(channelName: string, nicknameId: string): Promise<boolean>
     {
         const isUserInBlacklist = await this.prisma.blacklist.count({
             where: {
                 channelName,
-                nickname,
+                nickname: nicknameId,
             },
         });
         if(!isUserInBlacklist)
@@ -155,8 +155,6 @@ export class ChannelOutils {
 
     async   getChannelOwner(channelName: string): Promise<string | null>
     {
-        // console.log('channel owner: ', channelName);
-        // console.log('channel name 01: ', newName);
         const channel = await this.findChannelByName(channelName);
         return channel?.owner || null;
     }
@@ -181,40 +179,40 @@ export class ChannelOutils {
         return channel?.password || null;
     }
 
-    async   getBlacklist(channelName: string, user: string):Promise<Blacklist | null>
+    async   getBlacklist(channelId: string, userId: string):Promise<Blacklist | null>
     {
         const blacklist = await this.prisma.blacklist.findFirst({
             where: {
-                nickname: user,
-                channelName,
+                nickname: userId,
+                channelId,
             },
         });
         return blacklist || null;
     }
 
-    async   getBlacklistId(channelName: string, user: string):Promise<string>
+    async   getBlacklistId(channelName: string, userId: string):Promise<string>
     {
-        const blacklist = await this.getBlacklist(channelName, user);
+        const blacklist = await this.getBlacklist(channelName, userId);
         if(!blacklist)
             throw new NotFoundException('blacklist not found.');
         return blacklist.id;
     }
 
-    async   getStatusInBlacklist(channelName: string, user: string):Promise<string>
+    async   getStatusInBlacklist(channelName: string, userId: string):Promise<string>
     {
-        const isUserInBlacklis = await this.isUserInBlacklist(channelName, user);
+        const isUserInBlacklis = await this.isUserInBlacklist(channelName, userId);
         if(!isUserInBlacklis)
-            throw new NotFoundException(`${user} not found in blacklist`);
-        const id = await this.getBlacklistId(channelName, user);
+            return 'LOLO';
+        const id = await this.getBlacklistId(channelName, userId);
         const blacklist = await this.prisma.blacklist.findUnique({
             where: { id },
         });
         return blacklist.status;
     } 
 
-    async   getExpiredAtOfUser(channelName: string, mutedUser: string)
+    async   getExpiredAtOfUser(channelId: string, mutedUserId: string)
     {
-        const blacklist = await this.getBlacklist(channelName, mutedUser);
+        const blacklist = await this.getBlacklist(channelId, mutedUserId);
         if(!blacklist)
             return null;
         return blacklist.expiredAt;
@@ -229,21 +227,21 @@ export class ChannelOutils {
         });
     }
 
-    async   getUserChannelRole(channelName: string, user: string)
+    async   getUserChannelRole(channelName: string, userId: string)
     {
         const channel = await this.findChannelByName(channelName);
-        if (channel.owner === user) 
+        if (channel.owner === userId) 
             return 'owner'.toUpperCase();
-        const isAdmin = await this.isUserAdministrator(channelName, user);
+        const isAdmin = await this.isUserAdministrator(channelName, userId);
         if (isAdmin)
             return 'admin'.toUpperCase();
         else
             return 'member'.toUpperCase();
     }
 
-    async   updateStatusInBlacklist(channelName: string, mutedUser: string)
+    async   updateStatusInBlacklist(channelId: string, mutedUserId: string)
     {
-        const id = await this.getBlacklistId(channelName, mutedUser);
+        const id = await this.getBlacklistId(channelId, mutedUserId);
         await this.prisma.blacklist.delete({
             where: {id},
         });
@@ -254,9 +252,9 @@ export class ChannelOutils {
         try {
             for (const channel of this.mutedList) {
                 for (const mutedUser of channel.users) {
-                    const expiredAt = await this.getExpiredAtOfUser(channel.name, mutedUser);
+                    const expiredAt = await this.getExpiredAtOfUser(channel.channelId, mutedUser);
                     if (expiredAt && new Date() >= new Date(expiredAt)) {
-                        await this.updateStatusInBlacklist(channel.name, mutedUser);
+                        await this.updateStatusInBlacklist(channel.channelId, mutedUser);
                     }
                 }
             }
@@ -273,11 +271,11 @@ export class ChannelOutils {
         {
             for (const element of array)
             {
-                const channel = this.mutedList.find((c) => c.name == element.channelName);
+                const channel = this.mutedList.find((c) => c.channelId == element.channelId);
                 if (channel)
                     channel.users.push(element.nickname);
                 else {
-                    const ch: mutedUsers = {name: element.channelName, users: [element.nickname]};
+                    const ch: mutedUsers = {channelId: element.channelId, users: [element.nickname]};
                     this.mutedList.push(ch);
                 }
             }
@@ -309,5 +307,27 @@ export class ChannelOutils {
         });
         if (checkRequest)
             throw new UnauthorizedException('only one request accepted for channel');
+    }
+
+    async   getUserStatusCh(channelName: string, userId: string)
+    {
+        const channel = await this.prisma.channel.findUnique({
+            where: { name: channelName, users: {some : { id: userId }}},
+            include: {
+                blacklist: {
+                    select: {
+                        nickname: true,
+                        status: true
+                    }
+                }
+            }
+        });
+        if (!channel)
+            throw new NotFoundException(`${channelName} not found`);
+        for(const user of channel.blacklist) {
+            if (user.nickname === userId)
+                return user.status;
+        }
+        return "ACTIVE"
     }
 }

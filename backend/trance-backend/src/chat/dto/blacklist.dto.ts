@@ -7,7 +7,7 @@ export class kickUserDto {
 
     @IsNotEmpty()
     @IsString()
-    user2kick: string;
+    user2kickId: string;
 }
 
 export class banUserDto {
@@ -18,7 +18,7 @@ export class banUserDto {
 
     @IsNotEmpty()
     @IsString()
-    user2ban: string;
+    user2banId: string;
 }
 
 export class muteUserDto {
@@ -29,7 +29,7 @@ export class muteUserDto {
 
     @IsNotEmpty()
     @IsString()
-    user2mute: string;
+    user2muteId: string;
 
     @IsNotEmpty()
     @IsNumber()
