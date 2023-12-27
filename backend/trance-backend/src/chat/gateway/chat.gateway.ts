@@ -101,7 +101,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 		try
 		{
 			await  this.DmOutils.validateDtoData(data, creatChannel);
-			const owner = client.data.user.nickname;
+			const owner = client.data.user.id;
 			if (data.name.length > 10 || data.name.length < 1)
 				throw new BadRequestException(`Invalid channel name`);
 			if ((await this.Outils.isChannelExist(data.name)))

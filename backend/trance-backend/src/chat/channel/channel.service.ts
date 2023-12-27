@@ -38,8 +38,8 @@ export class ChannelService {
                 type: type_,
                 owner,
                 password: hashedPass,
-                users: { connect: [{ nickname: owner }] },
-                admins: { connect: [{ nickname: owner }] },
+                users: { connect: [{ id: owner }] },
+                admins: { connect: [{ id: owner }] },
             },
         });
         if (!newChannel)
