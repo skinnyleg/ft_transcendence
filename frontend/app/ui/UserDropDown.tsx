@@ -17,7 +17,7 @@ import { GiPoliceOfficerHead } from "react-icons/gi";
 import { FaUserXmark } from "react-icons/fa6";
 import { GiThroneKing } from "react-icons/gi";
 import { useRouter } from 'next/navigation';
-import MuteUser from './muteUser';
+import MuteUser from './MuteUser';
 import { ChatContext, chatSocketContext } from '../context/soketContext';
 
 
@@ -71,10 +71,10 @@ const UserDropDown: FC<UserDropDownProps> = ({userRole, userCardRole, userNick})
 	}
 
 	const demoteUser = () => {
-		// chatSocket.emit('demoteUser', {
-		// 	channelName: channelId,
-		// 	user2demote: userNick,
-		// })
+		chatSocket.emit('demoteAdmin', {
+			channelName: channelId,
+			newAdmin: userNick,
+		})
 		chatSocket.on('failed', () => {
 			return ;
 		})
@@ -89,7 +89,6 @@ const UserDropDown: FC<UserDropDownProps> = ({userRole, userCardRole, userNick})
 		chatSocket.on('failed', () => {
 			return ;
 		})
-		chatSocket.emit('getDataCH');
 	}
 
 	const setOwner = () => {
@@ -107,6 +106,7 @@ const UserDropDown: FC<UserDropDownProps> = ({userRole, userCardRole, userNick})
 		<MuteUser
 			isOpen={muteOptions}
 			setIsOpen={setMuteOptions}
+			userNick={userNick}
 		/>
       <Menu as="div" className="relative text-left">
         <div>

@@ -5,55 +5,102 @@ import { CiSearch } from "react-icons/ci";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { CreateChannelIcon } from './CustomIcons';
 import CreateChannelComponent from './CreateChannelComponent';
-import { chatSocketContext } from '../context/soketContext';
+import { ChatContext, chatSocketContext } from '../context/soketContext';
 import { ChannelInter } from '../interfaces/interfaces';
 import { useDebouncedCallback } from 'use-debounce';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { checkOpenChannelId } from './ChatUtils';
 
 
 const ChannelTab = () => {
 
 	const chatSocket = useContext(chatSocketContext)
+	const searchParams = useSearchParams();
+	const router = useRouter()
+	const {channelId, setChannelId, searchInput, setSearchInput} = useContext(ChatContext);
 	const [userChannels, setUserChannels] = useState<ChannelInter[]>([]);
-	const [searchInput, setSearchInput] = useState<string>('');
 	const [info, setInfo] = useState<string>('Join Or Create Your Own Channel');
+
+
+
+
+	const deleteChannelQuery = () => {
+		router.replace(`/Chat`);
+	}
 
 
 	useEffect(() => {
 		chatSocket.emit('getUserChannels');
-		chatSocket.on('UserChannels', (data: ChannelInter[]) => {
-			// console.log("channels == ", data);
+	},[])
+	
+	useEffect(() => {
+		chatSocket.on('queryChannels', (data: ChannelInter[]) => {
+			// console.log('query channels == ', data)
 			setUserChannels(data);
 		})
-		// chatSocket.on('queryChannels', (data: ChannelInter[]) => {
-		// 	console.log('query channels == ', data)
-		// 	setUserChannels(data);
-		// })
-
+		
 		chatSocket.on('channelDone', (data: ChannelInter) => {
+			// console.log('inside channel Done append')
 			setUserChannels((prevuserChannels) => {
 				return [...prevuserChannels, data]
 			})
 		})
-
+		chatSocket.on('PicDone', (data: {channelName: string}) => {
+			// console.log('change pic')
+			// console.log('searchParams == ', searchParams.get('channel'))
+			// console.log('sent from on == ', data.channelName)
+			// console.log('sent from state == ', channelId)
+			chatSocket.emit('getUserChannels')
+			if (checkOpenChannelId(data.channelName, channelId) === true)
+			{
+				chatSocket.emit('getDataCH', {
+					channelName: channelId,
+				})
+			}
+		})
 		
+		chatSocket.on('UserChannels', (data: ChannelInter[]) => {
+			// console.log("channels == ", data);
+			setUserChannels(data);
+		})
+
+		chatSocket.on('muteDone', (data: {channelName: string}) => {
+			if (checkOpenChannelId(data.channelName, channelId) === true)
+			{
+				chatSocket.emit('getDataCH', {
+					channelName: channelId,
+				})
+			}
+		})
+
+		// chatSocket.on('outDone', (data: {channelName: string}) => {
+		// 	console.log('searchParams == ', searchParams.get('channel'))
+		// 	console.log('sent from on == ', data.channelName)
+		// 	console.log('sent from state == ', channelId)
+		// 	if (checkOpenChannelId(data.channelName, channelId) == true)
+		// 	{
+		// 		deleteChannelQuery();
+		// 		setChannelId('');
+		// 	}
+		// 	chatSocket.emit('getUserChannels');
+		// })
+
 		return () => {
-			chatSocket.off('channelDone').off()
 			chatSocket.off('UserChannels').off()
+			chatSocket.off('queryChannels').off()
+			chatSocket.off('channelDone').off()
+			chatSocket.off('PicDone')
+			// chatSocket.off('outDone')
 		}
-	},[chatSocket])
+	}, [chatSocket, channelId])
 
 
 
 	const debouncedSearchWebSocket = useDebouncedCallback((searchInput) => {
 		if (searchInput !== '')
 		{
-			// console.log("searchInput in emit == &", searchInput, "&")
 			chatSocket.emit('searchChannel', {
 				channelName: searchInput
-			})
-			chatSocket.on('queryChannels', (data: ChannelInter[]) => {
-				// console.log('query channels2 == ', data)
-				setUserChannels(data);
 			})
 		}
 	}, 15); // 500 milliseconds debounce time

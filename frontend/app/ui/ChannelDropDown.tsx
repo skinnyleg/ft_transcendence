@@ -38,6 +38,10 @@ const ChannelDropDown: FC<ChannelDropDownProps> = ({userRole, showSideBar, chann
 		chatSocket.emit('leaveChannel', {
 			channelName: channelId
 		})
+		console.log("channelName before levaing == ", channelId)
+		chatSocket.emit('getDataCH', {
+			channelName: channelId
+		})
 	}
 
   return (

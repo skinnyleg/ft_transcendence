@@ -6,9 +6,11 @@ import LeftBar from '../ui/LeftBar'
 import Content from '../ui/Content'
 import TopBar from '../ui/top'
 import { createContext } from 'vm'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { ChatContext, socketContext, socket, chatSocketContext } from '../context/soketContext'
 import { ChannelInter, responseData } from '../interfaces/interfaces'
+import { checkIsOnDemandRevalidate } from 'next/dist/server/api-utils'
+import { checkOpenChannel, checkOpenChannelId } from '../ui/ChatUtils'
 
 
 interface ChatProps {}
@@ -29,11 +31,13 @@ const chat: FC<ChatProps> = () => {
 		return newName
 	}
 	// const [channelId, setChannelId] = useState<string>(extractChannelName())
-	const [channelId, setChannelId] = useState<string>(extractChannelName())
+	const [channelId, setChannelId] = useState<string>('')
+	const [searchInput, setSearchInput] = useState<string>('');
 	const [user, setUser] = useState<responseData>();
 	const [channel, setChannel] = useState<ChannelInter | null>(null);
 	const router = useRouter();
 	const chatSocket = useContext(chatSocketContext);
+	const pathname = usePathname();
 
 
 	const setChannelQuery = (newName: string) => {
@@ -45,56 +49,44 @@ const chat: FC<ChatProps> = () => {
 		}
 		router.replace(`/Chat?channel=${newName}`);
 	}
-
 	const deleteChannelQuery = () => {
 		router.replace(`/Chat`);
 	}
+
 	useEffect(() => {
 		console.log('entered useEffect channelId == ', channelId)
-		let newName: string;
-		if (channelId === '')
-		{
-			if (searchParams.has('channel') && searchParams.get('channel') !== '')
-			{
-				newName = searchParams.get('channel') as string
-				setChannelId(newName);
-				setChannelQuery(newName);
-				return ;
-			}
-		}
+		// setChannelId(channelId);
+		// let newName: string;
+		// if (channelId === '')
+		// {
+		// 	if (searchParams.has('channel') && searchParams.get('channel') !== '')
+		// 	{
+		// 		newName = searchParams.get('channel') as string
+		// 		setChannelId(newName);
+		// 		setChannelQuery(channelId);
+		// 		return ;
+		// 	}
+		// }
 		setChannelQuery(channelId);
 	}, [channelId])
 
 	useEffect(() => {
-		chatSocket.on('outDone', () => {
-			deleteChannelQuery();
-			chatSocket.emit('getUserChannels');
-		})
 
-		chatSocket.on('joinDone', () => {
+		chatSocket.on('outDone', (data: {channelName: string}) => {
+			console.log('searchParams == ', searchParams.get('channel'))
+			console.log('page sent from on == ', data.channelName)
+			console.log('page sent from state == ', channelId)
+			if (checkOpenChannelId(data.channelName, channelId) == true)
+			{
+				deleteChannelQuery();
+				setChannelId('');
+			}
 			chatSocket.emit('getUserChannels');
-			console.log('channelId == ', channelId)
-			if (channelId !== '')
-			{
-				console.log('here1');
-				chatSocket.emit('getDataCH', {
-					channelName: channelId,
-				})
-			}
-			else
-			{
-				console.log('here2');
-				console.log('channelId == ', extractChannelName())
-				chatSocket.emit('getDataCH', {
-					channelName: extractChannelName(),
-				})
-			}
 		})
 		return () => {
 			chatSocket.off('outDone')
-			chatSocket.off('joinDone')
 		}
-	}, [chatSocket])
+	}, [chatSocket, channelId])
 
 	useEffect(() => {
 		const fetchUser = async () => {
@@ -113,13 +105,13 @@ const chat: FC<ChatProps> = () => {
 			}
 		}
 		fetchUser();
-
+		deleteChannelQuery();
 	}, [])
 
 	return (
 		<div className='flex flex-col font-white bg-main overflow-y-hidden md:overflow-y-auto mr-0'>
 				<TopBar />
-		<ChatContext.Provider value={{channelId, setChannelId, user, setUser, channel, setChannel}}>
+		<ChatContext.Provider value={{channelId, setChannelId, user, setUser, channel, setChannel, searchInput, setSearchInput}}>
 			<div className='h-[100vh] md:h-[99vh] min-[1024px]:h-[88vh] mt-0 xl:mt-2 lg:mt-2 xl:h-[90vh] xl:pb-0 w-full md:justify-between flex flex-row  md:gap-2 min-[1024px]:gap-0 pt-[70px] pr-1 pl-1 lg:pb-0 lg:pt-1'>
 				<RightBar />
 				<Content />

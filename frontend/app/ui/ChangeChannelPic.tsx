@@ -67,7 +67,6 @@ function openModal() {
 					console.log("error from catch == ", error)
 				}
 			}
-			// setImgData(undefined);
 			chatSocket.emit('refreshPicture', {
 				channelName: channelId
 			});

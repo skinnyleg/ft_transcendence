@@ -6,6 +6,8 @@ import MessageComponentRight from './MessageComponentRight';
 import { user } from './ChatConstants';
 import { chatSocket, chatSocketContext } from '../context/soketContext';
 import { ChatContext } from '../context/soketContext';
+import { checkOpenChannelId } from './ChatUtils';
+import { useSearchParams } from 'next/navigation';
 
 
 
@@ -20,9 +22,10 @@ const ChatContent: FC<ChatContentProps> = () => {
 		const channelType = channel?.channelType;
 		const addBlur = (isJoined === 'none') && (channelType === 'PROTECTED' || channelType === 'PRIVATE');
 		const chatSocket = useContext(chatSocketContext);
+		const searchParams = useSearchParams()
 
 		useEffect(() => {
-			console.log("ref obj == ", scrollableRef.current)
+			// console.log("ref obj == ", scrollableRef.current)
 			if (scrollableRef.current) {
 				// Scroll to the bottom when Messages or addBlur change
 				scrollableRef.current.scrollTop = scrollableRef.current.scrollHeight;
@@ -36,35 +39,47 @@ const ChatContent: FC<ChatContentProps> = () => {
 
 
 		useEffect(() => {
-			let isMounted = true;
-			chatSocket.on('messagesCH', (data: MessageInter[]) => {
-				// console.log("message Data == ", data);
-					setMessages(data);
-			})
 			chatSocket.emit('getMessagesCH', {
 				channelName: channelId,
 			})
-			return () => {
-				chatSocket.off('messagesCH')
-				isMounted = false;
-			}
 		}, [channelId])
 
 
 		useEffect(() => {
-			let isMounted = true;
+			chatSocket.on('messagesCH', (data: MessageInter[]) => {
+				// console.log("message Data == ", data);
+					setMessages(data);
+				})
 				chatSocket.on('messageDoneCH', (data: MessageInter) => {
 					// console.log('got new message == ', data);
 					chatSocket.emit('getUserChannels');
-					setMessages((prevMessages) => {
-						return [...prevMessages, data]
-					})
-
+					if (checkOpenChannelId(data.channelId, channelId) == true)
+					{
+						setMessages((prevMessages) => {
+							return [...prevMessages, data]
+						})
+					}
 				})
+
+			chatSocket.on('newName', (data: {newName: string}) => {
+				chatSocket.emit('getUserChannels');
+				setChannelId(data.newName);
+				if (checkOpenChannelId(data.newName, channelId) == true)
+				{
+					chatSocket.emit('getDataCH', {
+						channelName: channelId
+					})
+				}
+			})
+
+				
 			return () => {
 				chatSocket.off('messageDoneCH')
+				chatSocket.off('messagesCH')
+				chatSocket.off('newName')
+				// chatSocket.off('changeDone')
 			}
-		},[chatSocket])
+		},[chatSocket, channelId])
 
 
 

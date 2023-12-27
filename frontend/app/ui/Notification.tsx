@@ -28,7 +28,7 @@ const Notifications = () => {
             });
             if (res.status === 200) {
                 const notification = await res.json();
-                console.log('notifications == ', notification)
+                // console.log('notifications == ', notification)
                 setNotifications(notification);
                 setNotificationNumber(notificationNumber + notification.length);
             }
@@ -49,10 +49,10 @@ const Notifications = () => {
     useEffect(() => {
 
 
-        chatSocket.on("notification", (notif) => {
-            console.log("ni=otif sent" ,notif);
-            toast.success(notif);
-        });
+        // chatSocket.on("notification", (notif) => {
+        //     console.log("ni=otif sent" ,notif);
+        //     toast.success(notif);
+        // });
 
 
         chatSocket.on("notifHistory", (data: NotificationsData) => {

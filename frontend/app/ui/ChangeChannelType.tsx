@@ -78,11 +78,6 @@ function openModal() {
 				newType: type?.toUpperCase()
 			})
 		}
-		chatSocket.on('changeDone', () => {
-			chatSocket.emit('getDataCH', {
-				channelName: channelId,
-			})
-		})
 		setIsOpen(false)
 	}
 

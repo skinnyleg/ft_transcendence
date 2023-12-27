@@ -271,7 +271,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			notif2users.usersSockets = this.usersSockets; 
 			notif2users.notif = `${newAdmin} demoted from channel admins`;
 			notif2users.user2notify = newAdmin;
-			await this.channelService.emitNotif2channelUsers(notif2users, ['refreshSide','newAdmin'], {channelName});
+			await this.channelService.emitNotif2channelUsers(notif2users, ['newAdmin', 'refreshSide'], {channelName});
 		}
 		catch (error) {
 			this.DmOutils.Error(client, 'setAdmin', error, 'demote user from channel admins failed');
@@ -356,7 +356,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			notif2users.usersSockets = this.usersSockets; 
 			notif2users.notif = `${user.nickname} left`;
 			notif2users.user2notify = user.nickname;
-			await this.channelService.emitNotif2channelUsers(notif2users, ['outDone', 'refreshSide']);
+			await this.channelService.emitNotif2channelUsers(notif2users, ['outDone', 'refreshSide'], {channelName});
 		}
 		catch(error) {
 			this.DmOutils.Error(client, 'leaveChannel', error, 'leave channel failed');
@@ -379,7 +379,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			notif2users.usersSockets = this.usersSockets; 
 			notif2users.notif = `${user2kick} got kicked`;
 			notif2users.user2notify = user2kick;
-			await this.channelService.emitNotif2channelUsers(notif2users, ['outDone', 'refreshSide']);
+			await this.channelService.emitNotif2channelUsers(notif2users, ['outDone', 'refreshSide'], {channelName});
 		}
 		catch(error) {
 			this.DmOutils.Error(client, 'kickUser', error, 'kick user failed');
@@ -463,7 +463,17 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			const {channelName, newType, password} = data;
 			const owner = client.data.user.nickname;
 			await this.channelService.changeChannelType(channelName, owner, newType, password);
-			client.emit('changeDone');
+			// client.emit('changeDone');
+			//
+			this.server.emit('changeDone', {channelName});
+			// const notif2users: notif2user = {channelName};
+			// notif2users.admin = owner;
+			// notif2users.server = this.server;
+			// notif2users.usersSockets = this.usersSockets; 
+			// notif2users.notif = `${owner} has changed the channel's type`;
+			// notif2users.user2notify = owner;
+			// await this.channelService.emitNotif2channelUsers(notif2users, ['', 'changeDone'], {channelName});
+			//
 		}
 		catch (error) {
 			this.DmOutils.Error(client, 'changeTypeCH', error, 'change channel type failed');

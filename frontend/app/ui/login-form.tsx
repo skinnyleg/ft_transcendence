@@ -97,23 +97,26 @@ export default function LoginForm() {
           </div>
         </div>
         <LoginButton />
-        <div className="text-center mt-5">
+        <div className="text-center mt-5 flex flex-col gap-2">
           <div className="flex items-center justify-center">
             <div className="border-t border-black w-1/2"></div>
             <div className="mx-4 text-xl">or</div>
             <div className="border-t border-black w-1/2"></div>
           </div>
-          <div className="mt-2 mb-5 flex items-center bg-lightQuartze justify-center">
-            <Link href="http://localhost:8000/auth/42/">
-              <Image
-                className="pointer-events-hover w-full h-full opacity-90 rounded-md hover:opacity-80"
-                src="/42.jpg"
-                width={40}
-                height={40}
-                objectFit='cover'
-                alt="42 Authentication API"
-              />
-            </Link>
+
+          <div className="flex items-center justify-center rounded-xl w-full  h-14">
+            <div className="mt-2 mb-5 flex  rounded-xl h-full w-full items-cente justify-center">
+              <Link href="http://localhost:8000/auth/42/">
+                <img
+                  className="pointer-events-hover rounded-xl object-scale-down opacity-90 hover:opacity-80"
+                  src="/42.jpg"
+                  width={40}
+                  height={40}
+                  objectFit='fit'
+                  alt="42 Authentication API"
+                />
+              </Link>
+            </div>
           </div>
         </div>
       </div>

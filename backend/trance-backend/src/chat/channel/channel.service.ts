@@ -156,11 +156,12 @@ export class ChannelService {
         const isMemberNew = await this.outils.isUserInChannel(channelName, newOwner);
         if (!isMemberNew)
             throw new NotFoundException(`${newOwner} not found in ${channelName}`);
+        console.log('new onwer == ', newOwner);
         await   this.prisma.channel.update({
             where: { name: channelName },
             data: {
                 owner: newOwner,
-                admins: { disconnect: [{ nickname: oldOwner}] },
+                admins: { disconnect: [{ nickname: oldOwner}] , connect: [{ nickname: newOwner}]},
             },
         });
     }
@@ -220,6 +221,7 @@ export class ChannelService {
         if(!isUserAdmin)
             throw new ForbiddenException('Only admins can kick users.');
         if((await this.outils.getChannelOwner(channelName)) === admin) {
+            console.log()
             const isAdmin = await this.outils.isUserAdministrator(channelName, user2kick);
             if(isAdmin) {
                 await this.prisma.channel.update({
@@ -291,7 +293,7 @@ export class ChannelService {
         if(isNotAdmin)
             if((await this.outils.getChannelOwner(channelName)) !== client)
                 throw new ForbiddenException('Only owner can mute admins.')
-        expirationTime *= 60;
+        // expirationTime *= 60;
         const expiredAt = DateTime.now().plus({ seconds: expirationTime }).toJSDate();
         await this.prisma.blacklist.create({
             data: {
@@ -478,7 +480,7 @@ export class ChannelService {
         // console.log('channelUsers -== ', channelUsers)
         for (const userSocket  of usersSockets) {
             if (user2notifyId === userSocket.userId)
-                userSocket.socket.emit(values[0], dataObj);
+            userSocket.socket.emit(values[0], dataObj);
             if (channelUsers.find(userIn => userIn.id === userSocket.userId))
                 userSocket.socket.join(channelId);
         }

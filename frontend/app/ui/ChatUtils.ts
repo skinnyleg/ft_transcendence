@@ -20,6 +20,22 @@ export const whichTab = (searchParams: ReadonlyURLSearchParams) =>  {
 	return 'none';
 }
 
+export const checkOpenChannel = (channelName: string, searchParams: ReadonlyURLSearchParams) => {
+	let channelId = '';
+	if (searchParams.has('channel'))
+		channelId = searchParams.get('channel') as string;
+	if (channelName === channelId)
+		return true;
+	return false;
+}
+
+export const checkOpenChannelId = (channelName: string, channelId: string) => {
+	if (channelName === channelId)
+		return true;
+	return false;
+}
+
+
 export const isBarOpen = (searchParams: ReadonlyURLSearchParams) => {
 	if (searchParams.has('bar') && searchParams.get('bar') === 'open')
 		return true;

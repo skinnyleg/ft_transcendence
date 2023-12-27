@@ -16,8 +16,7 @@ const ChatTypeBar: FC<ChatTypeBarProps> = () => {
 	const chatSocket = useContext(chatSocketContext);
 	const [isDisabled, setIsDisabled] = useState(false)
 	const [message, setMessage] = useState('')
-	const {channelId, setChannelId, setChannel, channel} = useContext(ChatContext);
-
+	const {channelId, setChannelId, setChannel, channel, setSearchInput} = useContext(ChatContext);
 
 
 		const sendMessage = () => {
@@ -58,6 +57,7 @@ const ChatTypeBar: FC<ChatTypeBarProps> = () => {
 			chatSocket.on('failed' , (data: string) => {
 				setBarValue(data);
 			})
+			// setSearchInput('')
 		}
 
 		if (channel && channel.userRole !== 'none')

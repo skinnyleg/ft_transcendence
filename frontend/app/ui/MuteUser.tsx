@@ -1,22 +1,40 @@
 "use client"
 import { Dialog, Transition } from '@headlessui/react'
-import { Dispatch, FC, Fragment, SetStateAction, useState } from 'react'
+import React, { Dispatch, FC, Fragment, SetStateAction, useContext, useState } from 'react'
 import { CreateChannelIcon, IconWithTooltip } from './CustomIcons'
 import { Menu } from '@headlessui/react'
 import { BiSolidEditAlt } from "react-icons/bi";
 import ChannelTypes from './ChannelTypeSelect'
 import MuteOptions from './MuteOptions'
+import { ChatContext, chatSocketContext } from '../context/soketContext'
 
+
+const types = [
+	{ type: '10s' },
+	{ type: '1min' },
+	{ type: '15min' },
+	{ type: '1h' },
+]
+
+const time = [
+	10,
+	60,
+	900,
+	3600
+]
 
 
 interface MuteUserProps {
     isOpen: boolean;
     setIsOpen: Dispatch<SetStateAction<boolean>>;
+	userNick: string;
 }
 
-const MuteUser: FC<MuteUserProps> = ({isOpen, setIsOpen}) => {
+const MuteUser: FC<MuteUserProps> = ({isOpen, setIsOpen, userNick}) => {
 
-	let [type, setType] = useState("")
+	let [type, setType] = useState(types[0].type)
+	const chatSocket = useContext(chatSocketContext);
+	const {channelId} = useContext(ChatContext);
 
 	const handleTypeChange = (type: string) => {
 		console.log("type is ", type);
@@ -34,8 +52,20 @@ function openModal() {
   }
 
 
-  	const handleSubmit = (e) => {
+  	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+		  console.log('muteType == ', type);
 		e.preventDefault();
+		let index = types.findIndex((item) => item.type === type);
+		if (index === -1 && types[0].type === type)
+			index = 0;
+
+		console.log('type index == ', time[index]);
+
+		chatSocket.emit('muteUser', {
+			channelName: channelId,
+			user2mute: userNick,
+			expirationTime: time[index]
+		})
 		closeModal();
 	}
 
@@ -43,7 +73,7 @@ function openModal() {
   return (
 	<>
 		<Transition appear show={isOpen} as={Fragment}>
-			<Dialog as="form" className="relative z-30" onClose={closeModal}>
+			<Dialog as="form" className="relative z-30" onClose={closeModal} onSubmit={handleSubmit}>
 				<Transition.Child
 					as={Fragment}
 					enter="ease-out duration-300"
@@ -87,7 +117,7 @@ function openModal() {
 										<button
 											type="submit"
 											className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-green-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-											onClick={handleSubmit}
+											// onClick={handleSubmit}
 										>
 										Submit
 										</button>

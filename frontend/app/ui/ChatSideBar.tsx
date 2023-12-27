@@ -31,29 +31,21 @@ const ChatSideBar: FC<ChatSideBarProps> = () => {
 		chatSocket.emit('getChSidebar', {
 			channelName: channelId
 		})
-
-		chatSocket.on('channelSidebar', (data: ChannelUser[]) => {
-			// console.log('data of users == ', data);
-			setChannelsUsers(data);
-		})
-
-		
-		return () => {
-			chatSocket.off('channelSidebar')
-		}
-	}, [])
+		return () => {}
+	}, [channelId])
 
 	useEffect(() => {
-		chatSocket.emit('getChSidebar', {
-			channelName: channelId
-		})
 
 		chatSocket.on('channelSidebar', (data: ChannelUser[]) => {
 			// console.log('here')
 			setChannelsUsers(data);
 		})
 		chatSocket.on('refreshSide', () => {
+			console.log('refresh')
 			chatSocket.emit('getChSidebar', {
+				channelName: channelId
+			})
+			chatSocket.emit('getDataCH',{
 				channelName: channelId
 			})
 		})

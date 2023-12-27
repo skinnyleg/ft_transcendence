@@ -964,7 +964,7 @@ export class UserService {
 		const users = await this.prisma.user.findMany({
 			where: {
 				nickname: {
-					contains: searchInput,
+					startsWith: searchInput,
 					mode: 'insensitive',
 				},
 			},

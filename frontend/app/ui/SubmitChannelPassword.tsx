@@ -34,6 +34,7 @@ const ChannelPassword: FC<ChannelPasswordProps> = () => {
 		})
 		chatSocket.on('failed', (data: string) => {
 			setError(data);
+			// return ;
 		})
 		// closeModal();
 	}
