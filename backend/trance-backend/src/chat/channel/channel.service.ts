@@ -44,7 +44,7 @@ export class ChannelService {
         });
         if (!newChannel)
             throw new InternalServerErrorException('channel creation failed');
-        const channel_: mutedUsers = {name, users: []};
+        const channel_: mutedUsers = {channelId: newChannel.id, users: []};
         this.outils.mutedList.push(channel_);
         return newChannel;
     }
@@ -301,11 +301,12 @@ export class ChannelService {
                 channel: {connect: {name: channelName}},
             },
         });
-        const channel = this.outils.mutedList.find((c) => c.name == channelName);
+        const channelId = await this.outils.getChannelIdByName(channelName);
+        const channel = this.outils.mutedList.find((c) => c.channelId == channelId);
         if (channel)
             channel.users.push(user2muteId);
         else {
-            const ch: mutedUsers = {name: channelName, users: [user2muteId]};
+            const ch: mutedUsers = {channelId: channelId, users: [user2muteId]};
             this.outils.mutedList.push(ch);
         }
     }   
