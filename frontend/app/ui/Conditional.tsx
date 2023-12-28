@@ -46,7 +46,9 @@ const Conditional = ({isfriend, privateProfile, userId, isBlocked} : DataProps )
         chatSocket.emit('sendMsgDM', {
             receiverId : userId
         })
-        router.push('/Chat')
+        chatSocket.on('redirect', (data: {dmId: string}) => {
+            router.push(`/Chat?personal=${data.dmId}`)
+        })
     }
 
     if (isfriend && !privateProfile)

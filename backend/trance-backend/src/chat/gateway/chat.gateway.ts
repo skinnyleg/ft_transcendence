@@ -344,9 +344,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			await  this.DmOutils.validateDtoData(data, sendMessageDm);
 			const user = client.data.user;
 			const receId = data.receiverId;
-			console.log('here')
 			const receiverSocket = this.usersSockets.find(user => user.userId === receId);
-			const { dmId, receiverId } = await this.DmService.generateDm(receId, user.id, receiverSocket.socket);
+			const { dmId, receiverId } = await this.DmService.generateDm(receId, user.id, receiverSocket);
 			const blockedList = await this.DmOutils.getBlockedUsers(user.id);
 			if (blockedList.find((blockUser => blockUser === receiverId)))
 				return client.emit('notification', `user is blocked`);
@@ -354,7 +353,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 				const message = await this.DmService.creatMessageDm(dmId, user.id, data.content);
 				await this.DmOutils.updateDmupdatedAt(dmId, message.createdAt);
 				const buffer = await this.DmOutils.fillDmsBuffer(message, user.id, dmId);
-				console.log('buffer == ', buffer);
 				if (receiverSocket) {
 					client.join(dmId);
 					receiverSocket.socket.join(dmId);
@@ -364,6 +362,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 					client.leave(dmId);
 				}
 			}
+			else
+				client.emit('redirect', {dmId})
 		}
 		catch (error) {
 			this.DmOutils.Error(client, 'sendMsgDM', error, 'send DM failed');

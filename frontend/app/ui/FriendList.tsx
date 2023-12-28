@@ -2,9 +2,10 @@ import { ChatBubbleBottomCenterIcon, CogIcon, LightBulbIcon } from "@heroicons/r
 import clsx from "clsx";
 import { GiPingPongBat } from "react-icons/gi";
 import { UserStatus } from "@/app/interfaces/interfaces";
-import { useEffect, useState } from "react";
-import { socket, socketContext } from "../context/soketContext";
+import { useContext, useEffect, useState } from "react";
+import { chatSocketContext, socket, socketContext } from "../context/soketContext";
 import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 
 interface FriendsData {
@@ -17,7 +18,11 @@ interface FriendsData {
 
 const FriendsList = () => {
     const [friendsList, setFriendList] = useState<FriendsData[]>([]);
-    
+    const chatSocket = useContext(chatSocketContext);
+    const router = useRouter();
+
+
+
     useEffect(() => {
         const friendsGet = async() => {
         try{
@@ -55,7 +60,16 @@ const FriendsList = () => {
           socket.off("statusChange", handleStatusChange);
         };
       }, [socket, setFriendList]);
-      
+
+      const sendMessage = (userId: string) => {
+        console.log('here')
+        chatSocket.emit('sendMsgDM', {
+            receiverId : userId
+        })
+        chatSocket.on('redirect', (data: {dmId: string}) => {
+            router.push(`/Chat?personal=${data.dmId}`)
+        })
+    }
 
     return (
         <div className="bg-accents rounded-md col-span-1 lg:col-span-2 lg:col-start-4 lg:col-end-6  
@@ -81,7 +95,7 @@ const FriendsList = () => {
                         <div className="flex flex-row justify-between">
                             <button className="ml-2 bg-button rounded-md px-2 py-1 text-white text-xs lg:block md:block xs:hidden">Challenge</button>
                             <GiPingPongBat  className="w-8 h-6 ml-2 hidden md:hidden text-button xs:block" />
-                            <button className="bg-button rounded-md px-2 py-1 text-white text-xs lg:block md:block xs:hidden">Chat</button>
+                            <button onClick={(e) => {sendMessage(friend.id)}} className="bg-button rounded-md px-2 py-1 text-white text-xs lg:block md:block xs:hidden">Chat</button>
                             <ChatBubbleBottomCenterIcon className="w-8 h-6 hidden text-button md:hidden xs:block" />
                         </div>
                     </div>

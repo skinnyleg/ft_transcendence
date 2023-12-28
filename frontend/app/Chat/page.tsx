@@ -19,33 +19,33 @@ interface ChatProps {}
 
 const chat: FC<ChatProps> = () => {
 	const searchParams = useSearchParams();
-	// const extractChannelName = () => {
-	// 	let newName = '';
-	// 	if (searchParams.has('channel') && searchParams.get('channel') !== '')
-	// 	{
-	// 		newName = searchParams.get('channel') as string
-	// 		// console.log('newName in root == ', newName);
-	// 		// setChannelId(newName);
-	// 	}
-	// 	console.log('newName == ', newName)
-	// 	return newName
-	// }
+	const extractChannelName = () => {
+		let newName = '';
+		if (searchParams.has('channel') && searchParams.get('channel') !== '')
+		{
+			newName = searchParams.get('channel') as string
+			// console.log('newName in root == ', newName);
+			// setChannelId(newName);
+		}
+		console.log('newName == ', newName)
+		return newName
+	}
 
-	// const extractPersonalName = () => {
-	// 	let newName = '';
-	// 	if (searchParams.has('personal') && searchParams.get('personal') !== '')
-	// 	{
-	// 		newName = searchParams.get('personal') as string
-	// 		// console.log('newName in root == ', newName);
-	// 		// setChannelId(newName);
-	// 	}
-	// 	console.log('newName == ', newName)
-	// 	return newName
-	// }
-	// const [channelId, setChannelId] = useState<string>(extractChannelName())
-	// const [personalId, setPersonalId] = useState<string>(extractPersonalName())
-	const [channelId, setChannelId] = useState<string>('')
-	const [personalId, setPersonalId] = useState<string>('')
+	const extractPersonalName = () => {
+		let newName = '';
+		if (searchParams.has('personal') && searchParams.get('personal') !== '')
+		{
+			newName = searchParams.get('personal') as string
+			// console.log('newName in root == ', newName);
+			// setChannelId(newName);
+		}
+		console.log('newName == ', newName)
+		return newName
+	}
+	const [channelId, setChannelId] = useState<string>(extractChannelName())
+	const [personalId, setPersonalId] = useState<string>(extractPersonalName())
+	// const [channelId, setChannelId] = useState<string>('')
+	// const [personalId, setPersonalId] = useState<string>('')
 	const [searchInputCh, setSearchInputCh] = useState<string>('');
 	const [searchInputDm, setSearchInputDm] = useState<string>('');
 	const [user, setUser] = useState<responseData>();
@@ -125,7 +125,7 @@ const chat: FC<ChatProps> = () => {
 			}
 		}
 		fetchUser();
-		deleteChannelQuery();
+		// deleteChannelQuery();
 	}, [])
 
 	return (

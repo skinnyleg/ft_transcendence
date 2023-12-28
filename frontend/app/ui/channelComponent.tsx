@@ -33,8 +33,8 @@ const ChannelComponent: FC<channelComponentProps> = ({channel}) => {
 				<div className='flex flex-col bg-teal-100 w-full h-full pl-2 rounded-xl'>
 					<h1 className='font-bold text-base '>{channel.channelName}</h1>
 					{/* <p className='text-gray-500 text-sm'>{channel.lastMsg === '' ? 'No New Messages' : channel.lastMsg}</p> */}
-					<p className='text-gray-500 text-sm'>  {channel.lastMsg.length > 7
-								? `${channel.lastMsg.substring(0, 7)}...`
+					<p className='text-gray-500 text-sm'>  {channel.lastMsg.length > 15
+								? `${channel.lastMsg.substring(0, 15)}...`
 								: channel.lastMsg === ''
 								? 'No New Messages'
 								: channel.lastMsg}

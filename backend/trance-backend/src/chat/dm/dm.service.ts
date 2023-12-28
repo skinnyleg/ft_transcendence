@@ -127,14 +127,15 @@ export class DmService {
         return allMessages;
     }
 
-    async   generateDm(receiverId: string , senderId: string, receiverSocket: Socket)
+    async   generateDm(receiverId: string , senderId: string, receiverSocket: any)
     {
         // const receiverId = await this.dmOutils.getUserIdByName(receiver);
         let dmId = await this.dmOutils.getDmIdby2User(senderId, receiverId);
         if (dmId === null) {
         	await this.creatDMchat(senderId, receiverId);
         	dmId = await this.dmOutils.getDmIdby2User(senderId, receiverId);
-            receiverSocket.emit('refreshDms');
+            if (receiverSocket)
+                receiverSocket.socket.emit('refreshDms');
         }
         return {dmId, receiverId} || {};
     }
