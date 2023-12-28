@@ -45,7 +45,7 @@ const LeaderboardPage: FC<LeaderboardProps> = () => {
 	return (
 		<div className='h-screen flex flex-col'>
 			<TopBar />
-			<div className='h-[100%] lg:h-[88%] xl:h-[89%] min-[1024px]:h-[90%] w-full flex flex-row  pt-[70px] pb-1 pr-2 pl-4 lg:pb-1 lg:pt-2'>
+			<div className='h-[100%]  lg:h-[92%] xl:h-[100%] mb-0 lg:mb-4 w-full flex flex-row  pt-[70px] pb-1 pr-2 pl-4 lg:pb-1 lg:pt-2'>
 				<Leaderboard 
 					Ranking={ranking}
 				/>

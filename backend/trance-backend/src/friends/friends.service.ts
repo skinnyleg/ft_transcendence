@@ -204,6 +204,7 @@ export class FriendsService {
 			if (!dmId) {
 				await this.dmService.creatDMchat(sender.id, userId)
 			}
+			sender.socket.emit('refreshPersonalTab');
 		}
 		catch(error)
 		{

@@ -138,4 +138,17 @@ export class DmService {
         }
         return {dmId, receiverId} || {};
     }
+
+    async   getDmbyId(dmId: string)
+    {
+        const dm = await this.prisma.dm.findUnique({
+            where: { id: dmId },
+            include: {
+                members: true,
+            },
+        });
+        if (!dm)
+            throw new NotFoundException('Dm not found');
+        return dm;
+    }
 }

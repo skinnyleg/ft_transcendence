@@ -8,7 +8,7 @@ import TopBar from '../ui/top'
 import { createContext } from 'vm'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { ChatContext, socketContext, socket, chatSocketContext } from '../context/soketContext'
-import { ChannelInter, responseData } from '../interfaces/interfaces'
+import { ChannelInter, DmsInter, NotificationsData, responseData } from '../interfaces/interfaces'
 import { checkIsOnDemandRevalidate } from 'next/dist/server/api-utils'
 import { checkOpenChannel, checkOpenChannelId } from '../ui/ChatUtils'
 
@@ -19,22 +19,38 @@ interface ChatProps {}
 
 const chat: FC<ChatProps> = () => {
 	const searchParams = useSearchParams();
-	const extractChannelName = () => {
-		let newName = '';
-		if (searchParams.has('channel') && searchParams.get('channel') !== '')
-		{
-			newName = searchParams.get('channel') as string
-			// console.log('newName in root == ', newName);
-			// setChannelId(newName);
-		}
-		console.log('newName == ', newName)
-		return newName
-	}
+	// const extractChannelName = () => {
+	// 	let newName = '';
+	// 	if (searchParams.has('channel') && searchParams.get('channel') !== '')
+	// 	{
+	// 		newName = searchParams.get('channel') as string
+	// 		// console.log('newName in root == ', newName);
+	// 		// setChannelId(newName);
+	// 	}
+	// 	console.log('newName == ', newName)
+	// 	return newName
+	// }
+
+	// const extractPersonalName = () => {
+	// 	let newName = '';
+	// 	if (searchParams.has('personal') && searchParams.get('personal') !== '')
+	// 	{
+	// 		newName = searchParams.get('personal') as string
+	// 		// console.log('newName in root == ', newName);
+	// 		// setChannelId(newName);
+	// 	}
+	// 	console.log('newName == ', newName)
+	// 	return newName
+	// }
 	// const [channelId, setChannelId] = useState<string>(extractChannelName())
+	// const [personalId, setPersonalId] = useState<string>(extractPersonalName())
 	const [channelId, setChannelId] = useState<string>('')
-	const [searchInput, setSearchInput] = useState<string>('');
+	const [personalId, setPersonalId] = useState<string>('')
+	const [searchInputCh, setSearchInputCh] = useState<string>('');
+	const [searchInputDm, setSearchInputDm] = useState<string>('');
 	const [user, setUser] = useState<responseData>();
 	const [channel, setChannel] = useState<ChannelInter | null>(null);
+	const [personal, setPersonal] = useState<DmsInter | null>(null);
 	const router = useRouter();
 	const chatSocket = useContext(chatSocketContext);
 	const pathname = usePathname();
@@ -49,26 +65,30 @@ const chat: FC<ChatProps> = () => {
 		}
 		router.replace(`/Chat?channel=${newName}`);
 	}
+
+	const setPersonalQuery = (newName: string) => {
+		// console.log('newName == ', newName)
+		if (newName === '')
+		{
+			deleteChannelQuery();
+			return ;
+		}
+		router.replace(`/Chat?personal=${newName}`);
+	}
+
 	const deleteChannelQuery = () => {
 		router.replace(`/Chat`);
 	}
 
 	useEffect(() => {
 		console.log('entered useEffect channelId == ', channelId)
-		// setChannelId(channelId);
-		// let newName: string;
-		// if (channelId === '')
-		// {
-		// 	if (searchParams.has('channel') && searchParams.get('channel') !== '')
-		// 	{
-		// 		newName = searchParams.get('channel') as string
-		// 		setChannelId(newName);
-		// 		setChannelQuery(channelId);
-		// 		return ;
-		// 	}
-		// }
 		setChannelQuery(channelId);
 	}, [channelId])
+
+
+	useEffect(() => {
+		setPersonalQuery(personalId);
+	}, [personalId])
 
 	useEffect(() => {
 
@@ -109,16 +129,16 @@ const chat: FC<ChatProps> = () => {
 	}, [])
 
 	return (
+		<ChatContext.Provider value={{personal, setPersonal, personalId, setPersonalId, channelId, setChannelId, user, setUser, channel, setChannel, searchInputCh, setSearchInputCh, searchInputDm, setSearchInputDm}}>
 		<div className='flex flex-col font-white bg-main overflow-y-hidden md:overflow-y-auto mr-0'>
 				<TopBar />
-		<ChatContext.Provider value={{channelId, setChannelId, user, setUser, channel, setChannel, searchInput, setSearchInput}}>
 			<div className='h-[100vh] md:h-[99vh] min-[1024px]:h-[88vh] mt-0 xl:mt-2 lg:mt-2 xl:h-[90vh] xl:pb-0 w-full md:justify-between flex flex-row  md:gap-2 min-[1024px]:gap-0 pt-[70px] pr-1 pl-1 lg:pb-0 lg:pt-1'>
 				<RightBar />
 				<Content />
 				<LeftBar />
 			</div>
-		</ChatContext.Provider>
 		</div>
+		</ChatContext.Provider>
 	)
 
 

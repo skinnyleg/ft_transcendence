@@ -15,6 +15,7 @@ import ChannelPass from './ChangeChannelPass';
 import ChannelType from './ChangeChannelType';
 import { ChatContext } from '../context/soketContext';
 import { chatSocketContext } from '../context/soketContext';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 
 
 interface ChannelDropDownProps {
@@ -38,8 +39,14 @@ const ChannelDropDown: FC<ChannelDropDownProps> = ({userRole, showSideBar, chann
 		chatSocket.emit('leaveChannel', {
 			channelName: channelId
 		})
-		console.log("channelName before levaing == ", channelId)
 		chatSocket.emit('getDataCH', {
+			channelName: channelId
+		})
+	}
+
+
+	const deleteChannel = () => {
+		chatSocket.emit('deleteChannel', {
 			channelName: channelId
 		})
 	}
@@ -197,6 +204,31 @@ const ChannelDropDown: FC<ChannelDropDownProps> = ({userRole, showSideBar, chann
                 )}
               </Menu.Item>
             </div>
+			{
+				userRole === 'OWNER' && (
+					<div className="px-1 py-1">
+						<Menu.Item>
+						{({ active }) => (
+							<button
+							onClick={deleteChannel}
+							className={`${
+								active ? 'bg-violet-500 text-white' : 'text-gray-900'
+							} group flex w-full items-center gap-4 rounded-md px-2 py-2 text-sm`}
+							>
+							<IconWithTooltip
+								icon={DeleteForeverIcon}
+								styles='w-6 h-6 hover:cursor-pointer'
+								tooltipId="OpenToolTip"
+								tooltipContent=""
+								// clickBehavior={showSideBar}
+							/>
+							Delete Channel
+							</button>
+						)}
+						</Menu.Item>
+					</div>
+				)
+			}
             <div className="px-1 py-1">
               <Menu.Item>
                 {({ active }) => (

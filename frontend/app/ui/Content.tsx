@@ -3,6 +3,7 @@ import { useState, type FC } from 'react';
 import { useSearchParams } from 'next/navigation';
 import ChatTabChannel from './ChatTabChannel';
 import { isBarOpen, whichTab } from './ChatUtils';
+import ChatTabPersonal from './ChatTabPersonal';
 
 interface ContentProps {}
 
@@ -23,15 +24,13 @@ const Content: FC<ContentProps> = ({}) => {
 						<ChatTabChannel />
 					</div>
 			)}
+			{renderTab === 'personal' &&  (
+					<div className={`lg:flex lg:flex-grow w-full pb-0 transition ease-in-out duration-700`}>
+						<ChatTabPersonal />
+					</div>
+			 )}
 		</>
 	);
 }
 
-			// {whichTab() === 'personal' &&  (
-			// 		<div className='lg:flex lg:flex-grow w-full h-full pb-1'>
-			// 			<ChatTabPersonal
-			// 				channelId={searchParams.get('personal')}
-			// 			/>
-			// 		</div>
-			//  )}
 export default Content;

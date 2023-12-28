@@ -25,11 +25,11 @@ const LeftBar: FC<LeftBarProps> = ({}) => {
 						<ChatSideBar />
 					</div>
 			)}
-			{/* {renderTab === 'personal' && isBarOpen() === true &&  ( */}
-			{/* 		<div className='hidden lg:flex lg:w-[50%] xl:w-[40%] w-full h-full pb-1'> */}
-			{/* 			<UserSideBar /> */}
-			{/* 		</div> */}
-			{/* )} */}
+			{/* {renderTab === 'personal' &&  (
+				<></>
+					// <div className='hidden lg:flex lg:w-[50%] xl:w-[40%] w-full h-full pb-0'>
+					// </div>
+			)} */}
 		</>
 	);
 }

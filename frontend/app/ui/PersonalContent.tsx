@@ -1,26 +1,28 @@
 "use client"
 import { useEffect, type FC, useRef, useContext, useState, useLayoutEffect } from 'react';
-import { ChannelInter, ChannelUser, MessageInter, responseData } from '../interfaces/interfaces';
+import { ChannelInter, ChannelUser, DmMessageInter, MessageInter, responseData } from '../interfaces/interfaces';
 import MessageComponentLeft from './MessageComponentLeft';
 import MessageComponentRight from './MessageComponentRight';
 import { user } from './ChatConstants';
 import { chatSocket, chatSocketContext } from '../context/soketContext';
 import { ChatContext } from '../context/soketContext';
-import { checkOpenChannelId } from './ChatUtils';
+import { checkOpenChannelId, checkOpenPersonalId } from './ChatUtils';
 import { useSearchParams } from 'next/navigation';
+import DmMessageComponentRight from './DmMessageComponentRight';
+import DmMessageComponentLeft from './DmMessageComponentLeft';
 
 
 
-interface ChatContentProps {}
+interface PersonalContentProps {}
 
-const ChatContent: FC<ChatContentProps> = () => {
+const PersonalContent: FC<PersonalContentProps> = () => {
 
 		const scrollableRef = useRef(null);
-		const {channelId, setChannelId, user, channel} = useContext(ChatContext);
-		const [messages, setMessages] = useState<MessageInter[]>([])
-		const isJoined = channel?.userRole;
-		const channelType = channel?.channelType;
-		const addBlur = (isJoined === 'none') && (channelType === 'PROTECTED' || channelType === 'PRIVATE');
+		const {personalId, setPersonalId, user, personal} = useContext(ChatContext);
+		const [messages, setMessages] = useState<DmMessageInter[]>([])
+		// const isJoined = channel?.userRole;
+		// const channelType = channel?.channelType;
+		// const addBlur = (isJoined === 'none') && (channelType === 'PROTECTED' || channelType === 'PRIVATE');
 		const chatSocket = useContext(chatSocketContext);
 		const searchParams = useSearchParams()
 
@@ -39,21 +41,21 @@ const ChatContent: FC<ChatContentProps> = () => {
 
 
 		useEffect(() => {
-			chatSocket.emit('getMessagesCH', {
-				channelName: channelId,
+			console.log('emitting getting msg dm == ', personalId)
+			chatSocket.emit('getMessagesDM', {
+				dmId: personalId,
 			})
-		}, [channelId])
+		}, [personalId])
 
 
 		useEffect(() => {
-			chatSocket.on('messagesCH', (data: MessageInter[]) => {
-				// console.log("message Data == ", data);
+			chatSocket.on('messagesDM', (data: DmMessageInter[]) => {
+				// console.log("messages Data personal == ", data);
 					setMessages(data);
 				})
-				chatSocket.on('messageDoneCH', (data: MessageInter) => {
-					console.log('got new message == ', data);
-					chatSocket.emit('getUserChannels');
-					if (checkOpenChannelId(data.channelId, channelId) == true)
+				chatSocket.on('messageDoneDM', (data: DmMessageInter) => {
+					chatSocket.emit('getUserDms');
+					if (checkOpenPersonalId(data.dmId, personalId) == true)
 					{
 						setMessages((prevMessages) => {
 							return [...prevMessages, data]
@@ -61,42 +63,33 @@ const ChatContent: FC<ChatContentProps> = () => {
 					}
 				})
 
-			chatSocket.on('newName', (data: {newName: string}) => {
-				chatSocket.emit('getUserChannels');
-				setChannelId(data.newName);
-				if (checkOpenChannelId(data.newName, channelId) == true)
-				{
-					chatSocket.emit('getDataCH', {
-						channelName: channelId
-					})
-				}
-			})
+				
 
 				
 			return () => {
-				chatSocket.off('messageDoneCH')
-				chatSocket.off('messagesCH')
-				chatSocket.off('newName')
+				chatSocket.off('messageDoneDM')
+				chatSocket.off('messagesDM')
+				// chatSocket.off('newName')
 				// chatSocket.off('changeDone')
 			}
-		},[chatSocket, channelId])
+		},[chatSocket, personalId])
 
 
 
 		return (
-			<div ref={scrollableRef} className={`w-full flex-grow p-2 gap-1 flex flex-col mt-3 mb-3 overflow-y-auto overflow-x-hidden ${addBlur ? 'blur overflow-y-hidden' : ''}`}>
+			<div ref={scrollableRef} className={`w-full flex-grow p-2 gap-1 flex flex-col mt-3 mb-3 overflow-y-auto overflow-x-hidden`}>
 				{
 					messages.length > 0 && messages.map((message) => {
 						if (message.sender === user?.nickname)
 							return (
-								<MessageComponentRight
+								<DmMessageComponentRight
 									key={message.messageId}
 									message={message}
 								/>
 							);
 						else
 							return (
-								<MessageComponentLeft
+								<DmMessageComponentLeft
 									key={message.messageId}
 									message={message}
 								/>
@@ -113,4 +106,4 @@ const ChatContent: FC<ChatContentProps> = () => {
 			</div>
 	);
 }
-export default ChatContent;
+export default PersonalContent;

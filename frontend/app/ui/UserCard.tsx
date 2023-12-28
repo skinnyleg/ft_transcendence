@@ -29,6 +29,7 @@ const UserCard: FC<UserCardProps> = ({user, userRole}) => {
 					userRole={userRole}
 					userCardRole={user.channelRole as string}
 					userNick={user.username as string}
+					userId={user.userId}
 				/>
 			</div>
 		</div>

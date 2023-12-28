@@ -26,9 +26,10 @@ interface UserDropDownProps {
 	userRole: string | undefined;
 	userCardRole: string;
 	userNick: string;
+	userId: string;
 }
 
-const UserDropDown: FC<UserDropDownProps> = ({userRole, userCardRole, userNick}) => {
+const UserDropDown: FC<UserDropDownProps> = ({userRole, userCardRole, userNick, userId}) => {
 
 
 	const [muteOptions, setMuteOptions] = useState(false);
@@ -53,7 +54,7 @@ const UserDropDown: FC<UserDropDownProps> = ({userRole, userCardRole, userNick})
 	const kickUser = () => {
 		chatSocket.emit('kickUser', {
 			channelName: channelId,
-			user2kick: userNick,
+			user2kickId: userId,
 		})
 		chatSocket.on('failed', () => {
 			return ;
@@ -63,7 +64,7 @@ const UserDropDown: FC<UserDropDownProps> = ({userRole, userCardRole, userNick})
 	const banUser = () => {
 		chatSocket.emit('banUser', {
 			channelName: channelId,
-			user2ban: userNick,
+			user2banId: userId,
 		})
 		chatSocket.on('failed', () => {
 			return ;
@@ -73,7 +74,7 @@ const UserDropDown: FC<UserDropDownProps> = ({userRole, userCardRole, userNick})
 	const demoteUser = () => {
 		chatSocket.emit('demoteAdmin', {
 			channelName: channelId,
-			newAdmin: userNick,
+			newAdminId: userId,
 		})
 		chatSocket.on('failed', () => {
 			return ;
@@ -84,7 +85,7 @@ const UserDropDown: FC<UserDropDownProps> = ({userRole, userCardRole, userNick})
 	const setAdmin = () => {
 		chatSocket.emit('setAdmin', {
 			channelName: channelId,
-			newAdmin: userNick,
+			newAdminId: userId,
 		})
 		chatSocket.on('failed', () => {
 			return ;
@@ -94,7 +95,7 @@ const UserDropDown: FC<UserDropDownProps> = ({userRole, userCardRole, userNick})
 	const setOwner = () => {
 		chatSocket.emit('changeOwnerCH', {
 			channelName: channelId,
-			newAdmin: userNick,
+			newAdminId: userId,
 		})
 		chatSocket.on('failed', () => {
 			return ;
@@ -107,6 +108,7 @@ const UserDropDown: FC<UserDropDownProps> = ({userRole, userCardRole, userNick})
 			isOpen={muteOptions}
 			setIsOpen={setMuteOptions}
 			userNick={userNick}
+			userId={userId}
 		/>
       <Menu as="div" className="relative text-left">
         <div>

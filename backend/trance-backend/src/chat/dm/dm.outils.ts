@@ -8,6 +8,7 @@ import { UserService } from "src/user/user.service";
 export interface dmsSide {
 	dmId?: string,
 	name?: string,
+	reciverId?: string,
 	lastMsg?: string,
 	picture?: string
 	status?: string

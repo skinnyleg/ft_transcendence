@@ -28,9 +28,10 @@ interface MuteUserProps {
     isOpen: boolean;
     setIsOpen: Dispatch<SetStateAction<boolean>>;
 	userNick: string;
+	userId: string;
 }
 
-const MuteUser: FC<MuteUserProps> = ({isOpen, setIsOpen, userNick}) => {
+const MuteUser: FC<MuteUserProps> = ({isOpen, setIsOpen, userNick, userId}) => {
 
 	let [type, setType] = useState(types[0].type)
 	const chatSocket = useContext(chatSocketContext);
@@ -63,7 +64,7 @@ function openModal() {
 
 		chatSocket.emit('muteUser', {
 			channelName: channelId,
-			user2mute: userNick,
+			user2muteId: userId,
 			expirationTime: time[index]
 		})
 		closeModal();

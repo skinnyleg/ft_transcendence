@@ -7,27 +7,27 @@ import ChannelPassword from './SubmitChannelPassword';
 import { chatSocketContext } from '../context/soketContext';
 import { ChatContext } from '../context/soketContext';
 
-interface ChatTypeBarProps {}
+interface PersonalTypeBarProps {}
 
 
-const ChatTypeBar: FC<ChatTypeBarProps> = () => {
+const PersonalTypeBar: FC<PersonalTypeBarProps> = () => {
 
 	const [barValue, setBarValue] = useState('Join');
 	const chatSocket = useContext(chatSocketContext);
 	const [isDisabled, setIsDisabled] = useState(false)
 	const [message, setMessage] = useState('')
-	const {channelId, setChannelId, setChannel, channel, setSearchInput} = useContext(ChatContext);
+	const {personalId, setPersonalId, setPersonal, personal} = useContext(ChatContext);
 
 
 		const sendMessage = () => {
 			if (message.trim().length)
 			{
 
-				console.log('message == ', message.trim().length)
-				// console.log('channelId == ', channelId)
-				chatSocket.emit('sendMsgCH', {
+				// console.log('message == ', message.trim().length)
+				// console.log('receiverId == ', personal.reciverId)
+				chatSocket.emit('sendMsgDM', {
+					receiverId: personal.reciverId,
 					content: message,
-					channelName: channelId,
 				})
 				setMessage('');
 			}
@@ -41,26 +41,7 @@ const ChatTypeBar: FC<ChatTypeBarProps> = () => {
 		  }
 
 
-		const handleChannelJoin = () => {
-			if (channel.channelType === 'PUBLIC')
-			{
-				setBarValue('Joining');
-			}
-			else
-			{
-				// setIsDisabled(true);
-				setBarValue('Your Request Has Been Sent')
-			}
-			chatSocket.emit('joinChannel', {
-				channelName: channelId
-			})
-			// chatSocket.on('failed' , (data: string) => {
-			// 	setBarValue(data);
-			// })
-			// setSearchInput('')
-		}
-
-		if (channel && channel.userRole !== 'none')
+		if (personal && personal.status !== 'BLOCKED')
 		{
 			return (
 				<div className='text-black h-9 rounded-xl p-0 flex flex-row justify-between items-center gap-2'>
@@ -87,27 +68,17 @@ const ChatTypeBar: FC<ChatTypeBarProps> = () => {
 			)
 		}
 
-		if (channel && channel.channelType === 'PROTECTED' && channel.userRole === 'none')
-		{
-			return (
-					<div className='text-black h-9 rounded-xl p-0 flex flex-row justify-between items-center gap-2'>
-						<ChannelPassword />
-					</div>
-			)
-		}
-
 		return (
 		<div className='text-black h-9 rounded-xl p-0 flex flex-row justify-between items-center gap-2'>
-			<div className={`bg-sky-700 w-[100%] rounded-3xl h-full flex items-center justify-center hover:cursor-pointer animate-pulse`}>
+			<div className={`bg-sky-700 w-[100%] rounded-3xl h-full flex items-center justify-center hover:cursor-not-allowed animate-pulse`}>
 				<button
 					disabled={isDisabled}
-					onClick={handleChannelJoin}
-					className='w-full h-full text-center text-xl font-bold text-teal-200 focus:outline-none'>
-					{barValue}
+					className='w-full h-full text-center text-xl font-bold text-teal-200 hover:cursor-not-allowed focus:outline-none'>
+					You Are Blocked
 				</button>
 			</div>
 		</div>
 
 	);
 }
-export default ChatTypeBar;
+export default PersonalTypeBar;

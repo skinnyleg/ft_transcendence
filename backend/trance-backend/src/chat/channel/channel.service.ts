@@ -49,6 +49,32 @@ export class ChannelService {
         return newChannel;
     }
 
+    async   deleteChannel(channelName: string, ownerId: string)
+    {
+        const channel = await this.outils.findChannelByName(channelName);
+        const ChannelOwner = await this.outils.getChannelOwner(channelName);
+        if (ChannelOwner !== ownerId)
+            throw new ForbiddenException('option allowed only for channel owner');
+        const {id , updatedAt, users, ...results} = channel;
+        console.log('results == ', results);
+        // const tmpChannel = await this.prisma.channel.create({
+        //     data: {
+        //         name: channel.name + "tmp",
+        //         picture: channel.picture,
+        //         type: channel.type,
+        //         owner: ownerId,
+        //         password: channel.password,
+        //         updatedAt: channel.updatedAt
+        //     },
+        // });
+        await this.prisma.channel.delete({
+            where: {
+                name: channelName,
+                owner: ownerId,
+            },
+        });
+    }
+
     async   joinChannel(channelName: string, usernameId: string, password?: string)
     {
         const isUserInChannel =  await this.outils.isUserInChannel(channelName, usernameId);
@@ -482,14 +508,14 @@ export class ChannelService {
     async   emitNotif2channelUsers(data: notif2user, values: string[], dataObj: any = {})
     {
         const {channelName, admin, notif, user2notify, server, usersSockets} = data;
-        console.log('new name ? == ', channelName)
+        // console.log('new name ? == ', channelName)
         const user2notifyId = user2notify;
         const channelId = await this.outils.getChannelIdByName(channelName);
         const channelUsers = await this.getChannelUsers(channelName);
         // console.log('channelUsers -== ', channelUsers)
         for (const userSocket  of usersSockets) {
             if (user2notifyId === userSocket.userId)
-            userSocket.socket.emit(values[0], dataObj);
+                userSocket.socket.emit(values[0], dataObj);
             if (channelUsers.find(userIn => userIn.id === userSocket.userId))
                 userSocket.socket.join(channelId);
         }

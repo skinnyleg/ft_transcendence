@@ -91,7 +91,7 @@ const CreateChannel: FC<CreateChannelProps> = () => {
 		<button
 			type="button"
 			onClick={openModal}
-			className="text-black bg-cyan-100 text-center w-1/6 rounded-e-xl"
+			className="text-black bg-cyan-100 text-center w-1/6 rounded-e-2xl"
 		>
 			<CreateChannelIcon
 			style='w-full h-6 focus:ring-0 focus:outline-none'

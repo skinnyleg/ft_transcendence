@@ -4,20 +4,32 @@ import DmComponent from './DmComponent';
 import { Dms } from './ChatConstants';
 
 
-interface UserDmsProps {}
+interface UserDmsProps {
+	userDms: DmsInter[] | undefined;
+	info: string;	
+}
 
-const UserDms: FC<UserDmsProps> = ({}) => {
+const UserDms: FC<UserDmsProps> = ({userDms, info}) => {
 		return (
-			<div className='overflow-y-auto'>
+			<>
 				{
-					Dms.map((Dm) => (
-						<DmComponent
-							key={Dm.id} // Add a unique key for each child component
-							Dm={Dm}
-						/>
+				  (userDms && userDms.length > 0) && (
+					userDms.map((Dm) => (
+					  <DmComponent
+						key={Dm.dmId} // Add a unique key for each child component
+						Dm={Dm}
+					  />
 					))
+				  )
 				}
-			</div>
+				{
+					(userDms && userDms.length === 0) && (
+						<div className='flex w-full h-full flex-crol justify-center items-center'>
+							<p className='text-center text-lg font-bold text-teal-200'>{info}</p>
+						</div>
+					)
+				}
+			</>
 	);
 }
 export default UserDms;

@@ -14,7 +14,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
 
   return (
-    <div className="flex bg-main flex-col md:flex-row md:overflow-y-auto overflow-y-auto xl:h-screen lg:h-screen">
+    <div className="flex h-screen bg-main flex-col overflow-y-hidden">
       <LayoutChat>
         {children}
       </LayoutChat>

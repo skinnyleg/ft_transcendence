@@ -17,7 +17,7 @@ const ChannelTab = () => {
 	const chatSocket = useContext(chatSocketContext)
 	const searchParams = useSearchParams();
 	const router = useRouter()
-	const {channelId, setChannelId, searchInput, setSearchInput} = useContext(ChatContext);
+	const {channelId, setChannelId, searchInputCh, setSearchInputCh} = useContext(ChatContext);
 	const [userChannels, setUserChannels] = useState<ChannelInter[]>([]);
 	const [info, setInfo] = useState<string>('Join Or Create Your Own Channel');
 
@@ -106,8 +106,8 @@ const ChannelTab = () => {
 	}, 15); // 500 milliseconds debounce time
 
 	useEffect(() => {
-	  if (searchInput && searchInput !== '') {
-		debouncedSearchWebSocket(searchInput);
+	  if (searchInputCh && searchInputCh !== '') {
+		debouncedSearchWebSocket(searchInputCh);
 		setInfo('No Channel Found!!')
 	  }
 	  else
@@ -115,20 +115,20 @@ const ChannelTab = () => {
 		chatSocket.emit('getUserChannels');
 		setInfo('Join Or Create Your Own Channel')
 	  }
-	}, [searchInput, debouncedSearchWebSocket]);
+	}, [searchInputCh, debouncedSearchWebSocket]);
 	return (
 		<div className="bg-teal-600 rounded-[15px] p-3 w-full shadow-lg lg:w-full h-[49%] flex flex-col">
 			<h1 className='text-teal-300 font-bold text-lg mb-1'>CHANNELS</h1>
 			<div className='flex flex-row justify-around rounded-2xl w-full mb-2'>
-				<div className='flex flex-row rounded-s-xl bg-cyan-100 w-4/5'>
+				<div className='flex flex-row rounded-s-2xl bg-cyan-100 w-4/5'>
 					<CiSearch
-						className='w-8  h-10 stroke-1 bg-cyan-100 rounded-s-lg pl-2 text-black'
+						className='w-8  h-10 stroke-1 bg-cyan-100 rounded-s-2xl pl-2 text-black'
 					/>
 					<input type='text'
 						placeholder='Search Channels...'
 						className='w-4/5 h-10 bg-cyan-100 border-none focus:ring-0 text-black'
-						value={searchInput}
-						onChange={(e) => setSearchInput(e.target.value)}
+						value={searchInputCh}
+						onChange={(e) => setSearchInputCh(e.target.value)}
 					/>
 				</div>
 				<CreateChannelComponent />

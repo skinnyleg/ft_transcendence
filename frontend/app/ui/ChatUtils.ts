@@ -35,6 +35,12 @@ export const checkOpenChannelId = (channelName: string, channelId: string) => {
 	return false;
 }
 
+export const checkOpenPersonalId = (DmId: string, personalId: string) => {
+	if (DmId === personalId)
+		return true;
+	return false;
+}
+
 
 export const isBarOpen = (searchParams: ReadonlyURLSearchParams) => {
 	if (searchParams.has('bar') && searchParams.get('bar') === 'open')

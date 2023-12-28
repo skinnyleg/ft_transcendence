@@ -4,7 +4,7 @@ import {  } from "@heroicons/react/24/outline";
 import { CiUnlock } from "react-icons/ci";
 import { IoSettingsSharp } from "react-icons/io5";
 import { Children, useContext, useEffect } from "react";
-import { socketContext } from "@/app/context/soketContext";
+import { chatSocketContext, socketContext } from "@/app/context/soketContext";
 import { useRouter } from "next/navigation";
 
 
@@ -21,6 +21,7 @@ interface DataProps {
 const Conditional = ({isfriend, privateProfile, userId, isBlocked} : DataProps ) => {
     const router = useRouter();
     const socket = useContext(socketContext);
+    const chatSocket = useContext(chatSocketContext);
 
     // Events Emiter
     const handleAddFriend = () => {
@@ -40,18 +41,26 @@ const Conditional = ({isfriend, privateProfile, userId, isBlocked} : DataProps )
         socket.emit("unblock-friend", {userId});
     }
 
+    const sendMessage = () => {
+        console.log('here')
+        chatSocket.emit('sendMsgDM', {
+            receiverId : userId
+        })
+        router.push('/Chat')
+    }
+
     if (isfriend && !privateProfile)
     {
         if (isBlocked){
             return (
                 <div className="flex flex-row rounded-3xl justify-evenly items-center text-white mx-auto h-full xl:w-[80%] w-[100%]">
-                    <div className={`flex text-white px-2 text-sm rounded-full`} onClick={handleUnblockUser}>
+                    <div className={`flex text-white px-2 text-sm rounded-full hover:cursor-pointer`} onClick={handleUnblockUser}>
                         <CiUnlock className="text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8"/>
                     </div>
-                    <div className="flex  text-white text-sm rounded-full px-2" onClick={handleDeleteFriend}>
+                    <div className="flex  text-white text-sm rounded-full px-2 hover:cursor-pointer" onClick={handleDeleteFriend}>
                         <UserMinusIcon className="text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8"/>
                     </div>
-                    <div className=" text-white text-sm rounded-full px-2 pr-1" onClick={() => {}}>
+                    <div className=" text-white text-sm rounded-full px-2 pr-1 hover:cursor-pointer" onClick={sendMessage}>
                         <ChatBubbleLeftEllipsisIcon className="text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8"/>
                     </div>
                 </div>
@@ -59,13 +68,13 @@ const Conditional = ({isfriend, privateProfile, userId, isBlocked} : DataProps )
         }
         return (
             <div className="flex flex-row rounded-3xl justify-evenly items-center text-white mx-auto h-full xl:w-[80%] w-[100%]">
-                <div className={`flex text-white px-2 text-sm rounded-full`} onClick={handleBlockUser}>
+                <div className={`flex text-white px-2 text-sm rounded-full hover:cursor-pointer`} onClick={handleBlockUser}>
                     <NoSymbolIcon className="text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8"/>
                 </div>
-                <div className="flex  text-white text-sm rounded-full px-2" onClick={handleDeleteFriend}>
+                <div className="flex  text-white text-sm rounded-full px-2 hover:cursor-pointer" onClick={handleDeleteFriend}>
                     <UserMinusIcon className="text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8"/>
                 </div>
-                <div className=" text-white text-sm rounded-full px-2 pr-1" onClick={() => {}}>
+                <div className=" text-white text-sm rounded-full px-2 pr-1 hover:cursor-pointer" onClick={sendMessage}>
                     <ChatBubbleLeftEllipsisIcon className="text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8"/>
                 </div>
             </div>
@@ -76,13 +85,13 @@ const Conditional = ({isfriend, privateProfile, userId, isBlocked} : DataProps )
         if (isBlocked){
             return (
                 <div className="flex flex-row rounded-3xl justify-evenly items-center text-white mx-auto text-center xl:w-[80%] w-[100%]">
-                    <div className={`${isBlocked ? 'hidden' : ''}flex text-white px-2 text-sm rounded-full`} onClick={handleUnblockUser}>
+                    <div className={`${isBlocked ? 'hidden' : ''}flex text-white px-2 text-sm rounded-full hover:cursor-pointer`} onClick={handleUnblockUser}>
                         <CiUnlock className="text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8"/>
                     </div>
-                    <div className="flex  text-white text-sm rounded-full px-2" onClick={handleAddFriend}>
+                    <div className="flex  text-white text-sm rounded-full px-2 hover:cursor-pointer" onClick={handleAddFriend}>
                         <UserPlusIcon className="text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8"/>
                     </div>
-                    <div className=" text-white text-sm rounded-full px-2" onClick={() => {}}>
+                    <div className=" text-white text-sm rounded-full px-2 hover:cursor-pointer" onClick={sendMessage}>
                         <ChatBubbleLeftEllipsisIcon className="text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8 pr-1"/>
                     </div>
                 </div>
@@ -90,13 +99,13 @@ const Conditional = ({isfriend, privateProfile, userId, isBlocked} : DataProps )
         }
         return (
             <div className="flex flex-row rounded-3xl justify-evenly items-center text-white mx-auto text-center xl:w-[80%] w-[100%]">
-                <div className={`${isBlocked ? 'hidden' : ''}flex text-white px-2 text-sm rounded-full`} onClick={handleBlockUser}>
+                <div className={`${isBlocked ? 'hidden' : ''}flex text-white px-2 text-sm rounded-full hover:cursor-pointer`} onClick={handleBlockUser}>
                     <NoSymbolIcon className="text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8"/>
                 </div>
-                <div className="flex  text-white text-sm rounded-full px-2" onClick={handleAddFriend}>
+                <div className="flex  text-white text-sm rounded-full px-2 hover:cursor-pointer" onClick={handleAddFriend}>
                     <UserPlusIcon className="text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8"/>
                 </div>
-                <div className=" text-white text-sm rounded-full px-2" onClick={() => {}}>
+                <div className=" text-white text-sm rounded-full px-2 hover:cursor-pointer" onClick={sendMessage}>
                     <ChatBubbleLeftEllipsisIcon className="text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8 pr-1"/>
                 </div>
             </div>

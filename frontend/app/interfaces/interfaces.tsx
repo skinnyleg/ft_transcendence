@@ -80,6 +80,7 @@ export interface ChannelInter {
   channelName: string,
   channelPicture: string,
   userRole: string,
+  userStatus: string,
   lastMsg: string,
   channelType: string
 }
@@ -93,11 +94,22 @@ export interface ChannelInter {
 // 	userRole?: string;
 // }
 
+
 export interface DmsInter {
-	id: string,
-	userPic: string,
-	userNick: string,
+	dmId: string,
+	name: string,
+	lastMsg: string,
+	picture: string
+	status: string
+  reciverId?: string,
 }
+
+
+// export interface DmsInter {
+// 	id: string,
+// 	userPic: string,
+// 	userNick: string,
+// }
 
 
 export interface ChannelUser {
@@ -115,6 +127,13 @@ export interface ChannelUser {
 // }
 
 
+export interface DmMessageInter {
+	dmId: string,
+	messageId: string,
+	sender: string,
+	message: string,
+	time: string
+}
 
 export interface MessageInter {
   channelId: string,

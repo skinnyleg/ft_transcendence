@@ -2,7 +2,7 @@ import { BellAlertIcon } from "@heroicons/react/24/outline";
 import { NotificationsData } from "@/app/interfaces/interfaces"
 import { useContext, useEffect, useState } from 'react';
 import clsx from "clsx";
-import { chatSocketContext, socketContext } from "../context/soketContext";
+import { ChatContext, chatSocketContext, socketContext } from "../context/soketContext";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import React from 'react';
 import { toast, ToastContainer } from 'react-toastify';
@@ -17,6 +17,7 @@ const Notifications = () => {
     const [newNotification, setNewNotification] = useState<NotificationsData | null>(null);
     const socket = useContext(socketContext);
     const chatSocket = useContext(chatSocketContext);
+    const {channelId, personalId} = useContext(ChatContext);
 
     useEffect( () => {
         const notif = async() => {
@@ -67,7 +68,7 @@ const Notifications = () => {
             chatSocket.off('notification');
             chatSocket.off('notif');
         }
-    }, [chatSocket])
+    }, [chatSocket,channelId])
 
 
 
@@ -106,13 +107,18 @@ const Notifications = () => {
         {
             chatSocket.emit('responseJoin', {
                 channelName: data.notifData.channelName,
-                user: data.notifData.user,
+                user: data.notifData.userId,
                 value: true,
                 requestId: data.requestId
             })
         }
         else
+        {
             socket.emit("accept-request", {userId : useId , requestId : reqId});
+            socket.on('refreshPersonalTab', () => {
+                chatSocket.emit('getUserDms');
+            })
+        }
         var i = notifications.indexOf(data);
         notifications.splice(i, 1);
         setNotifications(notifications);
@@ -127,7 +133,7 @@ const Notifications = () => {
         {
             chatSocket.emit('responseJoin', {
                 channelName: data.notifData.channelName,
-                user: data.notifData.user,
+                user: data.notifData.userId,
                 value: false,
                 requestId: data.requestId
             })

@@ -13,21 +13,22 @@ import { HiDotsVertical } from "react-icons/hi";
 import { useRouter, useSearchParams } from 'next/navigation';
 import ChannelDropDown from './ChannelDropDown';
 import { ChatContext } from '../context/soketContext';
+import PersonalDropDown from './PersonalDropDown';
 
 
-interface ChatTopBarProps {}
+interface PersonalTopBarProps {}
 
-const ChatTopBar: FC<ChatTopBarProps> = () => {
+const PersonalTopBar: FC<PersonalTopBarProps> = () => {
 
 	const router = useRouter();
 	const searchParams = useSearchParams()
-	const {channelId, setChannelId, channel} = useContext(ChatContext);
+	const {personalId, setPersonalId, personal} = useContext(ChatContext);
 
 	const handleBack = () => {
 		router.replace('/Chat');
 	}
 	const showSideBar = () => {
-		router.replace(`/Chat?channel=${channelId}&bar=open`);
+		router.replace(`/Chat?personal=${personalId}`);
 	}
 
 	return (
@@ -44,33 +45,27 @@ const ChatTopBar: FC<ChatTopBarProps> = () => {
 					<div className='max-w-[45px] max-h-[45px] min-w-[45px] min-h-[45px] flex justify-center'>
 						<Image
 							unoptimized={process.env.ENVIRONMENT !== "PRODUCTION"}
-							src={channel?.channelPicture}
+							src={personal?.picture}
 							width={45}
 							height={45}
-							alt='channel picture'
+							alt='User picture'
 							className='rounded-full border border-teal-600'
 						/>
 					</div>
 				</div>
 				<div className='flex flex-col'>
-					<h1 className='font-bold text-lg'>{channelId}</h1>
-					<p className='text-gray-500 hidden md:block'>{channel?.lastMsg}...</p>
+					<h1 className='font-bold text-lg'>{personal?.name}</h1>
+					<p className='text-gray-500 hidden md:block'>{personal?.lastMsg}...</p>
 				</div>
 			</div>
-			{
-				(channel && channel.userRole !== "none") && (
-					<div className='flex flex-row items-center justify-end gap-3 p-2 w-fit'>
-						<ChannelDropDown
-							key={channel.channelId}
-							userRole={channel.userRole}
-							showSideBar={showSideBar}
-							channelType={channel.channelType}
-							channelPic={channel.channelPicture}
-						/>
-					</div>
-				)
-			}
+			<div className='flex flex-row items-center justify-end gap-3 p-2 w-fit'>
+					<PersonalDropDown
+						key={personal?.personalId}
+						userRole={personal?.status}
+						userNick={personal?.name}
+					/>
+			</div>
 		</div>
 	);
 }
-export default ChatTopBar;
+export default PersonalTopBar;
