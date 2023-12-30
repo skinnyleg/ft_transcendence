@@ -13,6 +13,7 @@ export class QrService {
 
 	async checkQrCode(QrCode: string, id: string, res: Response)
 	{
+		
 		const secret = await this.userservice.getSecret(id);
 		if (!secret)
 			throw new ConflictException('user hasn\'t enabled 2FA')
@@ -26,12 +27,11 @@ export class QrService {
 		{
 			const token = await this.authService.createToken(user.id, user.nickname, TOKENEXP, TOKENSECRET)
 			const refresh = await this.authService.createToken(user.id, user.nickname, REFRESHEXP, REFRESHSECRET)
-			res.cookie('token', token, {maxAge: TOKENEXP * 1000})
-			res.cookie('refresh', refresh, {maxAge: REFRESHEXP * 1000})
+			res.cookie('token', token)
+			res.cookie('refresh', refresh)
 			res.status(200).json(token);
 		 } else {
 			throw new UnauthorizedException('not allowed')
 		 }
 	}
-
 }

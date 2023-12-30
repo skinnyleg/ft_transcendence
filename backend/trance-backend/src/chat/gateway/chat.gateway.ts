@@ -14,6 +14,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { changeNameDto, changeAdminsDto, changePassDto, changeTypeDto, changepicDto, stringDto } from '../dto/changePramCH.dto';
 import { banUserDto, kickUserDto, muteUserDto } from '../dto/blacklist.dto';
 import { RequestType } from '@prisma/client';
+import { exit } from 'process';
+import { error } from 'console';
 
 
 @WebSocketGateway({ 
@@ -38,13 +40,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 	@WebSocketServer()
 	server: Server;
 
-	private readonly usersSockets: {userId: string, socket: any}[] = [];
-
+	private usersSockets: {userId: string, socket: any}[] = [];
 
 	async onModuleInit() {
 		try
 		{
 			console.log('------ WebSocket Gateway started ------');
+			this.usersSockets.length = 0;
 			await this.Outils.pushMutedUsers();
 			await this.Outils.MuteExpiration();
 		}
@@ -56,11 +58,16 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 	async	handleConnection(@ConnectedSocket() client: Socket)
 	{
 		try
-		{
+		{	
 			const token: string = client.handshake.headers.token as string;
 			const payload = await this.jwtService.verifyAsync(token, { secret: process.env.jwtsecret })
 			const user = await this.userService.findOneById(payload.sub);
 			client.data.user = user;
+			// this.usersSockets.find((isExist) => { isExist.userId === user.id ? (throw new error('ffff')) : null});
+			for(const isExist of this.usersSockets) {
+				if (isExist.userId === user.id)
+					throw new ForbiddenException('only one tab allowed for connection');
+			}
 			console.log(`------ coonect: ${user.nickname} ------`);
 			this.usersSockets.push({userId: user.id, socket: client});
 		}
@@ -74,7 +81,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 	{
 		try
 		{
-			console.log(`------ User disconnect ------`);
+			console.log(`------ User disconnect ${client.data.user.nickname}------`);
+			const array: {userId: string, socket: any}[] = [];
+			for (const user of this.usersSockets) {
+				if (user.userId !== client.data.user.id)
+					array.push(user);
+			}
+			this.usersSockets = array;
 			client.disconnect();
 		}
 		catch (error) {
@@ -108,6 +121,22 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 		}
 	}
 
+	@SubscribeMessage('deleteChannel')
+	async	deleteChannel(@MessageBody() data: stringDto, @ConnectedSocket() client: Socket)
+	{
+		try
+		{
+			await  this.DmOutils.validateDtoData(data, stringDto);
+			const {channelName} = data;
+			const channelUsers = await this.channelService.getChannelUsers(channelName);
+			await this.channelService.deleteChannel(channelName, client.data.user.id);
+			this.server.emit('outDone', {channelName});
+		}	
+		catch{
+			this.DmOutils.Error(client, 'deleteChannel', error, 'delete  channel failed');
+		}
+	}
+
 	@SubscribeMessage('getDataCH')
 	async	channelInformation(@MessageBody() data: stringDto, @ConnectedSocket() client: Socket)
 	{
@@ -116,7 +145,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			await  this.DmOutils.validateDtoData(data, stringDto);
 			const { channelName } = data;
 			const user = client.data.user;
+			// console.log('channelName == ', channelName)
 			const channel = await this.Outils.findChannelByName(channelName);
+			// console.log('channelName == ', channelName)
 			let buffer: channelsSide = {};
 			buffer.channelId = channel.id;
 			buffer.channelName = channel.name;
@@ -149,8 +180,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 				await this.Outils.checkRequest(data, ownerId, user.id);
 				const reqID = await this.userService.generateRequest(user.id, ownerId, 
 					RequestType.JOINCHANNEL, false, data.channelName);
-				if (ownerSocket)
-					ownerSocket.socket.emit('notifHistory', (await this.userService.generateNotifData(reqID)));
+				if (ownerSocket) {
+					console.log('entered to private cond')
+					const obj = (await this.userService.generateNotifData(reqID))
+					ownerSocket.socket.emit('notifHistory', obj);
+				}
 				return client.emit('notification', 'request to join channel send to owner.');
 			}
 			const notif2users: notif2user = {};
@@ -163,6 +197,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			await this.channelService.emitNotif2channelUsers(notif2users, ['joinDone', 'refreshSide']);
 		}
 		catch (error) {
+			console.log('entered error ')
 			this.DmOutils.Error(client, 'joinChannel', error, 'join channel failed');
 		}
 	}
@@ -214,7 +249,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 				await this.channelService.emitNotif2channelUsers(notif2users, ["joinDone", 'refreshSide']);
 			}
 			else
+			{
 				userSocket.socket.emit('notification', `Request to join ${channelName} got rejected`);
+				userSocket.socket.emit('refreshSide');
+			}
 		}
 		catch (error) {
 			this.DmOutils.Error(client, 'responseJoin', error, 'response to join channel failed');
@@ -237,7 +275,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			notif2users.usersSockets = this.usersSockets; 
 			notif2users.notif = `${await this.userService.getNickById(newAdminId)} added to channel admins`;
 			notif2users.user2notify = newAdminId;
-			await this.channelService.emitNotif2channelUsers(notif2users, ['refreshSide','newAdmin'], {channelName});
+			await this.channelService.emitNotif2channelUsers(notif2users, ['newAdmin', 'refreshSide'], {channelName});
 		}
 		catch (error) {
 			this.DmOutils.Error(client, 'setAdmin', error, 'set admin to channel failed');
@@ -259,7 +297,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			notif2users.usersSockets = this.usersSockets; 
 			notif2users.notif = `${await this.userService.getNickById(newAdminId)} demoted from channel admins`;
 			notif2users.user2notify = newAdminId;
-			await this.channelService.emitNotif2channelUsers(notif2users, ['refreshSide','newAdmin'], {channelName});
+			await this.channelService.emitNotif2channelUsers(notif2users, ['newAdmin', 'refreshSide'], {channelName});
 		}
 		catch (error) {
 			this.DmOutils.Error(client, 'setAdmin', error, 'demote user from channel admins failed');
@@ -307,22 +345,25 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			const user = client.data.user;
 			const receId = data.receiverId;
 			const receiverSocket = this.usersSockets.find(user => user.userId === receId);
-			const { dmId, receiverId } = await this.DmService.generateDm(receId, user.id, receiverSocket.socket);
+			const { dmId, receiverId } = await this.DmService.generateDm(receId, user.id, receiverSocket);
 			const blockedList = await this.DmOutils.getBlockedUsers(user.id);
 			if (blockedList.find((blockUser => blockUser === receiverId)))
 				return client.emit('notification', `user is blocked`);
 			if (data.content) {
 				const message = await this.DmService.creatMessageDm(dmId, user.id, data.content);
 				await this.DmOutils.updateDmupdatedAt(dmId, message.createdAt);
-				const buffer = this.DmOutils.fillDmsBuffer(message, user.id, dmId);
+				const buffer = await this.DmOutils.fillDmsBuffer(message, user.id, dmId);
 				if (receiverSocket) {
 					client.join(dmId);
 					receiverSocket.socket.join(dmId);
 					this.server.to(dmId).emit('messageDoneDM', buffer);
 					receiverSocket.socket.leave(dmId);
+					receiverSocket.socket.emit('refreshUserDms');
 					client.leave(dmId);
 				}
 			}
+			else
+				client.emit('redirect', {dmId})
 		}
 		catch (error) {
 			this.DmOutils.Error(client, 'sendMsgDM', error, 'send DM failed');
@@ -336,14 +377,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			await this.DmOutils.validateDtoData(data, stringDto);
 			const { channelName } = data;
 			const user = client.data.user;
-			await this.channelService.leaveChannel(channelName, user.nickname);
+			await this.channelService.leaveChannel(channelName, user.id);
 			const notif2users: notif2user = {channelName};
 			notif2users.admin = await this.userService.getNickById(user.id);
 			notif2users.server = this.server;
 			notif2users.usersSockets = this.usersSockets; 
 			notif2users.notif = `${notif2users.admin} left`;
 			notif2users.user2notify = user.id;
-			await this.channelService.emitNotif2channelUsers(notif2users, ['outDone', 'refreshSide']);
+			await this.channelService.emitNotif2channelUsers(notif2users, ['outDone', 'refreshSide'], {channelName});
 		}
 		catch(error) {
 			this.DmOutils.Error(client, 'leaveChannel', error, 'leave channel failed');
@@ -367,7 +408,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			notif2users.usersSockets = this.usersSockets; 
 			notif2users.notif = `${await this.userService.getNickById(user2kickId)} got kicked`;
 			notif2users.user2notify = user2kickId;
-			await this.channelService.emitNotif2channelUsers(notif2users, ['outDone', 'refreshSide']);
+			await this.channelService.emitNotif2channelUsers(notif2users, ['outDone', 'refreshSide'], {channelName});
 		}
 		catch(error) {
 			this.DmOutils.Error(client, 'kickUser', error, 'kick user failed');
@@ -391,7 +432,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			notif2users.usersSockets = this.usersSockets; 
 			notif2users.notif = `${await this.userService.getNickById(user2banId)} got banned`;
 			notif2users.user2notify = user2banId;
-			await this.channelService.emitNotif2channelUsers(notif2users, ['outDone', 'refreshSide']);
+			await this.channelService.emitNotif2channelUsers(notif2users, ['outDone', 'refreshSide'], {channelName});
 		}
 		catch(error) {
 			this.DmOutils.Error(client, 'banUser', error, 'ban user failed');
@@ -437,7 +478,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			notif2users.usersSockets = this.usersSockets; 
 			notif2users.notif = `${await this.userService.getNickById(newAdminId)} is the new owner`;
 			notif2users.user2notify = newAdminId;
-			await this.channelService.emitNotif2channelUsers(notif2users, ['refreshSide','newOwner'], {channelName});
+			await this.channelService.emitNotif2channelUsers(notif2users, ['newOwner', 'refreshSide'], {channelName});
 		}
 		catch(error) {
 			this.DmOutils.Error(client, 'changeOwnerCH', error, 'change channel owner failed');
@@ -453,6 +494,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			const {channelName, newType, password} = data;
 			const ownerId = client.data.user.id;
 			await this.channelService.changeChannelType(channelName, ownerId, newType, password);
+			this.server.emit('changeDone', {channelName});
 		}
 		catch (error) {
 			this.DmOutils.Error(client, 'changeTypeCH', error, 'change channel type failed');
@@ -474,7 +516,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			notif2users.usersSockets = this.usersSockets; 
 			notif2users.notif = `${newName} is the new name of channel`;
 			notif2users.user2notify = ownerId;
-			await this.channelService.emitNotif2channelUsers(notif2users, ['', 'newName']);
+			await this.channelService.emitNotif2channelUsers(notif2users, ['', 'newName'], {newName});
 		}
 		catch (error) {
 			this.DmOutils.Error(client, 'changeNameCH', error, 'change channel name failed');
@@ -586,13 +628,37 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			this.DmOutils.Error(client, 'getUserChannels', error, 'get user channels failed');
 		}
 	}
+	
+	@SubscribeMessage('getDataDm')
+	async	GetDataDm(@MessageBody() data: getMessagesDm, @ConnectedSocket() client: Socket)
+	{
+		try
+		{
+			await  this.DmOutils.validateDtoData(data, getMessagesDm);
+			const user = client.data.user;
+			const ls = await this.DmOutils.getBlockedUsers(user.id);
+			const dm = await this.DmService.getDmbyId(data.dmId);
+			const dmSide: dmsSide = {};
+			dmSide.dmId = data.dmId;	
+			dmSide.name = (dm.members[0].nickname === user.nickname) ? dm.members[1].nickname : dm.members[0].nickname;;
+			dmSide.reciverId = (dm.members[0].id === user.id) ? dm.members[1].id : dm.members[0].id;
+			dmSide.lastMsg = '';
+			dmSide.picture = (dm.members[0].profilePic === user.profilePic) ? dm.members[1].profilePic : dm.members[0].profilePic;
+			dmSide.dmStatus = (this.DmOutils.isInBlockedList(dmSide.reciverId, ls) === true ? 'BLOCKED' : 'ACTIVE');
+			dmSide.userStatus = (dm.members[0].status === user.status) ? dm.members[1].status : dm.members[0].status;
+			client.emit('DmData', dmSide);
+		}
+		catch(error) {
+			this.DmOutils.Error(client, 'getDataDm', error, 'get data DM failed');
+		}
+	}
 
 	@SubscribeMessage('getUserDms')
 	async	GetUserDm(@ConnectedSocket() client: Socket)
 	{
 		try
 		{
-			let picture, name, lastMsg, status, receiver: string;
+			let picture, name, lastMsg, dmStatus, receiver;
 			const user = client.data.user;
 			const ls = await this.DmOutils.getBlockedUsers(user.id);
 			const userDms = await this.DmService.getUserDms(user.id);
@@ -606,8 +672,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 				}
 				lastMsg = dm.messages[0]?.content || '';
 				receiver = (dm.members[0].id === user.id) ? dm.members[1].id : dm.members[0].id;
-				status = (this.DmOutils.isInBlockedList(receiver, ls) === true ? 'BLOCKED' : 'ACTIVE');
-				dmSide.push({dmId: dm.id, name, lastMsg, picture, status});	
+				dmStatus = (this.DmOutils.isInBlockedList(receiver, ls) === true ? 'BLOCKED' : 'ACTIVE');
+				dmSide.push({dmId: dm.id, name , lastMsg, picture, dmStatus});	
 			}
 			client.emit('userDms', dmSide);
 		}
@@ -682,7 +748,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			const dmMessages: dmMessages[] = [];
 			for (const chat of allMessages.messages) {
 				const buffer: dmMessages = 
-				await this.DmOutils.fillDmsBuffer(allMessages, client.data.user.id, data.dmId);
+				await this.DmOutils.fillDmsBuffer(chat, client.data.user.id, data.dmId);
 				dmMessages.push(buffer);
 			}
 			client.emit('messagesDM', dmMessages);

@@ -46,13 +46,14 @@ export class UploadController {
   @UseInterceptors(FileInterceptor('file', channelPicMulterOptions))
   async uploadChannelPic(@UploadedFile() file: Express.Multer.File, @Req() req) {
 
+	console.log('entered upload channel')
 	if (file === undefined)
 		throw new BadRequestException('Server doesn\'t this upload')
 	const id = getId(req);
 	const channelName = req.headers.channelname;
 	if (channelName === undefined || channelName === '')
 		throw new BadRequestException('No Channel Name Given')
-	const newDir =  'http://localhost:8000/' + 'upload/Channel/'
+	const newDir =  'http://localhost:8000/' + 'upload/channel/'
 	const filePath = newDir + file.filename
 	await this.uploadService.updateChannelPic(filePath, channelName)
     return { valid:true, filename: filePath };

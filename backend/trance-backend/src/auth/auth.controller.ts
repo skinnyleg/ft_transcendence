@@ -17,7 +17,7 @@ export class AuthController {
 	@Post('signin')
 	async signIn(@Body() payload : authDto,  @Res() res)
 	{
-		return await this.authService.signIn(payload.username, payload.password, res)
+		return await this.authService.signIn(payload.username, payload.password, res);
 	}
 
 	@Get('42')
@@ -36,12 +36,14 @@ export class AuthController {
 		}
 		const token = await this.authService.createToken(request.user.id, request.user.nickname, TOKENEXP, TOKENSECRET)
 		const refresh = await this.authService.createToken(request.user.id, request.user.nickname, REFRESHEXP, REFRESHSECRET)
-		response.cookie('token', token, {maxAge: TOKENEXP * 1000})
-		response.cookie('refresh', refresh, {maxAge: REFRESHEXP * 1000})
+		response.cookie('token', token)
+		response.cookie('refresh', refresh)
 		if (request.user.FirstLogin === true)
+		{
 			response.redirect(`${process.env.FrontendHost}/settings`);
+			return ;
+		}
 		response.redirect(`${process.env.FrontendHost}/Dashboard`);
-		// response.status(200).json(token);
 	}
 
 	@UseGuards(JwtAuthGuard)
@@ -56,15 +58,6 @@ export class AuthController {
 	@Get('CheckToken')
 	CheckToken(@Res() res)
 	{
-		// if (req.signedCookies && 'token' in req.signedCookies) {
-		//   if (req.signedCookies.token.length > 0) {
-		// 	if (payload.token === "")
-		// 		res.status(200).json(req.signedCookies.token);
-		// 	else if (req.signedCookies.token === payload.token)
-		// 		res.status(200).json(payload.token);
-		//   }
-		// }
-		// throw new UnauthorizedException('not allowed')
 		res.status(200).send({message: "true"})
 	}
 
@@ -89,7 +82,8 @@ export class AuthController {
 	@Get('refresh')
 	refreshTokens(@Req() req, @Res() res)
 	{
-		return this.authService.refreshTokens(req, res);
+		const id = req.user.sub;
+		return this.authService.refreshTokens(req, res, id);
 	}
 
 

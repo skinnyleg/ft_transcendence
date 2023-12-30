@@ -125,7 +125,13 @@ export class UserService {
 
 		const sortedUsers = usersWithWinrates.sort((a, b) => b.winrate - a.winrate);
 
-		return (sortedUsers)
+		return (sortedUsers);
+	}
+
+	async getAchievements(id: string)
+	{
+		const acheivements = await this.getDoneAchievements(id);
+		return ({doneAchievements: acheivements});
 	}
 
 	async getNotDoneAchievements(id: string)
@@ -176,7 +182,7 @@ export class UserService {
 					status: true,
 				}
 			})
-			friendsData.push(friendData)
+			friendsData.push(friendData);
 		}
 		return (friendsData);
 	}
@@ -195,7 +201,7 @@ export class UserService {
 				status: friendStatus,
 				friendId: recipientId,
 			}
-		})
+		});
 	}
 
 	async updateFriend(recipientId: string,friendStatus: any)
@@ -623,6 +629,7 @@ export class UserService {
 					descriptionOfRequest: true,
 					typeOfRequest: true,
 					responded:true,
+					channelName: true,
 				},
 			});
 
@@ -659,6 +666,8 @@ export class UserService {
 				description: `${userData.nickname}` + " " + notifData.descriptionOfRequest,
 				typeOfRequest: notifData.typeOfRequest,
 				responded: notifData.responded,
+				channelName: notifData.channelName,
+				user: userData.nickname,
 			},
 		}
 		return combinedData;
@@ -736,7 +745,7 @@ export class UserService {
 					}
 				}
 			}
-		})
+		});
 
 		const requestIds = requests.flatMap((user) => user.userRequests.map((req) => ({ id: req.id })));
 	
@@ -772,7 +781,7 @@ export class UserService {
 		for (const req of requestIds)
 		{
 			const notif = await this.generateNotifData(req.id);
-			notifications.push(notif)
+			notifications.push(notif);
 		}
 		return notifications;
 	}
@@ -955,7 +964,7 @@ export class UserService {
 		const users = await this.prisma.user.findMany({
 			where: {
 				nickname: {
-					contains: searchInput,
+					startsWith: searchInput,
 					mode: 'insensitive',
 				},
 			},

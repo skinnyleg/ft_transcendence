@@ -65,7 +65,7 @@ model User {
   BackgroundPic String
   wallet        Int
   level         Int
-  Rank          Int
+  Rank          Int        @default(0)
   nickname      String     @unique
   status        UserStatus
   isEnabled     Boolean    @default(false)
@@ -86,7 +86,7 @@ model User {
   channels     Channel[]
   Message      Message[]
   Match        Match[]
-  Dm           Dm[] @relation("directmessage")
+  Dm           Dm[]           @relation("directmessage")
   users        FriendStatus[]
   achievements Achievement[]
 }
@@ -100,7 +100,7 @@ model Request {
   descriptionOfRequest String
   emitted              Boolean     @default(false)
   responded            Boolean     @default(false)
-  channelName          String?     @unique    
+  channelName          String?     @unique
 }
 
 model Achievement {
@@ -144,7 +144,7 @@ model Message {
   channel   Channel? @relation(fields: [channelId], references: [id])
   channelId String?
   Dm        Dm?      @relation(fields: [dmId], references: [id])
-  dmId    String?
+  dmId      String?
 }
 
 model Channel {
@@ -162,10 +162,10 @@ model Channel {
 }
 
 model Dm {
-  id          String    @id @default(uuid())
-  updatedAt   DateTime    @default(now()) @updatedAt
-  members     User[]     @relation("directmessage")
-  messages    Message[]
+  id        String    @id @default(uuid())
+  updatedAt DateTime  @default(now()) @updatedAt
+  members   User[]    @relation("directmessage")
+  messages  Message[]
 }
 
 model Blacklist {
