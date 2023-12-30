@@ -27,7 +27,7 @@ const chat: FC<ChatProps> = () => {
 			// console.log('newName in root == ', newName);
 			// setChannelId(newName);
 		}
-		console.log('newName == ', newName)
+		// console.log('newName == ', newName)
 		return newName
 	}
 
@@ -39,7 +39,7 @@ const chat: FC<ChatProps> = () => {
 			// console.log('newName in root == ', newName);
 			// setChannelId(newName);
 		}
-		console.log('newName == ', newName)
+		// console.log('newName == ', newName)
 		return newName
 	}
 	const [channelId, setChannelId] = useState<string>(extractChannelName())
@@ -49,8 +49,8 @@ const chat: FC<ChatProps> = () => {
 	const [searchInputCh, setSearchInputCh] = useState<string>('');
 	const [searchInputDm, setSearchInputDm] = useState<string>('');
 	const [user, setUser] = useState<responseData>();
-	const [channel, setChannel] = useState<ChannelInter | null>(null);
-	const [personal, setPersonal] = useState<DmsInter | null>(null);
+	const [channel, setChannel] = useState<ChannelInter>();
+	const [personal, setPersonal] = useState<DmsInter>();
 	const router = useRouter();
 	const chatSocket = useContext(chatSocketContext);
 	const pathname = usePathname();
@@ -93,9 +93,9 @@ const chat: FC<ChatProps> = () => {
 	useEffect(() => {
 
 		chatSocket.on('outDone', (data: {channelName: string}) => {
-			console.log('searchParams == ', searchParams.get('channel'))
-			console.log('page sent from on == ', data.channelName)
-			console.log('page sent from state == ', channelId)
+			// console.log('searchParams == ', searchParams.get('channel'))
+			// console.log('page sent from on == ', data.channelName)
+			// console.log('page sent from state == ', channelId)
 			if (checkOpenChannelId(data.channelName, channelId) == true)
 			{
 				deleteChannelQuery();
@@ -140,8 +140,6 @@ const chat: FC<ChatProps> = () => {
 		</div>
 		</ChatContext.Provider>
 	)
-
-
 }
 
 export default chat;

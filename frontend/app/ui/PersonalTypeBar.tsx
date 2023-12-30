@@ -41,7 +41,7 @@ const PersonalTypeBar: FC<PersonalTypeBarProps> = () => {
 		  }
 
 
-		if (personal && personal.status !== 'BLOCKED')
+		if (personal && personal.dmStatus !== 'BLOCKED')
 		{
 			return (
 				<div className='text-black h-9 rounded-xl p-0 flex flex-row justify-between items-center gap-2'>

@@ -50,7 +50,7 @@ const getnickname = async () => {
           return(nickname.profilePic);
       }
     } catch (error : any) {
-      toast.error(error.response.data.message[0]);
+      toast.error(error.response?.data.message[0]);
       return("");
     }
 };

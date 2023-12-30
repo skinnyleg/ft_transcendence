@@ -166,8 +166,8 @@ const Profile = () => {
                     <img src={profileData?.userData.BackgroundPic} className="w-full rounded-md h-full object-cover" alt="background Image"></img>
                     <h2 className="absolute top-2 left-0 pl-3 text-gray-300">{profileData?.userData.nickname}</h2>
                 </div>
-                <div  className="rounded-full lg:w-[100px] md:w-[90px] w-[80px] xl:h-[150px] xl:w-[150px] absolute bottom-0 left-0 transform  xl:translate-x-[10px] xl:translate-y-[55px] translate-x-[8px] translate-y-[32px] border-2">
-                    <img src={profileData?.userData.profilePic} alt="profile Picture" className="lg:w-[100px] md:w-[90px] w-[80px] xl:h-[150px] xl:w-[150px] rounded-full" />
+                <div  className="rounded-full lg:w-[100px] md:w-[90px] w-[80px] xl:h-[150px] xl:w-[150px] absolute bottom-0 left-0 transform  xl:translate-x-[10px] xl:translate-y-[55px] translate-x-[8px] translate-y-[32px] border-2 max-w-[90px] max-h-[90px] min-w-[90px] min-h-[90px]">
+                    <img src={profileData?.userData.profilePic} alt="profile Picture" className="lg:w-[100px] md:w-[90px] w-[80px] xl:h-[150px] xl:w-[150px] rounded-full max-w-[90px] max-h-[90px] min-w-[90px] min-h-[90px]" />
                 </div>
             </div>
             <div className="bg-lightblue lg:col-start-2 lg:col-end-4 lg:row-start-2 lg:mt-0 mt-2 md:mt-4 lg:row-end-3 col-start-1 col-end-4 row-start-3 row-end-4
@@ -202,24 +202,26 @@ const Profile = () => {
             </div>
             <div className="bg-accents lg:col-span-2 col-span-4 lg:row-start-4 lg:row-end-5 row-start-5 row-end-6 w-full xl:h-[37vh] lg:h-[38vh] h-[450px] shadow-md rounded-xl">
                 <div className="overflow-y-scroll h-full pt-2 styled-scrollbar ">
-                    <div className="lg:w-[80%] xl:w-[90%] w-[98%] mt-5 h-full mx-auto">
+                    <div className="lg:w-[90%] xl:w-[90%] w-[98%] mt-5 h-full  mx-auto">
                         {matchHistory.map((match) => {
                             return (
-                            <div key={match?.id} className="flex flex-col border border-lightQuartze rounded-xl w-full mt-2 xl:mt-4">
-                                <div className="flex flex-row justify-between">
-                                    <div className="flex flex-row m-3 ">
+                            <div key={match?.id} className="flex flex-col border  border-lightQuartze rounded-xl w-full mt-2 xl:mt-4">
+                                <div className="flex flex-row justify-between items-center">
+                                    <div className="flex flex-row m-3 items-center ">
                                         <img src="/yo.jpg" alt="profilePic" className="mt-2 w-10 h-10 xl:w-15 xl:w-15 rounded-full" />
                                         <h2 className="text-bold m-1 lg:ml-5 md:ml-5 ml-1 text-white lg:text-lg xl:text-2xl md:text-lg text-sm ">{match?.winner.nickname}</h2>
                                     </div>
-                                    <div className="flex flex-col m-0 ">
-                                        <span className="text-bold text-center mt-2 xl:text-lg text-sm">{match?.isMeWhoWon ? `won` : `lose`}</span>  
-                                        <div className="flex flex-row justify-between border border-white rounded-xl xl:w-[100px] w-[50px] mb-2 h-[30px] xl:h-[40px] bg-button text-white">
-                                            <h2 className="text-bold ml-2 xl:mt-1 text-xl">{match?.winnerScore}</h2>
+                                    <div className="flex flex-col m-0">
+                                        <div className="flex flex-row-reverse justify-evenly items-center border border-white rounded-xl xl:w-[100px] w-[100px] mb-2 h-[30px] xl:h-[40px] bg-button text-white">
+                                        <span className="text-bold mt-2 xl:text-lg  h-full text-xl">{match?.isMeWhoWon ? `won` : `lose`}</span>  
+                                        <div className="flex flex-row">
+                                            <h2 className="text-bold ml-0 xl:mt-1 text-xl">{match?.winnerScore}</h2>
                                             <h2 className="text-bold xl:mt-1 text-xl">:</h2>
-                                            <h2 className="text-bold mr-2 xl:mt-1 text-xl">{match?.loserScore}</h2>
+                                            <h2 className="text-bold mr-0 xl:mt-1 text-xl">{match?.loserScore}</h2>
+                                        </div>
                                         </div>
                                     </div>
-                                    <div className="flex flex-row-reverse m-3"> 
+                                    <div className="flex flex-row-reverse m-3 items-center"> 
                                         <img src="/yo1.jpg" alt="profilePic" className="mt-2 w-10 h-10 xl:w-15 xl:w-15 rounded-full" />
                                         <h2 className="text-bold m-2 lg:mr-5 md:mr-5 mr-1 lg:text-lg xl:text-2xl md:text-lg text-sm text-white" >{match?.loser.nickname}</h2>
                                     </div>

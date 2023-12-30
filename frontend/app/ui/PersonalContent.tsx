@@ -41,7 +41,6 @@ const PersonalContent: FC<PersonalContentProps> = () => {
 
 
 		useEffect(() => {
-			console.log('emitting getting msg dm == ', personalId)
 			chatSocket.emit('getMessagesDM', {
 				dmId: personalId,
 			})
@@ -50,10 +49,10 @@ const PersonalContent: FC<PersonalContentProps> = () => {
 
 		useEffect(() => {
 			chatSocket.on('messagesDM', (data: DmMessageInter[]) => {
-				// console.log("messages Data personal == ", data);
-					setMessages(data);
-				})
-				chatSocket.on('messageDoneDM', (data: DmMessageInter) => {
+				setMessages(data);
+			})
+			chatSocket.on('messageDoneDM', (data: DmMessageInter) => {
+					console.log("messages Data personal done == ", data);
 					chatSocket.emit('getUserDms');
 					if (checkOpenPersonalId(data.dmId, personalId) == true)
 					{
@@ -80,7 +79,7 @@ const PersonalContent: FC<PersonalContentProps> = () => {
 			<div ref={scrollableRef} className={`w-full flex-grow p-2 gap-1 flex flex-col mt-3 mb-3 overflow-y-auto overflow-x-hidden`}>
 				{
 					messages.length > 0 && messages.map((message) => {
-						if (message.sender === user?.nickname)
+						if ((message.sender === message.self) && (message.sender === user?.nickname))
 							return (
 								<DmMessageComponentRight
 									key={message.messageId}

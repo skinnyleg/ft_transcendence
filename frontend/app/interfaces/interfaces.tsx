@@ -100,8 +100,9 @@ export interface DmsInter {
 	name: string,
 	lastMsg: string,
 	picture: string
-	status: string
-  reciverId?: string,
+  reciverId: string,
+  dmStatus?: string,
+	userStatus?: string
 }
 
 
@@ -132,7 +133,8 @@ export interface DmMessageInter {
 	messageId: string,
 	sender: string,
 	message: string,
-	time: string
+	time: string,
+  self: string
 }
 
 export interface MessageInter {

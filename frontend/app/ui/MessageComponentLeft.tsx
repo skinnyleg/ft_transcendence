@@ -24,7 +24,7 @@ const MessageComponentLeft: FC<MessageComponentLeftProps> = ({message}) => {
 							// width={50}
 							// height={50}
 							alt='user pic'
-							className='rounded-full bg-teal-400 w-full h-full'
+							className='rounded-full bg-teal-400 w-full h-full max-w-[50px] max-h-[50px] min-w-[50px] min-h-[50px]'
 						/>
 					</div>
 				) : (

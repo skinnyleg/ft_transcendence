@@ -843,6 +843,7 @@ export class UserService {
 				id,
 			},
 			select: {
+				id: true,
 				nickname: true,
 				profilePic: true,
 			}

@@ -1,7 +1,7 @@
 "use client"
-import { useContext, type FC } from 'react';
+import { useContext, type FC, useEffect, useState } from 'react';
 import Image from 'next/image'
-import { ChannelInter } from '../interfaces/interfaces';
+import { ChannelInter, UserStatus } from '../interfaces/interfaces';
 import { IoMdSettings } from "react-icons/io";
 import { GoSidebarExpand } from "react-icons/go";
 import { IoIosArrowBack } from "react-icons/io";
@@ -12,7 +12,7 @@ import { HiLogout } from "react-icons/hi";
 import { HiDotsVertical } from "react-icons/hi";
 import { useRouter, useSearchParams } from 'next/navigation';
 import ChannelDropDown from './ChannelDropDown';
-import { ChatContext } from '../context/soketContext';
+import { ChatContext, chatSocket, socketContext } from '../context/soketContext';
 import PersonalDropDown from './PersonalDropDown';
 
 
@@ -22,7 +22,11 @@ const PersonalTopBar: FC<PersonalTopBarProps> = () => {
 
 	const router = useRouter();
 	const searchParams = useSearchParams()
-	const {personalId, setPersonalId, personal} = useContext(ChatContext);
+	const {personalId, setPersonalId, personal, setPersonal} = useContext(ChatContext);
+	const [status,setStatus] = useState<string>('')
+	const socket = useContext(socketContext);
+
+
 
 	const handleBack = () => {
 		router.replace('/Chat');
@@ -30,6 +34,21 @@ const PersonalTopBar: FC<PersonalTopBarProps> = () => {
 	const showSideBar = () => {
 		router.replace(`/Chat?personal=${personalId}`);
 	}
+
+	useEffect(() => {
+		setStatus(personal.userStatus);
+	}, [])
+
+	useEffect(() => {
+			chatSocket.on('statusChange', (data:({id: string, status: UserStatus})) => {
+				if (personalId === data.id)
+					setStatus(data.status);
+			})
+
+			return () => {
+				chatSocket.off('statusChange')
+			}
+	},[chatSocket])
 
 	return (
 		<div className='bg-teal-100 text-black h-16 rounded-xl p-2 flex flex-row justify-between items-center gap-0'>
@@ -55,13 +74,13 @@ const PersonalTopBar: FC<PersonalTopBarProps> = () => {
 				</div>
 				<div className='flex flex-col'>
 					<h1 className='font-bold text-lg'>{personal?.name}</h1>
-					<p className='text-gray-500 hidden md:block'>{personal?.lastMsg}...</p>
+					<p className='text-gray-500 hidden md:block'>{status}</p>
 				</div>
 			</div>
 			<div className='flex flex-row items-center justify-end gap-3 p-2 w-fit'>
 					<PersonalDropDown
 						key={personal?.personalId}
-						userRole={personal?.status}
+						userRole={personal?.dmStatus}
 						userNick={personal?.name}
 					/>
 			</div>

@@ -1,7 +1,8 @@
-import { Controller, Post, UseInterceptors, UploadedFile, Get, Param, Res, Req, BadRequestException, UseGuards } from '@nestjs/common';
+import { Controller, Post, UseInterceptors, UploadedFile, Get, Param, Res, Req, BadRequestException, UseGuards, NotFoundException } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { backgroundPicMulterOptions, channelPicMulterOptions, profilePicMulterOptions } from './multer.config';
 import * as path from 'path';
+import * as fs from 'fs';
 import { Response } from 'express';
 import { UploadService } from './upload.service';
 import { getId } from 'src/utils/getId';
@@ -63,21 +64,57 @@ export class UploadController {
 	@UseGuards(JwtAuthGuard)
 	@Get('/profile/:filename')
 	serveProfilePic(@Param('filename') filename: string, @Res() res: Response) {
-		const newDir =  path.join(__dirname, '..', '..', 'uploads', 'avatar')
-    	res.sendFile(filename, { root: newDir });
+		try {
+			const newDir = path.join(__dirname, '..', '..', 'uploads', 'avatar');
+			const filePath = path.join(newDir, filename);
+			if (fs.existsSync(filePath)) {
+			res.sendFile(filename, { root: newDir });
+			} else {
+			// Return a 404 Not Found response if the file does not exist
+			throw new NotFoundException('File not found');
+			}
+		} catch (error) {
+			// Handle other errors (e.g., server error)
+			// console.error(error);
+			res.status(500).send('Internal Server Error');
+		}
 	}
 	
 	@UseGuards(JwtAuthGuard)
 	@Get('/background/:filename')
 	serveBackgroundPic(@Param('filename') filename: string, @Res() res: Response) {
-		const newDir =  path.join(__dirname, '..', '..', 'uploads', 'background')
-    	res.sendFile(filename, { root: newDir });
+		try {
+			const newDir = path.join(__dirname, '..', '..', 'uploads', 'background');
+			const filePath = path.join(newDir, filename);
+			if (fs.existsSync(filePath)) {
+			res.sendFile(filename, { root: newDir });
+			} else {
+			// Return a 404 Not Found response if the file does not exist
+			throw new NotFoundException('File not found');
+			}
+		} catch (error) {
+			// Handle other errors (e.g., server error)
+			// console.error(error);
+			res.status(500).send('Internal Server Error');
+		}
 	}
 
 	@UseGuards(JwtAuthGuard)
 	@Get('/channel/:filename')
 	serveChannelPic(@Param('filename') filename: string, @Res() res: Response) {
-		const newDir =  path.join(__dirname, '..', '..', 'uploads', 'channels')
-    	res.sendFile(filename, { root: newDir });
+		try {
+			const newDir = path.join(__dirname, '..', '..', 'uploads', 'channels');
+			const filePath = path.join(newDir, filename);
+			if (fs.existsSync(filePath)) {
+			res.sendFile(filename, { root: newDir });
+			} else {
+			// Return a 404 Not Found response if the file does not exist
+			throw new NotFoundException('File not found');
+			}
+		} catch (error) {
+			// Handle other errors (e.g., server error)
+			// console.error(error);
+			res.status(500).send('Internal Server Error');
+		}
 	}
 }

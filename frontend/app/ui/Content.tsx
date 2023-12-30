@@ -15,17 +15,18 @@ const Content: FC<ContentProps> = ({}) => {
 	const barOpen = isBarOpen(searchParams)
 	return (
 		<>
-			{renderTab === 'none' &&  (
+			{/* {renderTab === 'none' &&  (
 					<div className='w-full h-full hidden lg:block pb-0'>
 					</div>
-			)}
+			)} */}
 			{renderTab === 'channel' &&  (
-					<div className={`lg:flex lg:flex-grow w-full pb-0 ${barOpen ? 'hidden md:flex' : ''} transition ease-in-out duration-700`}>
+				<div className={`lg:flex lg:flex-grow w-full pb-0 ${barOpen ? 'hidden md:flex' : ''} transition ease-in-out duration-700`}>
+						 {/* <div className={`lg:flex lg:w-[46.78%] w-full pb-0 ${barOpen ? 'hidden md:flex' : ''} transition ease-in-out duration-700`}> */}
 						<ChatTabChannel />
 					</div>
 			)}
 			{renderTab === 'personal' &&  (
-					<div className={`lg:flex lg:flex-grow w-full pb-0 transition ease-in-out duration-700`}>
+					<div className={`lg:flex flex-grow w-full pb-0 transition ease-in-out duration-700`}>
 						<ChatTabPersonal />
 					</div>
 			 )}
