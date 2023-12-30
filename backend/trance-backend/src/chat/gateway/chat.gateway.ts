@@ -628,13 +628,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			this.DmOutils.Error(client, 'getUserChannels', error, 'get user channels failed');
 		}
 	}
-	//
+	
 	@SubscribeMessage('getDataDm')
 	async	GetDataDm(@MessageBody() data: getMessagesDm, @ConnectedSocket() client: Socket)
 	{
 		try
 		{
-			// console.log('in getData dmId == ', data);
 			await  this.DmOutils.validateDtoData(data, getMessagesDm);
 			const user = client.data.user;
 			const ls = await this.DmOutils.getBlockedUsers(user.id);
@@ -645,21 +644,21 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			dmSide.reciverId = (dm.members[0].id === user.id) ? dm.members[1].id : dm.members[0].id;
 			dmSide.lastMsg = '';
 			dmSide.picture = (dm.members[0].profilePic === user.profilePic) ? dm.members[1].profilePic : dm.members[0].profilePic;
-			dmSide.status = (this.DmOutils.isInBlockedList(dmSide.reciverId, ls) === true ? 'BLOCKED' : 'ACTIVE');
+			dmSide.dmStatus = (this.DmOutils.isInBlockedList(dmSide.reciverId, ls) === true ? 'BLOCKED' : 'ACTIVE');
+			dmSide.userStatus = (dm.members[0].status === user.status) ? dm.members[1].status : dm.members[0].status;
 			client.emit('DmData', dmSide);
 		}
 		catch(error) {
 			this.DmOutils.Error(client, 'getDataDm', error, 'get data DM failed');
 		}
 	}
-	//
 
 	@SubscribeMessage('getUserDms')
 	async	GetUserDm(@ConnectedSocket() client: Socket)
 	{
 		try
 		{
-			let picture, name, lastMsg, status, receiver: string;
+			let picture, name, lastMsg, dmStatus, receiver;
 			const user = client.data.user;
 			const ls = await this.DmOutils.getBlockedUsers(user.id);
 			const userDms = await this.DmService.getUserDms(user.id);
@@ -673,8 +672,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 				}
 				lastMsg = dm.messages[0]?.content || '';
 				receiver = (dm.members[0].id === user.id) ? dm.members[1].id : dm.members[0].id;
-				status = (this.DmOutils.isInBlockedList(receiver, ls) === true ? 'BLOCKED' : 'ACTIVE');
-				dmSide.push({dmId: dm.id, name , lastMsg, picture, status});	
+				dmStatus = (this.DmOutils.isInBlockedList(receiver, ls) === true ? 'BLOCKED' : 'ACTIVE');
+				dmSide.push({dmId: dm.id, name , lastMsg, picture, dmStatus});	
 			}
 			client.emit('userDms', dmSide);
 		}

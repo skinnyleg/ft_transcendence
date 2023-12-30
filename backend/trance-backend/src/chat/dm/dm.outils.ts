@@ -11,7 +11,8 @@ export interface dmsSide {
 	reciverId?: string,
 	lastMsg?: string,
 	picture?: string
-	status?: string
+	dmStatus?: string,
+	userStatus?: string
 }
 
 export interface dmMessages {
