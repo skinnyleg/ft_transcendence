@@ -15,10 +15,10 @@ const LeftBar: FC<LeftBarProps> = ({}) => {
 	const barOpen = isBarOpen(searchParams)
 		return (
 		<>
-			{/* {renderTab === 'none' &&  (
+			{renderTab === 'none' &&  (
 					<div className='hidden lg:flex lg:w-[50%] xl:w-[40%] w-full h-full pb-0'>
 					</div>
-			)} */}
+			)}
 			{renderTab === 'channel' &&  (
 					<div className={`lg:flex md:w-[50%] lg:w-[50%] xl:w-[40%] w-full h-full pb-0 transition ease-in-out duration-700
 					${barOpen ? '' : 'hidden'}`}>

@@ -13,11 +13,11 @@ const matchHistory = [{
     id : "25/12/2024",
     winner : {
         nickname:"player 1",
-        profilePic:"url",
+        profilePic:"/yo.jpg",
     },
     loser : {
         nickname : "player2",
-        profilePic : "url",
+        profilePic : "/yo.jpg",
     },
     winnerScore : 2,
     loserScore : 1,
@@ -27,11 +27,11 @@ const matchHistory = [{
     id : "26/12/2024",
     winner : {
         nickname:"player 1",
-        profilePic:"url",
+        profilePic:"/yo.jpg",
     },
     loser : {
         nickname : "player2",
-        profilePic : "url",
+        profilePic : "/yo.jpg",
     },
     winnerScore : 2,
     loserScore : 1,
@@ -42,11 +42,11 @@ const matchHistory = [{
     id : "26/2/2424",
     winner : {
         nickname:"player 1",
-        profilePic:"url",
+        profilePic:"/yo.jpg",
     },
     loser : {
         nickname : "player2",
-        profilePic : "url",
+        profilePic : "/yo.jpg",
     },
     winnerScore : 2,
     loserScore : 1,
@@ -57,11 +57,11 @@ const matchHistory = [{
     id : "26/2/2424",
     winner : {
         nickname:"player 1",
-        profilePic:"url",
+        profilePic:"/yo.jpg",
     },
     loser : {
         nickname : "player2",
-        profilePic : "url",
+        profilePic : "/yo.jpg",
     },
     winnerScore : 2,
     loserScore : 1,
@@ -71,11 +71,11 @@ const matchHistory = [{
     id : "26/24/2424",
     winner : {
         nickname:"player 1",
-        profilePic:"url",
+        profilePic:"/yo.jpg",
     },
     loser : {
         nickname : "player2",
-        profilePic : "url",
+        profilePic : "/yo.jpg",
     },
     winnerScore : 2,
     loserScore : 1,
@@ -85,11 +85,11 @@ const matchHistory = [{
     id : "26/3/2424",
     winner : {
         nickname:"player 1",
-        profilePic:"url",
+        profilePic:"/yo.jpg",
     },
     loser : {
         nickname : "player2",
-        profilePic : "url",
+        profilePic : "/yo.jpg",
     },
     winnerScore : 2,
     loserScore : 1,
@@ -99,11 +99,11 @@ const matchHistory = [{
     id : "26/120/2424",
     winner : {
         nickname:"player 1",
-        profilePic:"url",
+        profilePic:"/yo.jpg",
     },
     loser : {
         nickname : "player2",
-        profilePic : "url",
+        profilePic : "/yo.jpg",
     },
     winnerScore : 2,
     loserScore : 1,
@@ -113,11 +113,11 @@ const matchHistory = [{
     id : "26/185/2424",
     winner : {
         nickname:"med-doba",
-        profilePic:"url",
+        profilePic:"/yo.jpg",
     },
     loser : {
         nickname : "yimazoua",
-        profilePic : "url",
+        profilePic : "/yo.jpg",
     },
     winnerScore : 2,
     loserScore : 1,
@@ -200,16 +200,47 @@ const Profile = () => {
                 <HandThumbDownIcon width={150} height={100} className="text-white text-2xl xl:mt-5 lg:mt-5 mt-2"/>
                 <span className="center text-black text-bold xl:mt-10 lg:mt-10 md:mt-5 mt-5 lg:mr-20 mr-5 ml-2 lg:text-5xl text-3xl" >2</span>
             </div>
-            <div className="bg-accents lg:col-span-2 col-span-4 lg:row-start-4 lg:row-end-5 row-start-5 row-end-6 w-full xl:h-[37vh] lg:h-[38vh] h-[450px] shadow-md rounded-xl">
+            <div className="bg-cyan-600 lg:col-span-2 col-span-4 lg:row-start-4  lg:row-end-5 row-start-5 row-end-6 w-full xl:h-[37vh] lg:h-[38vh] h-[450px] shadow-md rounded-xl">
+                {/* <h1 className="text-bold text-3xl self-center text-cyan-900">MATCH HISTORY</h1> */}
                 <div className="overflow-y-scroll h-full pt-2 styled-scrollbar ">
-                    <div className="lg:w-[90%] xl:w-[90%] w-[98%] mt-5 h-full  mx-auto">
-                        {matchHistory.map((match) => {
+                    <div className="lg:w-[95.31%] xl:w-[90%] w-[98%] mt-5 h-full mx-auto">
+
+                        {
+                            matchHistory.map((match) => {
+                                return (
+                                    <div key={match?.id}
+                                        className=" mb-2 w-full h-[18.75%] p-2 flex flex-row justify-between items-center rounded-[15px] border bg-cyan-100 border-lightQuartze">
+                                        <div className=" flex flex-row items-center gap-5">
+                                            <img src={match?.loser.profilePic}
+                                                className="rounded-full max-w-[55px] max-h-[55px] min-w-[55px] min-h-[55px]"
+                                            />
+                                            <h2 className="text-teal-600">{match?.loser.nickname}</h2>
+                                        </div>
+                                        <div className="bg-cyan-600 w-[20.41%] h-[56%] rounded-[30px] flex flex-row justify-evenly items-center">
+                                            <div className="flex flex-row ">
+                                                <h2 className="text-cyan-100">{match?.loserScore}</h2>
+                                                <h2 className="text-cyan-100">:</h2>
+                                                <h2 className="text-cyan-100">{match?.winnerScore}</h2>
+                                            </div>
+                                            <span className="text-bold text-cyan-100">{match?.isMeWhoWon ? `won` : `lose`}</span>
+                                        </div>
+                                        <div className="flex flex-row items-center gap-5">
+                                            <h2 className="text-teal-600">{match?.winner.nickname}</h2>
+                                            <img src={match?.winner.profilePic}
+                                                className="rounded-full max-w-[55px] max-h-[55px] min-w-[55px] min-h-[55px]"
+                                            />
+                                        </div>
+                                    </div>
+                                );
+                            })
+                        }
+                        {/* {matchHistory.map((match) => {
                             return (
-                            <div key={match?.id} className="flex flex-col border  border-lightQuartze rounded-xl w-full mt-2 xl:mt-4">
+                            <div key={match?.id} className="flex flex-col border  border-lightQuartze rounded-[15px] w-full mt-2 xl:mt-4">
                                 <div className="flex flex-row justify-between items-center">
-                                    <div className="flex flex-row m-3 items-center ">
+                                    <div className="flex flex-row m-3 items-center gap-2 ">
                                         <img src="/yo.jpg" alt="profilePic" className="mt-2 w-10 h-10 xl:w-15 xl:w-15 rounded-full" />
-                                        <h2 className="text-bold m-1 lg:ml-5 md:ml-5 ml-1 text-white lg:text-lg xl:text-2xl md:text-lg text-sm ">{match?.winner.nickname}</h2>
+                                        <h2 className="text-bold m-1 lg:ml-0 md:ml-0 ml-0 text-white lg:text-lg xl:text-2xl md:text-lg text-sm ">{match?.winner.nickname}</h2>
                                     </div>
                                     <div className="flex flex-col m-0">
                                         <div className="flex flex-row-reverse justify-evenly items-center border border-white rounded-xl xl:w-[100px] w-[100px] mb-2 h-[30px] xl:h-[40px] bg-button text-white">
@@ -228,7 +259,7 @@ const Profile = () => {
                                 </div>
                             </div>
                             )
-                        })}
+                        })} */}
                     </div>
                 </div>
             </div>

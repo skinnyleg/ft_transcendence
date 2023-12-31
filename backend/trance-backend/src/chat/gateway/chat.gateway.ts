@@ -225,7 +225,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 				where: { id: requestId },
 			});
 			if (!checkRequest) 
-				throw new ForbiddenException('forbidden action.');
+				throw new ForbiddenException('Forbidden action');
 			if (value) {
 				await this.prisma.channel.update({
 					where: { name: channelName },
@@ -586,7 +586,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			const {channelName} = data;
 			const userId = client.data.user.id;
 			if (!(await this.Outils.isUserInChannel(channelName, userId)))
-				throw new UnauthorizedException('Forbidden action.');
+				throw new UnauthorizedException('Forbidden action');
 			const channel = await this.Outils.findChannelByName(channelName);
 			const membershipCH: channelSidebar[] = [];
 			for (const user of channel.users) {

@@ -17,7 +17,7 @@ const settings = () => {
     const [enabled, setEnabled] = useState(false);
     const [newNick, setNewNick] = useState<string> ('');
     const [pass, setPass] = useState<string>('');
-    const [passConfirmation, setPassconfirmation] = useState<string>('');
+    const [passConfirmation, setPassConfirmation] = useState<string>('');
     const [Qr, setQr] = useState<string | null>(null);
     const fileRef = useRef<HTMLInputElement>(null);
     const avatarRef = useRef<HTMLInputElement>(null);
@@ -181,7 +181,7 @@ const settings = () => {
         setNewNick(e.target.value);
     }
     const passChange = (e : React.ChangeEvent<HTMLInputElement>) => {setPass(e.target.value)}
-    const passconfirmation = (e : React.ChangeEvent<HTMLInputElement>) => { if (pass === e.target.value) {setPassconfirmation(e.target.value)}}
+    const passconfirmation = (e : React.ChangeEvent<HTMLInputElement>) => {{setPassConfirmation(e.target.value)}}
     const HandlePassChange = async () => {
         console.log("honaaaa")
         if (passConfirmation)
@@ -189,8 +189,8 @@ const settings = () => {
             try{
                 const results =  await axios.post("http://localhost:8000/user/pass", {password : passConfirmation}, {withCredentials : true});
                 if (results.status === 201){
+                    setPassConfirmation('');
                     setPass('');
-                    setPassconfirmation('');
                 }
                 else {
                     setError("Unable To change Nickname Please try again");
@@ -213,7 +213,7 @@ const settings = () => {
                 setError("Unable To change Nickname Please try again");
             }
         } catch (error : any) {
-            console.log("error == ", error);
+            console.log("error2 == ", error);
             setError(error.response.data.message[0]);
         }
         
@@ -306,9 +306,9 @@ const settings = () => {
                                 </div>
                                 <div className="mb-2">
                                     <label className="text-gray-500 w-[90%] text-md ml-10 m-1">Confirm Password</label>
-                                    <input className="text-black w-[90%] rounded-lg" typeof="submit" placeholder="re-type your Password..." min={8} type="password" onChange={passconfirmation}></input>
+                                    <input className="text-black w-[90%] rounded-lg" typeof="submit" placeholder="re-type your Password..." min={8} type="password" value={passConfirmation} onChange={passconfirmation}></input>
                                 </div>
-                                <div className={`${passConfirmation ? 'flex' : 'hidden'} mb-10`}>
+                                <div className={`${pass === passConfirmation && pass !== '' ? 'flex' : 'hidden'} mb-10`}>
                                     <Button type="submit" radius="md" className={`block bg-gradient-to-tr from-accents to-back text-white shadow-lg 
                                         hover:from-accents hover:to-main hover:to-lightQuartzetext-white`} onClick={() => { HandlePassChange(); UpdateStatus()}}>
                                         save

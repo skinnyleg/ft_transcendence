@@ -113,7 +113,8 @@ const ChatTabChannel: FC<ChatTabProps> = () => {
 	if (channel === undefined)
 	{
 		return (
-			<h1>Start Chatting Now</h1>
+			// <h1>Start Chatting Now</h1>
+			<></>
 		);
 	}
 		return (

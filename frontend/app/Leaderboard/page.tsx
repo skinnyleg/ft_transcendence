@@ -31,7 +31,7 @@ const LeaderboardPage: FC<LeaderboardProps> = () => {
 		}
 		catch (error)
 		{
-			console.log("error == ", error);
+			console.log("error1 == ", error);
 		}
 		return data;
 	}

@@ -117,7 +117,8 @@ const ChatTabPersonal: FC<ChatTabProps> = () => {
 	if (personal === undefined)
 	{
 		return (
-			<h1>Start Chatting Now</h1>
+			// <h1>Start Chatting Now</h1>
+			<></>
 		);
 	}
 		return (

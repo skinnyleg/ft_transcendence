@@ -62,7 +62,7 @@ const PersonalTab = () => {
 	// ${hidden === 'personal' ? 'w-[79%]' : 'w-full'}
 
 	return (
-		<div className={` rounded-[15px] p-3  shadow-lg bg-teal-600  w-full h-[49%] flex flex-col`}>
+		<div className={` rounded-[15px] p-3  shadow-lg bg-teal-600 w-full h-[49%] flex flex-col`}>
 		<h1 className='text-teal-300 font-bold text-lg mb-1'>PERSONAL</h1>
 		<div className='flex flex-row justify-around rounded-2xl w-full mb-2'>
 			<div className='flex flex-row rounded-xl bg-cyan-100 w-full'>

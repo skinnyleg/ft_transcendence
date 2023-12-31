@@ -47,14 +47,34 @@ const Notifications = () => {
     
 
 
+
+    const check_notif = (notif: string) => {
+        if (notif === 'Forbidden action')
+            return true;
+        if (notif === 'Invalide data')
+            return true;
+        return false;
+    }
+
+
     useEffect(() => {
 
 
-        // chatSocket.on("notification", (notif) => {
-        //     console.log("ni=otif sent" ,notif);
-        //     toast.success(notif);
-        // });
+        chatSocket.on("notification", (notif) => {
+            console.log("ni=otif sent" ,notif);
+            toast.success(notif, {
+                toastId: 'chatNotifSucces'
+            });
+        });
 
+
+        chatSocket.on("failed", (notif) => {
+            if (check_notif(notif) === true)
+                return ;
+            toast.error(notif, {
+                toastId: 'chatNotifError'
+            });
+        });
 
         chatSocket.on("notifHistory", (data: NotificationsData) => {
             console.log("data chatSocket == ", data);
@@ -67,6 +87,7 @@ const Notifications = () => {
         return () => {
             chatSocket.off('notification');
             chatSocket.off('notif');
+            chatSocket.off('failed');
         }
     }, [chatSocket,channelId])
 
@@ -75,12 +96,16 @@ const Notifications = () => {
     useEffect(() => {
         socket.on("notification", (notif) => {
             console.log("ni=otif sent" ,notif);
-            toast.success(notif);
+            toast.success(notif, {
+                toastId: "success"
+            });
         });
 
         socket.on("error", (error) => {
             console.log("error sent" ,error);
-            toast.error(error.message);
+            toast.error(error.message, {
+                toastId: 'error'
+            });
         });
 
         socket.on("notifHistory", (data: NotificationsData) => {

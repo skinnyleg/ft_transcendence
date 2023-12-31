@@ -16,7 +16,7 @@ const RightBar: FC<RightBarProps> = ({}) => {
 	// <div className={`h-full w-full  md:w-full md:flex lg:flex  lg:w-[21.74%] flex justify-between flex-col
 	// 	${hidden ? 'hidden' : ''} ${sideBar ? 'md:hidden' : ''} transition duration-1000 ease-in-out`}>
 	return (
-			<div className={`h-full w-full  md:w-full md:flex lg:flex ${which === 'personal' ? 'lg:w-[36.65%]' : 'lg:w-[55%]'} flex justify-between flex-col
+			<div className={`h-full w-full  md:w-full md:flex lg:flex ${which === 'personal' ? 'lg:w-[36.65%] xl:w-[39.3%]' : 'lg:w-[55%]'} flex justify-between flex-col
 				${hidden ? 'hidden' : ''} ${sideBar ? 'md:hidden' : ''} transition duration-1000 ease-in-out`}>
 				<ChannelTab />
 				<PersonalTab />

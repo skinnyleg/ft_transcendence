@@ -128,11 +128,12 @@ const chat: FC<ChatProps> = () => {
 		// deleteChannelQuery();
 	}, [])
 
+	// mt-0 xl:mt-2 lg:mt-2
 	return (
 		<ChatContext.Provider value={{personal, setPersonal, personalId, setPersonalId, channelId, setChannelId, user, setUser, channel, setChannel, searchInputCh, setSearchInputCh, searchInputDm, setSearchInputDm}}>
-		<div className='flex flex-col font-white bg-main overflow-y-hidden md:overflow-y-auto mr-0'>
+		<div className='flex flex-col font-white bg-main overflow-y-hidden md:overflow-y-auto ml-2 '>
 				<TopBar />
-			<div className='h-[100vh] md:h-[99vh] min-[1024px]:h-[88vh] mt-0 xl:mt-2 lg:mt-2 xl:h-[90vh] xl:pb-0 w-full md:justify-between flex flex-row  md:gap-2 min-[1024px]:gap-0 pt-[70px] pr-1 pl-1 lg:pb-0 lg:pt-1'>
+			<div className='h-[100vh] md:h-[99vh] min-[1024px]:h-[88vh] lg:mt-5  md:mt-0 mt-0 xl:mt-5  xl:h-[90vh] xl:pb-0 w-full md:justify-between flex flex-row  md:gap-2 min-[1024px]:gap-0 pt-[70px] pr-1 pl-1 lg:pb-0 lg:pt-1'>
 				<RightBar />
 				<Content />
 				<LeftBar />
