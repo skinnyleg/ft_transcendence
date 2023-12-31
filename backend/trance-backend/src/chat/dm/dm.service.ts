@@ -111,6 +111,7 @@ export class DmService {
                         createdAt: true,
                         sender: {
                             select: {
+                                id: true,
                                 nickname: true,
                             },
                         },

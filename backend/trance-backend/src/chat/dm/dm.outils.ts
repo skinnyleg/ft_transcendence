@@ -127,7 +127,8 @@ export class DmOutils {
 		const buffer: dmMessages = {};
 		buffer.dmId = dmId;
 		buffer.messageId = message.id;
-		buffer.sender = await this.userService.getNickById(nicknameId);
+		// buffer.sender = await this.userService.getNickById(nicknameId);
+		buffer.sender = await this.userService.getNickById(message.sender.id);
 		buffer.message = message.content;
 		buffer.time = this.dateTime2String(message.createdAt);
 		return buffer;
