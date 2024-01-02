@@ -5,11 +5,11 @@ import { UserModule } from './user/user.module';
 import { QrModule } from './qr/qr.module';
 import { UploadModule } from './upload/upload.module';
 import { FriendsModule } from './friends/friends.module';
+import { GameModule } from './GameGateway/game.module';
 import { ChatModule } from './chat/chat.module';
-import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
-  imports: [AuthModule, PrismaModule, UserModule, QrModule, UploadModule, FriendsModule, ChatModule, ScheduleModule.forRoot()],
+  imports: [AuthModule, PrismaModule, UserModule, QrModule, UploadModule, FriendsModule, ChatModule, GameModule],
   controllers: [],
   providers: [],
 })

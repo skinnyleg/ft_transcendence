@@ -42,6 +42,7 @@ export class FriendsService {
 			this.sendWebSocketError(client, "User not found", true)
 			return;
 		}
+		console.log(user);
 		try {
 			await this.emitNotifications(client, user.id);
 		}
@@ -56,7 +57,6 @@ export class FriendsService {
 		const notifications = await this.userService.getNotifications(id);
 		if (notifications.length === 0)
 			return ;
-
 		client.emit('notification', `You have ${notifications.length} new notifications`)
 	}
 
@@ -85,8 +85,6 @@ export class FriendsService {
 		}
 	}
 
-	
-
 	async sendRequest(client: Socket, userId: string)
 	{
 		const toSend = this.getUserById(userId);
@@ -104,7 +102,6 @@ export class FriendsService {
 		{
 			this.sendWebSocketError(sender.socket, error.message, false);
 		}
-
 	}
 
 	async deleteRequest(client: Socket, userId: string)
@@ -186,8 +183,6 @@ export class FriendsService {
 			this.sendWebSocketError(sender.socket, error.message, false);
 		}
 	}
-
-
 
 	async acceptRequest(client: Socket, userId: string, requestId: string)
 	{

@@ -315,7 +315,7 @@ const settings = () => {
                                     </Button>
                                 </div>
                             </div>
-                            <div className="flex flex-col h-[60%] w-[35%] p-3 xl:mr-10 mr-0 xl:mt-10 mt-0 xl:ml-0 ml-5">
+                            <div className="flex flex-col h-[50vh] w-[35%] p-3 xl:mr-10 mr-0 xl:mt-10 mt-0 xl:ml-0 ml-5">
                                 <div className="flex h-full justify-between">
                                     <div className="text-white text-bold-300 text-lg">Enable 2FA </div>
                                     <Switch
@@ -332,7 +332,8 @@ const settings = () => {
                                     </Switch>
                                 </div>
                                 <h3 className={`${enabled ? 'flex': "hidden"} text-red-400 text-md`}>Please scan or disable QR code before leaving the page</h3>
-                                <div className={`${enabled ? 'flex': "hidden"} border-2 border-accents w-full`} style={{ height: "auto", margin: "0 auto", maxWidth: 260, width: "100%" }}>
+
+                                <div className={`${enabled ? 'flex': "hidden"} border-2 border-accents h-[20vh] w-full`} style={{ height: "auto", margin: "0 auto", maxWidth: 260, width: "100%" }}>
                                     <QRCode
                                     size={256}
                                     style={{ height: "auto"}}

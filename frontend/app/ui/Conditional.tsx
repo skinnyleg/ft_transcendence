@@ -115,10 +115,10 @@ const Conditional = ({isfriend, privateProfile, userId, isBlocked} : DataProps )
     }
     return (
         <div className="flex flex-row mx-auto justify-evenly items-center text-white w-[100%]">
-            <div className=" text-white text-sm rounded-full px-2 " onClick={() => {router.push("/settings")}}>
+            <div className=" text-white text-sm rounded-full px-2 hover:cursor-pointer" onClick={() => {router.push("/settings")}}>
                 <IoSettingsSharp className="text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8 "/>
             </div>
-            <div className="text-white text-sm px-2 rounded-full" onClick={() => {router.push("/Dashboard")}}>
+            <div className="text-white text-sm px-2 rounded-full hover:cursor-pointer" onClick={() => {router.push("/Dashboard")}}>
                 <HomeIcon className="text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8 " />
             </div>
         </div>

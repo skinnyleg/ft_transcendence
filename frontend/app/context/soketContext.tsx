@@ -3,7 +3,6 @@ import React, { createContext, useState } from "react";
 import { Cookies } from "react-cookie";
 import io from 'socket.io-client';
 import { profileNickPic } from "../interfaces/interfaces";
-import { toast } from "react-toastify";
 
 const cookies = new Cookies();
 // const [profilePic, setProfilePic] = useState('');
@@ -50,7 +49,7 @@ const getnickname = async () => {
           return(nickname.profilePic);
       }
     } catch (error : any) {
-      toast.error(error.response?.data.message[0]);
+    //   toast.error(error.response.data.message[0]);
       return("");
     }
 };

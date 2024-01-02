@@ -53,7 +53,6 @@ export default function LoginForm() {
 
   return (
     <form className="space-y-3" onSubmit={handleSubmit}>
-      {/* <ToastContainer /> */}
       <div className="flex-1 rounded-lg bg-accents border border-gray-300 px-6 pb-4 pt-8 mt-10">
         <h1 className={`${lusitana.className} mb-3 lg:text-2xl md:text-xl text-xl`}>
           Please log in to continue.

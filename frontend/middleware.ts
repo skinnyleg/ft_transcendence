@@ -43,12 +43,11 @@ const refreshToken = async (refreshtoken : string) => {
     console.log("status", res.status);
     const result = res.json()
     if (res.status === 200) {
-      console.log("llllllllllllllllllllllllllllllllllllll");
       return result;
     }
     if (res.status === 401){
       console.log("unauthorized")
-      return  result;
+      return result;
     }
     else{
       return result;
@@ -62,8 +61,10 @@ const refreshToken = async (refreshtoken : string) => {
 export default async function middleware(request: NextRequest){
     let token  = request.cookies.get("token")?.value;
     const refreshtoken  = request.cookies.get("refresh");
-    // const IsExpired = isJwtExpired(token as string);
-    // let response: NextResponse = NextResponse.next();
+    var IsExpired : boolean = false;
+    if (token)
+      IsExpired = isJwtExpired(token);
+    // let response: NextResponse = new NextResponse;
     // if (IsExpired){
     //   const {token , refresh} = await refreshToken(refreshtoken?.value as string);
     //   console.log('token == ', token)
@@ -74,19 +75,18 @@ export default async function middleware(request: NextRequest){
     //   return response;
     // }
     const succes = await checkAuth(token);
-    let isFirstTime = await checkVerification(token);
-    if (request.nextUrl.pathname === '/settings')
-        isFirstTime = false;
-
-    if (succes && !isFirstTime){
-      console.log('here')
+    // let isFirstTime = await checkVerification(token);
+    // if (request.nextUrl.pathname === '/settings')
+    //   isFirstTime = false;
+    if (succes){
+      console.log('here 200')
       return NextResponse.next();
     }
-    if (isFirstTime)
-      return NextResponse.redirect(new URL("http://localhost:3000/settings"));
+    // if (isFirstTime)
+    //   return NextResponse.redirect(new URL("http://localhost:3000/settings"));
     return NextResponse.redirect(new URL("/", "http://localhost:3000/"));
 }
-
+ 
 export const config = {
-    matcher: ['/Dashboard', '/settings', '/profile/:path*', '/Chat', '/Leaderboard']
+  matcher: ['/Dashboard', '/settings', '/profile/:path*', '/Chat', '/Leaderboard']
 }

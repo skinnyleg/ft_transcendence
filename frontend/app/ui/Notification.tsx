@@ -5,7 +5,7 @@ import clsx from "clsx";
 import { ChatContext, chatSocketContext, socketContext } from "../context/soketContext";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import React from 'react';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 
@@ -14,6 +14,8 @@ const Notifications = () => {
     const [notifications, setNotifications] = useState<NotificationsData[]>([]);
     const [showNotifications, setShowNotifications] = useState(false);
     const [notificationNumber, setNotificationNumber] = useState(0);
+    const [notif , setNotif] = useState<string>('');
+    const [Error , setError] = useState<string>('');
     const [newNotification, setNewNotification] = useState<NotificationsData | null>(null);
     const socket = useContext(socketContext);
     const chatSocket = useContext(chatSocketContext);
@@ -96,9 +98,7 @@ const Notifications = () => {
     useEffect(() => {
         socket.on("notification", (notif) => {
             console.log("ni=otif sent" ,notif);
-            toast.success(notif, {
-                toastId: "success"
-            });
+            setNotif(notif);
         });
 
         socket.on("error", (error) => {
@@ -106,6 +106,7 @@ const Notifications = () => {
             toast.error(error.message, {
                 toastId: 'error'
             });
+            setError(error.message);
         });
 
         socket.on("notifHistory", (data: NotificationsData) => {
@@ -173,7 +174,8 @@ const Notifications = () => {
 
     return (
         <>
-            <div className="z-30 relative">
+            <socketContext.Provider value={socket}>
+            <div className="z-10 relative">
                 <BellAlertIcon onClick={()=>{setShowNotifications(!showNotifications)}} className= "lg:h-[50px] lg:w-[50px] xl:h-[50px] xl:w-[50px] h-[35px] w-[35px] lg:flex lg:p-2 lg:bg-gray-100 text-accents rounded-full"/>
                 <span className={clsx(`absolute text-sm text-white font-bold rounded-full h-5 w-5 items-center text-center flex justify-center bottom-0 right-0 transform translate-x-[8px]`
                 , {'hidden' : showNotifications},
@@ -194,8 +196,9 @@ const Notifications = () => {
                         </div>
                     ))}
                     </div>
+                </div>
             </div>
-            </div>
+            </socketContext.Provider>
         </>
     );
 }
