@@ -175,12 +175,15 @@ const Profile = () => {
             </div>
             <div className="relative col-start-4 col-end-5 mt-2 md:mt-4 bg-accents rounded-2xl lg:mt-0 lg:row-start-2 mx-auto h-[30px] xl:h-[40px] lg:row-end-3 row-start-3 row-end-4 flex w-[80%] lg:w-[70%] xl:w-[70%]">
                 <Conditional isfriend={profileData?.isfriend} privateProfile = {profileData?.privateProfile} isBlocked = {profileData?.isBlocked} userId= {profileData?.userData?.id}/>
-            </div>
+            </div> 
             {/* 4 cards */}
-            <div  className="bg-accents col-span-1 lg:row-start-3 row-start-4 row-end-5 flex justify-between lg:row-end-4 w-full xl:h-[12vh] lg:h-[12vh] md:h-[180px] h-[120px] shadow-md rounded-3xl">
-                <div className="flex lg:flex-row flex-col h-full">
-                    <WalletIcon className="text-white xl:w-[60px] xl:h-[60px] lg:w-[80px] mb-4 md:w-[80px] w-[40px] xl:mt-8 mt-4 lg:ml-2 md:ml-2 ml-0"/>
-                    <p className="lg:text-2xl xl:text-3xl lg:block md:block hidden text-lg text-center xl:mt-12 lg:w-20 w-10 lg:ml-5 ml-7 pb-2 lg:mt-10 mt-3 text-bold-900">Wallet</p>
+            <div  className="bg-accents col-span-1 lg:row-start-3 row-start-4 row-end-5 flex justify-evenly lg:row-end-4 w-full xl:h-[12vh] lg:h-[12vh] md:h-[180px] h-[120px] shadow-md rounded-3xl">
+                <div className="flex lg:flex-row items-center flex-col h-[80%]">
+                    <WalletIcon className="text-white xl:w-[80px] xl:h-[80px]  text-center lg:w-[80px] mb-4 md:w-[80px] w-[40px] xl:mt-4 mt-4 lg:ml-2 md:ml-2 ml-0"/>
+                </div>
+                <div className="flex flex-col h-[80%]">
+                    <h2 className="lg:text-lg xl:text-xl lg:block md:block hidden text-md lg:w-20 w-10 mt-5 pb-2 text-bold-900">Wallet</h2>
+                    <p className="text-sm">Ping Pong Zone</p>
                 </div>
                 <h2 className="lg:text-2xl xl:text-5xl md:text-2xl text-lg mt-7 xl:mt-10 lg:mt-12 md:mt-10 text-bold-900 mr-3 md:mr-3 lg:mr-4">{profileData?.userData.wallet}</h2>
             </div>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import NavBar from "./navBar";
 import { socketContext , socket} from "@/app/context/soketContext";
+import { ToastContainer } from "react-toastify";
 
 export default function LayoutClinet({
     children
@@ -18,6 +19,7 @@ export default function LayoutClinet({
 
     return (
         <socketContext.Provider value={socket}>
+            <ToastContainer limit={1}/>
             <div className={`flex-none md:w-0 w-20 lg:w-20 xl:w-20`}>
                 <NavBar handleShowMenu={handleShowMenu} />
             </div>

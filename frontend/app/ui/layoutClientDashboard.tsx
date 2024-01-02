@@ -3,6 +3,7 @@
 import { useContext, useState } from "react";
 import NavBar from "./navBar";
 import { socket, socketContext } from "../context/soketContext";
+import { ToastContainer } from "react-toastify";
 
 export default function LayoutClientDashboard({
     children
@@ -16,6 +17,7 @@ export default function LayoutClientDashboard({
     }
     return (
         <socketContext.Provider value={socket}>
+            <ToastContainer limit={1} />
             <div className={`flex-none md:w-0 w-20 lg:w-20`}>
                 <NavBar handleShowMenu={handleShowMenu} />
             </div>

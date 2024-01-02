@@ -5,7 +5,7 @@ import clsx from "clsx";
 import { socketContext } from "../context/soketContext";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import React from 'react';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 
@@ -14,6 +14,8 @@ const Notifications = () => {
     const [notifications, setNotifications] = useState<NotificationsData[]>([]);
     const [showNotifications, setShowNotifications] = useState(false);
     const [notificationNumber, setNotificationNumber] = useState(0);
+    const [notif , setNotif] = useState<string>('');
+    const [Error , setError] = useState<string>('');
     const [newNotification, setNewNotification] = useState<NotificationsData | null>(null);
     const socket = useContext(socketContext);
 
@@ -45,21 +47,12 @@ const Notifications = () => {
     useEffect(() => {
         socket.on("notification", (notif) => {
             console.log("ni=otif sent" ,notif);
-            toast.success(notif, {
-                position: "top-right",
-                autoClose: 4000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
+            setNotif(notif);
         });
 
         socket.on("error", (error) => {
             console.log("error sent" ,error);
-            toast.error(error.message);
+            setError(error.message);
         });
 
         socket.on("notifHistory", (data: NotificationsData) => {
@@ -70,8 +63,8 @@ const Notifications = () => {
             });
             handleNewNotification(data);
         });
-    }, [socket]);
-
+    }, []);
+    
     const handleAcceptReq = (data: NotificationsData) => {
         let useId = data.notifData.userId;
         let reqId = data.requestId;
@@ -95,7 +88,6 @@ const Notifications = () => {
 
     return (
         <>
-            <ToastContainer />
             <socketContext.Provider value={socket}>
             <div className="z-10 relative">
                 <BellAlertIcon onClick={()=>{setShowNotifications(!showNotifications)}} className= "lg:h-[50px] lg:w-[50px] xl:h-[50px] xl:w-[50px] h-[35px] w-[35px] lg:flex lg:p-2 lg:bg-gray-100 text-accents rounded-full"/>
@@ -117,7 +109,7 @@ const Notifications = () => {
                         </div>
                     ))}
                     </div>
-            </div>
+                </div>
             </div>
             </socketContext.Provider>
         </>

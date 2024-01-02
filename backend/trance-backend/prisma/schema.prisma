@@ -14,6 +14,7 @@ enum UserStatus {
   ONLINE
   OFFLINE
   IN_GAME
+  IN_QUEUE
 }
 
 enum RequestType {
@@ -62,7 +63,7 @@ model User {
   userRequests Request[]
   channels     Channel[]
   Message      Message[]
-  Match        Match[]
+  Game        Game[]
   Chat         Chat[]
   users        FriendStatus[]
   achievements Achievement[]
@@ -120,15 +121,15 @@ model Message {
 
 // Define an Achievement model (you can further customize this)
 
+
 // Define a Match model
-model Match {
+model Game {
   id      String @id @default(uuid())
-  title   String
   wins    Int
   losses  Int
   score   Int
-  against User   @relation(fields: [userId], references: [id])
   userId  String
+  oponent User   @relation(fields: [userId], references: [id])
 }
 
 // Define a Chat model
