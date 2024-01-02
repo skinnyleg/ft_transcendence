@@ -65,7 +65,8 @@ const Notifications = () => {
         chatSocket.on("notification", (notif) => {
             console.log("ni=otif sent" ,notif);
             toast.success(notif, {
-                toastId: 'chatNotifSucces'
+                toastId: 'chatNotifSucces',
+                autoClose: 500
             });
         });
 
@@ -74,7 +75,8 @@ const Notifications = () => {
             if (check_notif(notif) === true)
                 return ;
             toast.error(notif, {
-                toastId: 'chatNotifError'
+                toastId: 'chatNotifError',
+                autoClose: 500
             });
         });
 
@@ -98,13 +100,17 @@ const Notifications = () => {
     useEffect(() => {
         socket.on("notification", (notif) => {
             console.log("ni=otif sent" ,notif);
-            setNotif(notif);
+            toast.success(notif, {
+                toastId: 'success',
+                autoClose: 500
+            });
         });
 
         socket.on("error", (error) => {
             console.log("error sent" ,error);
             toast.error(error.message, {
-                toastId: 'error'
+                toastId: 'error',
+                autoClose: 500
             });
             setError(error.message);
         });

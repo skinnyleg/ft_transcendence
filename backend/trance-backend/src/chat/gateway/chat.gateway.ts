@@ -195,7 +195,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			notif2users.server = this.server;
 			notif2users.usersSockets = this.usersSockets; 
 			notif2users.notif = `${nickname} has joined`;
-			notif2users.user2notify = nickname;
+			notif2users.user2notify = client.data.user.id;
 			await this.channelService.emitNotif2channelUsers(notif2users, ['joinDone', 'refreshSide']);
 		}
 		catch (error) {

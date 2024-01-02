@@ -440,9 +440,9 @@ const Profile = () => {
                       {
                         notAchievements.map((achievement) => {
                             return (
-                                <div key={achievement.id} className="p-2 rounded-[15px] border bg-gray-400 border-gray-500 w-full h-[18.75%]">
+                                <div key={achievement.id} className="p-2 rounded-[15px] flex flex-col justify-between border bg-gray-400 border-gray-500 w-full h-[18.75%]">
                                     <h2 className="font-bold text-[15px] lg:text-[20px]">{achievement.title}</h2>
-                                    <p className="text-xs text-gray-500 ml-2 lg:text-sm lg:block md:block hidden">{achievement.description}</p>
+                                    <p className="text-xs text-gray-500 ml-2 lg:text-sm lg:block md:block">{achievement.description}</p>
                                 </div>
                             )
                         })

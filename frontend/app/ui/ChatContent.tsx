@@ -46,6 +46,14 @@ const ChatContent: FC<ChatContentProps> = () => {
 
 
 		useEffect(() => {
+
+			// chatSocket.on('joinDone', () => {
+			// 	console.log("getmessafee lplwlww == ");
+			// 	chatSocket.emit('getMessagesCH', {
+			// 		channelName: channelId,
+			// 	})
+			// })
+
 			chatSocket.on('messagesCH', (data: MessageInter[]) => {
 				// console.log("message Data == ", data);
 					setMessages(data);

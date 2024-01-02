@@ -70,7 +70,7 @@ const PersonalTab = () => {
 					className='w-8  h-10 stroke-1 bg-cyan-100 rounded-2xl pl-2 text-black'
 				/>
 				<input type='text'
-					placeholder='Search Channels...'
+					placeholder='Search Dms...'
 					className='w-full h-10 bg-cyan-100 border-none focus:ring-0 text-black rounded-2xl'
 					value={searchInputDm}
 					onChange={(e) => setSearchInputDm(e.target.value)}

@@ -264,7 +264,7 @@ const settings = () => {
 
     return (
         <>
-            <main className="flex flex-col font-white bg-main xl:overflow-y-hidden overflow-y-styled-scrollbar lg:h-screen xl:h-screen h-full mr-2">
+            <main className="flex flex-col font-white bg-main overflow-y-auto styled-scrollbar lg:h-screen xl:h-screen h-full mr-2">
                 <TopBar />
                 <div className="flex flex-col w-full h-full mt-10 justify-between"> 
                     <div className="relative xl:h-[30vh] lg:h-[30vh] md:h-[30vh] h-[30vh] mt-10">
