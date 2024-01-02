@@ -13,6 +13,7 @@ const LeftBar: FC<LeftBarProps> = ({}) => {
 	
 	const renderTab = whichTab(searchParams);
 	const barOpen = isBarOpen(searchParams)
+	console.log('barOpen == ', barOpen)
 		return (
 		<>
 			{renderTab === 'none' &&  (

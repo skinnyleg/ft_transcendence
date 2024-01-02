@@ -33,7 +33,14 @@ const ChatTypeBar: FC<ChatTypeBarProps> = () => {
 			}
 		}
 
+		useEffect(() => {
+			chatSocket.on('refreshSide', () => {
+				console.log('refresh == ', channelId)
+				setBarValue('Join')
+			})
+		}, [chatSocket, channelId])
 
+		
 		const pressEnter = (e) => {
 			if(e.key == 'Enter'){
 				sendMessage();

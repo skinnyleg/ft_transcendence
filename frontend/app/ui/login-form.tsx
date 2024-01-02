@@ -33,7 +33,7 @@ export default function LoginForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
       });
-      
+      console.log('response == ', response);
       if (response.ok) {
         const res = await response.json();
         toast.success("Welcome ...!");
