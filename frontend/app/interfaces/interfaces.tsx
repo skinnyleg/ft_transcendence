@@ -33,6 +33,15 @@ export interface AchievementsData {
   totalScore: number;
 }[];
 
+
+export interface Achievements {
+  id: string;
+  title: string;
+  description: string;
+  userScore: number;
+  totalScore: number;
+};
+
 export interface responseData {
   id: string;
   profilePic: string;

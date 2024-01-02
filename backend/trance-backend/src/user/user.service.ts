@@ -131,7 +131,8 @@ export class UserService {
 	async getAchievements(id: string)
 	{
 		const acheivements = await this.getDoneAchievements(id);
-		return ({doneAchievements: acheivements});
+		const notAcheivements = await this.getNotDoneAchievements(id);
+		return ({doneAchievements: acheivements, notDoneAchievements: notAcheivements});
 	}
 
 	async getNotDoneAchievements(id: string)

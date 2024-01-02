@@ -2,7 +2,7 @@
 import TopBar from "@/app/ui/top";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { profileData } from "@/app/interfaces/interfaces";
+import { Achievements, profileData } from "@/app/interfaces/interfaces";
 import { ArrowTrendingUpIcon,   HandThumbUpIcon, UserPlusIcon, HandRaisedIcon, HandThumbDownIcon } from "@heroicons/react/20/solid";
 import { ArrowTrendingDownIcon,  ChatBubbleLeftEllipsisIcon, UserMinusIcon, WalletIcon, TrophyIcon } from "@heroicons/react/24/outline";
 import { FaUserFriends } from "react-icons/fa";
@@ -22,6 +22,141 @@ const matchHistory = [{
     winnerScore : 2,
     loserScore : 1,
     isMeWhoWon : true,
+},
+{
+    id : "26/12/2024",
+    winner : {
+        nickname:"player 1",
+        profilePic:"/yo.jpg",
+    },
+    loser : {
+        nickname : "player2",
+        profilePic : "/yo.jpg",
+    },
+    winnerScore : 2,
+    loserScore : 1,
+    isMeWhoWon : false,
+
+},
+{
+    id : "26/12/2024",
+    winner : {
+        nickname:"player 1",
+        profilePic:"/yo.jpg",
+    },
+    loser : {
+        nickname : "player2",
+        profilePic : "/yo.jpg",
+    },
+    winnerScore : 2,
+    loserScore : 1,
+    isMeWhoWon : false,
+
+},
+{
+    id : "26/12/2024",
+    winner : {
+        nickname:"player 1",
+        profilePic:"/yo.jpg",
+    },
+    loser : {
+        nickname : "player2",
+        profilePic : "/yo.jpg",
+    },
+    winnerScore : 2,
+    loserScore : 1,
+    isMeWhoWon : false,
+
+},
+{
+    id : "26/12/2024",
+    winner : {
+        nickname:"player 1",
+        profilePic:"/yo.jpg",
+    },
+    loser : {
+        nickname : "player2",
+        profilePic : "/yo.jpg",
+    },
+    winnerScore : 2,
+    loserScore : 1,
+    isMeWhoWon : false,
+
+},
+{
+    id : "26/12/2024",
+    winner : {
+        nickname:"player 1",
+        profilePic:"/yo.jpg",
+    },
+    loser : {
+        nickname : "player2",
+        profilePic : "/yo.jpg",
+    },
+    winnerScore : 2,
+    loserScore : 1,
+    isMeWhoWon : false,
+
+},
+{
+    id : "26/12/2024",
+    winner : {
+        nickname:"player 1",
+        profilePic:"/yo.jpg",
+    },
+    loser : {
+        nickname : "player2",
+        profilePic : "/yo.jpg",
+    },
+    winnerScore : 2,
+    loserScore : 1,
+    isMeWhoWon : false,
+
+},
+{
+    id : "26/12/2024",
+    winner : {
+        nickname:"player 1",
+        profilePic:"/yo.jpg",
+    },
+    loser : {
+        nickname : "player2",
+        profilePic : "/yo.jpg",
+    },
+    winnerScore : 2,
+    loserScore : 1,
+    isMeWhoWon : false,
+
+},
+{
+    id : "26/12/2024",
+    winner : {
+        nickname:"player 1",
+        profilePic:"/yo.jpg",
+    },
+    loser : {
+        nickname : "player2",
+        profilePic : "/yo.jpg",
+    },
+    winnerScore : 2,
+    loserScore : 1,
+    isMeWhoWon : false,
+
+},
+{
+    id : "26/12/2024",
+    winner : {
+        nickname:"player 1",
+        profilePic:"/yo.jpg",
+    },
+    loser : {
+        nickname : "player2",
+        profilePic : "/yo.jpg",
+    },
+    winnerScore : 2,
+    loserScore : 1,
+    isMeWhoWon : false,
+
 },
 {
     id : "26/12/2024",
@@ -131,6 +266,8 @@ const Profile = () => {
     const [isprivateProfile, setisprivateProfile] = useState<boolean | undefined>(false);
     const pathname = usePathname();
     const [profileData, setProfileData] = useState<profileData | undefined>(undefined);
+    const [achievements, setAchievements] = useState<Achievements[]>([])
+    const [notAchievements, setNotAchievements] = useState<Achievements[]>([])
     let nickname : string = pathname.split("/")[2];
 
     useEffect(() => {
@@ -151,9 +288,29 @@ const Profile = () => {
                 console.error("Error during authentication check:", error);
             }
         };
+        const getAchievements = async () => {
+            try {
+                const res = await fetch(`http://localhost:8000/user/Achievements`, {
+                    method: "GET",
+                    credentials: "include",
+                    headers: { "Content-Type": "application/json" },
+                });
+                if (res.ok) {
+                    const achievementsData = await res.json();
+                    // console.log(profileData);
+                    console.log("achievement == ", achievementsData);
+                    setAchievements(achievementsData.doneAchievements);
+                    setNotAchievements(achievementsData.notDoneAchievements);
+                }
+            } catch (error) {
+                console.error("Error during authentication check:", error);
+            }
+        };
+        getAchievements();
         getProfileData();
         setIsFriend(profileData?.isfriend);
         setisprivateProfile(profileData?.privateProfile);
+
     }, []);
     var level : number = profileData?.userData?.level;
 
@@ -201,9 +358,9 @@ const Profile = () => {
                 <span className="center text-black text-bold xl:mt-10 lg:mt-10 md:mt-5 mt-5 lg:mr-20 mr-5 ml-2 lg:text-5xl text-3xl" >2</span>
             </div>
             <div className="bg-cyan-600 lg:col-span-2 col-span-4 lg:row-start-4  lg:row-end-5 row-start-5 row-end-6 w-full xl:h-[37vh] lg:h-[38vh] h-[450px] shadow-md rounded-xl">
-                {/* <h1 className="text-bold text-3xl self-center text-cyan-900">MATCH HISTORY</h1> */}
-                <div className="overflow-y-scroll h-full pt-2 styled-scrollbar ">
-                    <div className="lg:w-[95.31%] xl:w-[90%] w-[98%] mt-5 h-full mx-auto">
+                <h1 className="text-bold text-3xl text-center mt-2 text-cyan-900">MATCH HISTORY</h1>
+                <div className=" h-[95%] pt-2 ">
+                    <div className="lg:w-[95.31%] xl:w-[90%] w-[98%] mt-5 h-[90%] mx-auto styled-scrollbar overflow-y-scroll">
 
                         {
                             matchHistory.map((match) => {
@@ -263,7 +420,63 @@ const Profile = () => {
                     </div>
                 </div>
             </div>
-            <div className="bg-accents lg:col-span-2 col-span-4 lg:row-start-4 lg:row-end-5 row-start-6 row-end-7 w-full xl:h-[37vh] lg:h-[38vh] h-[450px] shadow-md rounded-xl"> match history </div>
+            <div className=" bg-cyan-600 lg:col-span-2 col-span-4 lg:row-start-4 lg:row-end-5 row-start-6 row-end-7 w-full xl:h-[37vh] lg:h-[38vh] h-[450px] shadow-md rounded-xl"> 
+                <h2 className="text-bold text-3xl text-center mt-2 text-cyan-900">ACHIEVEMENT</h2>
+                <div className="  h-[95%] pt-2 ">
+                    <div className="lg:w-[95.31%] xl:w-[90%] w-[98%]  mx-auto h-[90%] flex mt-5 flex-col gap-2 overflow-y-auto styled-scrollbar">
+                      {
+                        achievements.map((achievement) => {
+                            return (
+                                <div key={achievement.id} className="p-2 rounded-[15px] border bg-cyan-100 border-lightQuartze w-full h-[18.75%]">
+                                    <h2 className="font-bold text-[15px] lg:text-[20px]">{achievement.title}</h2>
+                                    <p className="text-xs text-gray-500 ml-2 lg:text-sm lg:block md:block hidden">{achievement.description}</p>
+                                </div>
+                            )
+                        })
+                      }
+                      {
+                        notAchievements.map((achievement) => {
+                            return (
+                                <div key={achievement.id} className="p-2 rounded-[15px] border bg-gray-400 border-gray-500 w-full h-[18.75%]">
+                                    <h2 className="font-bold text-[15px] lg:text-[20px]">{achievement.title}</h2>
+                                    <p className="text-xs text-gray-500 ml-2 lg:text-sm lg:block md:block hidden">{achievement.description}</p>
+                                </div>
+                            )
+                        })
+                    }
+                     {/* {
+                        notAchievements.map((achievement) => {
+                            return (
+                                <div key={achievement.id} className="bg-red-500 w-full h-[18.75%]">
+                                    <h2>{achievement.title}</h2>
+                                    <p>{achievement.description}</p>
+                                </div>
+                            )
+                        })
+                    }
+                    {
+                        notAchievements.map((achievement) => {
+                            return (
+                                <div key={achievement.id} className="bg-red-500 w-full h-[18.75%]">
+                                    <h2>{achievement.title}</h2>
+                                    <p>{achievement.description}</p>
+                                </div>
+                            )
+                        })
+                    }
+                                        {
+                        notAchievements.map((achievement) => {
+                            return (
+                                <div key={achievement.id} className="bg-red-500 w-full h-[18.75%]">
+                                    <h2>{achievement.title}</h2>
+                                    <p>{achievement.description}</p>
+                                </div>
+                            )
+                        })
+                    } */}
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
     );
