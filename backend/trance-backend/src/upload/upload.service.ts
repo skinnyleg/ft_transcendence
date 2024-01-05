@@ -19,6 +19,18 @@ export class UploadService {
 		})
 	}
 
+	async updateChannelPic(pic: string, channelName: string)
+	{
+		// await this.prisma.user.update({
+		// 	where: {
+		// 		id: id,
+		// 	},
+		// 	data: {
+		// 		profilePic: pic
+		// 	}
+		// })
+	}
+
 	async updateBackgroundPic(pic: string, id: string)
 	{
 		await this.prisma.user.update({
