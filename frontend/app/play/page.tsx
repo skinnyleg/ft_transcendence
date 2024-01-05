@@ -18,7 +18,7 @@ const play = () => {
         x : 590,
         y: 150,
         width: 10,
-        height: 100,
+        height: 100,  
         score : 0,
     }
 

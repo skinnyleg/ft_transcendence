@@ -118,8 +118,7 @@ export class AuthService {
 			throw new NotFoundException('user not found')
 		
 		if (user.FirstLogin === false)
-			throw new ConflictException('already updated the value')
-
+			res.status(200).send({valid: true})
 
 		const updatedUser = await this.prisma.user.update({
 			where: {

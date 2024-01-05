@@ -22,16 +22,22 @@ export class GameGateway {
     }
     @SubscribeMessage('PlayQueue')
     QueueMaker(client: Socket){
-        this.gameService.handleMatchMaker(client);
+        this.gameService.handleMatchMaker(client, this.server);
     }
     @SubscribeMessage('challengeBot')
-    async BotMatchMaker(client : Socket, payload : Record<string, any>){
+    async BotMatchMaker(client : Socket){
+        this.gameService.challengeBot(client);
+    }
+
+    @SubscribeMessage('StartBotGame')
+    async startBotMatch(client : Socket, payload : Record<number, any>){
         const verify = await validateAndSendError(payload, BotDto);
         if (verify.valid == true){
             this.gameService.sendWebSocketError(client, verify.error, false);
         }
-        else
-            this.gameService.startBotGame(client, verify.input.width, verify.input.height)
+        else{
+            this.gameService.startBotGame(client, verify.input.width, verify.input.height);
+        }
     }
 
     @SubscribeMessage('challengeFriend')
@@ -50,7 +56,7 @@ export class GameGateway {
             this.gameService.sendWebSocketError(client, verify.error, false);
         }
         else
-            await this.gameService.acceptChallenge(client, verify.input.userId, verify.input.requestId);
+            await this.gameService.acceptChallenge(client, this.server, verify.input.userId, verify.input.requestId);
     }
 
     @SubscribeMessage('refuseChallenge') 
@@ -70,7 +76,7 @@ export class GameGateway {
             this.gameService.sendWebSocketError(client, verify.error, false);
         }
         else
-            await this.gameService.startGame(client, verify.input.userId, verify.input.width, verify.input.height)
+            await this.gameService.startGame(client, this.server, verify.input.userId, verify.input.width, verify.input.height)
     }
     async handleDisconnect(client: Socket) {
 		await this.gameService.deleteUser(client)

@@ -10,7 +10,7 @@ import ProgressBar from "@/app/ui/progressBar";
 import Conditional from "@/app/ui/Conditional";
 
 const matchHistory = [{
-    id : "25/12/2024",
+    id : "25/122024",
     winner : {
         nickname:"player 1",
         profilePic:"url",
@@ -24,7 +24,7 @@ const matchHistory = [{
     isMeWhoWon : true,
 },
 {
-    id : "26/12/2024",
+    id : "6/2/2024",
     winner : {
         nickname:"player 1",
         profilePic:"url",
@@ -39,7 +39,7 @@ const matchHistory = [{
 
 },
 {
-    id : "26/2/2424",
+    id : "26/22424",
     winner : {
         nickname:"player 1",
         profilePic:"url",
@@ -54,7 +54,7 @@ const matchHistory = [{
 },
 ,
 {
-    id : "26/2/2424",
+    id : "26//2424",
     winner : {
         nickname:"player 1",
         profilePic:"url",
@@ -68,7 +68,7 @@ const matchHistory = [{
     isMeWhoWon : true,
 },
 {
-    id : "26/24/2424",
+    id : "224/2424",
     winner : {
         nickname:"player 1",
         profilePic:"url",
@@ -82,7 +82,7 @@ const matchHistory = [{
     isMeWhoWon : true,
 },
 {
-    id : "26/3/2424",
+    id : "46/32424",
     winner : {
         nickname:"player 1",
         profilePic:"url",
@@ -96,7 +96,7 @@ const matchHistory = [{
     isMeWhoWon : true,
 },
 {
-    id : "26/120/2424",
+    id : "29/120/2424",
     winner : {
         nickname:"player 1",
         profilePic:"url",
@@ -110,7 +110,7 @@ const matchHistory = [{
     isMeWhoWon : true,
 },
 {
-    id : "26/185/2424",
+    id : "24/185/2424",
     winner : {
         nickname:"med-doba",
         profilePic:"url",
@@ -127,6 +127,7 @@ const matchHistory = [{
 
 const Profile = () => {
 
+    /// cant fetch data at the first login 
     const [isFriend, setIsFriend] = useState<boolean | undefined>(false);
     const [isprivateProfile, setisprivateProfile] = useState<boolean | undefined>(false);
     const pathname = usePathname();

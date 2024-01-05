@@ -1,18 +1,18 @@
 'use client';
 import { ArrowLeftOnRectangleIcon,
-    Bars4Icon, BellIcon, ChatBubbleBottomCenterIcon,
+    Bars4Icon, ChatBubbleBottomCenterIcon,
     Cog6ToothIcon, HomeIcon, MagnifyingGlassIcon, TrophyIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
-import { Metadata } from "next"
 import { Inter } from "next/font/google"
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import {responseData} from "@/app/interfaces/interfaces";
+import {profileNickPic, responseData} from "@/app/interfaces/interfaces";
 import { useDebouncedCallback } from "use-debounce";
-import { BellAlertIcon } from "@heroicons/react/20/solid";
+import { ContextProvider, picturesContext } from "../context/profileContext";
 import Notifications from "./Notification";
+import { toast } from "react-toastify";
 const inter = Inter({ subsets: ['latin'] })
 
 
@@ -31,30 +31,9 @@ function NavBar ({handleShowMenu}: NavBarProps)
   const [error, setError] = useState<string | null>(null);
   const [results, setRes] = useState<responseData[]>([]);
   const [showBar, setShowBar] = useState(false); // show search barr
+  const [profilePic, setProfilePic] = useState('');
+  const [backgroundPic, setBackgroundPic] = useState('');
   const [nickname, setNickname] = useState('');
-  const [ProfilePic, setProfilePic] = useState('');
-  const [showNotif, setShowNotif] = useState(false);
-  
-
-  useEffect(() => {
-    const getnickname = async () => {
-      try {
-        const res = await fetch(`http://localhost:8000/user/Nickname`, {
-          method: "GET",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-        });
-        if (res.ok) {
-          const nickname = await res.json();
-          setNickname(nickname.nickname);
-          setProfilePic(nickname.profilePic)
-        }
-      } catch (error) {
-        setError('Error fetching data');
-      }
-    };
-    getnickname();
-  }, []);
 
   const searchBackend = async (query: string) => {
     try {
@@ -87,7 +66,30 @@ function NavBar ({handleShowMenu}: NavBarProps)
     }
   }, [search, debouncedSearchBackend]);
 
-  return (
+  useEffect(() => {
+    const getnickname = async () => {
+      try {
+        const res = await fetch(`http://localhost:8000/user/Nickname`, {
+          method: "GET",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+        });
+        if (res.ok) {
+          const nickname : profileNickPic = await res.json();
+          setProfilePic(nickname.profilePic);
+          setBackgroundPic(nickname.BackgroundPic);
+          setNickname(nickname.nickname);
+          console.log("nick:", nickname);
+        }
+      } catch (error) {
+        toast.error('Error fetching data');
+      }
+    };
+    getnickname();
+}, []);
+  
+return (
+  <picturesContext.Provider value={{profilePic, backgroundPic, nickname}}>
   <div className={`${inter.className}`}>
     <div className="lg:hidden xl:hidden bg-nav top-0 text-white md:w-screen h-15 z-10 p-4 flex justify-between items-center border-indigo-600 fixed w-full">
       <button className="text-white p-2 focus:outline-none">
@@ -110,7 +112,7 @@ function NavBar ({handleShowMenu}: NavBarProps)
         <Link href={`http://localhost:3000/profile/${nickname}`}>
           <img
               className="h-8 w-auto rounded-full mr-2"
-              src={ProfilePic}
+              src={profilePic}
               alt="Logo"
               width={100}
               height={40}
@@ -177,6 +179,7 @@ function NavBar ({handleShowMenu}: NavBarProps)
       </div>
     </nav>
     </div>
+  </picturesContext.Provider>
   );
 }
 

@@ -22,7 +22,8 @@ export interface FriendsData {
 
 export interface profileNickPic{
   nickname: string;
-  profilePic:string; 
+  profilePic:string;
+  BackgroundPic: string;
 };
 
 export interface AchievementsData {

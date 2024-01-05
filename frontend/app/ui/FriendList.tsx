@@ -17,7 +17,8 @@ interface FriendsData {
 
 const FriendsList = () => {
     const [friendsList, setFriendList] = useState<FriendsData[]>([]);
-    
+    useEffect(() => {
+        
         const friendsGet = async() => {
         try{
             const res = await fetch(`http://localhost:8000/user/Friends`, {
@@ -33,9 +34,10 @@ const FriendsList = () => {
             toast.error(error as string);
         }
         }
-    friendsGet();
+        friendsGet();
+   }, []);
 
-    useEffect(() => {
+   useEffect(() => {
         const handleStatusChange = (stat : {id : string, status : UserStatus}) => {
           if (stat.status !== undefined) {
             setFriendList((prevFriendsList) => {
