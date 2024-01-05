@@ -7,6 +7,7 @@ import { generateNickname } from 'src/utils/generateNickname';
 import * as fs from 'fs';
 import * as path from 'path';
 import { NotificationData } from 'src/classes/classes';
+import { notDeepEqual } from 'assert';
 
 @Injectable()
 export class UserService {
@@ -1071,4 +1072,39 @@ export class UserService {
 		return {valid:false}
 	}
 
+
+	async getFriendStatus(id: string, nickname: string)
+	{
+		const user = await this.findOneByNickname(nickname);
+
+		if (!user)
+			throw new NotFoundException('User Not Found')
+		
+		
+		const friendStatus = await this.prisma.friendStatus.findFirst({
+			where: {
+				userId: id,
+				friendId: user.id
+			}
+		})
+		
+		if (!friendStatus)
+		{
+			const {BlockedBy, usersBlocked} = await this.prisma.user.findUnique({
+				where: {
+					id: user.id
+				},
+				select: {
+					BlockedBy: true,
+					usersBlocked: true,
+				}
+			})
+			let ret1 = BlockedBy.find((b) => b === id);
+			let ret2 = usersBlocked.find((b) => b === id);
+			if (ret2 || ret1)
+				return ({status: 'BLOCKED'})
+			return ({status: 'NONE'})
+		}
+		return {status: friendStatus.status};
+	}
 }
