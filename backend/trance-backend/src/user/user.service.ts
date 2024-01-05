@@ -972,6 +972,7 @@ export class UserService {
 				id: true,
 				nickname: true,
 				profilePic: true,
+				BackgroundPic: true,
 			}
 		})
 		if (!user)

@@ -1,6 +1,5 @@
 'use client';
 import TopBar from '../ui/top';
-import Achievements from '../ui/Achievements';
 import Themes from '../ui/Themes';
 import React, { useState, useEffect } from 'react';
 import PowerUps from '../ui/PowerUps';
@@ -12,6 +11,7 @@ import { FaRobot } from "react-icons/fa";
 import {dashboardData, profileData} from '../interfaces/interfaces';
 import { QuestionMarkCircleIcon, QueueListIcon } from '@heroicons/react/24/outline';
 import { ToastContainer, toast } from 'react-toastify';
+import TopThree from '../ui/TopThree';
 
 
 function Dashboard() {
@@ -54,9 +54,7 @@ function Dashboard() {
             <PlayButton theme = {theme} PowerUp={powerup}/>
           </div>
           
-          <Achievements
-            doneAchievements={doneAchievements}
-            notDoneAchievements={notDoneAchievements} />
+          <TopThree />
 
           <Themes handleThemeChange={handleThemeChange} />
           

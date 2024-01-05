@@ -2,11 +2,11 @@
 import { useDebouncedCallback } from 'use-debounce';
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
-import { use, useEffect, useRef, useState } from "react";
+import { use, useContext, useEffect, useRef, useState } from "react";
 import Link from 'next/link';
 import Notifications from './Notification';
 import {responseData, profileNickPic} from "@/app/interfaces/interfaces";
-import { socket , profilePicContext, avatarImage} from '../context/soketContext';
+import { socket , profileContext} from '../context/soketContext';
 import { toast } from 'react-toastify';
 
 export default function TopBar () {
@@ -16,6 +16,7 @@ export default function TopBar () {
   const [results, setRes] = useState<responseData[]>([]);
   const [profileData, setProfileData] = useState<profileNickPic | undefined>(undefined);
   const searchRef = useRef<HTMLDivElement>(null);
+  const {profilePic, backgroundPic} = useContext(profileContext)
 
   const handleClickOutside = (e: MouseEvent) => {
     if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
@@ -85,7 +86,6 @@ export default function TopBar () {
 
   return (
     <>
-      <profilePicContext.Provider value={avatarImage}>
       <div className="flex lg:flex-row justify-between flex-col w-full bg-transparent">
         <div className="lg:flex md:hidden hidden xl:flex">
           <h1 className="lg:text-2xl text-gray-500 text-lg font-bold-800">Welcome Back ....!</h1>
@@ -119,7 +119,6 @@ export default function TopBar () {
             </Link>
           </div>
       </div>
-    </profilePicContext.Provider>
     </>
   );
 }

@@ -321,10 +321,12 @@ const Profile = () => {
             <div className="relative col-start-1 col-end-5 xl:h-[33vh] lg:h-[33vh] md:h-[200px] h-[200px]  row-start-1 row-end-2 w-full shadow-md rounded-xl">
                 <div className="flex relative  flex-col text-4xl text-white text-bold-900 rounded-xl xl:h-[33vh] lg:h-[33vh] md:h-[200px] h-[200px]">
                     <img src={profileData?.userData.BackgroundPic} className="w-full rounded-md h-full object-cover" alt="background Image"></img>
-                    <h2 className="absolute top-2 left-0 pl-3 text-gray-300">{profileData?.userData.nickname}</h2>
                 </div>
                 <div  className="rounded-full lg:w-[100px] md:w-[90px] w-[80px] xl:h-[150px] xl:w-[150px] absolute bottom-0 left-0 transform  xl:translate-x-[10px] xl:translate-y-[55px] translate-x-[8px] translate-y-[32px] border-2 max-w-[90px] max-h-[90px] min-w-[90px] min-h-[90px]">
                     <img src={profileData?.userData.profilePic} alt="profile Picture" className="lg:w-[100px] md:w-[90px] w-[80px] xl:h-[150px] xl:w-[150px] rounded-full max-w-[90px] max-h-[90px] min-w-[90px] min-h-[90px]" />
+                </div>
+                <div className="absolute bottom-[-10] left-24">
+                    <h2 className=" text-black text-2xl left-10 inline-block pl-3">{profileData?.userData.nickname}</h2>
                 </div>
             </div>
             <div className="bg-lightblue lg:col-start-2 lg:col-end-4 lg:row-start-2 lg:mt-0 mt-2 md:mt-4 lg:row-end-3 col-start-1 col-end-4 row-start-3 row-end-4
@@ -333,38 +335,64 @@ const Profile = () => {
             </div>
             <div className="relative col-start-4 col-end-5 mt-2 md:mt-4 bg-accents rounded-2xl lg:mt-0 lg:row-start-2 mx-auto h-[30px] xl:h-[40px] lg:row-end-3 row-start-3 row-end-4 flex w-[80%] lg:w-[70%] xl:w-[70%]">
                 <Conditional isfriend={profileData?.isfriend} privateProfile = {profileData?.privateProfile} isBlocked = {profileData?.isBlocked} userId= {profileData?.userData?.id}/>
-            </div> 
-            {/* 4 cards */}
-            <div  className="bg-accents col-span-1 lg:row-start-3 row-start-4 row-end-5 flex justify-evenly lg:row-end-4 w-full xl:h-[12vh] lg:h-[12vh] md:h-[180px] h-[120px] shadow-md rounded-3xl">
-                <div className="flex lg:flex-row items-center flex-col h-[80%]">
-                    <WalletIcon className="text-white xl:w-[80px] xl:h-[80px]  text-center lg:w-[80px] mb-4 md:w-[80px] w-[40px] xl:mt-4 mt-4 lg:ml-2 md:ml-2 ml-0"/>
-                </div>
-                <div className="flex flex-col h-[80%]">
-                    <h2 className="lg:text-lg xl:text-xl lg:block md:block hidden text-md lg:w-20 w-10 mt-5 pb-2 text-bold-900">Wallet</h2>
-                    <p className="text-sm">Ping Pong Zone</p>
-                </div>
-                <h2 className="lg:text-2xl xl:text-5xl md:text-2xl text-lg mt-7 xl:mt-10 lg:mt-12 md:mt-10 text-bold-900 mr-3 md:mr-3 lg:mr-4">{profileData?.userData.wallet}</h2>
             </div>
-            <div  className="bg-accents col-span-1 flex justify-between lg:row-start-3 xl:h-[12vh] lg:h-[12vh] h-[120px] row-start-4 row-end-5 lg:row-end-4 w-full` shadow-md rounded-3xl">
-            <div className="flex lg:flex-row flex-col h-full">
-                    <TrophyIcon className="text-white xl:w-[60px] xl:h-[60px] lg:w-[80px] mb-4 md:w-[80px] w-[70px] xl:mt-8 mt-4 lg:ml-2 md:ml-2 ml-0"/>
-                    <p className="lg:text-2xl xl:text-3xl lg:block md:block hidden text-lg text-center xl:mt-12 lg:w-20 w-10 lg:ml-5 ml-7 pb-2 lg:mt-10 mt-3 text-bold-900">Rank</p>
+            <div className="col-span-4 lg:row-start-3 lg:row-end-4 row-start-4 row-end-5 flex flex-col md:flex-row justify-evenly  gap-2 items-center  w-full xl:h-[12vh] lg:h-[12vh] md:h-[12vh] h-[500px] rounded-3xl">
+                <div className="w-full md:w-1/4 h-[40%] md:h-[90%] bg-cyan-600 rounded-3xl flex flex-row justify-between items-center p-2 gap-2 ">
+                    <div className="flex flex-row gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="75" height="75" viewBox="0 0 75 75" fill="none">
+                            <path d="M6.25 28.1249H15.625V65.625H6.25C4.52412 65.625 3.125 64.2259 3.125 62.5V31.2499C3.125 29.524 4.52412 28.1249 6.25 28.1249ZM22.7903 24.0846L42.7919 4.08315C43.3416 3.53331 44.2122 3.47147 44.8341 3.938L47.4984 5.93625C49.0131 7.07225 49.6956 9.0079 49.2284 10.8427L45.6244 24.9999H65.625C69.0769 24.9999 71.875 27.7981 71.875 31.2499V37.8259C71.875 38.6425 71.715 39.4509 71.4044 40.2056L61.7344 63.6897C61.2522 64.8606 60.1109 65.625 58.8447 65.625H25C23.2741 65.625 21.875 64.2259 21.875 62.5V26.2943C21.875 25.4655 22.2043 24.6707 22.7903 24.0846Z" fill="#D4F1F4"/>
+                        </svg>
+                        <div className="flex flex-col">
+                            <h1 className="text-cyan-900 text-[20px] font-semibold w-[47px]">WINS</h1>
+                            <p className="text-cyan-100 text-[16px] font-semibold">PING PONG ZONE</p>
+                        </div>
+
+                    </div>
+                    <h1 className="text-cyan-900 text-[50px] font-semibold">00</h1>
                 </div>
-                <h2 className="lg:text-2xl xl:text-5xl md:text-2xl text-lg mt-7 xl:mt-10 lg:mt-12 md:mt-10 text-bold-900 mr-3 md:mr-3 lg:mr-4">2</h2>
-            </div>
-            <div className="bg-accents col-span-1 lg:row-start-3 row-start-4 row-end-5 lg:row-end-4 w-full xl:h-[12vh] lg:h-[12vh] h-[120px] shadow-md flex justify-between rounded-3xl">
-                <HandThumbUpIcon width={150} height={100} className="text-white text-2xl xl:mt-5 lg:mt-5 mt-2"/>
-                <span className="center text-black text-bold xl:mt-10 lg:mt-10 md:mt-5 mt-5 lg:mr-20 mr-5 ml-2 lg:text-5xl text-3xl" >2</span>
-            </div>
-            <div  className="bg-accents col-span-1 lg:row-start-3 row-start-4 row-end-5 lg:row-end-4 w-full xl:h-[12vh] lg:h-[12vh] h-[120px] shadow-md flex justify-between rounded-3xl">
-                <HandThumbDownIcon width={150} height={100} className="text-white text-2xl xl:mt-5 lg:mt-5 mt-2"/>
-                <span className="center text-black text-bold xl:mt-10 lg:mt-10 md:mt-5 mt-5 lg:mr-20 mr-5 ml-2 lg:text-5xl text-3xl" >2</span>
+                <div className="w-full md:w-1/4 h-[40%] md:h-[90%] bg-cyan-600 rounded-3xl flex flex-row justify-between items-center p-2 gap-2 ">
+                    <div className="flex flex-row gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="69" height="63" viewBox="0 0 69 63" fill="none">
+                            <path d="M65.75 37.875H56.375V0.375H65.75C67.4759 0.375 68.875 1.77412 68.875 3.5V34.75C68.875 36.4759 67.4759 37.875 65.75 37.875ZM49.2097 41.9153L29.2081 61.9169C28.6584 62.4666 27.7879 62.5284 27.1659 62.0619L24.5016 60.0638C22.9869 58.9278 22.3043 56.9919 22.7714 55.1572L26.3755 41H6.375C2.92322 41 0.125 38.2019 0.125 34.75V28.1741C0.125 27.3575 0.284938 26.5491 0.59575 25.7944L10.2657 2.31016C10.7478 1.13922 11.889 0.375 13.1553 0.375H47C48.7259 0.375 50.125 1.77412 50.125 3.5V39.7056C50.125 40.5344 49.7956 41.3294 49.2097 41.9153Z" fill="#D4F1F4"/>
+                        </svg>
+                        <div className="flex flex-col">
+                            <h1 className="text-cyan-900 text-[20px] font-semibold w-[47px]">LOSSES</h1>
+                            <p className="text-cyan-100 text-[16px] font-semibold">PING PONG ZONE</p>
+                        </div>
+
+                    </div>
+                    <h1 className="text-cyan-900 text-[50px] font-semibold">00</h1>
+                </div>
+                <div className="w-full md:w-1/4 h-[40%] md:h-[90%] bg-cyan-600 rounded-3xl flex flex-row justify-between items-center p-2 gap-2 ">
+                    <div className="flex flex-row gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="75" height="75" viewBox="0 0 75 75" fill="none">
+                            <path d="M40.6403 52.9406V59.3841H56.2653V65.6341H18.7652V59.3841H34.3903V52.9406C22.058 51.4028 12.5152 40.8828 12.5152 28.1342V9.38416H62.5153V28.1342C62.5153 40.8828 52.9725 51.4028 40.6403 52.9406ZM3.14025 15.6342H9.39025V28.1342H3.14025V15.6342ZM65.6403 15.6342H71.8903V28.1342H65.6403V15.6342Z" fill="#D4F1F4"/>
+                        </svg>
+                        <div className="flex flex-col">
+                            <h1 className="text-cyan-900 text-[20px] font-semibold w-[47px]">RANK</h1>
+                            <p className="text-cyan-100 text-[16px] font-semibold">PING PONG ZONE</p>
+                        </div>
+                    </div>
+                    <h1 className="text-cyan-900 text-[50px] font-semibold">00</h1>
+                </div>
+                <div className="w-full md:w-1/4 h-[40%] md:h-[90%] bg-cyan-600 rounded-3xl flex flex-row justify-between items-center p-2 gap-2 ">
+                    <div className="flex flex-row gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="75" height="75" viewBox="0 0 75 75" fill="none">
+                            <path d="M68.7653 18.75H46.8903C36.535 18.75 28.1403 27.1447 28.1403 37.5C28.1403 47.8553 36.535 56.25 46.8903 56.25H68.7653V62.5C68.7653 64.2259 67.3663 65.625 65.6403 65.625H9.39026C7.66438 65.625 6.26526 64.2259 6.26526 62.5V12.5C6.26526 10.7741 7.66438 9.375 9.39026 9.375H65.6403C67.3663 9.375 68.7653 10.7741 68.7653 12.5V18.75ZM46.8903 25H71.8903V50H46.8903C39.9866 50 34.3903 44.4034 34.3903 37.5C34.3903 30.5964 39.9866 25 46.8903 25ZM46.8903 34.375V40.625H56.2653V34.375H46.8903Z" fill="#D4F1F4"/>
+                        </svg>
+                        <div className="flex flex-col">
+                            <h1 className="text-cyan-900 text-[20px] font-semibold w-[47px]">WALLET</h1>
+                            <p className="text-cyan-100 text-[16px] font-semibold">PING PONG ZONE</p>
+                        </div>
+
+                    </div>
+                    <h1 className="text-cyan-900 text-[50px] font-semibold">00</h1>
+                </div>
             </div>
             <div className="bg-cyan-600 lg:col-span-2 col-span-4 lg:row-start-4  lg:row-end-5 row-start-5 row-end-6 w-full xl:h-[37vh] lg:h-[38vh] h-[450px] shadow-md rounded-xl">
-                <h1 className="text-bold text-3xl text-center mt-2 text-cyan-900">MATCH HISTORY</h1>
-                <div className=" h-[95%] pt-2 ">
+                 <h1 className="text-bold text-3xl text-center mt-2 text-cyan-900">MATCH HISTORY</h1>
+                <div className=" h-[95%] pt-2 pb-2">
                     <div className="lg:w-[95.31%] xl:w-[90%] w-[98%] mt-5 h-[90%] mx-auto styled-scrollbar overflow-y-scroll">
-
                         {
                             matchHistory.map((match) => {
                                 return (
@@ -394,32 +422,7 @@ const Profile = () => {
                                 );
                             })
                         }
-                        {/* {matchHistory.map((match) => {
-                            return (
-                            <div key={match?.id} className="flex flex-col border  border-lightQuartze rounded-[15px] w-full mt-2 xl:mt-4">
-                                <div className="flex flex-row justify-between items-center">
-                                    <div className="flex flex-row m-3 items-center gap-2 ">
-                                        <img src="/yo.jpg" alt="profilePic" className="mt-2 w-10 h-10 xl:w-15 xl:w-15 rounded-full" />
-                                        <h2 className="text-bold m-1 lg:ml-0 md:ml-0 ml-0 text-white lg:text-lg xl:text-2xl md:text-lg text-sm ">{match?.winner.nickname}</h2>
-                                    </div>
-                                    <div className="flex flex-col m-0">
-                                        <div className="flex flex-row-reverse justify-evenly items-center border border-white rounded-xl xl:w-[100px] w-[100px] mb-2 h-[30px] xl:h-[40px] bg-button text-white">
-                                        <span className="text-bold mt-2 xl:text-lg  h-full text-xl">{match?.isMeWhoWon ? `won` : `lose`}</span>  
-                                        <div className="flex flex-row">
-                                            <h2 className="text-bold ml-0 xl:mt-1 text-xl">{match?.winnerScore}</h2>
-                                            <h2 className="text-bold xl:mt-1 text-xl">:</h2>
-                                            <h2 className="text-bold mr-0 xl:mt-1 text-xl">{match?.loserScore}</h2>
-                                        </div>
-                                        </div>
-                                    </div>
-                                    <div className="flex flex-row-reverse m-3 items-center"> 
-                                        <img src="/yo1.jpg" alt="profilePic" className="mt-2 w-10 h-10 xl:w-15 xl:w-15 rounded-full" />
-                                        <h2 className="text-bold m-2 lg:mr-5 md:mr-5 mr-1 lg:text-lg xl:text-2xl md:text-lg text-sm text-white" >{match?.loser.nickname}</h2>
-                                    </div>
-                                </div>
-                            </div>
-                            )
-                        })} */}
+                
                     </div>
                 </div>
             </div>
@@ -447,7 +450,7 @@ const Profile = () => {
                             )
                         })
                     }
-                     {/* {
+                    {
                         notAchievements.map((achievement) => {
                             return (
                                 <div key={achievement.id} className="bg-red-500 w-full h-[18.75%]">
@@ -476,7 +479,7 @@ const Profile = () => {
                                 </div>
                             )
                         })
-                    } */}
+                    }
                     </div>
                 </div>
             </div>

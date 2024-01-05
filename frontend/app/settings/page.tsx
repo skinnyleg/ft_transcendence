@@ -3,13 +3,14 @@
 import TopBar from "../ui/top";
 import QRCode from 'qrcode.react';
 import { Switch } from '@headlessui/react'
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { Button } from "@nextui-org/react";
 import { profileNickPic } from "../interfaces/interfaces";
 import { PlusCircleIcon } from "@heroicons/react/20/solid";
 import Image from "next/image";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
+import { profileContext } from "../context/soketContext";
 // import withAuth from "../withAuth"
 
 const settings = () => {
@@ -80,6 +81,7 @@ const settings = () => {
         };  
         // getnickname();
         checkVerification();
+        UpdateStatus();
 
       }, []);
 
@@ -264,7 +266,7 @@ const settings = () => {
 
     return (
         <>
-            <main className="flex flex-col font-white bg-main overflow-y-auto styled-scrollbar lg:h-screen xl:h-screen h-full mr-2">
+            <main className="flex flex-col font-white bg-main  lg:h-screen xl:h-screen h-full mr-2">
                 <TopBar />
                 <div className="flex flex-col w-full h-full mt-10 justify-between"> 
                     <div className="relative xl:h-[30vh] lg:h-[30vh] md:h-[30vh] h-[30vh] mt-10">
@@ -287,8 +289,8 @@ const settings = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="flex border-2 border-gray-200 xl:h-[50vh] lg:h-[50vh] md:h-[54vh] h-[80vh] w-full mt-20 rounded-lg">
-                        <div className="flex xl:flex-row lg:flex-row md:flex-row h-full flex-col md:p-5 lg:p-10 xl:p-10 justify-between w-full">
+                    <div className="flex border-2 border-gray-200 xl:h-[50vh] lg:h-[50vh] md:h-[54vh] h-[80vh] w-full mt-0 rounded-lg">
+                        <div className="flex xl:flex-row lg:flex-row md:flex-row h-full flex-col md:p-2 lg:p-2 xl:p-2 justify-between w-full">
                             <div className="flex flex-col xl:w-[30%] h-[50%] lg:w-[40%] w-[70%] p-5 mt-10 xl:ml-10 ml-5">
                                 <div className="mb-6">
                                     <label className="text-gray-500 w-[90%] text-md ml-10 mt-10 m-1">Change Nickname</label>
@@ -310,13 +312,13 @@ const settings = () => {
                                 </div>
                                 <div className={`${pass === passConfirmation && pass !== '' ? 'flex' : 'hidden'} mb-10`}>
                                     <Button type="submit" radius="md" className={`block bg-gradient-to-tr from-accents to-back text-white shadow-lg 
-                                        hover:from-accents hover:to-main hover:to-lightQuartzetext-white`} onClick={() => { HandlePassChange(); UpdateStatus()}}>
+                                        hover:from-accents hover:to-main hover:to-lightQuartzetext-white`} onClick={() => { HandlePassChange();}}>
                                         save
                                     </Button>
                                 </div>
                             </div>
-                            <div className="flex flex-col h-[50vh] w-[35%] p-3 xl:mr-10 mr-0 xl:mt-10 mt-0 xl:ml-0 ml-5">
-                                <div className="flex h-full justify-between">
+                            <div className="flex flex-col h-[50vh] w-[35%] p-3 xl:mr-10 mr-0 xl:mt-10 mt-0 xl:ml-0 ml-5 ">
+                                <div className="flex h-fit justify-between">
                                     <div className="text-white text-bold-300 text-lg">Enable 2FA </div>
                                     <Switch
                                         checked={enabled}

@@ -19,7 +19,7 @@ export class Strategy42 extends PassportStrategy(Strategy, '42') {
 			intraId: profile._json.id,
 			password: "123",
 			profilePic: profile._json.image.link,
-			BackgroundPic: process.env.BackendHost + "/upload/background/DefaultBackground.jpg",
+			BackgroundPic: process.env.BackendHost + "/upload/background/DefaultBackground.png",
 			wallet: profile._json.wallet,
 			level: profile._json.cursus_users[1].level,
 			nickname: profile._json.login,
