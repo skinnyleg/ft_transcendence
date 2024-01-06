@@ -8,6 +8,7 @@ import { ArrowTrendingDownIcon,  ChatBubbleLeftEllipsisIcon, UserMinusIcon, Wall
 import { FaUserFriends } from "react-icons/fa";
 import ProgressBar from "@/app/ui/progressBar";
 import Conditional from "@/app/ui/Conditional";
+import { ContextFriendProvider } from "@/app/context/profileContext";
 
 const matchHistory = [{
     id : "25/122024",
@@ -265,10 +266,10 @@ const Profile = () => {
     /// cant fetch data at the first login 
     const [isFriend, setIsFriend] = useState<boolean | undefined>(false);
     const [isprivateProfile, setisprivateProfile] = useState<boolean | undefined>(false);
-    const pathname = usePathname();
     const [profileData, setProfileData] = useState<profileData | undefined>(undefined);
     const [achievements, setAchievements] = useState<Achievements[]>([])
     const [notAchievements, setNotAchievements] = useState<Achievements[]>([])
+    const pathname = usePathname();
     let nickname : string = pathname.split("/")[2];
 
     useEffect(() => {
@@ -315,6 +316,7 @@ const Profile = () => {
     }, []);
     var level : number = profileData?.userData?.level;
 
+    
     return (
     <main className="flex flex-col">
         <TopBar />

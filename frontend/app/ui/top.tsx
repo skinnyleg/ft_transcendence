@@ -7,7 +7,7 @@ import Link from 'next/link';
 import Notifications from './Notification';
 import {responseData, profileNickPic} from "@/app/interfaces/interfaces";
 import { socket} from '../context/soketContext';
-import { ContextProvider, picturesContext } from "../context/profileContext";
+import { ContextProvider, picturesContext } from "../context/profilePicContext";
 
 import { toast } from 'react-toastify';
 

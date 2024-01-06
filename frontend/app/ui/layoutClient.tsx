@@ -4,7 +4,8 @@ import { useState } from "react";
 import NavBar from "./navBar";
 import { socketContext , socket} from "@/app/context/soketContext";
 import { ToastContainer, toast } from "react-toastify";
-import { ContextProvider } from "../context/profileContext";
+import { ContextProvider } from "../context/profilePicContext";
+import { ContextFriendProvider } from "../context/profileContext";
 
 export default function LayoutClinet({
     children

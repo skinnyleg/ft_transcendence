@@ -9,7 +9,7 @@ import { profileNickPic } from "../interfaces/interfaces";
 import { PlusCircleIcon } from "@heroicons/react/20/solid";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
-import { ContextProvider, picturesContext } from "../context/profileContext";
+import { ContextProvider, picturesContext } from "../context/profilePicContext";
 import { url } from "inspector";
 
 const settings = () => {

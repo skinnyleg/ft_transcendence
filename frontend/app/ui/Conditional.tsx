@@ -7,6 +7,7 @@ import { Children, useContext, useEffect } from "react";
 import { chatSocketContext, socketContext } from "@/app/context/soketContext";
 import { useRouter } from "next/navigation";
 import { IconWithTooltip } from "./CustomIcons";
+import { FriendStatusContext } from "../context/profileContext";
 
 
 

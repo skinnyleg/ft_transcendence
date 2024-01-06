@@ -275,7 +275,7 @@ export class GameService {
         // just send to the specific player not all the client connect √
         // check if it's a valid match (there is a challenge or two player in queue) √
         // distingue who is the client to update the status √ (add map with an arr of two player as value and roomId as key) √
-
+        // Store match Result (match History / Achivements)
         const player1 = this.getUserBySocketId(client.id);
         const player2 = this.getUserById(userId);
         // problem who is the 2nd player √ (add rom id as a userGame attribute) √
@@ -369,6 +369,7 @@ export class GameService {
                 player2.IsInGame = false;
                 this.userService.updateStatus(this.players_arr.get(player1.roomId)[0].id, UserStatus.ONLINE);
                 this.userService.updateStatus(this.players_arr.get(player1.roomId)[1].id, UserStatus.ONLINE);
+                // this.userService.storeResults(player1, player2);
                 break;
             }
         }
