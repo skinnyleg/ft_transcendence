@@ -110,7 +110,7 @@ export class UserController {
 		return this.userService.getAchievements(id);
 	}
 
-	@Get('FriendStatus')
+	@Post('FriendStatus')
 	@UseGuards(JwtAuthGuard)
  	getFriendStatus(@Body() payload: NicknameDto, @Req() req) {
 		const id = getId(req);

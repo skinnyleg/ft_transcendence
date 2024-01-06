@@ -1,12 +1,12 @@
 import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { authenticator } from 'otplib';
-import { AchievementStatus, RequestType, Status, UserStatus } from '@prisma/client';
+import { AchievementStatus, RequestType, Status, User, UserStatus } from '@prisma/client';
 import { hashPass } from 'src/utils/bcryptUtils';
 import { generateNickname } from 'src/utils/generateNickname';
 import * as fs from 'fs';
 import * as path from 'path';
-import { NotificationData } from 'src/classes/classes';
+import { GameUser, NotificationData } from 'src/classes/classes';
 import { notDeepEqual } from 'assert';
 
 @Injectable()
@@ -442,7 +442,6 @@ export class UserService {
 		return id;
 	}
 
-
 	async deleteRequest(senderId: string, recipientId: string)
 	{
 		if (senderId === recipientId)
@@ -605,8 +604,6 @@ export class UserService {
 		return id;
 		
 	}
-
-
 
 	async unblockUser(senderId: string, recipientId: string)
 	{
@@ -924,6 +921,23 @@ export class UserService {
 	}
 
 
+	async storeResults(player1 : GameUser, player2 : GameUser){
+		const user1 : User = await this.findOneById(player1.id);
+		const user2 : User = await this.findOneById(player2.id);
+		const score: number[] = [player1.score, player2.score];
+		return (await this.prisma.game.create(
+			{
+				data:{
+					MatchScore: score,
+					opponentId: player2.id,
+					userId: player1.id,
+					player: user1,
+					opponent: user2,
+				},
+			}
+		))
+	}
+
 	async getSecret(id: string)
 	{
 		const secret = await this.prisma.user.findUnique({
@@ -1206,12 +1220,12 @@ export class UserService {
 
 	async getFriendStatus(id: string, nickname: string)
 	{
+		console.log("nickname", nickname);
 		const user = await this.findOneByNickname(nickname);
+		console.log("userID", user.id);
 
 		if (!user)
 			throw new NotFoundException('User Not Found')
-		
-		
 		const friendStatus = await this.prisma.friendStatus.findFirst({
 			where: {
 				userId: id,
@@ -1236,6 +1250,7 @@ export class UserService {
 				return ({status: 'BLOCKED'})
 			return ({status: 'NONE'})
 		}
+		console.log("friendStatus", friendStatus.status);
 		return {status: friendStatus.status};
 	}
 }

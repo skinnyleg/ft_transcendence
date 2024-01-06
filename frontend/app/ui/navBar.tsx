@@ -10,7 +10,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import {profileNickPic, responseData} from "@/app/interfaces/interfaces";
 import { useDebouncedCallback } from "use-debounce";
-import { ContextProvider, picturesContext } from "../context/profileContext";
+import { ContextProvider, picturesContext } from "../context/profilePicContext";
 import Notifications from "./Notification";
 import { toast } from "react-toastify";
 const inter = Inter({ subsets: ['latin'] })
@@ -89,7 +89,6 @@ function NavBar ({handleShowMenu}: NavBarProps)
 }, []);
   
 return (
-  <picturesContext.Provider value={{profilePic, backgroundPic, nickname}}>
   <div className={`${inter.className}`}>
     <div className="lg:hidden xl:hidden bg-nav top-0 text-white md:w-screen h-15 z-10 p-4 flex justify-between items-center border-indigo-600 fixed w-full">
       <button className="text-white p-2 focus:outline-none">
@@ -179,7 +178,6 @@ return (
       </div>
     </nav>
     </div>
-  </picturesContext.Provider>
   );
 }
 

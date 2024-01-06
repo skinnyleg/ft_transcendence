@@ -20,6 +20,7 @@ export class GameGateway {
     async handleConnection(client: Socket){
         await this.gameService.saveUser(client);
     }
+
     @SubscribeMessage('PlayQueue')
     QueueMaker(client: Socket){
         this.gameService.handleMatchMaker(client, this.server);
@@ -42,7 +43,7 @@ export class GameGateway {
 
     @SubscribeMessage('challengeFriend')
     async challengeFriend(client : Socket, payload : Record<string, any>){
-        const verify = await validateAndSendError(payload, oponentDto);
+        const verify = await validateAndSendError(payload, oponentDto); 
         if (verify.valid == true)
 			this.gameService.sendWebSocketError(client, verify.error, false);
         else
@@ -78,6 +79,7 @@ export class GameGateway {
         else
             await this.gameService.startGame(client, this.server, verify.input.userId, verify.input.width, verify.input.height)
     }
+
     async handleDisconnect(client: Socket) {
 		await this.gameService.deleteUser(client)
 		client.disconnect();

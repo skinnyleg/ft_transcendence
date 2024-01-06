@@ -1,13 +1,14 @@
 'use client';
 import TopBar from "@/app/ui/top";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { profileData } from "@/app/interfaces/interfaces";
 import { ArrowTrendingUpIcon,   HandThumbUpIcon, UserPlusIcon, HandRaisedIcon, HandThumbDownIcon } from "@heroicons/react/20/solid";
 import { ArrowTrendingDownIcon,  ChatBubbleLeftEllipsisIcon, UserMinusIcon, WalletIcon, TrophyIcon } from "@heroicons/react/24/outline";
 import { FaUserFriends } from "react-icons/fa";
 import ProgressBar from "@/app/ui/progressBar";
 import Conditional from "@/app/ui/Conditional";
+import { ContextFriendProvider } from "@/app/context/profileContext";
 
 const matchHistory = [{
     id : "25/122024",
@@ -130,8 +131,8 @@ const Profile = () => {
     /// cant fetch data at the first login 
     const [isFriend, setIsFriend] = useState<boolean | undefined>(false);
     const [isprivateProfile, setisprivateProfile] = useState<boolean | undefined>(false);
-    const pathname = usePathname();
     const [profileData, setProfileData] = useState<profileData | undefined>(undefined);
+    const pathname = usePathname();
     let nickname : string = pathname.split("/")[2];
 
     useEffect(() => {
@@ -144,7 +145,6 @@ const Profile = () => {
                 });
                 if (res.ok) {
                     const profileData = await res.json();
-                    // console.log(profileData);
                     setProfileData(profileData);
                 }
             } catch (error) {
@@ -157,6 +157,7 @@ const Profile = () => {
     }, []);
     var level : number = profileData?.userData?.level;
 
+    
     return (
     <main className="flex flex-col">
         <TopBar />

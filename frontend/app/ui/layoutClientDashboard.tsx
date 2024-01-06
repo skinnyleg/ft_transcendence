@@ -4,7 +4,7 @@ import { useContext, useState } from "react";
 import NavBar from "./navBar";
 import { socket, socketContext } from "../context/soketContext";
 import { ToastContainer } from "react-toastify";
-import { ContextProvider } from "../context/profileContext";
+import { ContextProvider } from "../context/profilePicContext";
 
 export default function LayoutClientDashboard({
     children

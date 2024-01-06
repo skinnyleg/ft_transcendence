@@ -46,7 +46,7 @@ const Notifications = () => {
     
     useEffect(() => {
         socket.on("notification", (notif) => {
-            console.log("ni=otif sent" ,notif);
+            console.log("notif sent" ,notif);
             setNotif(notif);
         });
 
@@ -66,8 +66,8 @@ const Notifications = () => {
     }, []);
     
     const handleAcceptReq = (data: NotificationsData) => {
-        let useId = data.notifData.userId;
-        let reqId = data.requestId;
+        const useId = data.notifData.userId;
+        const reqId = data.requestId;
 
         socket.emit("accept-request", {userId : useId , requestId : reqId});
         var i = notifications.indexOf(data);
@@ -77,8 +77,8 @@ const Notifications = () => {
     }
     
     const handleRefuseReq = (data: NotificationsData) => {
-        let useId = data.notifData.userId;
-        let reqId = data.requestId;
+        const useId = data.notifData.userId;
+        const reqId = data.requestId;
         socket.emit("refuse-request", {userId : useId , requestId : reqId});
         var i = notifications.indexOf(data);
         notifications.splice(i, 1);
