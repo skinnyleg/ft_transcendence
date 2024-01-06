@@ -6,7 +6,9 @@ import { use, useContext, useEffect, useRef, useState } from "react";
 import Link from 'next/link';
 import Notifications from './Notification';
 import {responseData, profileNickPic} from "@/app/interfaces/interfaces";
-import { socket , profileContext} from '../context/soketContext';
+import { socket} from '../context/soketContext';
+import { ContextProvider, picturesContext } from "../context/profileContext";
+
 import { toast } from 'react-toastify';
 
 export default function TopBar () {
@@ -14,7 +16,6 @@ export default function TopBar () {
   const [search, setSearch] = useState('');
   const [show, setShow] = useState(false);
   const [results, setRes] = useState<responseData[]>([]);
-  const [profileData, setProfileData] = useState<profileNickPic | undefined>(undefined);
   const searchRef = useRef<HTMLDivElement>(null);
   const {profilePic, backgroundPic} = useContext(profileContext)
 
@@ -32,26 +33,6 @@ export default function TopBar () {
     return () => {
       document.removeEventListener('click', handleClickOutside);
     };
-  }, []);
- 
-  useEffect(() => {
-    const getnickname = async () => {
-      try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/Nickname`, {
-          method: "GET",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-        });
-        if (res.ok) {
-          const nickname = await res.json();
-          setProfileData(nickname);
-          // console.log("nick:", nickname.nickname);
-        }
-      } catch (error) {
-        toast.error('Error fetching data');
-      }
-    };
-    getnickname();
   }, []);
 
   const searchBackend = async (query: string) => {
@@ -84,41 +65,43 @@ export default function TopBar () {
     }
   }, [search, debouncedSearchBackend]);
 
+  const {profilePic, backgroundPic, nickname} = useContext(picturesContext)
+  console.log("1+++*========", profilePic)
+    console.log("2+++*========", backgroundPic)
+    console.log("3+++*========", nickname)
   return (
-    <>
       <div className="flex lg:flex-row justify-between flex-col w-full bg-transparent">
-        <div className="lg:flex md:hidden hidden xl:flex">
-          <h1 className="lg:text-2xl text-gray-500 text-lg font-bold-800">Welcome Back ....!</h1>
-        </div>
-        <div className="relative lg:flex md:hidden hidden bg-accent" ref={searchRef}>
-          <MagnifyingGlassIcon className="h-8 w-8 pl-3 rounded-full absolute top-1/3 left transform -translate-y-1/2" />
-          <input
-            onChange={(e) => {setSearch(e.target.value); if (e.target.value) setShow(true); else {setShow(false); setRes([]);} }}
-            onAuxClickCapture={(e) =>{setSearch(''); setShow(false); setRes([]);}}
-            type="search"
-            placeholder="Search..."
-            className={`p-2 lg:h-10 lg:w-80 md:w-40 w-80 mx-auto bg-accents h-6 border border-gray-300 lg:pl-12 md:pl-12 pl-4 text-white rounded-t-xl ${show ? '' : 'rounded-b-xl'} focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-transparent`}
-          />
-          <div className={`${(show || search) ? 'block' : 'hidden'} absolute top-10 lg:w-80 md:w-40 w-80 mx-auto bg-white shadow-md transition-transform duration-300 z-10 rounded-b-lg`}>
-            <div className="flex flex-col">
-              {show && results.map((result) => (
-                <Link href={`/profile/${result.nickname}`} key={result.nickname}>
-                  <div className="flex items-center p-2 hover:bg-gray-100 cursor-pointer z-10">
-                    <img src={result.profilePic} alt="profile" className="w-10 h-10 rounded-full" />
-                    <p className="ml-2">{result.nickname}</p>
-                  </div>
-                </Link>
-              ))}
+          <div className="lg:flex md:hidden hidden xl:flex">
+            <h1 className="lg:text-2xl text-gray-500 text-lg font-bold-800">Welcome Back ....!</h1>
+          </div>
+          <div className="relative lg:flex md:hidden hidden bg-accent" ref={searchRef}>
+            <MagnifyingGlassIcon className="h-8 w-8 pl-3 rounded-full absolute top-1/3 left transform -translate-y-1/2" />
+            <input
+              onChange={(e) => {setSearch(e.target.value); if (e.target.value) setShow(true); else {setShow(false); setRes([]);} }}
+              onAuxClickCapture={(e) =>{setSearch(''); setShow(false); setRes([]);}}
+              type="search"
+              placeholder="Search..."
+              className={`p-2 lg:h-10 lg:w-80 md:w-40 w-80 mx-auto bg-accents h-6 border border-gray-300 lg:pl-12 md:pl-12 pl-4 text-white rounded-t-xl ${show ? '' : 'rounded-b-xl'} focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-transparent`}
+            />
+            <div className={`${(show || search) ? 'block' : 'hidden'} absolute top-10 lg:w-80 md:w-40 w-80 mx-auto bg-white shadow-md transition-transform duration-300 z-10 rounded-b-lg`}>
+              <div className="flex flex-col">
+                {show && results.map((result) => (
+                  <Link href={`/profile/${result.nickname}`} key={result.nickname}>
+                    <div className="flex items-center p-2 hover:bg-gray-100 cursor-pointer z-10">
+                      <img src={result.profilePic} alt="profile" className="w-10 h-10 rounded-full" />
+                      <p className="ml-2">{result.nickname}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
             </div>
           </div>
+            <div   className="lg:flex xl:flex md:hidden hidden pr-2 lg:space-x-4">
+              <Notifications/>
+                <Link href={`http://localhost:3000/profile/${nickname}`}>
+                  <img src={profilePic} alt="yo" className="w-[50px] h-[50px] rounded-full border-accents border-[2px] hidden lg:flex" />
+                </Link>
+            </div> 
         </div>
-          <div   className="lg:flex xl:flex md:hidden hidden pr-2 lg:space-x-4">
-            <Notifications/>
-            <Link href={`http://localhost:3000/profile/${profileData?.nickname}`}>
-              <img src={profileData?.profilePic} alt="yo" className="w-[50px] h-[50px] rounded-full border-accents border-[2px] hidden lg:flex" />
-            </Link>
-          </div>
-      </div>
-    </>
   );
 }

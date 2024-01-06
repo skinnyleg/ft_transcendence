@@ -303,6 +303,7 @@ export class UserService {
 	}
 
 	async genarateMatchInfo(me : string, opponentId : string){
+		var infos;
 		const player1 = await this.prisma.user.findUnique({
 			where:{
 				id: me,
@@ -313,17 +314,21 @@ export class UserService {
 				nickname: true,
 			}
 		});
-		const player2 = await this.prisma.user.findUnique({
-			where:{
-				id: opponentId,
-			},
-			select:{
-				id: true,
-				profilePic: true,
-				nickname: true,
-			}
-		});
-		const infos = [player1, player2];
+		if (opponentId){
+
+			const player2 = await this.prisma.user.findUnique({
+				where:{
+					id: opponentId,
+				},
+				select:{
+					id: true,
+					profilePic: true,
+					nickname: true,
+				}
+			});
+			infos = [player1, player2];
+		}
+		infos = [player1];
 		console.log("Info === ", infos);
 		return (infos);
 	}
