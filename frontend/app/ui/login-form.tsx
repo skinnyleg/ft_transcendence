@@ -27,7 +27,7 @@ export default function LoginForm() {
     const password = event.currentTarget.password.value;
   
     try {
-      const response = await fetch('http://localhost:8000/auth/signin', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/auth/signin`, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
@@ -105,7 +105,7 @@ export default function LoginForm() {
 
           <div className="flex items-center justify-center rounded-xl w-full  h-14">
             <div className="mt-2 mb-5 flex  rounded-xl h-full w-full items-cente justify-center">
-              <Link href="http://localhost:8000/auth/42/">
+              <Link href={`${process.env.NEXT_PUBLIC_BACKEND_HOST}/auth/42/`}>
                 <img
                   className="pointer-events-hover rounded-xl object-scale-down opacity-90 hover:opacity-80"
                   src="/42.jpg"

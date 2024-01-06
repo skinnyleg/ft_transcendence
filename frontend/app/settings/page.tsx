@@ -32,7 +32,7 @@ const settings = () => {
     useEffect(() => {
         const checkVerification = async () => {
             try {      
-              const res = await fetch("http://localhost:8000/auth/CheckFirstLogin", {
+              const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/auth/CheckFirstLogin`, {
                 method: 'GET',
                 credentials: 'include',
               headers: {
@@ -88,7 +88,7 @@ const settings = () => {
       useEffect(() => {
         const IsQrEnabled = async () => {
           try {
-            const res = await fetch(`http://localhost:8000/user/qrEnabled`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/qrEnabled`, {
               method: "GET",
               credentials: "include",
               headers: { "Content-Type": "application/json" },
@@ -112,7 +112,7 @@ const settings = () => {
             const formData = new FormData();
             formData.append("file", file);
             try{
-                const results = await fetch(`http://localhost:8000/upload/BackgroundPic`, {
+                const results = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/upload/BackgroundPic`, {
                 credentials: 'include',
                 method: 'POST',
                 body: formData,})
@@ -139,7 +139,7 @@ const settings = () => {
             const formData = new FormData();
             formData.append("file", avatarFile);
             try{
-                const results = await fetch(`http://localhost:8000/upload/ProfilePic`, {
+                const results = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/upload/ProfilePic`, {
                 credentials: 'include',
                 method: 'POST',
                 body: formData,})
@@ -157,7 +157,7 @@ const settings = () => {
     const HandleNickChange = async () => {
         if (newNick){
             try{
-                const results = await axios.post("http://localhost:8000/user/nick", {nickname : newNick}, {withCredentials:true});
+                const results = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/nick`, {nickname : newNick}, {withCredentials:true});
                 console.log(results.status);
                 if (results.status === 201){
                     console.log("YYYYYYo")
@@ -189,7 +189,7 @@ const settings = () => {
         if (passConfirmation)
         {
             try{
-                const results =  await axios.post("http://localhost:8000/user/pass", {password : passConfirmation}, {withCredentials : true});
+                const results =  await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/pass`, {password : passConfirmation}, {withCredentials : true});
                 if (results.status === 201){
                     setPassConfirmation('');
                     setPass('');
@@ -206,7 +206,7 @@ const settings = () => {
 
     const UpdateStatus = async () => {
         try{
-            const results =  await axios.post("http://localhost:8000/auth/UpdateFirstLogin", {},{withCredentials: true});
+            const results =  await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/auth/UpdateFirstLogin`, {},{withCredentials: true});
             console.log("res == ", results);
             if (results.status === 200)
             {
@@ -223,7 +223,7 @@ const settings = () => {
 
     const enableQrVer = async () => {
         try{
-            const results =  await axios.post("http://localhost:8000/user/2FA", {Enabled : true}, {withCredentials : true});
+            const results =  await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/2FA`, {Enabled : true}, {withCredentials : true});
             console.log("srta", results.status);
             if (results.status === 201){
                 console.log("YYYYYYo")
@@ -241,7 +241,7 @@ const settings = () => {
     const gnerateQrCode = async () => {
         
         try{
-            const results =  await axios.get("http://localhost:8000/user/GenerateQr", {withCredentials : true});
+            const results =  await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/GenerateQr`, {withCredentials : true});
             if (results.status === 200){
                 setEnabled(!enabled);
                 console.log(results.data)

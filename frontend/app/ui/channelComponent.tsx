@@ -23,7 +23,7 @@ const ChannelComponent: FC<channelComponentProps> = ({channel}) => {
 	return (
 		<div onClick={setChannelQuery} className='gap-2 rounded-[15px] w-full h-12 mb-1 text-black p-0 flex justify-between items-center hover:cursor-pointer'>
 				<Image
-					unoptimized={process.env.ENVIRONMENT !== "PRODUCTION"}
+					unoptimized={process.env.NEXT_PUBLIC_ENVIRONMENT !== "PRODUCTION"}
 					src={channel.channelPicture as string}
 					alt='channel Image'
 					width={45}

@@ -15,7 +15,7 @@ const TopThree = ()=> {
   const getLeaderboard = async () => {
 		let data;
 		try {
-				const leaderboard = await fetch('http://localhost:8000/user/Leaderboard', {
+				const leaderboard = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/Leaderboard`, {
 				method: 'GET',
 				credentials: 'include',
 				headers:{'Content-Type': 'application/json',

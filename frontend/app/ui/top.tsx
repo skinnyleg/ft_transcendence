@@ -37,7 +37,7 @@ export default function TopBar () {
   useEffect(() => {
     const getnickname = async () => {
       try {
-        const res = await fetch(`http://localhost:8000/user/Nickname`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/Nickname`, {
           method: "GET",
           credentials: "include",
           headers: { "Content-Type": "application/json" },
@@ -56,7 +56,7 @@ export default function TopBar () {
 
   const searchBackend = async (query: string) => {
     try {
-      const results = await fetch(`http://localhost:8000/user/search`, {
+      const results = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/search`, {
         credentials: 'include',
         method: 'POST',
         body: JSON.stringify({ searchInput: query }),

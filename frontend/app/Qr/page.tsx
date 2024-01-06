@@ -13,7 +13,7 @@ const VerifyCode :  React.FC = () => {
   const router = useRouter();
   const handleSubmit = async (code: string) => {
     try {
-      const response = await fetch('http://localhost:8000/qr/check', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/qr/check`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

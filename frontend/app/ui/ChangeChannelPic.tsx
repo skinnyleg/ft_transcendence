@@ -46,7 +46,7 @@ function openModal() {
 				const formData = new FormData();
 				formData.append("file", imgData);
 				try {
-					const url = process.env.NEXT_PUBLIC_BACKEND_URL;
+					const url = process.env.NEXT_PUBLIC_BACKEND_HOST;
 					console.log('url == ', url);
 	
 					const results = await fetch(`${url}/upload/ChannelPic`, {
@@ -121,7 +121,7 @@ function openModal() {
 									<div className='flex flex-row gap-3 items-end p-3'>
 										<div className='w-[80px] h-[80px] '>
 											<Image
-												unoptimized={process.env.ENVIRONMENT !== "PRODUCTION"}
+												unoptimized={process.env.NEXT_PUBLIC_ENVIRONMENT !== "PRODUCTION"}
 												src={img}
 												width={80}
 												height={80}

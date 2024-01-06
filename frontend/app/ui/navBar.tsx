@@ -39,7 +39,7 @@ function NavBar ({handleShowMenu}: NavBarProps)
   useEffect(() => {
     const getnickname = async () => {
       try {
-        const res = await fetch(`http://localhost:8000/user/Nickname`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/Nickname`, {
           method: "GET",
           credentials: "include",
           headers: { "Content-Type": "application/json" },
@@ -58,7 +58,7 @@ function NavBar ({handleShowMenu}: NavBarProps)
 
   const searchBackend = async (query: string) => {
     try {
-      const results = await fetch(`http://localhost:8000/user/search`, {
+      const results = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/search`, {
         credentials: 'include',
         method: 'POST',
         body: JSON.stringify({ searchInput: query }),
@@ -166,7 +166,7 @@ function NavBar ({handleShowMenu}: NavBarProps)
             </Link>
         </div>
         <div className="absolute bottom-5 justify-center text-gray-500 xl:mt-15 items-center flex w-full ">
-          <Link href="http://localhost:8000/auth/signout" 
+          <Link href={`${process.env.NEXT_PUBLIC_BACKEND_HOST}/auth/signout`} 
             className={clsx(`flex justify-center w-full 
             hover:text-accents`, {
           'text-accents'  : currentPath === "/",

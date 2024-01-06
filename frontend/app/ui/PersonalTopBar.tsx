@@ -63,7 +63,7 @@ const PersonalTopBar: FC<PersonalTopBarProps> = () => {
 					/>
 					<div className='max-w-[45px] max-h-[45px] min-w-[45px] min-h-[45px] flex justify-center'>
 						<Image
-							unoptimized={process.env.ENVIRONMENT !== "PRODUCTION"}
+							unoptimized={process.env.NEXT_PUBLIC_ENVIRONMENT !== "PRODUCTION"}
 							src={personal?.picture}
 							width={45}
 							height={45}

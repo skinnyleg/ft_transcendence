@@ -9,7 +9,7 @@ let profilePic = '';
 let backgroundPic = '';
 
 const token = cookies.get('token');
-export const socket = io("http://localhost:8000/friendsGateway", {
+export const socket = io(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/friendsGateway`, {
     withCredentials: true,
     transportOptions: {
         polling: {
@@ -24,7 +24,7 @@ export const socket = io("http://localhost:8000/friendsGateway", {
 //     console.log("heeheh", socket);
 // });
 
-export const chatSocket = io("http://localhost:8000/chatGateway", {
+export const chatSocket = io(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/chatGateway`, {
     withCredentials: true,
     transportOptions: {
         polling: {
@@ -41,7 +41,7 @@ chatSocket.on('failed', (data: string) => {
 
 const getnickname = async () => {
     try {
-      const res = await fetch(`http://localhost:8000/user/Nickname`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/Nickname`, {
         method: "GET",
         credentials: "include",
         headers: { "Content-Type": "application/json" },

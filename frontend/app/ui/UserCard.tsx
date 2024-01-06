@@ -15,7 +15,7 @@ const UserCard: FC<UserCardProps> = ({user, userRole}) => {
 		return (
 		<div className='w-full h-11 mb-1 text-black flex gap-2 justify-between items-center'>
 			<Image
-				unoptimized={process.env.ENVIRONMENT !== "PRODUCTION"}
+				unoptimized={process.env.NEXT_PUBLIC_ENVIRONMENT !== "PRODUCTION"}
 				src={user.userPicture as string}
 				alt='user Image'
 				width='45'

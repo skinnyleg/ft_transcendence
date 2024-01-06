@@ -273,7 +273,7 @@ const Profile = () => {
     useEffect(() => {
         const getProfileData = async () => {
             try {
-                const res = await fetch(`http://localhost:8000/user/profile/${nickname}`, {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/profile/${nickname}`, {
                     method: "GET",
                     credentials: "include",
                     headers: { "Content-Type": "application/json" },
@@ -290,7 +290,7 @@ const Profile = () => {
         };
         const getAchievements = async () => {
             try {
-                const res = await fetch(`http://localhost:8000/user/Achievements`, {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/Achievements`, {
                     method: "GET",
                     credentials: "include",
                     headers: { "Content-Type": "application/json" },

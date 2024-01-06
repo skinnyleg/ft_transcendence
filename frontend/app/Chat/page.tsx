@@ -111,7 +111,7 @@ const chat: FC<ChatProps> = () => {
 	useEffect(() => {
 		const fetchUser = async () => {
 			try {
-				const res = await fetch(`http://localhost:8000/user/Nickname`, {
+				const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/Nickname`, {
 				  method: "GET",
 				  credentials: "include",
 				  headers: { "Content-Type": "application/json" },

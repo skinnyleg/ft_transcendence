@@ -4,7 +4,7 @@ import checkAuth from "./checktoken";
 
 const checkVerification = async (token:string | undefined) => {
     try {      
-      const res = await fetch("http://localhost:8000/auth/CheckFirstLogin", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/auth/CheckFirstLogin`, {
         method: 'GET',
         credentials: 'include',
       headers: {
@@ -32,7 +32,7 @@ const checkVerification = async (token:string | undefined) => {
 
 const refreshToken = async (refreshtoken : string) => {
   try {      
-    const res = await fetch("http://localhost:8000/auth/refresh", {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/auth/refresh`, {
       method: 'GET',
       credentials: 'include',
     headers: {
