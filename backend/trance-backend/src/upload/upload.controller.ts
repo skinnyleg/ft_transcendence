@@ -1,4 +1,4 @@
-import { Controller, Post, UseInterceptors, UploadedFile, Get, Param, Res, Req, BadRequestException, UseGuards, NotFoundException } from '@nestjs/common';
+import { Controller, Post, UseInterceptors, UploadedFile, Get, Param, Res, Req, BadRequestException, UseGuards, Delete, ConflictException, NotFoundException } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { backgroundPicMulterOptions, channelPicMulterOptions, profilePicMulterOptions } from './multer.config';
 import * as path from 'path';
@@ -60,7 +60,6 @@ export class UploadController {
     return { valid:true, filename: filePath };
   }
 
-
 	@UseGuards(JwtAuthGuard)
 	@Get('/profile/:filename')
 	serveProfilePic(@Param('filename') filename: string, @Res() res: Response) {
@@ -117,4 +116,8 @@ export class UploadController {
 			res.status(500).send('Internal Server Error');
 		}
 	}
+
+
+
+
 }
