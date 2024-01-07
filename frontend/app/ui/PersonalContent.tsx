@@ -62,7 +62,16 @@ const PersonalContent: FC<PersonalContentProps> = () => {
 					}
 				})
 
-				
+				chatSocket.on('messageDoneCH', (data: MessageInter) => {
+					console.log('got new message == ', data);
+					chatSocket.emit('getUserChannels');
+					// if (checkOpenChannelId(data.channelId, channelId) == true)
+					// {
+					// 	setMessages((prevMessages) => {
+					// 		return [...prevMessages, data]
+					// 	})
+					// }
+				})
 
 				
 			return () => {

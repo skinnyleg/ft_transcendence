@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isJwtExpired } from 'jwt-check-expiration';
 import checkAuth from "./checktoken";
 
 const checkVerification = async (token:string | undefined) => {
     try {      
-      const res = await fetch("http://localhost:8000/auth/CheckFirstLogin", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/auth/CheckFirstLogin`, {
         method: 'GET',
         credentials: 'include',
       headers: {
@@ -32,7 +31,7 @@ const checkVerification = async (token:string | undefined) => {
 
 const refreshToken = async (refreshtoken : string) => {
   try {      
-    const res = await fetch("http://localhost:8000/auth/refresh", {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/auth/refresh`, {
       method: 'GET',
       credentials: 'include',
     headers: {
@@ -61,9 +60,6 @@ const refreshToken = async (refreshtoken : string) => {
 export default async function middleware(request: NextRequest){
     let token  = request.cookies.get("token")?.value;
     const refreshtoken  = request.cookies.get("refresh");
-    var IsExpired : boolean = false;
-    if (token)
-      IsExpired = isJwtExpired(token);
     // let response: NextResponse = new NextResponse;
     // if (IsExpired){
     //   const {token , refresh} = await refreshToken(refreshtoken?.value as string);

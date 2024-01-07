@@ -1,12 +1,13 @@
 import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { authenticator } from 'otplib';
-import { AchievementStatus, RequestType, Status, UserStatus } from '@prisma/client';
+import { AchievementStatus, RequestType, Status, User, UserStatus } from '@prisma/client';
 import { hashPass } from 'src/utils/bcryptUtils';
 import { generateNickname } from 'src/utils/generateNickname';
 import * as fs from 'fs';
 import * as path from 'path';
-import { NotificationData } from 'src/classes/classes';
+import { GameUser, NotificationData } from 'src/classes/classes';
+import { notDeepEqual } from 'assert';
 
 @Injectable()
 export class UserService {
@@ -303,6 +304,7 @@ export class UserService {
 	}
 
 	async genarateMatchInfo(me : string, opponentId : string){
+		var infos;
 		const player1 = await this.prisma.user.findUnique({
 			where:{
 				id: me,
@@ -313,17 +315,21 @@ export class UserService {
 				nickname: true,
 			}
 		});
-		const player2 = await this.prisma.user.findUnique({
-			where:{
-				id: opponentId,
-			},
-			select:{
-				id: true,
-				profilePic: true,
-				nickname: true,
-			}
-		});
-		const infos = [player1, player2];
+		if (opponentId){
+
+			const player2 = await this.prisma.user.findUnique({
+				where:{
+					id: opponentId,
+				},
+				select:{
+					id: true,
+					profilePic: true,
+					nickname: true,
+				}
+			});
+			infos = [player1, player2];
+		}
+		infos = [player1];
 		console.log("Info === ", infos);
 		return (infos);
 	}
@@ -436,7 +442,6 @@ export class UserService {
 		await this.setNewFriend(senderId, recipientId, Status.PENDING)
 		return id;
 	}
-
 
 	async deleteRequest(senderId: string, recipientId: string)
 	{
@@ -576,6 +581,15 @@ export class UserService {
 		})
 		if (!sender)
 			throw new NotFoundException('sender Doesn\'t exist')
+
+		const idExists = sender.usersBlocked.find((id) => id === recipientId)
+
+		if (idExists)
+			throw new BadRequestException('user is already blocked');
+		const idExistsby = user.BlockedBy.find((id) => id === senderId)
+
+		if (idExistsby)
+			throw new BadRequestException('user is already blocked');
 		sender.usersBlocked.push(recipientId);
 
 		user.BlockedBy.push(senderId);
@@ -603,8 +617,6 @@ export class UserService {
 		return id;
 		
 	}
-
-
 
 	async unblockUser(senderId: string, recipientId: string)
 	{
@@ -925,6 +937,23 @@ export class UserService {
 	}
 
 
+	// async storeResults(player1 : GameUser, player2 : GameUser){
+	// 	const user1 : User = await this.findOneById(player1.id);
+	// 	const user2 : User = await this.findOneById(player2.id);
+	// 	const score: number[] = [player1.score, player2.score];
+	// 	return (await this.prisma.game.create(
+	// 		{
+	// 			data:{
+	// 				MatchScore: score,
+	// 				opponentId: player2.id,
+	// 				userId: player1.id,
+	// 				player: user1,
+	// 				opponent: user2,
+	// 			},
+	// 		}
+	// 	))
+	// }
+
 	async getSecret(id: string)
 	{
 		const secret = await this.prisma.user.findUnique({
@@ -1141,6 +1170,7 @@ export class UserService {
 			},
 			select: {
 				isEnabled: true,
+				otpauth_url: true,
 			}
 		})
 		return isEnabled;
@@ -1153,6 +1183,8 @@ export class UserService {
 			throw new NotFoundException('user not found')
 		const secret = authenticator.generateSecret();
 		const url = authenticator.keyuri(user.nickname,'Pong',secret);
+		if (user.isEnabled === true)
+			return ;
 		await this.prisma.user.update({
 			where: {
 				id: id,
@@ -1184,8 +1216,6 @@ export class UserService {
 			},
 			data: {
 				isEnabled: false,
-				Secret: null,
-				otpauth_url: null
 			}
 		})
 	}
@@ -1205,4 +1235,40 @@ export class UserService {
 		return {valid:false}
 	}
 
+
+	async getFriendStatus(id: string, nickname: string)
+	{
+		console.log("nickname", nickname);
+		const user = await this.findOneByNickname(nickname);
+		console.log("userID", user.id);
+
+		if (!user)
+			throw new NotFoundException('User Not Found')
+		const friendStatus = await this.prisma.friendStatus.findFirst({
+			where: {
+				userId: id,
+				friendId: user.id
+			}
+		})
+		
+		if (!friendStatus)
+		{
+			const {BlockedBy, usersBlocked} = await this.prisma.user.findUnique({
+				where: {
+					id: user.id
+				},
+				select: {
+					BlockedBy: true,
+					usersBlocked: true,
+				}
+			})
+			let ret1 = BlockedBy.find((b) => b === id);
+			let ret2 = usersBlocked.find((b) => b === id);
+			if (ret2 || ret1)
+				return ({status: 'BLOCKED'})
+			return ({status: 'NONE'})
+		}
+		console.log("friendStatus", friendStatus.status);
+		return {status: friendStatus.status};
+	}
 }

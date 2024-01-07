@@ -15,7 +15,7 @@ const TopThree = ()=> {
   const getLeaderboard = async () => {
 		let data;
 		try {
-				const leaderboard = await fetch('http://localhost:8000/user/Leaderboard', {
+				const leaderboard = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/Leaderboard`, {
 				method: 'GET',
 				credentials: 'include',
 				headers:{'Content-Type': 'application/json',
@@ -42,9 +42,9 @@ const TopThree = ()=> {
       jsxElements.push(
         <div key={index} className="flex flex-row p-2 rounded-[15px] w-full mb-0 h-1/3 items-center py-0 bg-cyan-600">
         <div className="flex-grow flex flex-row items-center justify-between">
-          <div className='flex flex-row items-center gap-2'>
-            <img src='/yo.jpg' alt={`user Picture ` + index} className="w-16 h-16 rounded-[15px] " />
-            <div className="font-bold text-[15px] lg:text-[20px] ">Unknown</div>
+          <div className='flex flex-row items-center gap-4'>
+            <img src='/yo.jpg' alt={`user Picture ` + index} className="w-14 h-14 lg:w-14 lg:h-14 xl:w-16 xl:h-16 rounded-[15px]" />
+            <div className="text-[35px] font-semibold ">Unknown</div>
           </div>
           <div className='w-fit h-fit'>
             <img src={medals[index]} alt={`medal` + (index)} className='w-11 h-12 rounded-[15px]'/>
@@ -57,9 +57,9 @@ const TopThree = ()=> {
   }
 
   return (
-    <div className=" p-0 rounded-md lg:col-span-2  col-span-1 lg:col-start-4 lg:col-end-6 md:row-start-4 md:row-end-5 lg:row-start-1 lg:row-end-2 w-full md:h-[350px] h-[350px] xl:h-[33vh] lg:h-[33vh] shadow-md">
+    <div className=" p-0 rounded-md lg:col-span-2  col-span-1 lg:col-start-4 lg:col-end-6 md:row-start-4 md:row-end-5 lg:row-start-1 lg:row-end-2 w-full md:h-[350px] h-[350px] xl:h-[250px] lg:h-[250px]">
       {/* <h4 className="text-xl font-bold text-white mb-0">LEADERBOARD</h4>  */}
-      <div className="flex flex-col  p-4  h-full  w-full justify-between gap-2">
+      <div className="flex flex-col  p-0  h-full  w-full justify-between gap-2">
 
         {
           leaderboardData.slice(0, 3).map((userRank, index) => {
@@ -68,7 +68,7 @@ const TopThree = ()=> {
               <div key={userRank.id} className="flex flex-row p-2 rounded-[15px] w-full mb-0 h-1/3 items-center py-0 bg-cyan-600">
               <div className="flex-grow flex flex-row items-center justify-between">
                 <div className='flex flex-row items-center gap-4'>
-                  <img src={userRank.profilePic} alt={`user Picture ` + userRank.id} className="w-16 h-16 rounded-[15px] " />
+                  <img src={userRank.profilePic} alt={`user Picture ` + userRank.id} className="w-14 h-14 lg:w-14 lg:h-14 xl:w-16 xl:h-16 rounded-[15px] "/>
                   <div className=" text-[35px] font-semibold ">{userRank.nickname}</div>
                 </div>
                 <div className='w-fit h-fit'>

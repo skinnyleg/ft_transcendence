@@ -11,7 +11,7 @@ const LeaderboardCard: FC<LeaderboardCardProps> = ({user}) => {
 		return (
 			<div className={`bg-teal-600 ${user.self === true ? 'bg-teal-800' : 'bg-teal-600'} rounded-2xl overflow-y-auto h-fit w-full items-center justify-between flex gap-1 flex-row transition p-2 duration-1000 ease-in-out`}>
 				<div className='w-1/5'>
-					<Link href={`/profile/${user.nickname}`} className='w-[50%]  flex flex-row justify-between items-center max-w-[50px] max-h-[50px] min-w-[50px] min-h-[50px]'>
+					<Link href={`/profile/${user.nickname}`} className='w-[50%]  flex flex-row justify-between gap-3 items-center max-w-[50px] max-h-[50px] min-w-[50px] min-h-[50px]'>
 						<img
 							src={user.profilePic}
 							// width={50}

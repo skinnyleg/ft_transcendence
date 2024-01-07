@@ -5,7 +5,7 @@ async function checkAuth(token:string | undefined)  {
     try {
       console.log(token);
       
-      const res = await fetch("http://localhost:8000/auth/CheckToken", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/auth/CheckToken`, {
         method: 'GET',
       headers: {
           'Content-Type': 'application/json',

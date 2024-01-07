@@ -23,7 +23,7 @@ const DmComponent: FC<DmComponentProps> = ({Dm}) => {
 	return (
 		<div onClick={setDmQuery} className='gap-2 rounded-[15px] w-full h-12 mb-1 text-black p-0 flex justify-between items-center hover:cursor-pointer'>
 				<Image
-					unoptimized={process.env.ENVIRONMENT !== "PRODUCTION"}
+					unoptimized={process.env.NEXT_PUBLIC_ENVIRONMENT !== "PRODUCTION"}
 					src={Dm.picture as string}
 					alt='Dm Image'
 					width={45}

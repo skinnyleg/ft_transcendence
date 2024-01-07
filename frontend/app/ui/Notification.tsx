@@ -24,7 +24,7 @@ const Notifications = () => {
     useEffect( () => {
         const notif = async() => {
         try{
-            const res = await fetch(`http://localhost:8000/user/Notifications`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/Notifications`, {
                 method: "GET",
                 credentials: "include",
                 headers: { "Content-Type": "application/json" },

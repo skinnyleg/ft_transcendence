@@ -9,7 +9,7 @@ interface MessageComponentLeftProps {
 const MessageComponentLeft: FC<MessageComponentLeftProps> = ({message}) => {
 
 	const picExists = () => {
-		if (message && message.picture !== undefined && message.picture !== null)
+		if (message && message.picture !== undefined && message.picture !== null && message.picture !== '')
 			return true;
 		return false;
 	}

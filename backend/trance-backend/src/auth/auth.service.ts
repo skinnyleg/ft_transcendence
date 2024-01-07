@@ -32,7 +32,11 @@ export class AuthService {
 			throw new UnauthorizedException('Wrong Crendentiels')
 		res.cookie('id', user.id, {signed: true})
 		if (user.isEnabled == true)
-			res.redirect(`${process.env.FrontendHost}/Qr`);
+		{
+			// res.redirect(`${process.env.FrontendHost}/Qr`);
+			res.status(202).json({valid: true});
+			return ;
+		}
 		const token = await this.createToken(user.id, user.nickname, TOKENEXP, TOKENSECRET)
 		const refresh = await this.createToken(user.id, user.nickname, REFRESHEXP, REFRESHSECRET)
 		res.cookie('token', token)
@@ -117,8 +121,10 @@ export class AuthService {
 			throw new NotFoundException('user not found')
 		
 		if (user.FirstLogin === false)
-			throw new ConflictException('already updated the value')
-
+		{
+			res.status(200).send({valid: true})
+			return ;
+		}
 
 		const updatedUser = await this.prisma.user.update({
 			where: {

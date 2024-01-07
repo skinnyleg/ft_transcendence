@@ -115,8 +115,10 @@ export class FriendsService {
 				const notif = await this.userService.generateNotifData(requestId);
 				const nick = await this.userService.getNickById(sender.id)
 				toSend.socket.emit('notification', `${nick} has unfriended you`);
+				toSend.socket.emit('refreshFriendIcon', {val: false});
 			}
 			client.emit('notification', 'Unfriend request sent successfully');
+			sender.socket.emit('refreshFriendIcon', {val: false});
 		}
 		catch(error)
 		{
@@ -136,8 +138,10 @@ export class FriendsService {
 				const notif = await this.userService.generateNotifData(requestId);
 				const nick = await this.userService.getNickById(sender.id)
 				toSend.socket.emit('notification', `${nick} has blocked you`);
+				// toSend.socket.emit('refreshBlockIcon', {val: true});
 			}
 			client.emit('notification', 'block request sent successfully');
+			sender.socket.emit('refreshBlockIcon', {val: true});
 		}
 		catch(error)
 		{
@@ -157,8 +161,10 @@ export class FriendsService {
 				const notif = await this.userService.generateNotifData(requestId);
 				const nick = await this.userService.getNickById(sender.id)
 				toSend.socket.emit('notification', `${nick} has unblocked you`);
+				// toSend.socket.emit('refreshBlockIcon', {val: false});
 			}
 			client.emit('notification', 'unblock request sent successfully');
+			sender.socket.emit('refreshBlockIcon', {val: false});
 		}
 		catch(error)
 		{
@@ -194,7 +200,9 @@ export class FriendsService {
 			{
 				const nick = await this.userService.getNickById(sender.id)
 				toSend.socket.emit('notification', `${nick} accepted your request`);
+				toSend.socket.emit('refreshFriendIcon', {val: true});
 			}
+			sender.socket.emit('refreshFriendIcon', {val: true})
 			const dmId = await this.dmOutils.getDmIdby2User(sender.id, userId);
 			if (!dmId) {
 				await this.dmService.creatDMchat(sender.id, userId)

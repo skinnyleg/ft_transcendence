@@ -56,7 +56,7 @@ export class DmOutils {
 		Object.assign(ObjectDto, data);
 		const ValidationError: ValidationError[] = await validate(ObjectDto);
 		if (ValidationError.length > 0) {
-			console.error('ValidationErrors: ', ValidationError);
+			// console.error('ValidationErrors: ', ValidationError);
 			throw new BadRequestException('Invalide data');
 		}
 		// return data as typeof dtoClass;

@@ -86,6 +86,5 @@ export class AuthController {
 		return this.authService.refreshTokens(req, res, id);
 	}
 
-
 }
 

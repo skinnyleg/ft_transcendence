@@ -27,7 +27,7 @@ const FriendsList = () => {
     
         const friendsGet = async() => {
         try{
-            const res = await fetch(`http://localhost:8000/user/Friends`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/Friends`, {
                 method: "GET",
                 credentials: "include",
                 headers: { "Content-Type": "application/json" },
@@ -75,7 +75,7 @@ const FriendsList = () => {
 
     return (
         <div className="bg-accents rounded-md col-span-1 lg:col-span-2 lg:col-start-4 lg:col-end-6  
-        row-start-5 row-end-6 lg:row-start-2 lg:row-end-4 lg:w-full xl:w-full md:h-[350px] h-[350px] xl:h-[55h] lg:h-[55vh] shadow-md">
+        row-start-5 row-end-6 lg:row-start-2 lg:row-end-4 lg:w-full xl:w-full md:h-[350px] h-[350px] xl:h-[507px] lg:h-[507px] shadow-md">
             <h4 className="text-xl font-bold text-white p-4">FRIENDS</h4>
             <div className={`${(friendsList.length == 0) ? 'block' : 'hidden'}  w-full h-1/2 mt-20`}><h5 className="w-1/2 mt-10 mx-auto text-bold-900 text-3xl">Go socialize</h5></div>
             <div className={`${(friendsList.length > 0) ? 'block' : 'hidden'} flex-col space-y-4 p-4 items-center overflow-y-scroll h-5/6 w-full styled-scrollbar`}>
@@ -94,11 +94,11 @@ const FriendsList = () => {
                                 {friend.nickname}</div>
                             </div>
                         </div>
-                        <div className="flex flex-row justify-between">
+                        <div className="flex flex-row justify-between items-center gap-2">
                             <button className="bg-button rounded-md px-2 py-1 text-white text-xs lg:block md:block xs:hidden">Challenge</button>
                             <GiPingPongBat  className="w-8 h-6 ml-2 hidden md:hidden text-button xs:block" />
                             <button onClick={(e) => {sendMessage(friend.id)}} className="bg-button rounded-md px-2 py-1 text-white text-xs lg:block md:block xs:hidden">Chat</button>
-                            <ChatBubbleBottomCenterIcon className="w-8 h-6 hidden text-button md:hidden xs:block" />
+                            <ChatBubbleBottomCenterIcon className="w-8 h-6 hidden text-button md:hidden xs:block" onClick={(e) => {sendMessage(friend.id)}}/>
                         </div>
                     </div>
                 ))}

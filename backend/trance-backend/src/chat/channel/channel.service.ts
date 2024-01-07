@@ -67,6 +67,12 @@ export class ChannelService {
         //         updatedAt: channel.updatedAt
         //     },
         // });
+        const deleteMessages = await this.prisma.message.deleteMany({
+            where: {
+                channelId: id,
+            },
+           });
+        console.log('deleted == ', deleteMessages);
         await this.prisma.channel.delete({
             where: {
                 name: channelName,

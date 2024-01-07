@@ -45,7 +45,6 @@ export const backgroundPicMulterOptions = {
   },
 };
 
-
 export const channelPicMulterOptions = {
   storage: diskStorage({
     destination: './uploads/channels', // Set the destination folder

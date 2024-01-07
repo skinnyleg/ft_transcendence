@@ -8,9 +8,10 @@ import { ArrowTrendingDownIcon,  ChatBubbleLeftEllipsisIcon, UserMinusIcon, Wall
 import { FaUserFriends } from "react-icons/fa";
 import ProgressBar from "@/app/ui/progressBar";
 import Conditional from "@/app/ui/Conditional";
+import { ContextFriendProvider } from "@/app/context/profileContext";
 
 const matchHistory = [{
-    id : "25/12/2024",
+    id : "25/122024",
     winner : {
         nickname:"player 1",
         profilePic:"/yo.jpg",
@@ -24,7 +25,7 @@ const matchHistory = [{
     isMeWhoWon : true,
 },
 {
-    id : "26/12/2024",
+    id : "6/2/2024",
     winner : {
         nickname:"player 1",
         profilePic:"/yo.jpg",
@@ -174,7 +175,7 @@ const matchHistory = [{
 
 },
 {
-    id : "26/2/2424",
+    id : "26/22424",
     winner : {
         nickname:"player 1",
         profilePic:"/yo.jpg",
@@ -189,7 +190,7 @@ const matchHistory = [{
 },
 ,
 {
-    id : "26/2/2424",
+    id : "26//2424",
     winner : {
         nickname:"player 1",
         profilePic:"/yo.jpg",
@@ -203,7 +204,7 @@ const matchHistory = [{
     isMeWhoWon : true,
 },
 {
-    id : "26/24/2424",
+    id : "224/2424",
     winner : {
         nickname:"player 1",
         profilePic:"/yo.jpg",
@@ -217,7 +218,7 @@ const matchHistory = [{
     isMeWhoWon : true,
 },
 {
-    id : "26/3/2424",
+    id : "46/32424",
     winner : {
         nickname:"player 1",
         profilePic:"/yo.jpg",
@@ -231,7 +232,7 @@ const matchHistory = [{
     isMeWhoWon : true,
 },
 {
-    id : "26/120/2424",
+    id : "29/120/2424",
     winner : {
         nickname:"player 1",
         profilePic:"/yo.jpg",
@@ -245,7 +246,7 @@ const matchHistory = [{
     isMeWhoWon : true,
 },
 {
-    id : "26/185/2424",
+    id : "24/185/2424",
     winner : {
         nickname:"med-doba",
         profilePic:"/yo.jpg",
@@ -262,18 +263,19 @@ const matchHistory = [{
 
 const Profile = () => {
 
+    /// cant fetch data at the first login 
     const [isFriend, setIsFriend] = useState<boolean | undefined>(false);
     const [isprivateProfile, setisprivateProfile] = useState<boolean | undefined>(false);
-    const pathname = usePathname();
     const [profileData, setProfileData] = useState<profileData | undefined>(undefined);
     const [achievements, setAchievements] = useState<Achievements[]>([])
     const [notAchievements, setNotAchievements] = useState<Achievements[]>([])
+    const pathname = usePathname();
     let nickname : string = pathname.split("/")[2];
 
     useEffect(() => {
         const getProfileData = async () => {
             try {
-                const res = await fetch(`http://localhost:8000/user/profile/${nickname}`, {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/profile/${nickname}`, {
                     method: "GET",
                     credentials: "include",
                     headers: { "Content-Type": "application/json" },
@@ -290,7 +292,7 @@ const Profile = () => {
         };
         const getAchievements = async () => {
             try {
-                const res = await fetch(`http://localhost:8000/user/Achievements`, {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/Achievements`, {
                     method: "GET",
                     credentials: "include",
                     headers: { "Content-Type": "application/json" },
@@ -313,16 +315,19 @@ const Profile = () => {
 
     }, []);
     var level : number = profileData?.userData?.level;
-
+    var isblocked : boolean | undefined = profileData?.isBlocked;
+    var isfriend : boolean | undefined = profileData?.isfriend;
+    console.log('isblocked in profiele == ', profileData?.isBlocked)
+    
     return (
-    <main className="flex flex-col">
+    <main className="flex flex-col ">
         <TopBar />
         <div className="grid grid-cols-4 xl:mt-15 mt-20 lg:mt-5 lg:auto-rows-min xl:gap-5 gap-3 w-full md:grid-row-6 grid-row-6 ">
             <div className="relative col-start-1 col-end-5 xl:h-[33vh] lg:h-[33vh] md:h-[200px] h-[200px]  row-start-1 row-end-2 w-full shadow-md rounded-xl">
                 <div className="flex relative  flex-col text-4xl text-white text-bold-900 rounded-xl xl:h-[33vh] lg:h-[33vh] md:h-[200px] h-[200px]">
                     <img src={profileData?.userData.BackgroundPic} className="w-full rounded-md h-full object-cover" alt="background Image"></img>
                 </div>
-                <div  className="rounded-full lg:w-[100px] md:w-[90px] w-[80px] xl:h-[150px] xl:w-[150px] absolute bottom-0 left-0 transform  xl:translate-x-[10px] xl:translate-y-[55px] translate-x-[8px] translate-y-[32px] border-2 max-w-[90px] max-h-[90px] min-w-[90px] min-h-[90px]">
+                <div  className="rounded-full lg:w-[100px] md:w-[90p    x] w-[80px] xl:h-[150px] xl:w-[150px] absolute bottom-0 left-0 transform  xl:translate-x-[8px] xl:translate-y-[55px] translate-x-[8px] translate-y-[30px] border-2 max-w-[90px] max-h-[90px] min-w-[90px] min-h-[90px]">
                     <img src={profileData?.userData.profilePic} alt="profile Picture" className="lg:w-[100px] md:w-[90px] w-[80px] xl:h-[150px] xl:w-[150px] rounded-full max-w-[90px] max-h-[90px] min-w-[90px] min-h-[90px]" />
                 </div>
                 <div className="absolute bottom-[-10] left-24">
@@ -333,10 +338,10 @@ const Profile = () => {
             h-[30px] xl:h-[40px] rounded-2xl lg:w-[100%] md:w-[100%] w-[90%] flex shadow-md">
                 <ProgressBar level={level} />
             </div>
-            <div className="relative col-start-4 col-end-5 mt-2 md:mt-4 bg-accents rounded-2xl lg:mt-0 lg:row-start-2 mx-auto h-[30px] xl:h-[40px] lg:row-end-3 row-start-3 row-end-4 flex w-[80%] lg:w-[70%] xl:w-[70%]">
-                <Conditional isfriend={profileData?.isfriend} privateProfile = {profileData?.privateProfile} isBlocked = {profileData?.isBlocked} userId= {profileData?.userData?.id}/>
+            <div className="relative col-start-4 mx-auto col-end-5 mt-2 md:mt-4  bg-accents rounded-2xl lg:mt-0 lg:row-start-2 h-[30px] xl:h-[40px] lg:row-end-3 row-start-3 row-end-4 flex w-[100%] lg:w-[70%] xl:w-[70%]">
+                <Conditional isfriend={isfriend} privateProfile = {profileData?.privateProfile} isBlocked = {isblocked} userId= {profileData?.userData?.id}/>
             </div>
-            <div className="col-span-4 lg:row-start-3 lg:row-end-4 row-start-4 row-end-5 flex flex-col md:flex-row justify-evenly  gap-2 items-center  w-full xl:h-[12vh] lg:h-[12vh] md:h-[12vh] h-[500px] rounded-3xl">
+            <div className="col-span-4 lg:row-start-3 lg:row-end-4 row-start-4 row-end-5 flex flex-col md:flex-row justify-evenly  gap-2 items-center  w-full xl:h-[150px] lg:h-[150px] md:h-[12vh] h-[500px] rounded-3xl">
                 <div className="w-full md:w-1/4 h-[40%] md:h-[90%] bg-cyan-600 rounded-3xl flex flex-row justify-between items-center p-2 gap-2 ">
                     <div className="flex flex-row gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" width="75" height="75" viewBox="0 0 75 75" fill="none">
@@ -389,7 +394,7 @@ const Profile = () => {
                     <h1 className="text-cyan-900 text-[50px] font-semibold">00</h1>
                 </div>
             </div>
-            <div className="bg-cyan-600 lg:col-span-2 col-span-4 lg:row-start-4  lg:row-end-5 row-start-5 row-end-6 w-full xl:h-[37vh] lg:h-[38vh] h-[450px] shadow-md rounded-xl">
+            <div className="bg-cyan-600 lg:col-span-2 col-span-4 lg:row-start-4  lg:row-end-5 row-start-5 row-end-6 w-full xl:h-[540px] lg:h-[540px] h-[450px] shadow-md rounded-xl">
                  <h1 className="text-bold text-3xl text-center mt-2 text-cyan-900">MATCH HISTORY</h1>
                 <div className=" h-[95%] pt-2 pb-2">
                     <div className="lg:w-[95.31%] xl:w-[90%] w-[98%] mt-5 h-[90%] mx-auto styled-scrollbar overflow-y-scroll">
@@ -426,7 +431,7 @@ const Profile = () => {
                     </div>
                 </div>
             </div>
-            <div className=" bg-cyan-600 lg:col-span-2 col-span-4 lg:row-start-4 lg:row-end-5 row-start-6 row-end-7 w-full xl:h-[37vh] lg:h-[38vh] h-[450px] shadow-md rounded-xl"> 
+            <div className=" bg-cyan-600 lg:col-span-2 col-span-4 lg:row-start-4 lg:row-end-5 row-start-6 row-end-7 w-full xl:h-[540px] lg:h-[540px] h-[450px] shadow-md rounded-xl"> 
                 <h2 className="text-bold text-3xl text-center mt-2 text-cyan-900">ACHIEVEMENT</h2>
                 <div className="  h-[95%] pt-2 ">
                     <div className="lg:w-[95.31%] xl:w-[90%] w-[98%]  mx-auto h-[90%] flex mt-5 flex-col gap-2 overflow-y-auto styled-scrollbar">

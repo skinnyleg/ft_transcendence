@@ -23,11 +23,15 @@ function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/user/Dashboard', { withCredentials: true});
+        // const response = await axios.get('${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/Dashboard', { withCredentials: true});
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/Dashboard`, { withCredentials: true});
         console.log("Dash", response.status);
         setDashboardData(response.data);
       } catch (error) {
-        toast.error('Error fetching data');
+        console.log('error == ', error);
+        toast.error('Error fetching data', {
+          autoClose: 500
+        });
       }
     };
 
@@ -47,8 +51,8 @@ function Dashboard() {
     <main className="flex flex-col font-white bg-main mr-2">
       <TopBar />
       <div className="flex flex-col h-[95%] lg:mt-5  md:mt-10 mt-10 xl:mt-5">
-        <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-5 lg:grid-rows-3 gap-5 w-full h-full mt-4 md:grid-row-5 grid-row-5">
-          <div className="relative p-20 rounded-md col-span-1 lg:col-span-3 lg:h-[33vh] md:h-[300px] h-[300px] xl:h-[33vh] lg:w-full shadow-md" style={{backgroundImage: `url(${theme})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+        <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-5 lg:grid-rows-3 gap-3 w-full h-full mt-4 md:grid-row-5 grid-row-5">
+          <div className="relative p-0 rounded-md col-span-1 lg:col-span-3 lg:h-[250px] md:h-[300px] h-[300px] xl:h-[250px] lg:w-full shadow-md" style={{backgroundImage: `url(${theme})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
             <FaRobot className="text-accents w-8 h-8 absolute right-5 top-5"/>
             <QueueListIcon className="text-accents w-8 h-8 absolute right-12 mr-2 top-5" />
             <PlayButton theme = {theme} PowerUp={powerup}/>

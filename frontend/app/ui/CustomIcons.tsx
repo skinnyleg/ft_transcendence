@@ -7,7 +7,7 @@ import { Tooltip } from 'react-tooltip'
 import { IoMdAddCircleOutline } from "react-icons/io";
 
 interface IconWithTooltipProps {
-	icon: ElementType;
+	icon: any;
 	tooltipId: string;
 	tooltipContent: string;
 	styles: string;
