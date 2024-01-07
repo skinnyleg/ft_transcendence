@@ -7,7 +7,18 @@ import { validateAndSendError } from "src/utils/validateInputWebsocket";
 import { RequestActionDto } from "src/friends/Dto/requestDto";
 import { BotDto, GameSettingsDto } from "./Dto/GameSettingsDto";
 
-// let num: number = 0;
+let num: number = 0;
+const width = 20;
+        const height = 150;
+        let speedR = 20;
+        const minY = 0;
+        const minX = 0;
+        const maxY = 600;
+        const maxX = 800;
+        const midleVertical = ((maxY - minY) / 2) + minY;
+        const midleCanvas = ((maxX- minX) / 2) + minX;
+        let currentPositionL = { x: (minX + width), y: midleVertical };
+            const newPositionL = { ...currentPositionL }; 
 @WebSocketGateway({ namespace: 'GameGateway', cors: {
     origin: process.env.FrontendHost,
     allowedHeaders: ["token"],
@@ -22,12 +33,13 @@ export class GameGateway {
 
     server: Server;
     async handleConnection(client: Socket){
-        // console.log('med-doba: ', num++);
+        console.log('med-doba: ', num++);
         await this.gameService.saveUser(client);
     }
 
     @SubscribeMessage('PlayQueue')
-    QueueMaker(client: Socket){
+    QueueMaker(@ConnectedSocket() client: Socket){
+        console.log('quere in backend ')
         this.gameService.handleMatchMaker(client);
     }
     
@@ -42,19 +54,55 @@ export class GameGateway {
     }
     
     //
+    // @SubscribeMessage('arrow')
     // @SubscribeMessage('players-data')
-    // async playersinfo(client : Socket)
-    // {
-    //     console.log('in backend')
-    //     interface playerInfo {
-    //         name: string,
-    //         picture: string
-    //     };
-    //     const data: playerInfo[] = [{name: 'med-doba', picture: ''}, {name: 'hmoubal', picture: ''}]; 
+    @SubscribeMessage('arrow')
+    async playersinfo(@ConnectedSocket() client : Socket, arrow: any)
+    {
+        console.log('in backend == ', arrow)
+        // const width = 20;
+        // const height = 150;
+        // let speedR = 20;
+        // const minY = 0;
+        // const minX = 0;
+        // const maxY = 600;
+        // const maxX = 800;
+        // const midleVertical = ((maxY - minY) / 2) + minY;
+        // const midleCanvas = ((maxX- minX) / 2) + minX;
+        interface playerInfo {
+            name: string,
+            picture: string
+        };
+
+        interface playersCoordinates {
+            playerL: {x: number, y: number}, 
+            playerR: {x: number, y: number}
+        }
+        //*****--*--**
+        // let currentPositionL = { x: (minX + width), y: midleVertical };
+        //     const newPositionL = { ...currentPositionL }; 
+            switch (arrow) {
+                case 'UP':
+                    newPositionL.y -= speedR;
+                    break;
+                case 'DOWN':
+                    newPositionL.y += speedR;
+                    break;
+            }
+            newPositionL.y = Math.max(minY + height/2, Math.min(newPositionL.y, maxY- height/2));
+            // newPositionL.y = Math.max(minY + height/2, Math.min(newPositionL.y, maxY- height/2));
+            console.log('y: ',  newPositionL.y)
+            // Matter.Body.setPosition(paddleLeft, newPositionLeft, []);
+            const data: playersCoordinates = {playerL: newPositionL, playerR: newPositionL};
+            console.log('Coordinates in backend: ', data);
+            client.emit('players-coordinates', data);
+            currentPositionL = newPositionL;
+            // currentPositionL = newPositionR;
+        //*****--*--**
+        // const data: playerInfo[] = [{name: 'med-doba', picture: ''}, {name: 'hmoubal', picture: ''}]; 
         
-    //     console.log('data == ', data);
-    //     client.emit('players-info', data);
-    // }
+        console.log('data == ', data);
+    }
     //
 
     @SubscribeMessage('challengeFriend')

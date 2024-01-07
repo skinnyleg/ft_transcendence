@@ -12,103 +12,86 @@ const PongZoneQueue = () => {
     let speedR = 20;
     let speedL = 20;
     
-    const { Engine, Render, World, Bodies, Composite, Runner} = Matter;
-
-    const engine = Engine.create();
-    const render = Render.create({
-        canvas: canvasRef.current,
-        engine: engine,
-        options: {
-            background: '#ffffff',
-            wireframes: false,
-        } 
-    });
-
-    const minY = render.bounds.min.y;
-    const minX = render.bounds.min.x;
-    const maxY = render.bounds.max.y;
-    const maxX = render.bounds.max.x;
-
-    const midleVertical = ((maxY - minY) / 2) + minY;
-    const midleCanvas = ((maxX- minX) / 2) + minX;
-
-    const ball = Matter.Bodies.circle(midleCanvas, midleVertical, 10, {
-        isStatic: true,
-        restitution: 0.8, // Bounciness of the ball
-        friction: 0.1, // Friction of the ball
-        density: 0.04, // Density of the ball
-        render: {
-            fillStyle: 'red', // Color of the ball
-            strokeStyle: 'green', // Border color of the ball
-            lineWidth: 5, // Border width of the ball
-        },
-    });
-    let paddleLeft = Bodies.rectangle(minX + width, midleVertical, width, height, { isStatic: true });
-    let paddleRight = Bodies.rectangle(maxX - width, midleVertical, width, height, { isStatic: true });
-
+    
+    
     useEffect(() => {
-        
-        let currentPositionLeft = { x: (minX + width), y: midleVertical };
+        const { Engine, Render, World, Bodies, Composite, Runner} = Matter;
+    
+        const engine = Engine.create();
+        const render = Render.create({
+            canvas: canvasRef.current,
+            engine: engine,
+            options: {
+                background: '#ffffff',
+                wireframes: false,
+            } 
+        });
+    
+        const minY = render.bounds.min.y;
+        const minX = render.bounds.min.x;
+        const maxY = render.bounds.max.y;
+        const maxX = render.bounds.max.x;
+    
+        const midleVertical = ((maxY - minY) / 2) + minY;
+        const midleCanvas = ((maxX- minX) / 2) + minX;
+        const ball = Matter.Bodies.circle(midleCanvas, midleVertical, 10, {
+            isStatic: true,
+            restitution: 0.8, // Bounciness of the ball
+            friction: 0.1, // Friction of the ball
+            density: 0.04, // Density of the ball
+            render: {
+                fillStyle: 'red', // Color of the ball
+                strokeStyle: 'green', // Border color of the ball
+                lineWidth: 5, // Border width of the ball
+            },
+        });
         const handleKey = (event) => {
-            const newPositionLeft = { ...currentPositionLeft }; 
+            // console.log('dkjhasjd')
             switch (event.key) {
                 case 'ArrowUp':
-                    newPositionLeft.y -= speedR;
-                    gameSocket.emit('ArrowUp'); 
+                    gameSocket.emit('arrow', 'UP'); 
                     break;
                 case 'ArrowDown':
-                    newPositionLeft.y += speedR;
-                    gameSocket.emit('ArrowDown'); 
+                    gameSocket.emit('arrow', 'DOWN'); 
                     break;
             }
-            newPositionLeft.y = Math.max(minY + height/2, Math.min(newPositionLeft.y, maxY- height/2));
-            console.log('y: ',  newPositionLeft.y)
-            Matter.Body.setPosition(paddleLeft, newPositionLeft, []);
-            currentPositionLeft = newPositionLeft;
-            //--
-            gameSocket.on('players-coordinates', (data: playersCoordinates) => {
-                Matter.Body.setPosition(paddleRight, data.playerL);
-                Matter.Body.setPosition(paddleRight, data.playerR);
-            });
-            gameSocket.on('ball-coordinates', (data: ballCoordinates) => {
-                Matter.Body.setVelocity(ball, data)
-            });
-            //--
+            // console.log('arrowss front');
         };
-
         document.addEventListener('keydown', handleKey);
 
-        // let currentPositionRight = { x: (maxX - width), y: midleVertical };
-        // setInterval(() => {   
-        //     const newPositionRight = { ...currentPositionRight };
-        //     if (newPositionRight.y >=  (maxY - height/2))
-        //         speedL = -speedL;
-        //     if (newPositionRight.y >=  (minY + height/2))
-        //         speedL *= -1;
-        //     newPositionRight.y += speedL;
-        //     newPositionRight.y = Math.max(minY + height/2, Math.min(newPositionRight.y, maxY - height/2));
-        //     Matter.Body.setPosition(paddleRight, newPositionRight);
-        //     currentPositionRight = newPositionRight;
-        // }, 150);
 
-        // gameSocket.on('playersInfo', (data) => {
-        //     // Matter.Body.setPosition(paddleRight, newPositionRight);
-        //     console.log('data', data);
-        // });
-        // gameSocket.on('moveDown', (data) => {
-        //     Matter.Body.setPosition(paddleRight, newPositionRight);
-        // });
+        let paddleLeft = Bodies.rectangle(minX + width, midleVertical, width, height, { isStatic: true });
+        let paddleRight = Bodies.rectangle(maxX - width, midleVertical, width, height, { isStatic: true });
+        
+        gameSocket.on('players-coordinates', (data: playersCoordinates) => {
+            console.log('Coordinates: ', data);
+            Matter.Body.setPosition(paddleRight, data.playerL);
+            Matter.Body.setPosition(paddleRight, data.playerR);
+        });
+
+        gameSocket.on('ball-coordinates', (data: ballCoordinates) => {
+            Matter.Body.setVelocity(ball, data)
+        });
         
         Composite.add(engine.world, [paddleLeft, paddleRight, ball]);
         Render.run(render);
         const runner = Runner.create();
         Runner.run(runner, engine);
-
+        
         return () => {
             Render.stop(render);
+            World.clear(engine.world);
+            Engine.clear(engine);
+            gameSocket.off('ball-coordinates');
+            gameSocket.off('players-coordinates');
+            // if (render.canvas)
+            //     render.canvas.remove();
+            if (render.context)
+                render.context.clearRect(0, 0, render.canvas.width, render.canvas.height);
         };
-
+        
     }, []);
+    
 
     return (
         <div className="bg-transparent w-[100%] h-[80%] rounded-[10px] justify-center absolute bottom-0">

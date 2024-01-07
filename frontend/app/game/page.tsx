@@ -19,8 +19,8 @@ function game() {
                 <SideBar />
                 <div className="flex flex-col w-[91.74%] h-[97.33%] items-center relative rounded-[10px]">
                     <GameResultBar />
-                    <PongZoneBoot />
-                    {/* <PongZoneQueue /> */}
+                    {/* <PongZoneBoot /> */}
+                    <PongZoneQueue />
                 </div>
             </div>
         </main>

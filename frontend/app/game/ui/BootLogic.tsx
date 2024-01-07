@@ -29,6 +29,7 @@ const PongZoneBoot = () => {
         const minX = render.bounds.min.x;
         const maxY = render.bounds.max.y;
         const maxX = render.bounds.max.x;
+        console.log('render', render.bounds);
 
         const midleVertical = ((maxY - minY) / 2) + minY;
         const midleCanvas = ((maxX- minX) / 2) + minX;

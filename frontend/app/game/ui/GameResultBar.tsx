@@ -11,10 +11,10 @@ const GameResultBar = () => {
     const [playerR, setPlayerR] = useState<playerInfo | undefined>(undefined);
 
     useEffect(() => {
-        console.log('here')
+        // console.log('here')
         gameSocket.emit('players-data');
         gameSocket.on('players-info', (data: playerInfo[]) => {
-            console.log('ops here == ', data);
+            // console.log('ops here == ', data);
             setPlayerL(data[0]);
             setPlayerR(data[1]);
         });
@@ -28,7 +28,6 @@ const GameResultBar = () => {
 
     const obj1: playerInfoProps = {style: '', textPos: '', playerInfo: playerL};
     const obj2: playerInfoProps = {style:'flex-row-reverse', textPos:'text-end', playerInfo: playerR};
-    
     return (
         <div className="bg-cyan-600  w-[100%] h-[18.5%] rounded-[10px] flex items-center justify-between">
             <PlayerInfo {...obj1}/>
