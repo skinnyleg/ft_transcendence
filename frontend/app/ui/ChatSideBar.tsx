@@ -85,6 +85,13 @@ const ChatSideBar: FC<ChatSideBarProps> = () => {
 		);
 	}
 
+		// if (channelUsers.length === 0)
+		// {
+		// 	return (
+		// 		<></>
+		// 	);
+		// }
+
 		return (
 		<div className={`w-full bg-teal-600 lg:ml-2 rounded-xl flex flex-col p-2 h-full overflow-y-auto`}>
 			<div className={`${isJoined === true ? '' : 'blur overflow-y-hidden pointer-events-none'}`}>

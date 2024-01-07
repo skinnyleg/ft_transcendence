@@ -48,9 +48,12 @@ const ChatTabChannel: FC<ChatTabProps> = () => {
 		
 		chatSocket.on('joinDone', () => {
 			chatSocket.emit('getUserChannels');
-				chatSocket.emit('getDataCH', {
-					channelName: channelId,
-				})
+			chatSocket.emit('getDataCH', {
+				channelName: channelId,
+			})
+			chatSocket.emit('getMessagesCH', {
+				channelName: channelId,
+			})
 				setSearchInputCh('')
 		})
 
@@ -113,7 +116,8 @@ const ChatTabChannel: FC<ChatTabProps> = () => {
 	if (channel === undefined)
 	{
 		return (
-			<h1>Start Chatting Now</h1>
+			// <h1>Start Chatting Now</h1>
+			<></>
 		);
 	}
 		return (

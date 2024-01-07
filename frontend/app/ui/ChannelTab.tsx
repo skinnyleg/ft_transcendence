@@ -9,7 +9,7 @@ import { ChatContext, chatSocketContext } from '../context/soketContext';
 import { ChannelInter } from '../interfaces/interfaces';
 import { useDebouncedCallback } from 'use-debounce';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { checkOpenChannelId } from './ChatUtils';
+import { checkOpenChannelId, isHidden, whichTab } from './ChatUtils';
 
 
 const ChannelTab = () => {
@@ -20,7 +20,7 @@ const ChannelTab = () => {
 	const {channelId, setChannelId, searchInputCh, setSearchInputCh} = useContext(ChatContext);
 	const [userChannels, setUserChannels] = useState<ChannelInter[]>([]);
 	const [info, setInfo] = useState<string>('Join Or Create Your Own Channel');
-
+	const hidden = whichTab(searchParams)
 
 
 
@@ -117,7 +117,7 @@ const ChannelTab = () => {
 	  }
 	}, [searchInputCh, debouncedSearchWebSocket]);
 	return (
-		<div className="bg-teal-600 rounded-[15px] p-3 w-full shadow-lg lg:w-full h-[49%] flex flex-col">
+		<div className={`bg-teal-600 rounded-[15px] p-3 shadow-lg w-full h-[49%] flex flex-col`}>
 			<h1 className='text-teal-300 font-bold text-lg mb-1'>CHANNELS</h1>
 			<div className='flex flex-row justify-around rounded-2xl w-full mb-2'>
 				<div className='flex flex-row rounded-s-2xl bg-cyan-100 w-4/5'>

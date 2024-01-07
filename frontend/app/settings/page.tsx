@@ -3,13 +3,14 @@
 import TopBar from "../ui/top";
 import QRCode from 'qrcode.react';
 import { Switch } from '@headlessui/react'
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { Button } from "@nextui-org/react";
 import { profileNickPic } from "../interfaces/interfaces";
 import { PlusCircleIcon } from "@heroicons/react/20/solid";
 import Image from "next/image";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
+import { profileContext } from "../context/soketContext";
 // import withAuth from "../withAuth"
 
 const settings = () => {
@@ -17,7 +18,7 @@ const settings = () => {
     const [enabled, setEnabled] = useState(false);
     const [newNick, setNewNick] = useState<string> ('');
     const [pass, setPass] = useState<string>('');
-    const [passConfirmation, setPassconfirmation] = useState<string>('');
+    const [passConfirmation, setPassConfirmation] = useState<string>('');
     const [Qr, setQr] = useState<string | null>(null);
     const fileRef = useRef<HTMLInputElement>(null);
     const avatarRef = useRef<HTMLInputElement>(null);
@@ -80,6 +81,7 @@ const settings = () => {
         };  
         // getnickname();
         checkVerification();
+        UpdateStatus();
 
       }, []);
 
@@ -181,7 +183,7 @@ const settings = () => {
         setNewNick(e.target.value);
     }
     const passChange = (e : React.ChangeEvent<HTMLInputElement>) => {setPass(e.target.value)}
-    const passconfirmation = (e : React.ChangeEvent<HTMLInputElement>) => { if (pass === e.target.value) {setPassconfirmation(e.target.value)}}
+    const passconfirmation = (e : React.ChangeEvent<HTMLInputElement>) => {{setPassConfirmation(e.target.value)}}
     const HandlePassChange = async () => {
         console.log("honaaaa")
         if (passConfirmation)
@@ -189,8 +191,8 @@ const settings = () => {
             try{
                 const results =  await axios.post("http://localhost:8000/user/pass", {password : passConfirmation}, {withCredentials : true});
                 if (results.status === 201){
+                    setPassConfirmation('');
                     setPass('');
-                    setPassconfirmation('');
                 }
                 else {
                     setError("Unable To change Nickname Please try again");
@@ -213,7 +215,7 @@ const settings = () => {
                 setError("Unable To change Nickname Please try again");
             }
         } catch (error : any) {
-            console.log("error == ", error);
+            console.log("error2 == ", error);
             setError(error.response.data.message[0]);
         }
         
@@ -264,7 +266,7 @@ const settings = () => {
 
     return (
         <>
-            <main className="flex flex-col font-white bg-main xl:overflow-y-hidden overflow-y-styled-scrollbar lg:h-screen xl:h-screen h-full mr-2">
+            <main className="flex flex-col font-white bg-main  lg:h-screen xl:h-screen h-full mr-2">
                 <TopBar />
                 <div className="flex flex-col w-full h-full mt-10 justify-between"> 
                     <div className="relative xl:h-[30vh] lg:h-[30vh] md:h-[30vh] h-[30vh] mt-10">
@@ -287,8 +289,8 @@ const settings = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="flex border-2 border-gray-200 xl:h-[50vh] lg:h-[50vh] md:h-[54vh] h-[80vh] w-full mt-20 rounded-lg">
-                        <div className="flex xl:flex-row lg:flex-row md:flex-row h-full flex-col md:p-5 lg:p-10 xl:p-10 justify-between w-full">
+                    <div className="flex border-2 border-gray-200 xl:h-[50vh] lg:h-[50vh] md:h-[54vh] h-[80vh] w-full mt-0 rounded-lg">
+                        <div className="flex xl:flex-row lg:flex-row md:flex-row h-full flex-col md:p-2 lg:p-2 xl:p-2 justify-between w-full">
                             <div className="flex flex-col xl:w-[30%] h-[50%] lg:w-[40%] w-[70%] p-5 mt-10 xl:ml-10 ml-5">
                                 <div className="mb-6">
                                     <label className="text-gray-500 w-[90%] text-md ml-10 mt-10 m-1">Change Nickname</label>
@@ -306,17 +308,17 @@ const settings = () => {
                                 </div>
                                 <div className="mb-2">
                                     <label className="text-gray-500 w-[90%] text-md ml-10 m-1">Confirm Password</label>
-                                    <input className="text-black w-[90%] rounded-lg" typeof="submit" placeholder="re-type your Password..." min={8} type="password" onChange={passconfirmation}></input>
+                                    <input className="text-black w-[90%] rounded-lg" typeof="submit" placeholder="re-type your Password..." min={8} type="password" value={passConfirmation} onChange={passconfirmation}></input>
                                 </div>
-                                <div className={`${passConfirmation ? 'flex' : 'hidden'} mb-10`}>
+                                <div className={`${pass === passConfirmation && pass !== '' ? 'flex' : 'hidden'} mb-10`}>
                                     <Button type="submit" radius="md" className={`block bg-gradient-to-tr from-accents to-back text-white shadow-lg 
-                                        hover:from-accents hover:to-main hover:to-lightQuartzetext-white`} onClick={() => { HandlePassChange(); UpdateStatus()}}>
+                                        hover:from-accents hover:to-main hover:to-lightQuartzetext-white`} onClick={() => { HandlePassChange();}}>
                                         save
                                     </Button>
                                 </div>
                             </div>
-                            <div className="flex flex-col h-[60%] w-[35%] p-3 xl:mr-10 mr-0 xl:mt-10 mt-0 xl:ml-0 ml-5">
-                                <div className="flex h-full justify-between">
+                            <div className="flex flex-col h-[50vh] w-[35%] p-3 xl:mr-10 mr-0 xl:mt-10 mt-0 xl:ml-0 ml-5 ">
+                                <div className="flex h-fit justify-between">
                                     <div className="text-white text-bold-300 text-lg">Enable 2FA </div>
                                     <Switch
                                         checked={enabled}
@@ -332,7 +334,8 @@ const settings = () => {
                                     </Switch>
                                 </div>
                                 <h3 className={`${enabled ? 'flex': "hidden"} text-red-400 text-md`}>Please scan or disable QR code before leaving the page</h3>
-                                <div className={`${enabled ? 'flex': "hidden"} border-2 border-accents w-full`} style={{ height: "auto", margin: "0 auto", maxWidth: 260, width: "100%" }}>
+
+                                <div className={`${enabled ? 'flex': "hidden"} border-2 border-accents h-[20vh] w-full`} style={{ height: "auto", margin: "0 auto", maxWidth: 260, width: "100%" }}>
                                     <QRCode
                                     size={256}
                                     style={{ height: "auto"}}

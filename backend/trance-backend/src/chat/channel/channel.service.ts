@@ -462,7 +462,7 @@ export class ChannelService {
     {
         const isMember = await this.outils.isUserInChannel(channelName, usernameId);
         if (!isMember)
-            throw new ForbiddenException('forbidden action.');
+            throw new ForbiddenException('Forbidden action');
         const channelId = await this.outils.getChannelIdByName(channelName);
         const blockedList = await this.dmOutils.getBlockedUsers(usernameId);
         const allMessages = await this.prisma.message.findMany({

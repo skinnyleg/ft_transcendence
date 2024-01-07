@@ -1,6 +1,5 @@
 'use client';
 import TopBar from '../ui/top';
-import Achievements from '../ui/Achievements';
 import Themes from '../ui/Themes';
 import React, { useState, useEffect } from 'react';
 import PowerUps from '../ui/PowerUps';
@@ -12,6 +11,7 @@ import { FaRobot } from "react-icons/fa";
 import {dashboardData, profileData} from '../interfaces/interfaces';
 import { QuestionMarkCircleIcon, QueueListIcon } from '@heroicons/react/24/outline';
 import { ToastContainer, toast } from 'react-toastify';
+import TopThree from '../ui/TopThree';
 
 
 function Dashboard() {
@@ -46,7 +46,7 @@ function Dashboard() {
   return (
     <main className="flex flex-col font-white bg-main mr-2">
       <TopBar />
-      <div className="flex flex-col lg:mt-5 h-[95%] md:mt-10 mt-10 xl:mt-5">
+      <div className="flex flex-col h-[95%] lg:mt-5  md:mt-10 mt-10 xl:mt-5">
         <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-5 lg:grid-rows-3 gap-5 w-full h-full mt-4 md:grid-row-5 grid-row-5">
           <div className="relative p-20 rounded-md col-span-1 lg:col-span-3 lg:h-[33vh] md:h-[300px] h-[300px] xl:h-[33vh] lg:w-full shadow-md" style={{backgroundImage: `url(${theme})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
             <FaRobot className="text-accents w-8 h-8 absolute right-5 top-5"/>
@@ -54,9 +54,7 @@ function Dashboard() {
             <PlayButton theme = {theme} PowerUp={powerup}/>
           </div>
           
-          <Achievements
-            doneAchievements={doneAchievements}
-            notDoneAchievements={notDoneAchievements} />
+          <TopThree />
 
           <Themes handleThemeChange={handleThemeChange} />
           

@@ -131,7 +131,8 @@ export class UserService {
 	async getAchievements(id: string)
 	{
 		const acheivements = await this.getDoneAchievements(id);
-		return ({doneAchievements: acheivements});
+		const notAcheivements = await this.getNotDoneAchievements(id);
+		return ({doneAchievements: acheivements, notDoneAchievements: notAcheivements});
 	}
 
 	async getNotDoneAchievements(id: string)
@@ -242,6 +243,131 @@ export class UserService {
 				},
 		});
 	}
+
+	// GAME SECTION
+
+	async saveChallengeRequest(challengerId: string, opponentId: string){
+		// check if the challenger and opponent exist
+		if (challengerId === opponentId)
+			throw new ConflictException('Can\'t challenge yourself')
+
+		const challenger = await this.prisma.user.findUnique({
+			where: {
+				id: challengerId,
+			}
+		})
+		if (!challenger)
+			throw new NotFoundException('user Doesn\'t exist')
+		const opponent = await this.prisma.user.findUnique({
+			where: {
+				id: opponentId,
+			}
+		})
+		if (!opponent)
+			throw new NotFoundException('user Doesn\'t exist')
+
+		// check request  .0
+		const requestExist = await this.prisma.request.findFirst({
+			where: {
+			  senderId: challengerId,
+			  typeOfRequest: RequestType.CHALLENGE,
+			  responded: false,
+			},
+		});
+		if (requestExist)
+			throw new ConflictException('you have already sent challenge')
+		// check if one of them is in, geme
+		const isInGame = await this.prisma.user.findFirst({
+			where: {
+				OR: [
+				{
+					id: challengerId,
+					status: {
+						in: [UserStatus.IN_GAME]
+					},
+				},
+				{
+					id: opponentId,
+					status: {
+						in: [UserStatus.IN_GAME]
+					},
+				},
+				],
+			},
+		});
+		if (isInGame)
+			throw new ConflictException('Already In Game!');
+		// SEND REQUEST 
+		const id = await this.generateRequest(challengerId, opponentId, RequestType.CHALLENGE);
+		return id;
+	}
+
+	async genarateMatchInfo(me : string, opponentId : string){
+		const player1 = await this.prisma.user.findUnique({
+			where:{
+				id: me,
+			},
+			select:{
+				id: true,
+				profilePic: true,
+				nickname: true,
+			}
+		});
+		const player2 = await this.prisma.user.findUnique({
+			where:{
+				id: opponentId,
+			},
+			select:{
+				id: true,
+				profilePic: true,
+				nickname: true,
+			}
+		});
+		const infos = [player1, player2];
+		console.log("Info === ", infos);
+		return (infos);
+	}
+
+
+	async updateMatchHistory(){
+		
+	}
+
+	async updateReq(me: string, challenger: string, requestId: string)
+	{
+		if (me === challenger)
+			throw new ConflictException('can\'t accept a challenge from yourself')
+
+		const request = await this.prisma.request.findUnique({
+			where: {
+				id: requestId,
+				senderId: challenger,
+				responded: false,
+			}
+		});
+
+		if (!request)
+			throw new NotFoundException('request Doesn\'t exist or already responded')
+		const user = await this.prisma.user.findUnique({
+			where: {
+				id: challenger,
+			}
+		})
+		if (!user)
+			throw new NotFoundException('user Doesn\'t exist')
+	
+		await this.prisma.request.update({
+			where: {
+				id: requestId
+			},
+			data: {
+				emitted: true,
+				responded: true,
+			}
+		  });
+		
+	}
+	// END OF GAME SECTION
 
 	async saveRequest(senderId: string, recipientId: string)
 	{
@@ -843,8 +969,10 @@ export class UserService {
 				id,
 			},
 			select: {
+				id: true,
 				nickname: true,
 				profilePic: true,
+				BackgroundPic: true,
 			}
 		})
 		if (!user)

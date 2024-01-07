@@ -1,8 +1,10 @@
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { DmOutils } from './dm.outils';
-import { User, Types, Message, Dm } from '@prisma/client';
+import { User, Types, Message, Dm, UserStatus } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Socket } from 'socket.io';
+import { error } from 'console';
+import { async } from 'rxjs';
 
 @Injectable()
 export class DmService {
@@ -32,9 +34,8 @@ export class DmService {
 
     async   creatMessageDm(dmId: string, senderId: string, content: string): Promise<Message | null>
     {
-        if(!dmId) {
+        if(!dmId)
             throw new BadRequestException('the dm id is indefined');
-        }
         const newMessage = await this.prisma.message.create({
             data: {
                 content,
@@ -42,8 +43,19 @@ export class DmService {
                 Dm: { connect: {id: dmId} },
             },
         });
+        if (!newMessage)
+            throw new ConflictException('creat message failed');
         console.log('newmessage: ', newMessage);
-        return newMessage;
+        const messageInfo = await this.prisma.message.findUnique({
+            where: { id: newMessage.id },
+            include: {
+                sender: { select: { id: true, nickname: true } },
+                Dm: { select: { id: true } }
+            },
+        });
+        messageInfo
+        // return newMessage;
+        return messageInfo;
     }
 
     async   getUserDms(userId: string)
@@ -152,5 +164,23 @@ export class DmService {
         if (!dm)
             throw new NotFoundException('Dm not found');
         return dm;
+    }
+
+    async   UserStatus2Others(userId: string, usersSockets: any, status: UserStatus)
+    {
+        const dms2notif = await this.prisma.dm.findMany({
+            where: { members: { some: {id: userId} } },
+            include : {
+                members: {
+                    select:  { id: true },
+                },
+            },	
+        });
+        for (const member of dms2notif) {
+            const memberId = (member.members[0].id === userId) ? member.members[1].id : member.members[0].id;
+            const memberSocket = usersSockets.find((connect) => connect.userId === memberId);
+            if (memberSocket)
+                memberSocket.socket.emit("statusChange", {id: member.id, status: status});
+        }
     }
 }

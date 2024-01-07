@@ -6,6 +6,7 @@ import { ChatContext, chatSocketContext } from '../context/soketContext';
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import { ChannelInter, DmsInter } from '../interfaces/interfaces';
+import { isHidden, whichTab } from './ChatUtils';
 
 const PersonalTab = () => {
 
@@ -16,6 +17,7 @@ const PersonalTab = () => {
 	const {channelId, setChannelId, searchInputDm, setSearchInputDm} = useContext(ChatContext);
 	const [userDms, setUserDms] = useState<DmsInter[]>([]);
 	const [info, setInfo] = useState<string>('Add Some Friends');
+	const hidden = whichTab(searchParams)
 
 
 	const deleteChannelQuery = () => {
@@ -57,10 +59,10 @@ const PersonalTab = () => {
 	}, [chatSocket, channelId])
 
 
-
+	// ${hidden === 'personal' ? 'w-[79%]' : 'w-full'}
 
 	return (
-		<div className="bg-teal-600 rounded-[15px] p-3 w-full shadow-lg lg:w-full h-[49%] flex flex-col">
+		<div className={` rounded-[15px] p-3  shadow-lg bg-teal-600 w-full h-[49%] flex flex-col`}>
 		<h1 className='text-teal-300 font-bold text-lg mb-1'>PERSONAL</h1>
 		<div className='flex flex-row justify-around rounded-2xl w-full mb-2'>
 			<div className='flex flex-row rounded-xl bg-cyan-100 w-full'>
@@ -68,7 +70,7 @@ const PersonalTab = () => {
 					className='w-8  h-10 stroke-1 bg-cyan-100 rounded-2xl pl-2 text-black'
 				/>
 				<input type='text'
-					placeholder='Search Channels...'
+					placeholder='Search Dms...'
 					className='w-full h-10 bg-cyan-100 border-none focus:ring-0 text-black rounded-2xl'
 					value={searchInputDm}
 					onChange={(e) => setSearchInputDm(e.target.value)}

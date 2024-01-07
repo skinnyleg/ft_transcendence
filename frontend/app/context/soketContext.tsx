@@ -3,10 +3,11 @@ import React, { createContext, useState } from "react";
 import { Cookies } from "react-cookie";
 import io from 'socket.io-client';
 import { profileNickPic } from "../interfaces/interfaces";
-import { toast } from "react-toastify";
 
 const cookies = new Cookies();
-// const [profilePic, setProfilePic] = useState('');
+let profilePic = '';
+let backgroundPic = '';
+
 const token = cookies.get('token');
 export const socket = io("http://localhost:8000/friendsGateway", {
     withCredentials: true,
@@ -47,18 +48,20 @@ const getnickname = async () => {
       });
       if (res.ok) {
           const nickname : profileNickPic = await res.json();
-          return(nickname.profilePic);
+          profilePic = nickname.profilePic
+          backgroundPic = nickname.backgroundPic
+          return(nickname);
       }
     } catch (error : any) {
-      toast.error(error.response.data.message[0]);
-      return("");
+    //   toast.error(error.response.data.message[0]);
+      return(undefined);
     }
 };
 
 
-export const avatarImage = getnickname();
+getnickname();
 
-export const profilePicContext = createContext(avatarImage);
+export const profileContext = createContext<any>({profilePic, backgroundPic});
 
 export const socketContext = createContext(socket);
 export const chatSocketContext = createContext(chatSocket);

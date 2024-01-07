@@ -1,10 +1,15 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Bebas_Neue, Inter } from 'next/font/google'
 import './globals.css'
 import { socket , socketContext} from './context/soketContext'
 import { ToastContainer } from 'react-toastify'
 
-const inter = Inter({ subsets: ['latin'] })
+const bebas_neue = Bebas_Neue({
+  weight: '400',
+  subsets: ['latin'],
+  style: 'normal',
+  
+})
 
 export const metadata: Metadata = {
   title: 'Login',
@@ -23,7 +28,7 @@ export default function RootLayout({
       <head >
         <link rel='icon' href='/logo.png' />
       </head>
-      <body className={inter.className}>
+      <body className={bebas_neue.className}>
         {children}
       </body>
     </html>

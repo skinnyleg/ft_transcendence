@@ -15,11 +15,12 @@ const UserCard: FC<UserCardProps> = ({user, userRole}) => {
 		return (
 		<div className='w-full h-11 mb-1 text-black flex gap-2 justify-between items-center'>
 			<Image
+				unoptimized={process.env.ENVIRONMENT !== "PRODUCTION"}
 				src={user.userPicture as string}
 				alt='user Image'
 				width='45'
 				height='45'
-				className='rounded-full bg-teal-300'
+				className='rounded-full bg-teal-300 max-w-[35px] max-h-[35px] min-w-[35px] min-h-[35px]'
 			/>
 			<div className='flex bg-teal-100 rounded-xl items-center p-2 w-full h-full justify-between'>
 				<h1 className='font-bold text-xl'>

@@ -17,7 +17,6 @@ export class FriendsGateway {
   @WebSocketServer()
   server: Server;
 
-
 	async handleConnection(client: Socket) {
 		await this.friendsService.saveUser(client);
 		// console.log(client.id);
@@ -42,7 +41,7 @@ export class FriendsGateway {
 		else
 			await this.friendsService.deleteRequest(client, verify.input.userId)
 	}
-
+    
 	@SubscribeMessage('block-friend')
 	async blockFriend(client: Socket, payload: Record<string, any>)
 	{

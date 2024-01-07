@@ -13,7 +13,7 @@ import { joinChannel, resJoinChannel } from '../dto/joinChannelDto.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { changeNameDto, changeAdminsDto, changePassDto, changeTypeDto, changepicDto, stringDto } from '../dto/changePramCH.dto';
 import { banUserDto, kickUserDto, muteUserDto } from '../dto/blacklist.dto';
-import { RequestType } from '@prisma/client';
+import { RequestType, UserStatus } from '@prisma/client';
 import { exit } from 'process';
 import { error } from 'console';
 
@@ -70,6 +70,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			}
 			console.log(`------ coonect: ${user.nickname} ------`);
 			this.usersSockets.push({userId: user.id, socket: client});
+			await this.DmService.UserStatus2Others(user.id, this.usersSockets, UserStatus.ONLINE);
 		}
 		catch (error) {
 			console.error('Error<connection>: ', error.message);
@@ -83,6 +84,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 		{
 			console.log(`------ User disconnect ${client.data.user.nickname}------`);
 			const array: {userId: string, socket: any}[] = [];
+			await this.DmService.UserStatus2Others(client.data.user.id, this.usersSockets, UserStatus.OFFLINE);
 			for (const user of this.usersSockets) {
 				if (user.userId !== client.data.user.id)
 					array.push(user);
@@ -193,7 +195,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			notif2users.server = this.server;
 			notif2users.usersSockets = this.usersSockets; 
 			notif2users.notif = `${nickname} has joined`;
-			notif2users.user2notify = nickname;
+			notif2users.user2notify = client.data.user.id;
 			await this.channelService.emitNotif2channelUsers(notif2users, ['joinDone', 'refreshSide']);
 		}
 		catch (error) {
@@ -223,7 +225,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 				where: { id: requestId },
 			});
 			if (!checkRequest) 
-				throw new ForbiddenException('forbidden action.');
+				throw new ForbiddenException('Forbidden action');
 			if (value) {
 				await this.prisma.channel.update({
 					where: { name: channelName },
@@ -353,14 +355,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 				const message = await this.DmService.creatMessageDm(dmId, user.id, data.content);
 				await this.DmOutils.updateDmupdatedAt(dmId, message.createdAt);
 				const buffer = await this.DmOutils.fillDmsBuffer(message, user.id, dmId);
+				client.join(dmId);
 				if (receiverSocket) {
-					client.join(dmId);
 					receiverSocket.socket.join(dmId);
-					this.server.to(dmId).emit('messageDoneDM', buffer);
-					receiverSocket.socket.leave(dmId);
 					receiverSocket.socket.emit('refreshUserDms');
-					client.leave(dmId);
 				}
+				this.server.to(dmId).emit('messageDoneDM', buffer);
 			}
 			else
 				client.emit('redirect', {dmId})
@@ -586,7 +586,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			const {channelName} = data;
 			const userId = client.data.user.id;
 			if (!(await this.Outils.isUserInChannel(channelName, userId)))
-				throw new UnauthorizedException('Forbidden action.');
+				throw new UnauthorizedException('Forbidden action');
 			const channel = await this.Outils.findChannelByName(channelName);
 			const membershipCH: channelSidebar[] = [];
 			for (const user of channel.users) {
@@ -628,7 +628,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			this.DmOutils.Error(client, 'getUserChannels', error, 'get user channels failed');
 		}
 	}
-	
+
 	@SubscribeMessage('getDataDm')
 	async	GetDataDm(@MessageBody() data: getMessagesDm, @ConnectedSocket() client: Socket)
 	{
@@ -640,12 +640,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			const dm = await this.DmService.getDmbyId(data.dmId);
 			const dmSide: dmsSide = {};
 			dmSide.dmId = data.dmId;	
-			dmSide.name = (dm.members[0].nickname === user.nickname) ? dm.members[1].nickname : dm.members[0].nickname;;
+			dmSide.name = (dm.members[0].id === user.id) ? dm.members[1].nickname : dm.members[0].nickname;;
 			dmSide.reciverId = (dm.members[0].id === user.id) ? dm.members[1].id : dm.members[0].id;
 			dmSide.lastMsg = '';
-			dmSide.picture = (dm.members[0].profilePic === user.profilePic) ? dm.members[1].profilePic : dm.members[0].profilePic;
+			dmSide.picture = (dm.members[0].id === user.id) ? dm.members[1].profilePic : dm.members[0].profilePic;
 			dmSide.dmStatus = (this.DmOutils.isInBlockedList(dmSide.reciverId, ls) === true ? 'BLOCKED' : 'ACTIVE');
-			dmSide.userStatus = (dm.members[0].status === user.status) ? dm.members[1].status : dm.members[0].status;
+			dmSide.userStatus = (dm.members[0].id === user.id) ? dm.members[1].status : dm.members[0].status;
 			client.emit('DmData', dmSide);
 		}
 		catch(error) {

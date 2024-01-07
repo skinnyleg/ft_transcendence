@@ -5,7 +5,7 @@ import clsx from "clsx";
 import { ChatContext, chatSocketContext, socketContext } from "../context/soketContext";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import React from 'react';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 
@@ -14,6 +14,8 @@ const Notifications = () => {
     const [notifications, setNotifications] = useState<NotificationsData[]>([]);
     const [showNotifications, setShowNotifications] = useState(false);
     const [notificationNumber, setNotificationNumber] = useState(0);
+    const [notif , setNotif] = useState<string>('');
+    const [Error , setError] = useState<string>('');
     const [newNotification, setNewNotification] = useState<NotificationsData | null>(null);
     const socket = useContext(socketContext);
     const chatSocket = useContext(chatSocketContext);
@@ -47,14 +49,36 @@ const Notifications = () => {
     
 
 
+
+    const check_notif = (notif: string) => {
+        if (notif === 'Forbidden action')
+            return true;
+        if (notif === 'Invalide data')
+            return true;
+        return false;
+    }
+
+
     useEffect(() => {
 
 
-        // chatSocket.on("notification", (notif) => {
-        //     console.log("ni=otif sent" ,notif);
-        //     toast.success(notif);
-        // });
+        chatSocket.on("notification", (notif) => {
+            console.log("ni=otif sent" ,notif);
+            toast.success(notif, {
+                toastId: 'chatNotifSucces',
+                autoClose: 500
+            });
+        });
 
+
+        chatSocket.on("failed", (notif) => {
+            if (check_notif(notif) === true)
+                return ;
+            toast.error(notif, {
+                toastId: 'chatNotifError',
+                autoClose: 500
+            });
+        });
 
         chatSocket.on("notifHistory", (data: NotificationsData) => {
             console.log("data chatSocket == ", data);
@@ -67,6 +91,7 @@ const Notifications = () => {
         return () => {
             chatSocket.off('notification');
             chatSocket.off('notif');
+            chatSocket.off('failed');
         }
     }, [chatSocket,channelId])
 
@@ -75,12 +100,19 @@ const Notifications = () => {
     useEffect(() => {
         socket.on("notification", (notif) => {
             console.log("ni=otif sent" ,notif);
-            toast.success(notif);
+            toast.success(notif, {
+                toastId: 'success',
+                autoClose: 500
+            });
         });
 
         socket.on("error", (error) => {
             console.log("error sent" ,error);
-            toast.error(error.message);
+            toast.error(error.message, {
+                toastId: 'error',
+                autoClose: 500
+            });
+            setError(error.message);
         });
 
         socket.on("notifHistory", (data: NotificationsData) => {
@@ -148,7 +180,8 @@ const Notifications = () => {
 
     return (
         <>
-            <div className="z-30 relative">
+            <socketContext.Provider value={socket}>
+            <div className="z-10 relative">
                 <BellAlertIcon onClick={()=>{setShowNotifications(!showNotifications)}} className= "lg:h-[50px] lg:w-[50px] xl:h-[50px] xl:w-[50px] h-[35px] w-[35px] lg:flex lg:p-2 lg:bg-gray-100 text-accents rounded-full"/>
                 <span className={clsx(`absolute text-sm text-white font-bold rounded-full h-5 w-5 items-center text-center flex justify-center bottom-0 right-0 transform translate-x-[8px]`
                 , {'hidden' : showNotifications},
@@ -169,8 +202,9 @@ const Notifications = () => {
                         </div>
                     ))}
                     </div>
+                </div>
             </div>
-            </div>
+            </socketContext.Provider>
         </>
     );
 }

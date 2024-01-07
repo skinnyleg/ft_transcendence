@@ -23,6 +23,7 @@ export interface FriendsData {
 export interface profileNickPic{
   nickname: string;
   profilePic:string; 
+  backgroundPic: string;
 };
 
 export interface AchievementsData {
@@ -32,6 +33,15 @@ export interface AchievementsData {
   userScore: number;
   totalScore: number;
 }[];
+
+
+export interface Achievements {
+  id: string;
+  title: string;
+  description: string;
+  userScore: number;
+  totalScore: number;
+};
 
 export interface responseData {
   id: string;
@@ -100,8 +110,9 @@ export interface DmsInter {
 	name: string,
 	lastMsg: string,
 	picture: string
-	status: string
-  reciverId?: string,
+  reciverId: string,
+  dmStatus?: string,
+	userStatus?: string
 }
 
 
@@ -132,7 +143,8 @@ export interface DmMessageInter {
 	messageId: string,
 	sender: string,
 	message: string,
-	time: string
+	time: string,
+  self: string
 }
 
 export interface MessageInter {
