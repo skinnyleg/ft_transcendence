@@ -581,6 +581,15 @@ export class UserService {
 		})
 		if (!sender)
 			throw new NotFoundException('sender Doesn\'t exist')
+
+		const idExists = sender.usersBlocked.find((id) => id === recipientId)
+
+		if (idExists)
+			throw new BadRequestException('user is already blocked');
+		const idExistsby = user.BlockedBy.find((id) => id === senderId)
+
+		if (idExistsby)
+			throw new BadRequestException('user is already blocked');
 		sender.usersBlocked.push(recipientId);
 
 		user.BlockedBy.push(senderId);
@@ -1161,6 +1170,7 @@ export class UserService {
 			},
 			select: {
 				isEnabled: true,
+				otpauth_url: true,
 			}
 		})
 		return isEnabled;
@@ -1173,6 +1183,8 @@ export class UserService {
 			throw new NotFoundException('user not found')
 		const secret = authenticator.generateSecret();
 		const url = authenticator.keyuri(user.nickname,'Pong',secret);
+		if (user.isEnabled === true)
+			return ;
 		await this.prisma.user.update({
 			where: {
 				id: id,
@@ -1204,8 +1216,6 @@ export class UserService {
 			},
 			data: {
 				isEnabled: false,
-				Secret: null,
-				otpauth_url: null
 			}
 		})
 	}

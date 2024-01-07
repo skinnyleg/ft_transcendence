@@ -17,7 +17,6 @@ export default function TopBar () {
   const [show, setShow] = useState(false);
   const [results, setRes] = useState<responseData[]>([]);
   const searchRef = useRef<HTMLDivElement>(null);
-  const {profilePic, backgroundPic} = useContext(profileContext)
 
   const handleClickOutside = (e: MouseEvent) => {
     if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
@@ -66,9 +65,9 @@ export default function TopBar () {
   }, [search, debouncedSearchBackend]);
 
   const {profilePic, backgroundPic, nickname} = useContext(picturesContext)
-  console.log("1+++*========", profilePic)
-    console.log("2+++*========", backgroundPic)
-    console.log("3+++*========", nickname)
+  // console.log("1+++*========", profilePic)
+  //   console.log("2+++*========", backgroundPic)
+  //   console.log("3+++*========", nickname)
   return (
       <div className="flex lg:flex-row justify-between flex-col w-full bg-transparent">
           <div className="lg:flex md:hidden hidden xl:flex">
@@ -88,7 +87,7 @@ export default function TopBar () {
                 {show && results.map((result) => (
                   <Link href={`/profile/${result.nickname}`} key={result.nickname}>
                     <div className="flex items-center p-2 hover:bg-gray-100 cursor-pointer z-10">
-                      <img src={result.profilePic} alt="profile" className="w-10 h-10 rounded-full" />
+                      <img src={result.profilePic} alt="profile" className="rounded-full w-10 h-10" />
                       <p className="ml-2">{result.nickname}</p>
                     </div>
                   </Link>
@@ -96,10 +95,10 @@ export default function TopBar () {
               </div>
             </div>
           </div>
-            <div   className="lg:flex xl:flex md:hidden hidden pr-2 lg:space-x-4">
+            <div   className="lg:flex xl:flex md:hidden hidden pr-2 lg:space-x-4 ">
               <Notifications/>
                 <Link href={`http://localhost:3000/profile/${nickname}`}>
-                  <img src={profilePic} alt="yo" className="w-[50px] h-[50px] rounded-full border-accents border-[2px] hidden lg:flex" />
+                  <img src={profilePic} alt="yo" className="max-w-[50px] max-h-[50px] min-w-[50px] min-h-[50px] rounded-full border-accents border-[2px] hidden lg:flex" />
                 </Link>
             </div> 
         </div>

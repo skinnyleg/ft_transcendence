@@ -30,23 +30,28 @@ export default function LoginForm() {
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/auth/signin`, {
         method: 'POST',
         credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json'},
         body: JSON.stringify({ username, password }),
       });
-      console.log('response == ', response);
-      if (response.ok) {
+      console.log('response == ', response.status);
+      if (response.status === 200) {
         const res = await response.json();
         toast.success("Welcome ...!");
         router.push('/Dashboard', undefined);
-      } else if (response.status === 401) {
-        toast.error('Invalid credentials. Please check your username and password.');
+      } 
+      else if (response.status === 202)
+      {
+        router.push('/Qr', undefined);
+      }
+      else if (response.status === 401) {
+        toast.error('Invalid credentials. Please check your username and password.', {autoClose: 500});
       } else if (response.status === 404) {
-        toast.error('User not found. Please check your credentials.');
+        toast.error('User not found. Please check your credentials.', {autoClose: 500});
       } else {
         toast.error(`HTTP error! Status: ${response.status}`);
       }
     } catch (error) {
-      toast.error('An unexpected error occurred. Please try again later.');
+      toast.error('An unexpected error occurred. Please try again later.', {autoClose: 500});
     }
     };
   

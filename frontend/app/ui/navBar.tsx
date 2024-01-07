@@ -7,7 +7,7 @@ import { Inter } from "next/font/google"
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {profileNickPic, responseData} from "@/app/interfaces/interfaces";
 import { useDebouncedCallback } from "use-debounce";
 import { ContextProvider, picturesContext } from "../context/profilePicContext";
@@ -31,9 +31,9 @@ function NavBar ({handleShowMenu}: NavBarProps)
   const [error, setError] = useState<string | null>(null);
   const [results, setRes] = useState<responseData[]>([]);
   const [showBar, setShowBar] = useState(false); // show search barr
-  const [profilePic, setProfilePic] = useState('');
-  const [backgroundPic, setBackgroundPic] = useState('');
-  const [nickname, setNickname] = useState('');
+  // const [profilePic, setProfilePic] = useState('');
+  // const [backgroundPic, setBackgroundPic] = useState('');
+  // const [nickname, setNickname] = useState('');
 
   const searchBackend = async (query: string) => {
     try {
@@ -66,28 +66,28 @@ function NavBar ({handleShowMenu}: NavBarProps)
     }
   }, [search, debouncedSearchBackend]);
 
-  useEffect(() => {
-    const getnickname = async () => {
-      try {
-        const res = await fetch(`http://localhost:8000/user/Nickname`, {
-          method: "GET",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-        });
-        if (res.ok) {
-          const nickname : profileNickPic = await res.json();
-          setProfilePic(nickname.profilePic);
-          setBackgroundPic(nickname.backgroundPic);
-          setNickname(nickname.nickname);
-          console.log("nick:", nickname);
-        }
-      } catch (error) {
-        toast.error('Error fetching data');
-      }
-    };
-    getnickname();
-}, []);
-  
+//   useEffect(() => {
+//     const getnickname = async () => {
+//       try {
+//         const res = await fetch(`http://localhost:8000/user/Nickname`, {
+//           method: "GET",
+//           credentials: "include",
+//           headers: { "Content-Type": "application/json" },
+//         });
+//         if (res.ok) {
+//           const nickname : profileNickPic = await res.json();
+//           setProfilePic(nickname.profilePic);
+//           setBackgroundPic(nickname.backgroundPic);
+//           setNickname(nickname.nickname);
+//           console.log("nick:", nickname);
+//         }
+//       } catch (error) {
+//         toast.error('Error fetching data');
+//       }
+//     };
+//     getnickname();
+// }, []);
+const {profilePic, backgroundPic, nickname} = useContext(picturesContext)
 return (
   <div className={`${inter.className}`}>
     <div className="lg:hidden xl:hidden bg-nav top-0 text-white md:w-screen h-15 z-10 p-4 flex justify-between items-center border-indigo-600 fixed w-full">
@@ -110,11 +110,9 @@ return (
         </div>
         <Link href={`http://localhost:3000/profile/${nickname}`}>
           <img
-              className="h-8 w-auto rounded-full mr-2"
+              className="max-w-[32px] max-h-[32px] min-w-[32px] min-h-[32px] rounded-full mr-2"
               src={profilePic}
               alt="Logo"
-              width={100}
-              height={40}
           />
         </Link>
       </div>

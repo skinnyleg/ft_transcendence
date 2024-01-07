@@ -15,7 +15,7 @@ export const ContextProvider = ({ children }: { children: any })=> {
     useEffect(() => {
         const getnickname = async () => {
           try {
-            const res = await fetch(`http://localhost:8000/user/Nickname`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/Nickname`, {
               method: "GET",
               credentials: "include",
               headers: { "Content-Type": "application/json" },
@@ -34,14 +34,14 @@ export const ContextProvider = ({ children }: { children: any })=> {
         getnickname();
       }, []);
       const updateProfile = (newProfilePic: string, newBackground: string, newNickname: string) => {
+        console.log("1***========", newProfilePic)
+        console.log("2***========", newBackground)
+        console.log("3***========", newNickname)
         if (newProfilePic)
             setProfilePic(newProfilePic);
         if (newBackground) setBackgroundPic(newBackground);
         if (newNickname) setNickname(newNickname);
       };
-      console.log("1***========", profilePic)
-      console.log("2***========", backgroundPic)
-      console.log("3***========", nickname)
     return (
         <picturesContext.Provider value={{ profilePic, backgroundPic, nickname, updateProfile }}>
         {children}
