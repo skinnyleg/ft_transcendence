@@ -1,28 +1,159 @@
 'use client'
 
+import React, { useContext, useEffect, useRef, useState } from "react";
 import TopBar from "../ui/top";
 import QRCode from 'qrcode.react';
 import { Switch } from '@headlessui/react'
-import { useContext, useEffect, useRef, useState } from "react";
 import { Button } from "@nextui-org/react";
-import { profileNickPic } from "../interfaces/interfaces";
 import { PlusCircleIcon } from "@heroicons/react/20/solid";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import { ContextProvider, picturesContext } from "../context/profilePicContext";
-import { url } from "inspector";
 
-const settings = () => {
+const Settings : React.FC = () => {
 
+    const fileRef = useRef<HTMLInputElement>(null);
+    const avatarRef = useRef<HTMLInputElement>(null);
     const [enabled, setEnabled] = useState(false);
     const [newNick, setNewNick] = useState<string> ('');
     const [pass, setPass] = useState<string>('');
     const [passConfirmation, setPassConfirmation] = useState<string>('');
     const [Qr, setQr] = useState<string | null>(null);
-    const fileRef = useRef<HTMLInputElement>(null);
-    const avatarRef = useRef<HTMLInputElement>(null);
     const [QrEnabled, setQrEnabled] = useState<boolean>(false);
     const [Error, setError] = useState("");
+    const {profilePic, backgroundPic, nickname, updateProfile} = useContext(picturesContext)
+
+    const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            const formData = new FormData();
+            formData.append("file", file);
+            try{
+                const results = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/upload/BackgroundPic`, {
+                credentials: 'include',
+                method: 'POST',
+                body: formData,})
+                console.log ("file === ", results);
+
+                if (results.ok){
+                    const pic = await results.json();
+                    updateProfile(null, pic.filename, null);
+                }
+                else {
+                    toast.error("Unable To change Picture Please try again", {toastId: "Error", autoClose: 1000});
+
+                }
+            } catch (error : any) {
+                toast.error(error.response.data.message, {toastId: "Error", autoClose: 1000});
+
+            }
+        }
+      };
+
+    const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const avatarFile = e.target.files?.[0];
+        if (avatarFile)
+        {
+            const formData = new FormData();
+            formData.append("file", avatarFile);
+            try{
+                const results = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/upload/ProfilePic`, {
+                credentials: 'include',
+                method: 'POST',
+                body: formData,})
+                if (results.ok){
+                    const pic = await results.json();
+                    updateProfile(pic.filename, null, null);
+                }
+                else {
+                    toast.error("Unable To change Picture Please try again", {toastId: "Error", autoClose: 1000});
+                }
+            } catch (error : any) {
+                toast.error(error.response.data.message, {toastId: "Error", autoClose: 1000});
+            }
+        }
+    }
+    const HandleNickChange = async () => {
+        if (newNick){
+            try{
+                const results = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/nick`, {nickname : newNick}, {withCredentials:true});
+                console.log(results.status);
+                if (results.status === 201){
+                    updateProfile(null, null, newNick);
+                }
+                else {
+                    toast.error("Unable To change Nickname Please try again", {toastId: "Error", autoClose: 1000});
+                }
+            } catch (error : any) {
+                toast.error(error.response.data.message, {toastId: "Error", autoClose: 1000});
+                // setError(error.response.data.message[0]);
+            }finally {
+                setNewNick('');
+            }
+        }
+    }
+
+    const handleFileAdd = () => {
+        fileRef.current!.click();
+    };
+    const handleAvatarAdd = () => {
+        avatarRef.current!.click();
+    }
+    const AddNickname = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setNewNick(e.target.value);
+    }
+    const passChange = (e : React.ChangeEvent<HTMLInputElement>) => {setPass(e.target.value)}
+    const passconfirmation = (e : React.ChangeEvent<HTMLInputElement>) => {{setPassConfirmation(e.target.value)}}
+    const HandlePassChange = async () => {
+        if (passConfirmation)
+        {
+            try{
+                const results =  await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/pass`, {password : passConfirmation}, {withCredentials : true});
+                console.log("ressuuuusdls", results);
+                if (results.status === 201){
+                    setPassConfirmation('');
+                    setPass('');
+                }
+                else {
+                    toast.error("Unable To change Password Please try again", {toastId: "Error", autoClose: 1000});
+                }
+            } catch (error : any) {
+                toast.error(error.response.data.message[0], {toastId: "Error", autoClose: 1000});
+            }
+        }
+
+    }
+
+    const enableQrVer = async () => {
+        try{
+            const results =  await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/2FA`, {Enabled : !QrEnabled}, {withCredentials : true});
+            console.log("srta", results.status);
+            if (results.status === 201){
+                console.log("YYYYYYo")
+              setQrEnabled(!QrEnabled);
+                
+            }
+            else {
+                console.log("error");
+                toast.error("Unable To change Nickname Please try again", {toastId: "Error", autoClose: 1000});
+            }
+        } catch (error : any) {
+            toast.error(error.response.data.message, {toastId: "Error", autoClose: 1000});
+        }
+    }
+    
+    const gnerateQrCode = async () => {
+        try{
+            const results =  await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/GenerateQr`, {withCredentials : true});
+            if (results.status === 200){
+                setEnabled(!enabled);
+                console.log(results.data)
+                setQr(results.data.img)
+            }
+        } catch (error : any){
+            toast.error(error.response.data.message, {toastId: "Error", autoClose: 1000});
+        }
+    }
 
     useEffect(() => {
         const checkVerification = async () => {
@@ -59,13 +190,11 @@ const settings = () => {
                     console.log("LOOL")
                 }
                 else {
-                    // setError("Unable To change Nickname Please try again");
                     toast.error("Unable To change Nickname Please try again", {toastId: "Error", autoClose: 1000});
                 }
             } catch (error : any) {
                 console.log("error == ", error);
                 toast.error(error.response.data.message, {toastId: "Error", autoClose: 1000});
-                // setError(error.response.data.message);
             }
             
         }
@@ -86,160 +215,11 @@ const settings = () => {
             }
           } catch (error : any) {
             toast.error(error.response.data.message, {toastId: "Error", autoClose: 1000});
-            // setError(error.response.data.message[0]);
           }
         };
         IsQrEnabled();
         UpdateStatus();
       }, []);
-
-    const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            const formData = new FormData();
-            formData.append("file", file);
-            try{
-                const results = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/upload/BackgroundPic`, {
-                credentials: 'include',
-                method: 'POST',
-                body: formData,})
-                console.log ("file === ", results);
-
-                if (results.ok){
-                    const pic = await results.json();
-                    updateProfile(null, pic.filename, null);
-                }
-                else {
-                    // setError("Unable To change Picture Please try again");
-                    toast.error("Unable To change Picture Please try again", {toastId: "Error", autoClose: 1000});
-
-                }
-            } catch (error : any) {
-                // setError(error.response.data.message[0]);
-                toast.error(error.response.data.message, {toastId: "Error", autoClose: 1000});
-
-            }
-        }
-      };
-
-    const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const avatarFile = e.target.files?.[0];
-        if (avatarFile)
-        {
-            const formData = new FormData();
-            formData.append("file", avatarFile);
-            try{
-                const results = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/upload/ProfilePic`, {
-                credentials: 'include',
-                method: 'POST',
-                body: formData,})
-                if (results.ok){
-                    const pic = await results.json();
-                    updateProfile(pic.filename, null, null);
-                }
-                else {
-                    toast.error("Unable To change Picture Please try again", {toastId: "Error", autoClose: 1000});
-                    // setError("Unable To change Picture Please try again");
-                }
-            } catch (error : any) {
-                // setError(error.response.data.message[0]);
-                toast.error(error.response.data.message, {toastId: "Error", autoClose: 1000});
-            }
-            // console.log('picture sent == ', e.target.files?.[0].name)
-        }
-    }
-    const HandleNickChange = async () => {
-        if (newNick){
-            try{
-                const results = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/nick`, {nickname : newNick}, {withCredentials:true});
-                console.log(results.status);
-                if (results.status === 201){
-                    updateProfile(null, null, newNick);
-                }
-                else {
-                    // setError("Unable To change Nickname Please try again");
-                    toast.error("Unable To change Nickname Please try again", {toastId: "Error", autoClose: 1000});
-                }
-            } catch (error : any) {
-                toast.error(error.response.data.message[0], {toastId: "Error", autoClose: 1000});
-                // setError(error.response.data.message[0]);
-            }finally {
-                setNewNick('');
-            }
-        }
-    }
-
-    const handleFileAdd = () => {
-        fileRef.current!.click();
-    };
-    const handleAvatarAdd = () => {
-        avatarRef.current!.click();
-    }
-    const AddNickname = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setNewNick(e.target.value);
-    }
-    const passChange = (e : React.ChangeEvent<HTMLInputElement>) => {setPass(e.target.value)}
-    const passconfirmation = (e : React.ChangeEvent<HTMLInputElement>) => {{setPassConfirmation(e.target.value)}}
-    const HandlePassChange = async () => {
-        console.log("honaaaa")
-        if (passConfirmation)
-        {
-            try{
-                const results =  await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/pass`, {password : passConfirmation}, {withCredentials : true});
-                if (results.status === 201){
-                    setPassConfirmation('');
-                    setPass('');
-                }
-                else {
-                    // setError("Unable To change Nickname Please try again");
-                    toast.error("Unable To change Password Please try again", {toastId: "Error", autoClose: 1000});
-                }
-            } catch (error : any) {
-                // setError(error.response.data.message[0]);
-                toast.error(error.response.data.message, {toastId: "Error", autoClose: 1000});
-            }
-        }
-
-    }
-
-    const enableQrVer = async () => {
-        try{
-            const results =  await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/2FA`, {Enabled : !QrEnabled}, {withCredentials : true});
-            console.log("srta", results.status);
-            if (results.status === 201){
-                console.log("YYYYYYo")
-              setQrEnabled(!QrEnabled);
-                
-            }
-            else {
-                console.log("error");
-                // setError("Unable To change Nickname Please try again");
-                toast.error("Unable To change Nickname Please try again", {toastId: "Error", autoClose: 1000});
-            }
-        } catch (error : any) {
-            toast.error(error.response.data.message, {toastId: "Error", autoClose: 1000});
-            // setError(error.response.data.message);
-        }
-    }
-    
-    const gnerateQrCode = async () => {
-        try{
-            const results =  await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/GenerateQr`, {withCredentials : true});
-            if (results.status === 200){
-                setEnabled(!enabled);
-                console.log(results.data)
-                setQr(results.data.img)
-            }
-        } catch (error : any){
-            toast.error(error.response.data.message, {toastId: "Error", autoClose: 1000});
-            // setError(error.response.data.message[0]);
-        }
-    }
-
-//    if (Error)
-//     toast.error(Error as string, {toastId: "Error", autoClose: 1000});
-
-    const {profilePic, backgroundPic, nickname, updateProfile} = useContext(picturesContext)
 
 return (
     <main className="flex flex-col font-white bg-main  overflow-y-styled-scrollbar h-full mr-2">
@@ -338,4 +318,4 @@ return (
 );
 }
 
-export default (settings);
+export default (Settings);

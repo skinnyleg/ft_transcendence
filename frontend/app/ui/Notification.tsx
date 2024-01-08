@@ -40,7 +40,7 @@ const Notifications = () => {
         }
         }
         notif();
-    }, [newNotification]);
+    }, [newNotification, notificationNumber]);
 
     const handleNewNotification = (data: NotificationsData) => {
         setNewNotification(data);
@@ -93,7 +93,7 @@ const Notifications = () => {
             chatSocket.off('notif');
             chatSocket.off('failed');
         }
-    }, [chatSocket,channelId])
+    }, [chatSocket,channelId, setNotifications])
 
 
 
@@ -130,7 +130,7 @@ const Notifications = () => {
             socket.off('notification').off()
             socket.off('notifHistory').off()
         }
-    }, [socket]);
+    }, [socket, setNotifications]);
 
     const handleAcceptReq = (data: NotificationsData) => {
         let useId = data.notifData.userId;

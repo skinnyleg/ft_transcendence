@@ -37,7 +37,7 @@ const PersonalTopBar: FC<PersonalTopBarProps> = () => {
 
 	useEffect(() => {
 		setStatus(personal.userStatus);
-	}, [])
+	}, [setStatus])
 
 	useEffect(() => {
 			chatSocket.on('statusChange', (data:({id: string, status: UserStatus})) => {
@@ -48,7 +48,7 @@ const PersonalTopBar: FC<PersonalTopBarProps> = () => {
 			return () => {
 				chatSocket.off('statusChange')
 			}
-	},[chatSocket])
+	},[chatSocket, setStatus])
 
 	return (
 		<div className='bg-teal-100 text-black h-16 rounded-xl p-2 flex flex-row justify-between items-center gap-0'>

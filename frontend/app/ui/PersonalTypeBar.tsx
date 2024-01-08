@@ -34,7 +34,7 @@ const PersonalTypeBar: FC<PersonalTypeBarProps> = () => {
 		}
 
 
-		const pressEnter = (e) => {
+		const pressEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
 			if(e.key == 'Enter'){
 				sendMessage();
 			  }

@@ -4,12 +4,18 @@ import React, { use, useEffect, useRef, useState } from 'react';
 import VerificationInput from '../ui/qrCode';
 import { redirect, useRouter } from 'next/navigation';
 import { ToastContainer, toast } from 'react-toastify';
-// import useInputRefs from '../ui/useInputRefs';
 
 
 const VerifyCode :  React.FC = () => {
-  const [error, setError] = useState<string | null>(null);
-  const inputRefs =  Array(6).fill(0).map(() => useRef<HTMLInputElement | null>(null));
+  /// Never Ever Use useRef inside callBack it's against react hooks rules 
+  const [inputRefs, setInputRefs] = useState<React.RefObject<HTMLInputElement>[]>([]);
+
+  useEffect(() => {
+    // Initialize refs only once
+    setInputRefs(Array(6).fill(null).map(() => React.createRef<HTMLInputElement>()));
+  }, []);
+
+  const [error, setError] = useState<string | null>(null)
   const router = useRouter();
   const handleSubmit = async (code: string) => {
     try {
@@ -27,17 +33,12 @@ const VerifyCode :  React.FC = () => {
         router.replace('/Dashboard');
       }
       else {
-          setError('Verification Failed')
-        }
+        setError('Verification Failed')
+      }
       } catch (error : any) {
       setError('Verification Failed')
     }
   };
-
-  useEffect(() => {
-      if (inputRefs)
-        inputRefs[0].current?.focus();
-  }, [])
 
   return (
     <>

@@ -1,7 +1,6 @@
 import type { FC } from 'react';
 import { DmsInter } from '../interfaces/interfaces';
 import DmComponent from './DmComponent';
-import { Dms } from './ChatConstants';
 
 
 interface UserDmsProps {
