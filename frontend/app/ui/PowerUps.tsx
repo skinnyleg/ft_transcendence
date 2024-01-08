@@ -15,15 +15,15 @@ const PowerUps = ({handlePowerUpChange}: PowerUpsProps) => {
   const powerups = ['FireBall', 'IceBall', 'LightningBall', 'WaterBall', 'EarthBall', 'AirBall'];
 
   return (
-    <div className="bg-accents rounded-md lg:col-span-3 col-span-1 lg:w-full md:h-[260px] h-[250px] xl:h-[245px] lg:h-[245px] row-start-3 row-end-4 shadow-md">
-      <h4 className="text-2xl p-2 text-gray-600 font-bold mb-10 ml-2">Power Ups</h4>
-      <div className="flex p-2 overflow-x-auto h-[150px] md:h-[150px] xl:h-[15vh] lg:h-[15vh] mt-5">
+    <div className="bg-accents rounded-md lg:col-span-3 col-span-1 lg:w-full md:h-[260px] h-[250px] xl:h-[94%] lg:h-[94%] row-start-3 row-end-4 shadow-md">
+      <h4 className="text-2xl pl-[2%] pt-[2%] text-gray-600 font-bold ">Power Ups</h4>
+      <div className="flex overflow-x-auto mt-[2%] h-[150px] pl-[2%]  w-full">
         <Swiper
           slidesPerView={4}
           pagination={{ clickable: true }}
           onSlideChange={() => console.log('slide change')}
           onSwiper={(swiper) => console.log(swiper)}
-          width={500}
+          width={1000}
           >
           {['/52.jpg', '/yo.jpg', '/yo1.jpg', '/42.jpg', '/yo1.jpg', '/yo.jpg'].map((image, index) => (
             <SwiperSlide 

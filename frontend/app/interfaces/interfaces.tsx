@@ -74,6 +74,8 @@ export interface profileData {
         Rank: number;
         nickname: string;
         status: UserStatus;
+        Wins: number;
+        Losses: number;
     };
     isfriend: boolean;
     privateProfile: boolean;

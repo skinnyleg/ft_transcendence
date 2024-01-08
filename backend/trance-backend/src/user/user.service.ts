@@ -1049,6 +1049,8 @@ export class UserService {
 				level: true,
 				status: true,
 				isEnabled: true,
+				Wins: true,
+				Losses: true,
 			},
 		})
 		if (!user)
