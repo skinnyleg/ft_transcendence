@@ -86,9 +86,9 @@ model User {
   userRequests Request[]
   channels     Channel[]
   Message      Message[]
-  Game         Game[]         @relation("player")
-  opponentGame Game[]         @relation("opponent")
   Dm           Dm[]           @relation("directmessage")
+  player       Game[]         @relation(name: "player")
+  opponent     Game[]         @relation(name: "opponent")
   users        FriendStatus[]
   achievements Achievement[]
 }
@@ -125,16 +125,6 @@ model FriendStatus {
 }
 
 // Define an Achievement model (you can further customize this)
-
-// Define a Match model
-model Game {
-  id         String @id @default(uuid())
-  MatchScore Int[]
-  opponentId String
-  userId     String
-  player     User   @relation("player", fields: [userId], references: [id])
-  opponent   User   @relation("opponent", fields: [opponentId], references: [id])
-}
 
 model Message {
   id        String   @id @default(uuid())
@@ -176,4 +166,14 @@ model Blacklist {
   expiredAt DateTime?
   channelId String
   channel   Channel    @relation(fields: [channelId], references: [id])
+}
+
+// Define a Match model
+model Game {
+  id         String @id @default(uuid())
+  MatchScore Int[]
+  opponentId String
+  userId     String
+  player     User   @relation(name: "player", fields: [userId], references: [id])
+  opponent   User?  @relation(name: "opponent", fields: [opponentId], references: [id])
 }
