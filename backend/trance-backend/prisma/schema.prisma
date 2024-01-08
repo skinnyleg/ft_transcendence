@@ -63,8 +63,8 @@ model User {
   userRequests Request[]
   channels     Channel[]
   Message      Message[]
-  Game        Game[] @relation("player")
-  opponentGame        Game[] @relation("opponent")
+  player       Game[] @relation(name:"player")
+  opponent     Game[] @relation(name:"opponent")
   Chat         Chat[]
   users        FriendStatus[]
   achievements Achievement[]
@@ -129,8 +129,8 @@ model Game {
   MatchScore   Int[]
   opponentId  String
   userId  String
-  player User   @relation("player", fields: [userId], references: [id])
-  opponent User   @relation("opponent", fields: [opponentId], references: [id])
+  player User   @relation(name: "player", fields: [userId], references: [id])
+  opponent User?  @relation(name:"opponent", fields: [opponentId], references: [id])
 }
 
 // Define a Chat model

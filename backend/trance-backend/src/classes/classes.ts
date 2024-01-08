@@ -20,8 +20,17 @@ export class GameUser{
 	socket: Socket;
 	isInQueue: boolean;
 	IsInGame : boolean;
+	isReady : boolean;
 	score : number;
-	roomId : string
+	roomId : string;
+	win : boolean;
+}
+
+export class PlayerInfo {
+	id: string;
+	profilePic: string;
+	nickname: string;
+	opponentId?: string;
 }
 
 export class rightPaddle{

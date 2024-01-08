@@ -6,7 +6,7 @@ import { hashPass } from 'src/utils/bcryptUtils';
 import { generateNickname } from 'src/utils/generateNickname';
 import * as fs from 'fs';
 import * as path from 'path';
-import { GameUser, NotificationData } from 'src/classes/classes';
+import { GameUser, NotificationData, PlayerInfo } from 'src/classes/classes';
 import { notDeepEqual } from 'assert';
 
 @Injectable()
@@ -304,7 +304,7 @@ export class UserService {
 
 	async genarateMatchInfo(me : string, opponentId : string){
 		var infos;
-		const player1 = await this.prisma.user.findUnique({
+		var player1 : PlayerInfo = await this.prisma.user.findUnique({
 			where:{
 				id: me,
 			},
@@ -315,8 +315,7 @@ export class UserService {
 			}
 		});
 		if (opponentId){
-
-			const player2 = await this.prisma.user.findUnique({
+			var player2 : PlayerInfo = await this.prisma.user.findUnique({
 				where:{
 					id: opponentId,
 				},
@@ -326,17 +325,14 @@ export class UserService {
 					nickname: true,
 				}
 			});
-			infos = [player1, player2];
+			infos = [{...player1, opponentId: player2.id}, {...player2, opponentId: player1.id}];
+			return infos;
 		}
 		infos = [player1];
 		console.log("Info === ", infos);
 		return (infos);
 	}
 
-
-	async updateMatchHistory(){
-		
-	}
 
 	async updateReq(me: string, challenger: string, requestId: string)
 	{
@@ -920,22 +916,67 @@ export class UserService {
 		})
 	}
 
-
 	async storeResults(player1 : GameUser, player2 : GameUser){
-		const user1 : User = await this.findOneById(player1.id);
-		const user2 : User = await this.findOneById(player2.id);
-		const score: number[] = [player1.score, player2.score];
+		var score: number[];
+		score = [player1.score, player2.score];
+		console.log("playerId1", player1.id)
+		console.log("playerId222", player2.id)
+		console.log("score : : ", score);
 		return (await this.prisma.game.create(
 			{
-				data:{
+				data:
+				{
 					MatchScore: score,
-					opponentId: player2.id,
-					userId: player1.id,
-					player: user1,
-					opponent: user2,
+					player:{connect: {id : player1.id}},
+					opponent:{connect: {id : player2.id}},
 				},
 			}
 		))
+	}
+
+	async updateWinLose(player: GameUser){
+		const wins : boolean = player.win;
+		if (wins){
+			return (
+				await this.prisma.user.update({
+					where:{
+						id: player.id,
+					},
+					data: {
+						Wins: {increment: 1}
+					}
+
+				})
+			)
+		}
+		else{
+			return (
+				await this.prisma.user.update({
+					where:{
+						id: player.id,
+					},
+					data: {
+						Losses:{increment: 1} 
+					}
+	
+				})
+			)
+		}
+	}
+
+	async getMatchs(id : string){
+		const matches = await this.prisma.game.findMany({
+			where:{
+				OR: [
+					{userId: id,},
+					{opponentId: id},
+				],
+			},
+		})
+		if (matches){
+			return matches
+		}
+		return [];
 	}
 
 	async getSecret(id: string)
@@ -953,6 +994,19 @@ export class UserService {
 		return secret.Secret;
 	}
 
+	async getStatus(id :string){
+		const status = await this.prisma.user.findUnique({
+			where:{
+				id: id,
+			},
+			select: {
+				status: true
+			}
+		})
+		if (!status)
+			throw new NotFoundException('User Not Found');
+		return status.status;
+	}
 
 		async changePassword(newPass : string, id : string) {
 
