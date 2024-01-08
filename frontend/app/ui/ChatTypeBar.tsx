@@ -41,8 +41,8 @@ const ChatTypeBar: FC<ChatTypeBarProps> = () => {
 		}, [chatSocket, channelId])
 
 		
-		const pressEnter = (e) => {
-			if(e.key == 'Enter'){
+		const pressEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
+			if(event.key == 'Enter'){
 				sendMessage();
 			  }
 		  }

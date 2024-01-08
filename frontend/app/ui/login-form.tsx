@@ -48,7 +48,7 @@ export default function LoginForm() {
       } else if (response.status === 404) {
         toast.error('User not found. Please check your credentials.', {autoClose: 500});
       } else {
-        toast.error(`HTTP error! Status: ${response.status}`);
+        toast.error(`Error, Please Try later`);
       }
     } catch (error) {
       toast.error('An unexpected error occurred. Please try again later.', {autoClose: 500});
@@ -116,7 +116,6 @@ export default function LoginForm() {
                   src="/42.jpg"
                   width={40}
                   height={40}
-                  objectFit='fit'
                   alt="42 Authentication API"
                 />
               </Link>

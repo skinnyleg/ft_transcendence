@@ -1,7 +1,6 @@
 
 import type { FC } from 'react';
 import ChannelComponent from './channelComponent';
-// import { channels } from './ChatConstants';
 import { ChannelInter } from '../interfaces/interfaces';
 
 interface UserChannelsProps {

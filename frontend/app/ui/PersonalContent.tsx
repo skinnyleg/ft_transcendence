@@ -3,7 +3,6 @@ import { useEffect, type FC, useRef, useContext, useState, useLayoutEffect } fro
 import { ChannelInter, ChannelUser, DmMessageInter, MessageInter, responseData } from '../interfaces/interfaces';
 import MessageComponentLeft from './MessageComponentLeft';
 import MessageComponentRight from './MessageComponentRight';
-import { user } from './ChatConstants';
 import { chatSocket, chatSocketContext } from '../context/soketContext';
 import { ChatContext } from '../context/soketContext';
 import { checkOpenChannelId, checkOpenPersonalId } from './ChatUtils';
@@ -17,7 +16,7 @@ interface PersonalContentProps {}
 
 const PersonalContent: FC<PersonalContentProps> = () => {
 
-		const scrollableRef = useRef(null);
+		const scrollableRef = useRef<any>(null);
 		const {personalId, setPersonalId, user, personal} = useContext(ChatContext);
 		const [messages, setMessages] = useState<DmMessageInter[]>([])
 		// const isJoined = channel?.userRole;

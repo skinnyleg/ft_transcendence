@@ -27,7 +27,7 @@ const PersonalTab = () => {
 
 	useEffect(() => {
 		chatSocket.emit('getUserDms');
-	},[])
+	},[chatSocket])
 	
 	useEffect(() => {
 		
