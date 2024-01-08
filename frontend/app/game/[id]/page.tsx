@@ -1,10 +1,10 @@
 'use client';
 import React, {useContext, useState} from "react";
-import PongZoneQueue from "./ui/QueueLogic";
-import PongZoneBoot from "./ui/BootLogic";
-import GameResultBar from "./ui/GameResultBar";
+import PongZoneQueue from "../ui/QueueLogic";
+import PongZoneBoot from "../ui/BootLogic";
+import GameResultBar from "../ui/GameResultBar";
 import { useRouter } from "next/navigation";
-import gameSocket, { GameContext } from "./ui/gameSockets";
+import gameSocket, { GameContext } from "../ui/gameSockets";
 
 
 export const SideBar = () => {

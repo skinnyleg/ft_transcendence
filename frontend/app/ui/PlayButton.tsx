@@ -1,7 +1,7 @@
 interface PlayButtonProps { theme: string; PowerUp: string; }
 import {Button, ButtonGroup} from "@nextui-org/react";
 import { useRouter } from "next/navigation";
-import gameSocket from "../game/[id]/ui/gameSockets";
+import gameSocket from "../game/ui/gameSockets";
 
 
 const PlayButton = ({ theme, PowerUp }:PlayButtonProps) => {

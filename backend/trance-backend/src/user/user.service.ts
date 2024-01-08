@@ -8,6 +8,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { GameUser, NotificationData, PlayerInfo } from 'src/classes/classes';
 import { notDeepEqual } from 'assert';
+import { info } from 'console';
 
 @Injectable()
 export class UserService {
@@ -327,6 +328,7 @@ export class UserService {
 				}
 			});
 			infos = [{...player1, opponentId: player2.id}, {...player2, opponentId: player1.id}];
+			console.log("jjjjjj", infos)
 			return infos;
 		}
 		infos = [player1];

@@ -473,15 +473,19 @@ export class GameService {
             this.players_arr.get(user1.roomId)[0].isInQueue = false;
             this.players_arr.get(user1.roomId)[1].isInQueue = false;
             user1.socket.join(user1.roomId);
-            user2.socket.join(user2.roomId);
+            user2.socket.join(user1.roomId);
             this.players_arr.get(user1.roomId)
+            console.log("playerrrrs", this.players_arr.get(user1.roomId))
             // update Status
             this.players_arr.get(user1.roomId)[0].IsInGame = true;
             this.players_arr.get(user1.roomId)[1].IsInGame = true;
             // infos
-            const infos = await this.userService.genarateMatchInfo(this.players_arr.get(user1.roomId)[0].id, this.players_arr.get(user1.roomId)[0].id);
+            const infos = await this.userService.genarateMatchInfo(this.players_arr.get(user1.roomId)[0].id, this.players_arr.get(user1.roomId)[1].id);
             // Emite that match is ready With players infos √
-            server.to(user1.roomId).emit('MatchReady', infos);
+            user1.socket.emit('MatchReady', infos);
+            user2.socket.emit('MatchReady', infos);
+
+            // server.to(user1.roomId).emit('MatchReady', infos);
             // Match is Ready Backend can start Send corrdinations √
             server.to(user1.roomId).emit('redirectPlayers_match', true);
         }

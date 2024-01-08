@@ -2,8 +2,8 @@
 import React, { useState } from "react";
 import LayoutClientDashboard from "@/app/ui/layoutClientDashboard";
 import { Metadata } from "next";
-import { GameContext } from "./[id]/ui/gameSockets";
-import { matchInfo } from "./[id]/types/interfaces";
+import { GameContext } from "./ui/gameSockets";
+import { matchInfo } from "./types/interfaces";
 
 // export const metadata : Metadata = {
 //   title: 'Game',
