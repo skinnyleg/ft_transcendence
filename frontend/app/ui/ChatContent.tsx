@@ -3,7 +3,6 @@ import { useEffect, type FC, useRef, useContext, useState, useLayoutEffect } fro
 import { ChannelInter, ChannelUser, MessageInter, responseData } from '../interfaces/interfaces';
 import MessageComponentLeft from './MessageComponentLeft';
 import MessageComponentRight from './MessageComponentRight';
-import { user } from './ChatConstants';
 import { chatSocket, chatSocketContext } from '../context/soketContext';
 import { ChatContext } from '../context/soketContext';
 import { checkOpenChannelId } from './ChatUtils';
@@ -15,7 +14,7 @@ interface ChatContentProps {}
 
 const ChatContent: FC<ChatContentProps> = () => {
 
-		const scrollableRef = useRef(null);
+		const scrollableRef = useRef<any>(null);
 		const {channelId, setChannelId, user, channel} = useContext(ChatContext);
 		const [messages, setMessages] = useState<MessageInter[]>([])
 		const isJoined = channel?.userRole;

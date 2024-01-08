@@ -4,7 +4,6 @@ import ChatTopBar from './ChatTopBar';
 import ChatContent from './ChatContent';
 import ChatTypeBar from './ChatTypeBar';
 import { ChannelInter, DmsInter, NotificationsData } from '../interfaces/interfaces';
-import { channels } from './ChatConstants';
 import { chatSocketContext } from '../context/soketContext';
 import { checkOpenChannelId, getChannelName } from './ChatUtils';
 import { useRouter, useSearchParams } from 'next/navigation';

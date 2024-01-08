@@ -139,6 +139,7 @@ export class GameService {
                     challenger.IsInGame = true;
                     const infos = await this.userService.genarateMatchInfo(this.players_arr.get(me.roomId)[0].id, this.players_arr.get(challenger.roomId)[1].id);
                     server.to(me.roomId).emit('playersInfo', infos)
+                    server.to(me.roomId).emit('MatchReady', infos);
                 }
             } catch (error) {
                 this.sendWebSocketError(me.socket, error.message, false);
@@ -447,11 +448,11 @@ export class GameService {
         const playerStatus = await this.userService.getStatus(user.id);
         if (playerStatus === UserStatus.IN_GAME || playerStatus === UserStatus.IN_QUEUE)
         {
-            user.socket.emit('notification', `Already in Game`);
+            user.socket.emit('error', `Already in Game`);
             return ;
         }
         if (user.IsInGame === true){
-            user.socket.emit('notification', `Already in Game`);
+            user.socket.emit('error', `Already in Game`);
             return ;
         }
         if (this.makeQueue.enQueue(client) == true){

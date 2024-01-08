@@ -1,10 +1,14 @@
-'use client';
-import { useRef } from "react";
-import React from "react";
+// 'use client';
+// import { useRef } from "react";
+// import React from "react";
 
 
 // const useInputRefs = ((length: number) => {
-//     return Array(length).fill(0).map(() => useRef<HTMLInputElement | null>(null));
-//   });
+//     const inputRefs: React.RefObject<HTMLInputElement>[] = [];
+//   for (let i = 0; i < 6; i++) {
+//     inputRefs[i] = useRef<HTMLInputElement>(null);
+//   }
+//     return inputRefs;
+// });
 
 // export default useInputRefs;

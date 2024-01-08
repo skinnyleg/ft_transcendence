@@ -17,7 +17,7 @@ interface ChatProps {}
 
 
 
-const chat: FC<ChatProps> = () => {
+const Chat: React.FC<ChatProps> = () => {
 	const searchParams = useSearchParams();
 	const extractChannelName = () => {
 		let newName = '';
@@ -143,4 +143,4 @@ const chat: FC<ChatProps> = () => {
 	)
 }
 
-export default chat;
+export default Chat;
