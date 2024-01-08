@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Matter from 'matter-js';
 import gameSocket from './gameSockets';
 
@@ -10,11 +10,12 @@ const PongZoneBoot = () => {
     const height = 150;
     let speedR = 20;
     let speedL = 20;
+
+    const   [matchready, setMatchready] = useState<boolean>(false);
+    const   [pongzone, setPongzone] = useState({width: 0, height: 0});
     
     useEffect(() => {
-
-        const { Engine, Render, World, Bodies, Composite, Runner} = Matter;
-
+        const   { Engine, Render, World, Bodies, Composite, Runner} = Matter;
         const engine = Engine.create();
         const render = Render.create({
             canvas: canvasRef.current,
@@ -25,10 +26,11 @@ const PongZoneBoot = () => {
             } 
         });
         
-        const minY = render.bounds.min.y;
-        const minX = render.bounds.min.x;
-        const maxY = render.bounds.max.y;
-        const maxX = render.bounds.max.x;
+        const minY: number = render.bounds.min.y;
+        const minX: number = render.bounds.min.x;
+        const maxY: number = render.bounds.max.y;
+        const maxX: number = render.bounds.max.x;
+        setPongzone({width: maxX, height: maxY});
         console.log('render', render.bounds);
 
         const midleVertical = ((maxY - minY) / 2) + minY;
@@ -84,12 +86,12 @@ const PongZoneBoot = () => {
             currentPositionRight = newPositionRight;
         }, 150);
 
-        gameSocket.on('moveUp', (data) => {
-            Matter.Body.setPosition(paddleRight, newPositionRight);
-        });
-        gameSocket.on('moveDown', (data) => {
-            Matter.Body.setPosition(paddleRight, newPositionRight);
-        });
+        // gameSocket.on('moveUp', (data) => {
+        //     Matter.Body.setPosition(paddleRight, newPositionRight);
+        // });
+        // gameSocket.on('moveDown', (data) => {
+        //     Matter.Body.setPosition(paddleRight, newPositionRight);
+        // });
         
         Composite.add(engine.world, [paddleLeft, paddleRight, ball]);
         Render.run(render);
@@ -100,11 +102,18 @@ const PongZoneBoot = () => {
             Render.stop(render);
         };
 
-    }, []);
+    }, [matchready]);
+
+    const startGame = () => {
+        setMatchready(true);
+        console.log('startGame: ', matchready);
+        gameSocket.emit('PongZone', {id: '', ...pongzone});
+    };
 
     return (
         <div className="bg-transparent w-[100%] h-[80%] rounded-[10px] justify-center absolute bottom-0">
-            <canvas ref={canvasRef} className='bg-transparent w-[100%] h-[100%] rounded-[10px]'/>
+            { !matchready && <button onClick={startGame}>START GAME</button>}
+            { matchready && <canvas ref={canvasRef} className='bg-transparent w-[100%] h-[100%] rounded-[10px]'/>}
         </div>
     );
 };

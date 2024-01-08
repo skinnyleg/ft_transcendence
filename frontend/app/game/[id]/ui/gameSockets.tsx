@@ -1,5 +1,7 @@
 import io from 'socket.io-client';
 import { Cookies } from "react-cookie";
+import { createContext } from 'vm';
+import React from 'react';
 
 
 const cookies = new Cookies();
@@ -15,5 +17,9 @@ const gameSocket = io('http://localhost:8000/GameGateway', {
         }
     }
 });
+
+
+
+export const GameContext = React.createContext<any>({});
 
 export default gameSocket;

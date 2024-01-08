@@ -12,3 +12,9 @@ export interface ballCoordinates {
     x: number,
     y: number
 }
+
+export interface matchInfo {
+    id: string;
+    profilePic: string;
+    nickname: string;
+}
