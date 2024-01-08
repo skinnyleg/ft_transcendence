@@ -161,7 +161,7 @@ const settings = () => {
                     toast.error("Unable To change Nickname Please try again", {toastId: "Error", autoClose: 1000});
                 }
             } catch (error : any) {
-                toast.error(error.response.data.message[0], {toastId: "Error", autoClose: 1000});
+                toast.error(error.response.data.message, {toastId: "Error", autoClose: 1000});
                 // setError(error.response.data.message[0]);
             }finally {
                 setNewNick('');
@@ -195,8 +195,7 @@ const settings = () => {
                     toast.error("Unable To change Password Please try again", {toastId: "Error", autoClose: 1000});
                 }
             } catch (error : any) {
-                // setError(error.response.data.message[0]);
-                toast.error(error.response.data.message, {toastId: "Error", autoClose: 1000});
+                toast.error(error.response.data.message[0], {toastId: "Error", autoClose: 1000});
             }
         }
 
