@@ -318,16 +318,42 @@ const Profile = () => {
     var isblocked : boolean | undefined = profileData?.isBlocked;
     var isfriend : boolean | undefined = profileData?.isfriend;
     console.log('isblocked in profiele == ', profileData?.isBlocked)
-    
+    function formatNumber(num: number, precision = 1) {
+        const lookup = [
+          { value: 1, symbol: "" },
+          { value: 1e3, symbol: "k" },
+          { value: 1e6, symbol: "M" },
+          { value: 1e9, symbol: "B" },
+        ];
+       
+        const rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
+        const item = lookup.slice().reverse().find(function(item) {
+          return num >= item.value;
+        });
+       
+        return item ? (num / item.value).toFixed(precision).replace(rx, "$1") + item.symbol : "0";
+       }
+
+    const renderWallet = () => {
+        const wallet = profileData?.userData.wallet as number;
+        return formatNumber(wallet);
+        // if (wallet < 10)
+        //     return (`0${wallet}`);
+        // if (wallet > 10 && wallet < 1000)
+        //     return (`${wallet}`);
+        // if ()
+    }
+
     return (
-    <main className="flex flex-col ">
+    <main className="flex flex-col h-screen">
         <TopBar />
-        <div className="grid grid-cols-4 xl:mt-15 mt-20 lg:mt-5 lg:auto-rows-min xl:gap-5 gap-3 w-full md:grid-row-6 grid-row-6 ">
-            <div className="relative col-start-1 col-end-5 xl:h-[33vh] lg:h-[33vh] md:h-[200px] h-[200px]  row-start-1 row-end-2 w-full shadow-md rounded-xl">
-                <div className="flex relative  flex-col text-4xl text-white text-bold-900 rounded-xl xl:h-[33vh] lg:h-[33vh] md:h-[200px] h-[200px]">
+        <div className="flex flex-col h-[95%] xl:mt-15 mt-20 lg:mt-5">
+        <div className="grid grid-cols-4 lg:auto-rows-min xl:gap-5 gap-3 w-full h-[] md:grid-row-6 grid-row-6 ">
+            <div className="relative col-start-1 col-end-5 xl:h-[40%] lg:h-[40%] md:h-[200px] h-[200px] row-start-1 row-end-2 w-full shadow-md rounded-xl">
+                <div className="flex relative flex-col text-4xl text-white text-bold-900 rounded-xl xl:h-[100%] lg:h-[100%] md:h-[200px] h-[200px]">
                     <img src={profileData?.userData.BackgroundPic} className="w-full rounded-md h-full object-cover" alt="background Image"></img>
                 </div>
-                <div  className="rounded-full lg:w-[100px] md:w-[90p    x] w-[80px] xl:h-[150px] xl:w-[150px] absolute bottom-0 left-0 transform  xl:translate-x-[8px] xl:translate-y-[55px] translate-x-[8px] translate-y-[30px] border-2 max-w-[90px] max-h-[90px] min-w-[90px] min-h-[90px]">
+                <div  className="rounded-full lg:w-[100px] md:w-[90px] w-[80px] xl:h-[150px] xl:w-[150px] absolute bottom-0 left-0 transform  xl:translate-x-[8px] xl:translate-y-[55px] translate-x-[8px] translate-y-[30px] border-2 max-w-[90px] max-h-[90px] min-w-[90px] min-h-[90px]">
                     <img src={profileData?.userData.profilePic} alt="profile Picture" className="lg:w-[100px] md:w-[90px] w-[80px] xl:h-[150px] xl:w-[150px] rounded-full max-w-[90px] max-h-[90px] min-w-[90px] min-h-[90px]" />
                 </div>
                 <div className="absolute bottom-[-10] left-24">
@@ -353,7 +379,7 @@ const Profile = () => {
                         </div>
 
                     </div>
-                    <h1 className="text-cyan-900 text-[50px] font-semibold">00</h1>
+                    <h1 className="text-cyan-900 text-[50px] font-semibold">{profileData?.userData.Wins as number < 10 ? `0${profileData?.userData.Wins}`: `${profileData?.userData.Wins}`}</h1>
                 </div>
                 <div className="w-full md:w-1/4 h-[40%] md:h-[90%] bg-cyan-600 rounded-3xl flex flex-row justify-between items-center p-2 gap-2 ">
                     <div className="flex flex-row gap-2">
@@ -366,7 +392,7 @@ const Profile = () => {
                         </div>
 
                     </div>
-                    <h1 className="text-cyan-900 text-[50px] font-semibold">00</h1>
+                    <h1 className="text-cyan-900 text-[50px] font-semibold">{profileData?.userData.Losses as number < 10 ? `0${profileData?.userData.Losses}`: `${profileData?.userData.Losses}`}</h1>
                 </div>
                 <div className="w-full md:w-1/4 h-[40%] md:h-[90%] bg-cyan-600 rounded-3xl flex flex-row justify-between items-center p-2 gap-2 ">
                     <div className="flex flex-row gap-2">
@@ -378,7 +404,7 @@ const Profile = () => {
                             <p className="text-cyan-100 text-[16px] font-semibold">PING PONG ZONE</p>
                         </div>
                     </div>
-                    <h1 className="text-cyan-900 text-[50px] font-semibold">00</h1>
+                    <h1 className="text-cyan-900 text-[50px] font-semibold">{profileData?.userData.Rank as number < 10 ? `0${profileData?.userData.Rank}`: `${profileData?.userData.Rank}`}</h1>
                 </div>
                 <div className="w-full md:w-1/4 h-[40%] md:h-[90%] bg-cyan-600 rounded-3xl flex flex-row justify-between items-center p-2 gap-2 ">
                     <div className="flex flex-row gap-2">
@@ -391,10 +417,10 @@ const Profile = () => {
                         </div>
 
                     </div>
-                    <h1 className="text-cyan-900 text-[50px] font-semibold">00</h1>
+                    <h1 className="text-cyan-900 text-[50px] font-semibold">{renderWallet()}</h1>
                 </div>
             </div>
-            <div className="bg-cyan-600 lg:col-span-2 col-span-4 lg:row-start-4  lg:row-end-5 row-start-5 row-end-6 w-full xl:h-[540px] lg:h-[540px] h-[450px] shadow-md rounded-xl">
+            <div className="bg-cyan-600 lg:col-span-2 col-span-4 lg:row-start-4  lg:row-end-5 row-start-5 row-end-6 w-full xl:h-[45%] lg:h-[35%] h-[450px] shadow-md rounded-xl">
                  <h1 className="text-bold text-3xl text-center mt-2 text-cyan-900">MATCH HISTORY</h1>
                 <div className=" h-[95%] pt-2 pb-2">
                     <div className="lg:w-[95.31%] xl:w-[90%] w-[98%] mt-5 h-[90%] mx-auto styled-scrollbar overflow-y-scroll">
@@ -431,7 +457,7 @@ const Profile = () => {
                     </div>
                 </div>
             </div>
-            <div className=" bg-cyan-600 lg:col-span-2 col-span-4 lg:row-start-4 lg:row-end-5 row-start-6 row-end-7 w-full xl:h-[540px] lg:h-[540px] h-[450px] shadow-md rounded-xl"> 
+            <div className=" bg-cyan-600 lg:col-span-2 col-span-4 lg:row-start-4 lg:row-end-5 row-start-6 row-end-7 w-full xl:h-[45%] lg:h-[35%] h-[450px] shadow-md rounded-xl"> 
                 <h2 className="text-bold text-3xl text-center mt-2 text-cyan-900">ACHIEVEMENT</h2>
                 <div className="  h-[95%] pt-2 ">
                     <div className="lg:w-[95.31%] xl:w-[90%] w-[98%]  mx-auto h-[90%] flex mt-5 flex-col gap-2 overflow-y-auto styled-scrollbar">
@@ -488,6 +514,7 @@ const Profile = () => {
                     </div>
                 </div>
             </div>
+        </div>
         </div>
     </main>
     );
