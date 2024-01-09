@@ -6,6 +6,7 @@ import { useContext, useEffect, useState } from "react";
 import { chatSocketContext, socket, socketContext } from "../context/soketContext";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import { IconWithTooltip } from "./CustomIcons";
 
 
 interface FriendsData {
@@ -42,7 +43,7 @@ const FriendsList = () => {
     useEffect(() => {
     
     friendsGet();
-    },[])
+    }, [])
 
     
     useEffect(() => {
@@ -72,7 +73,7 @@ const FriendsList = () => {
             receiverId : userId
         })
         chatSocket.on('redirect', (data: {dmId: string}) => {
-            router.push(`/Chat?personal=${data.dmId}`)
+            router.push(`/Chat`)
         })
     }
 
@@ -103,11 +104,23 @@ const FriendsList = () => {
                                     <div className="font-bold text-sm lg:text-lg xs:max-chars-5">
                                         {friend.nickname}
                                     </div>
-                                    <div className="flex flex-row justify-evenly lg:justify-between items-center gap-0  w-full">
-                                        <button className="bg-button rounded-md px-2 py-1 text-white text-xs lg:block md:block xs:hidden">Challenge</button>
-                                        <GiPingPongBat  className="w-6 h-4 ml-0 hidden md:hidden text-button xs:block" />
-                                        <button onClick={(e) => {sendMessage(friend.id)}} className="bg-button rounded-md px-2 py-1 text-white text-xs lg:block md:block xs:hidden">Chat</button>
-                                        <ChatBubbleBottomCenterIcon className="w-6 h-4 hidden text-button md:hidden xs:block" onClick={(e) => {sendMessage(friend.id)}}/>
+                                    <div className="flex flex-row justify-center items-center gap-2 md:gap-6  w-full">
+                                        {/* <button className="bg-button rounded-md px-2 py-1 text-white text-xs lg:block md:block xs:hidden">Challenge</button> */}
+                                        <IconWithTooltip
+                                            icon={GiPingPongBat}
+                                            styles='w-6 h-4 md:w-8 md:h-8  text-button xs:block hover:cursor-pointer'
+                                            tooltipId="ChallengeToolTip"
+                                            tooltipContent="Challenge"
+                                        />
+                                        {/* <GiPingPongBat  className="w-6 h-4 md:w-8 md:h-8  text-button xs:block hover:cursor-pointer" /> */}
+                                        {/* <button onClick={(e) => {sendMessage(friend.id)}} className="bg-button rounded-md px-2 py-1 text-white text-xs lg:block md:block xs:hidden">Chat</button> */}
+                                        <IconWithTooltip
+                                            icon={ChatBubbleBottomCenterIcon}
+                                            styles='w-6 h-4 md:w-8 md:h-8  text-button xs:block hover:cursor-pointer'
+                                            tooltipId="SendMsgToolTip"
+                                            tooltipContent="Send Message"
+                                        />
+                                        {/* <ChatBubbleBottomCenterIcon className="w-6 h-4 md:w-8 md:h-8  text-button xs:block hover:cursor-pointer" onClick={(e) => {sendMessage(friend.id)}}/> */}
                                     </div>
                                 </div>
                         ))

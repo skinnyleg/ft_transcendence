@@ -86,7 +86,7 @@ function NavBar ({handleShowMenu}: NavBarProps)
 //       }
 //     };
 //     getnickname();
-// }, []);
+// });
 const {profilePic, backgroundPic, nickname} = useContext(picturesContext)
 return (
   <div className={`${inter.className}`}>

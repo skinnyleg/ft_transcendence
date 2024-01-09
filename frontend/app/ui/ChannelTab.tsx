@@ -6,7 +6,7 @@ import { IoMdAddCircleOutline } from "react-icons/io";
 import { CreateChannelIcon } from './CustomIcons';
 import CreateChannelComponent from './CreateChannelComponent';
 import { ChatContext, chatSocketContext } from '../context/soketContext';
-import { ChannelInter } from '../interfaces/interfaces';
+import { ChannelInter, DmMessageInter } from '../interfaces/interfaces';
 import { useDebouncedCallback } from 'use-debounce';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { checkOpenChannelId, isHidden, whichTab } from './ChatUtils';
@@ -31,11 +31,14 @@ const ChannelTab = () => {
 
 	useEffect(() => {
 		chatSocket.emit('getUserChannels');
-	},[])
+		chatSocket.on("ready", () => {
+			chatSocket.emit('getUserChannels');
+		   });
+	}, [])
 	
 	useEffect(() => {
 		chatSocket.on('queryChannels', (data: ChannelInter[]) => {
-			// console.log('query channels == ', data)
+			console.log('query channels == ', data)
 			setUserChannels(data);
 		})
 		
@@ -60,7 +63,7 @@ const ChannelTab = () => {
 		})
 		
 		chatSocket.on('UserChannels', (data: ChannelInter[]) => {
-			// console.log("channels == ", data);
+			console.log("channels == ", data);
 			setUserChannels(data);
 		})
 
@@ -85,14 +88,20 @@ const ChannelTab = () => {
 		// 	chatSocket.emit('getUserChannels');
 		// })
 
+		chatSocket.on('messageDoneDM', (data: DmMessageInter) => {
+			console.log("messages Data personal doneasdasdas == ", data);
+			chatSocket.emit('getUserDms');
+		})
+	
 		return () => {
 			chatSocket.off('UserChannels').off()
 			chatSocket.off('queryChannels').off()
 			chatSocket.off('channelDone').off()
 			chatSocket.off('PicDone')
+			chatSocket.off('messageDoneDM')
 			// chatSocket.off('outDone')
 		}
-	}, [chatSocket, channelId])
+	}, [channelId])
 
 
 
@@ -103,7 +112,7 @@ const ChannelTab = () => {
 				channelName: searchInput
 			})
 		}
-	}, 15); // 500 milliseconds debounce time
+	}, 30); // 500 milliseconds debounce time
 
 	useEffect(() => {
 	  if (searchInputCh && searchInputCh !== '') {
@@ -133,7 +142,7 @@ const ChannelTab = () => {
 				</div>
 				<CreateChannelComponent />
 			</div>
-			<div className='flex gap-0 flex-col w-full h-full overflow-y-auto'>
+			<div className='flex gap-0 flex-col w-full h-full overflow-y-auto styled-scrollbar'>
 				<UserChannels
 					channels={userChannels}
 					info={info}

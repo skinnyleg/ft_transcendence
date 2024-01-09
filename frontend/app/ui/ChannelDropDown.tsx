@@ -32,7 +32,7 @@ const ChannelDropDown: FC<ChannelDropDownProps> = ({userRole, showSideBar, chann
 	let [openPass, setOpenPass] = useState(false)
 	let [openType, setOpenType] = useState(false)
 	const chatSocket = useContext(chatSocketContext);
-	const {channelId, setChannelId} = useContext(ChatContext);
+	const {channelId, setChannelId,setHideTabs} = useContext(ChatContext);
 	const [error, setError] = useState<string>('')
 
 	const leaveChannel = () => {
@@ -42,6 +42,7 @@ const ChannelDropDown: FC<ChannelDropDownProps> = ({userRole, showSideBar, chann
 		chatSocket.emit('getDataCH', {
 			channelName: channelId
 		})
+		setHideTabs(false)
 	}
 
 
@@ -49,6 +50,7 @@ const ChannelDropDown: FC<ChannelDropDownProps> = ({userRole, showSideBar, chann
 		chatSocket.emit('deleteChannel', {
 			channelName: channelId
 		})
+		setHideTabs(false)
 	}
 
   return (

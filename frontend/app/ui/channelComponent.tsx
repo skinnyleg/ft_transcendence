@@ -12,13 +12,15 @@ interface channelComponentProps {
 const ChannelComponent: FC<channelComponentProps> = ({channel}) => {
 	const router = useRouter();
 
-	const {channelId, setChannelId} = useContext(ChatContext);
+	const {channelId, setChannelId, setPersonalId, setHideTabs} = useContext(ChatContext);
 
 
 	const setChannelQuery = () => {
 		console.log('set channel name == ', channel.channelName)
 		setChannelId(channel.channelName);
-		router.replace(`/Chat?channel=${channel.channelName}`);
+		setPersonalId('');
+		setHideTabs(true);
+		// router.push(`/Chat?channel=${channel.channelName}`);
 	}
 	return (
 		<div onClick={setChannelQuery} className='gap-2 rounded-[15px] w-full h-12 mb-1 text-black p-0 flex justify-between items-center hover:cursor-pointer'>

@@ -227,14 +227,17 @@ export class UserService {
 		});
 	}
 
-	async deleteFriend(recipientId: string)
+	async deleteFriend(recipientId: string, senderId: string)
 	{
 		const friendExist = await this.prisma.friendStatus.findFirst({
 			where: {
 				userId: recipientId, // The specific userId you want to target
+				friendId: senderId
 			},
 		});
 
+		console.log('firend instance == ', friendExist)
+		console.log('id is == ', recipientId)
 		if (!friendExist)
 			throw new NotFoundException('no instanse found')
 
@@ -476,8 +479,8 @@ export class UserService {
 		if (!friendStatus)
 			throw new ConflictException('you need to be friends to unfriend')
 			
-		await this.deleteFriend(senderId)
-		await this.deleteFriend(recipientId)
+		await this.deleteFriend(senderId, recipientId)
+		await this.deleteFriend(recipientId, senderId)
 
 		const id = await this.generateRequest(senderId, recipientId, RequestType.UNFRIEND, true);
 		return id;
@@ -739,7 +742,7 @@ export class UserService {
 		if (!user)
 			throw new NotFoundException('user Doesn\'t exist')
 	
-		await this.deleteFriend(recipientId)
+		await this.deleteFriend(recipientId, senderId)
 		await this.prisma.request.update({
 			where: {
 				id: requestId
@@ -1152,6 +1155,8 @@ export class UserService {
 				status: true,
 				BlockedBy: true,
 				usersBlocked: true,
+				Wins: true,
+				Losses: true,
 			},
 		})
 		if (!user)

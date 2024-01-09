@@ -110,7 +110,7 @@ const ChatTabPersonal: FC<ChatTabProps> = () => {
 			// chatSocket.off('changeDone')
 			// chatSocket.off('outDone')
 		}
-	}, [chatSocket, personalId])
+	}, [])
 
 
 	if (personal === undefined)

@@ -14,7 +14,7 @@ interface ChatSideBarProps {}
 const ChatSideBar: FC<ChatSideBarProps> = () => {
 
 
-	const {channelId, setChannelId, user, channel} = useContext(ChatContext);
+	const {channelId, setChannelId, user, channel, setBarOpen} = useContext(ChatContext);
 
 	const searchParams = useSearchParams()
 	const router = useRouter();
@@ -53,7 +53,7 @@ const ChatSideBar: FC<ChatSideBarProps> = () => {
 			chatSocket.off('channelSidebar')
 			chatSocket.off('refreshSide')
 		}
-	}, [chatSocket, channelId])
+	}, [channelId])
 
 	const filteredUsers = () => {
 		if (search === '')
@@ -65,7 +65,8 @@ const ChatSideBar: FC<ChatSideBarProps> = () => {
 
 	const handleCloseSideBar = () => {
 		setSearch('');
-		router.replace(`/Chat?channel=${channelId}`);
+		setBarOpen(false);
+		// router.replace(`/Chat?channel=${channelId}`);
 	}
 
 	const renderBar = (channelUsers: ChannelUser[], userRole: string[]) => {
@@ -93,7 +94,7 @@ const ChatSideBar: FC<ChatSideBarProps> = () => {
 		// }
 
 		return (
-		<div className={`w-full bg-teal-600 lg:ml-2 rounded-xl flex flex-col p-2 h-full overflow-y-auto`}>
+		<div className={`w-full bg-teal-600 lg:ml-2 rounded-xl flex flex-col p-2 h-full overflow-y-auto styled-scrollbar`}>
 			<div className={`${isJoined === true ? '' : 'blur overflow-y-hidden pointer-events-none'}`}>
 				<div className='flex flex-row rounded-xl bg-teal-200 w-full items-center sticky top-0'>
 					<IconWithTooltip

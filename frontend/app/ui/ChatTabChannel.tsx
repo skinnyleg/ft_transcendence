@@ -28,7 +28,11 @@ const ChatTabChannel: FC<ChatTabProps> = () => {
 
 
 	useEffect(() => {
-		console.log('channelId == ', channelId)
+		// console.log('channelId == ', channelId)
+		// console.log('channel from search == ', searchParams.get('channel'))
+		// chatSocket.emit('getDataCH', {
+		// 	channelName: getChannelName(searchParams),
+		// })
 		chatSocket.emit('getDataCH', {
 			channelName: channelId,
 		})
@@ -50,7 +54,7 @@ const ChatTabChannel: FC<ChatTabProps> = () => {
 			chatSocket.emit('getMessagesCH', {
 				channelName: channelId,
 			})
-				setSearchInputCh('')
+			setSearchInputCh('')
 		})
 
 
@@ -106,7 +110,7 @@ const ChatTabChannel: FC<ChatTabProps> = () => {
 			chatSocket.off('changeDone')
 			// chatSocket.off('refreshSide')
 		}
-	}, [chatSocket, channelId])
+	}, [channelId])
 
 
 	if (channel === undefined)

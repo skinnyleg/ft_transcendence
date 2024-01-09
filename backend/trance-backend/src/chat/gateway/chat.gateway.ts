@@ -62,15 +62,17 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			const token: string = client.handshake.headers.token as string;
 			const payload = await this.jwtService.verifyAsync(token, { secret: process.env.jwtsecret })
 			const user = await this.userService.findOneById(payload.sub);
+			// console.log('usereqw == ', user);
 			client.data.user = user;
 			// this.usersSockets.find((isExist) => { isExist.userId === user.id ? (throw new error('ffff')) : null});
-			for(const isExist of this.usersSockets) {
-				if (isExist.userId === user.id)
-					throw new ForbiddenException('only one tab allowed for connection');
-			}
+			// for(const isExist of this.usersSockets) {
+			// 	if (isExist.userId === user.id)
+			// 		throw new ForbiddenException('only one tab allowed for connection');
+			// }
 			console.log(`------ coonect: ${user.nickname} ------`);
 			this.usersSockets.push({userId: user.id, socket: client});
 			await this.DmService.UserStatus2Others(user.id, this.usersSockets, UserStatus.ONLINE);
+			client.emit('ready');
 		}
 		catch (error) {
 			console.error('Error<connection>: ', error.message);
@@ -144,6 +146,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 	{
 		try
 		{
+			// console.log('channelName == ', data.channelName)
 			await  this.DmOutils.validateDtoData(data, stringDto);
 			const { channelName } = data;
 			const user = client.data.user;
@@ -516,7 +519,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			notif2users.usersSockets = this.usersSockets; 
 			notif2users.notif = `${newName} is the new name of channel`;
 			notif2users.user2notify = ownerId;
-			await this.channelService.emitNotif2channelUsers(notif2users, ['', 'newName'], {newName});
+			await this.channelService.emitNotif2channelUsers(notif2users, ['', 'newName'], {newName, oldName: channelName});
 		}
 		catch (error) {
 			this.DmOutils.Error(client, 'changeNameCH', error, 'change channel name failed');
@@ -698,7 +701,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 				buffer.channelPicture = channel.picture;
 				buffer.channelType = channel.type;
 				buffer.userRole = 'none';
-				buffer.lastMsg = 'join channel to see messages';
+				buffer.lastMsg = 'join channel';
 				const isMember = await this.Outils.isUserInChannel(channelName, client.data.user.id);
 				if (isMember) {
 					buffer.userRole = await this.Outils.getUserChannelRole(channel.name, client.data.user.id);

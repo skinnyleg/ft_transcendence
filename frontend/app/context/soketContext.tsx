@@ -29,6 +29,16 @@ export const chatSocket = io(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/chatGatewa
     }
 });
 
+
+// chatSocket.on('connect', () => {
+//     // chatSocket.emit('getUserChannels')
+// })
+
+// if (chatSocket.connected)
+// {
+//     chatSocket.emit('getUserChannels')
+// }
+
 export const socketContext = createContext(socket);
 export const chatSocketContext = createContext(chatSocket);
 export const ChatContext = React.createContext<any>({});

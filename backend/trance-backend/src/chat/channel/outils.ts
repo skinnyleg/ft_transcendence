@@ -298,9 +298,9 @@ export class ChannelOutils {
 
     async   checkRequest(data: any, ownerId: string, senderId: string)
     {
-        const checkRequest = await this.prisma.request.findUnique({
+        // channelName: data.channelName,
+        const checkRequest = await this.prisma.request.findFirst({
             where: {
-                channelName: data.channelName,
                 typeOfRequest: 'JOINCHANNEL',
                 senderId,
                 userId: ownerId

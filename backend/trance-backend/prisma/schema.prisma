@@ -102,7 +102,7 @@ model Request {
   descriptionOfRequest String
   emitted              Boolean     @default(false)
   responded            Boolean     @default(false)
-  channelName          String?     @unique
+  channelName          String?     
 }
 
 model Achievement {

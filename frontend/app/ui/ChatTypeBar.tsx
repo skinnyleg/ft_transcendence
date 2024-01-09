@@ -35,10 +35,9 @@ const ChatTypeBar: FC<ChatTypeBarProps> = () => {
 
 		useEffect(() => {
 			chatSocket.on('refreshSide', () => {
-				console.log('refresh == ', channelId)
 				setBarValue('Join')
 			})
-		}, [chatSocket, channelId])
+		}, [])
 
 		
 		const pressEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {

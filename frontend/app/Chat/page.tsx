@@ -42,12 +42,14 @@ const Chat: React.FC<ChatProps> = () => {
 		// console.log('newName == ', newName)
 		return newName
 	}
-	const [channelId, setChannelId] = useState<string>(extractChannelName())
-	const [personalId, setPersonalId] = useState<string>(extractPersonalName())
-	// const [channelId, setChannelId] = useState<string>('')
-	// const [personalId, setPersonalId] = useState<string>('')
+	// const [channelId, setChannelId] = useState<string>(extractChannelName())
+	// const [personalId, setPersonalId] = useState<string>(extractPersonalName())
+	const [channelId, setChannelId] = useState<string>('')
+	const [personalId, setPersonalId] = useState<string>('')
 	const [searchInputCh, setSearchInputCh] = useState<string>('');
 	const [searchInputDm, setSearchInputDm] = useState<string>('');
+	const [barOpen, setBarOpen] = useState<boolean>(false)
+	const [hideTabs, setHideTabs] = useState<boolean>(false)
 	const [user, setUser] = useState<responseData>();
 	const [channel, setChannel] = useState<ChannelInter>();
 	const [personal, setPersonal] = useState<DmsInter>();
@@ -80,15 +82,12 @@ const Chat: React.FC<ChatProps> = () => {
 		router.replace(`/Chat`);
 	}
 
-	useEffect(() => {
-		console.log('entered useEffect channelId == ', channelId)
-		setChannelQuery(channelId);
-	}, [channelId])
 
 
-	useEffect(() => {
-		setPersonalQuery(personalId);
-	}, [personalId])
+
+	// useEffect(() => {
+	// 	setPersonalQuery(personalId);
+	// }, [personalId])
 
 	useEffect(() => {
 
@@ -98,15 +97,30 @@ const Chat: React.FC<ChatProps> = () => {
 			// console.log('page sent from state == ', channelId)
 			if (checkOpenChannelId(data.channelName, channelId) == true)
 			{
-				deleteChannelQuery();
+				// deleteChannelQuery();
 				setChannelId('');
+				setHideTabs(false)
 			}
 			chatSocket.emit('getUserChannels');
 		})
+
+
+		chatSocket.on('newName', (data: {newName: string, oldName: string}) => {
+			console.log('am\'I here')
+			chatSocket.emit('getUserChannels');
+			if (checkOpenChannelId(data.oldName, channelId) == true)
+			{
+				chatSocket.emit('getDataCH', {
+					channelName: data.newName
+				})
+				setChannelId(data.newName);
+			}
+		})
 		return () => {
 			chatSocket.off('outDone')
+			chatSocket.off('newName')
 		}
-	}, [chatSocket, channelId])
+	}, [channelId])
 
 	useEffect(() => {
 		const fetchUser = async () => {
@@ -130,16 +144,16 @@ const Chat: React.FC<ChatProps> = () => {
 
 	// mt-0 xl:mt-2 lg:mt-2
 	return (
-		<ChatContext.Provider value={{personal, setPersonal, personalId, setPersonalId, channelId, setChannelId, user, setUser, channel, setChannel, searchInputCh, setSearchInputCh, searchInputDm, setSearchInputDm}}>
 		<div className='flex flex-col font-white bg-main overflow-y-hidden md:overflow-y-auto ml-2 '>
 				<TopBar />
+		<ChatContext.Provider value={{hideTabs,setHideTabs,barOpen, setBarOpen, personal, setPersonal, personalId, setPersonalId, channelId, setChannelId, user, setUser, channel, setChannel, searchInputCh, setSearchInputCh, searchInputDm, setSearchInputDm}}>
 			<div className='h-[100vh] md:h-[99vh] min-[1024px]:h-[88vh] lg:mt-5  md:mt-0 mt-0 xl:mt-5  xl:h-[90vh] xl:pb-0 w-full md:justify-between flex flex-row  md:gap-2 min-[1024px]:gap-0 pt-[70px] pr-1 pl-1 lg:pb-0 lg:pt-1'>
 				<RightBar />
 				<Content />
 				<LeftBar />
 			</div>
-		</div>
 		</ChatContext.Provider>
+		</div>
 	)
 }
 

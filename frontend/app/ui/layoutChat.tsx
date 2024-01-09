@@ -6,6 +6,7 @@ import { chatSocket, chatSocketContext, socketContext , socket } from "../contex
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ContextProvider } from "../context/profilePicContext";
+import Image from "next/image";
 export default function LayoutChat({
     children
   }: {

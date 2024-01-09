@@ -1,11 +1,11 @@
 "use client"
 import { useEffect, type FC, useRef, useContext, useState, useLayoutEffect } from 'react';
-import { ChannelInter, ChannelUser, MessageInter, responseData } from '../interfaces/interfaces';
+import { ChannelInter, ChannelUser, DmMessageInter, MessageInter, responseData } from '../interfaces/interfaces';
 import MessageComponentLeft from './MessageComponentLeft';
 import MessageComponentRight from './MessageComponentRight';
 import { chatSocket, chatSocketContext } from '../context/soketContext';
 import { ChatContext } from '../context/soketContext';
-import { checkOpenChannelId } from './ChatUtils';
+import { checkOpenChannelId, getChannelName } from './ChatUtils';
 import { useSearchParams } from 'next/navigation';
 
 
@@ -38,6 +38,12 @@ const ChatContent: FC<ChatContentProps> = () => {
 
 
 		useEffect(() => {
+			
+			// getChannelName(searchParams)
+			// chatSocket.emit('getMessagesCH', {
+			// 	channelName: channelId,
+			// })
+
 			chatSocket.emit('getMessagesCH', {
 				channelName: channelId,
 			})
@@ -52,6 +58,8 @@ const ChatContent: FC<ChatContentProps> = () => {
 			// 		channelName: channelId,
 			// 	})
 			// })
+
+
 
 			chatSocket.on('messagesCH', (data: MessageInter[]) => {
 				// console.log("message Data == ", data);
@@ -74,17 +82,18 @@ const ChatContent: FC<ChatContentProps> = () => {
 						})
 					}
 				})
-
-			chatSocket.on('newName', (data: {newName: string}) => {
-				chatSocket.emit('getUserChannels');
-				setChannelId(data.newName);
-				if (checkOpenChannelId(data.newName, channelId) == true)
-				{
-					chatSocket.emit('getDataCH', {
-						channelName: channelId
-					})
-				}
-			})
+			//TODO weird behavior
+			// chatSocket.on('newName', (data: {newName: string, oldName: string}) => {
+			// 	console.log('am\'I here')
+			// 	chatSocket.emit('getUserChannels');
+			// 	if (checkOpenChannelId(data.oldName, channelId) == true)
+			// 	{
+			// 		chatSocket.emit('getDataCH', {
+			// 			channelName: data.newName
+			// 		})
+			// 		setChannelId(data.newName);
+			// 	}
+			// })
 
 				
 			return () => {
@@ -93,12 +102,12 @@ const ChatContent: FC<ChatContentProps> = () => {
 				chatSocket.off('newName')
 				// chatSocket.off('changeDone')
 			}
-		},[chatSocket, channelId])
+		},[channelId])
 
 
 
 		return (
-			<div ref={scrollableRef} className={`w-full flex-grow p-2 gap-1 flex flex-col mt-3 mb-3 overflow-y-auto overflow-x-hidden ${addBlur ? 'blur overflow-y-hidden' : ''}`}>
+			<div ref={scrollableRef} className={`w-full flex-grow p-2 gap-1 flex flex-col mt-3 mb-3 overflow-y-auto styled-scrollbar overflow-x-hidden ${addBlur ? 'blur overflow-y-hidden' : ''}`}>
 				{
 					messages.length > 0 && messages.map((message) => {
 						if (message.sender === user?.nickname)

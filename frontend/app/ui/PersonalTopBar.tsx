@@ -22,14 +22,15 @@ const PersonalTopBar: FC<PersonalTopBarProps> = () => {
 
 	const router = useRouter();
 	const searchParams = useSearchParams()
-	const {personalId, setPersonalId, personal, setPersonal} = useContext(ChatContext);
+	const {personalId, setPersonalId, personal, setPersonal, setHideTabs} = useContext(ChatContext);
 	const [status,setStatus] = useState<string>('')
 	const socket = useContext(socketContext);
 
 
 
 	const handleBack = () => {
-		router.replace('/Chat');
+		// router.replace('/Chat');
+		setHideTabs(false);
 	}
 	const showSideBar = () => {
 		router.replace(`/Chat?personal=${personalId}`);
@@ -37,7 +38,7 @@ const PersonalTopBar: FC<PersonalTopBarProps> = () => {
 
 	useEffect(() => {
 		setStatus(personal.userStatus);
-	}, [setStatus])
+	}, [])
 
 	useEffect(() => {
 			chatSocket.on('statusChange', (data:({id: string, status: UserStatus})) => {
@@ -48,7 +49,7 @@ const PersonalTopBar: FC<PersonalTopBarProps> = () => {
 			return () => {
 				chatSocket.off('statusChange')
 			}
-	},[chatSocket, setStatus])
+	},[personalId])
 
 	return (
 		<div className='bg-teal-100 text-black h-16 rounded-xl p-2 flex flex-row justify-between items-center gap-0'>

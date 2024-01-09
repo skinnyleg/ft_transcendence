@@ -14,7 +14,7 @@ const PersonalTab = () => {
 	const chatSocket = useContext(chatSocketContext)
 	const searchParams = useSearchParams();
 	const router = useRouter()
-	const {channelId, setChannelId, searchInputDm, setSearchInputDm} = useContext(ChatContext);
+	const {channelId, setChannelId,personalId, searchInputDm, setSearchInputDm} = useContext(ChatContext);
 	const [userDms, setUserDms] = useState<DmsInter[]>([]);
 	const [info, setInfo] = useState<string>('Add Some Friends');
 	const hidden = whichTab(searchParams)
@@ -27,13 +27,16 @@ const PersonalTab = () => {
 
 	useEffect(() => {
 		chatSocket.emit('getUserDms');
-	},[chatSocket])
+		chatSocket.on("ready", () => {
+			chatSocket.emit('getUserDms');
+		   });
+	}, [])
 	
 	useEffect(() => {
 		
 		
 		chatSocket.on('userDms', (data: DmsInter[]) => {
-			// console.log("channels == ", data);
+			console.log("DMs == ", data);
 			setUserDms(data);
 		})
 
@@ -54,9 +57,10 @@ const PersonalTab = () => {
 
 		return () => {
 			chatSocket.off('userDms').off()
+			chatSocket.off('refreshUserDms').off()
 			// chatSocket.off('outDone')
 		}
-	}, [chatSocket, channelId])
+	}, [])
 
 
 	// ${hidden === 'personal' ? 'w-[79%]' : 'w-full'}
@@ -77,7 +81,7 @@ const PersonalTab = () => {
 				/>
 			</div>
 		</div>
-		<div className='flex gap-0 flex-col w-full h-full overflow-y-auto'>
+		<div className='flex gap-0 flex-col w-full h-full overflow-y-auto styled-scrollbar'>
 			<UserDms
 				userDms={userDms.filter((dm) => dm.name.includes(searchInputDm))}
 				info={info}

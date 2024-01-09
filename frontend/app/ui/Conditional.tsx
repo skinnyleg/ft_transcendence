@@ -83,7 +83,7 @@ const Conditional = ({isfriend, privateProfile, userId, isBlocked} : DataProps )
             receiverId : userId
         })
         chatSocket.on('redirect', (data: {dmId: string}) => {
-            router.push(`/Chat?personal=${data.dmId}`)
+            router.push(`/Chat`)
         })
     }
     if (!privateProfile)
@@ -115,15 +115,15 @@ const Conditional = ({isfriend, privateProfile, userId, isBlocked} : DataProps )
                             <IconWithTooltip
                                 icon={UserMinusIcon}
                                 styles='text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8'
-                                tooltipId="UnblockToolTip"
-                                tooltipContent="Unblock"
+                                tooltipId="UnfriendToolTip"
+                                tooltipContent="Unfriend"
                             />
                         ) : (
                             <IconWithTooltip
                             icon={UserPlusIcon}
                             styles='text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8'
-                            tooltipId="UnblockToolTip"
-                            tooltipContent="Unblock"
+                            tooltipId="AddToolTip"
+                            tooltipContent="Add Friend"
                         />
                         )
                     }

@@ -1,26 +1,24 @@
 "use client"
-import type { FC } from 'react';
+import { useContext, type FC } from 'react';
 import UserSideBar from './UserSideBar';
 import { useSearchParams } from 'next/navigation';
 import ChatSideBar from './ChatSideBar';
 import { isBarOpen, whichTab } from './ChatUtils';
+import { ChatContext } from '../context/soketContext';
 
 interface LeftBarProps {}
 
 const LeftBar: FC<LeftBarProps> = ({}) => {
 	const searchParams = useSearchParams();
+	const {channelId, personalId, barOpen} = useContext(ChatContext);
 
-	
-	const renderTab = whichTab(searchParams);
-	const barOpen = isBarOpen(searchParams)
-	console.log('barOpen == ', barOpen)
 		return (
 		<>
-			{renderTab === 'none' &&  (
+			{(channelId === '' && personalId === '') &&  (
 					<div className='hidden lg:flex lg:w-[50%] xl:w-[40%] w-full h-full pb-0'>
 					</div>
 			)}
-			{renderTab === 'channel' &&  (
+			{(channelId !== '' && personalId === '') &&  (
 					<div className={`lg:flex md:w-[50%] lg:w-[50%] xl:w-[40%] w-full h-full pb-0 transition ease-in-out duration-700
 					${barOpen ? '' : 'hidden'}`}>
 					{/* <div className={`lg:flex md:w-[21.69%] w-full h-full pb-0 transition ease-in-out duration-700
@@ -28,7 +26,7 @@ const LeftBar: FC<LeftBarProps> = ({}) => {
 						<ChatSideBar />
 					</div>
 			)}
-			{renderTab === 'personal' &&  (
+			{(personalId !== '' && channelId === '') &&  (
 				<></>
 					// <div className='hidden lg:flex bg-purple-600 lg:w-[50%] xl:w-[40%] w-full h-full pb-0'>
 					// </div>

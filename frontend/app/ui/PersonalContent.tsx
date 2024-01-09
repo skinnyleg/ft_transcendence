@@ -59,7 +59,7 @@ const PersonalContent: FC<PersonalContentProps> = () => {
 							return [...prevMessages, data]
 						})
 					}
-				})
+			})
 
 				chatSocket.on('messageDoneCH', (data: MessageInter) => {
 					console.log('got new message == ', data);
@@ -79,12 +79,12 @@ const PersonalContent: FC<PersonalContentProps> = () => {
 				// chatSocket.off('newName')
 				// chatSocket.off('changeDone')
 			}
-		},[chatSocket, personalId])
+		},[personalId])
 
 
 
 		return (
-			<div ref={scrollableRef} className={`w-full flex-grow p-2 gap-1 flex flex-col mt-3 mb-3 overflow-y-auto overflow-x-hidden`}>
+			<div ref={scrollableRef} className={`w-full flex-grow p-2 gap-1 flex flex-col mt-3 mb-3 overflow-y-auto styled-scrollbar overflow-x-hidden`}>
 				{
 					messages.length > 0 && messages.map((message) => {
 						if ((message.sender === message.self) && (message.sender === user?.nickname))

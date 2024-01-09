@@ -56,7 +56,7 @@ export class ChannelService {
         if (ChannelOwner !== ownerId)
             throw new ForbiddenException('option allowed only for channel owner');
         const {id , updatedAt, users, ...results} = channel;
-        console.log('results == ', results);
+        // console.log('results == ', results);
         // const tmpChannel = await this.prisma.channel.create({
         //     data: {
         //         name: channel.name + "tmp",
@@ -72,13 +72,22 @@ export class ChannelService {
                 channelId: id,
             },
            });
-        console.log('deleted == ', deleteMessages);
-        await this.prisma.channel.delete({
+        // console.log('deleted == ', deleteMessages);
+        // console.log('name cahnell == ', channelName);
+        // console.log('ownerId == ', ownerId);
+        const channelId = await this.outils.getChannelIdByName(channelName)
+        await this.prisma.blacklist.deleteMany({
+            where: {
+                channelId: channelId
+            }
+        })
+        const deleted = await this.prisma.channel.delete({
             where: {
                 name: channelName,
                 owner: ownerId,
             },
         });
+        // console.log('channel ==? ', deleted);
     }
 
     async   joinChannel(channelName: string, usernameId: string, password?: string)

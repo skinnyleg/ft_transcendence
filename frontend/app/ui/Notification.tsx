@@ -16,12 +16,11 @@ const Notifications = () => {
     const [notificationNumber, setNotificationNumber] = useState(0);
     const [notif , setNotif] = useState<string>('');
     const [Error , setError] = useState<string>('');
-    const [newNotification, setNewNotification] = useState<NotificationsData | null>(null);
     const socket = useContext(socketContext);
     const chatSocket = useContext(chatSocketContext);
     const {channelId, personalId} = useContext(ChatContext);
 
-    useEffect( () => {
+    useEffect(() => {
         const notif = async() => {
         try{
             const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/Notifications`, {
@@ -40,11 +39,10 @@ const Notifications = () => {
         }
         }
         notif();
-    }, [newNotification, notificationNumber]);
+    }, []);
 
     const handleNewNotification = (data: NotificationsData) => {
-        setNewNotification(data);
-        setNotificationNumber(notificationNumber);
+        setNotificationNumber(notificationNumber + 1);
     }
     
 
@@ -54,6 +52,10 @@ const Notifications = () => {
         if (notif === 'Forbidden action')
             return true;
         if (notif === 'Invalide data')
+            return true;
+        if (notif === 'get user channels failed')
+            return true;
+        if (notif === 'get user DMs failed')
             return true;
         return false;
     }
@@ -72,6 +74,7 @@ const Notifications = () => {
 
 
         chatSocket.on("failed", (notif) => {
+            console.log('error notif == ', notif)
             if (check_notif(notif) === true)
                 return ;
             toast.error(notif, {
@@ -90,10 +93,11 @@ const Notifications = () => {
 
         return () => {
             chatSocket.off('notification');
-            chatSocket.off('notif');
+            chatSocket.off('notifHistory');
             chatSocket.off('failed');
         }
-    }, [chatSocket,channelId, setNotifications])
+        //TODO now that added the dependency i need to test error notif again
+    }, [handleNewNotification])
 
 
 
@@ -130,7 +134,7 @@ const Notifications = () => {
             socket.off('notification').off()
             socket.off('notifHistory').off()
         }
-    }, [socket, setNotifications]);
+    }, [handleNewNotification]);
 
     const handleAcceptReq = (data: NotificationsData) => {
         let useId = data.notifData.userId;
@@ -181,7 +185,7 @@ const Notifications = () => {
     return (
         <>
             <socketContext.Provider value={socket}>
-            <div className="z-10 relative">
+            <div className="z-30 relative">
                 <BellAlertIcon onClick={()=>{setShowNotifications(!showNotifications)}} className= "lg:h-[50px] lg:w-[50px] xl:h-[50px] xl:w-[50px] h-[35px] w-[35px] lg:flex lg:p-2 lg:bg-gray-100 text-accents rounded-full"/>
                 <span className={clsx(`absolute text-sm text-white font-bold rounded-full h-5 w-5 items-center text-center flex justify-center bottom-0 right-0 transform translate-x-[8px]`
                 , {'hidden' : showNotifications},
