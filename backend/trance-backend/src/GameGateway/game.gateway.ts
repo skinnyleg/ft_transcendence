@@ -19,29 +19,79 @@ const width = 20;
         const midleCanvas = ((maxX- minX) / 2) + minX;
         let currentPositionL = { x: (minX + width), y: midleVertical };
             const newPositionL = { ...currentPositionL }; 
-@WebSocketGateway({ namespace: 'GameGateway', cors: {
-    origin: process.env.FrontendHost,
-    allowedHeaders: ["token"],
-    credentials: true
-}
-})
-export class GameGateway {
 
-    constructor(private readonly gameService: GameService, private makeQueue : makeQueue) {}
-
-    @WebSocketServer()
-
-    server: Server;
-    async handleConnection(client: Socket){
-        console.log('med-doba: ', num++);
-        await this.gameService.saveUser(client);
+            @WebSocketGateway({ namespace: 'GameGateway', cors: {
+                origin: process.env.FrontendHost,
+                allowedHeaders: ["token"],
+                credentials: true
+            }
+        })
+        export class GameGateway {
+            
+            constructor(private readonly gameService: GameService, private makeQueue : makeQueue) {}
+            private readonly buffer: any[] = [];
+            
+            @WebSocketServer()
+            
+            server: Server;
+            async handleConnection(client: Socket){
+                // console.log('med-doba: ', num++);
+                await this.gameService.saveUser(client);
+            }
+            
+            @SubscribeMessage('PlayQueue')
+            QueueMaker(client: Socket){
+                this.gameService.handleMatchMaker(client, this.server);
+                //
+                if (!this.buffer.includes(client)) {
+                    console.log('times');
+                    this.buffer.push(client);
+                }
+        }
+        
+        removeFromBuffer(index: number)
+        {
+            if (index > -1 && index <= this.buffer.length) {
+                console.log('times');
+              this.buffer.splice(index, 1);
+            }
+        }
+    @SubscribeMessage('ImReady')
+    QueueReady(client: Socket){
+        // if (this.buffer.length >= 2) {
+        //     this.buffer[0].emit('MatchReady', `match-${num}`);
+        //     this.buffer[1].emit('MatchReady', `match-${num++}`);
+        //     this.removeFromBuffer(0);
+        //     this.removeFromBuffer(0);
+        //     console.log('ImReady lenght == ',  this.buffer.length);
+        // }
+        var queueLength =  this.makeQueue.getQueue().length;
+        console.log("Queue length 1111 ===  ", queueLength);
+        if (queueLength >= 2){
+            // dequeue and get users √
+            const player1 = this.makeQueue.dequeue();
+            var user1 = this.gameService.getUserBySocketId(player1.id);
+            const player2 = this.makeQueue.dequeue();
+            var user2 = this.gameService.getUserBySocketId(player2.id);
+            user1.roomId= user2.id;
+            user2.roomId= user2.id;
+            // add user to player_arr √
+            this.gameService.players_arr.set(user1.roomId, [user1, user2]);
+            this.gameService.players_arr.get(user1.roomId)[0].isInQueue = false;
+            this.gameService.players_arr.get(user1.roomId)[1].isInQueue = false;
+            user1.socket.join(user1.roomId);
+            user2.socket.join(user2.roomId);
+            this.gameService.players_arr.get(user1.roomId)
+            // update Status
+            this.gameService.players_arr.get(user1.roomId)[0].IsInGame = true;
+            this.gameService.players_arr.get(user1.roomId)[1].IsInGame = true;
+            // infos
+            // Match is Ready Backend can start Send corrdinations √
+            this.server.to(this.gameService.players_arr.get(user1.roomId)[0].roomId).emit('MatchReady', user1.roomId);
+        }
+        console.log("Queue length 2222 ===  ", this.makeQueue.getQueue().length);
     }
 
-    @SubscribeMessage('PlayQueue')
-    QueueMaker(client: Socket){
-        this.gameService.handleMatchMaker(client, this.server);
-    }
-    
     @SubscribeMessage('challengeBot')
     async BotMatchMaker(client : Socket){
         this.gameService.challengeBot(client);
@@ -61,53 +111,6 @@ export class GameGateway {
     //
     // @SubscribeMessage('arrow')
     // @SubscribeMessage('players-data')
-    @SubscribeMessage('arrow')
-    async playersinfo(@ConnectedSocket() client : Socket, arrow: any)
-    {
-        console.log('in backend == ', arrow)
-        // const width = 20;
-        // const height = 150;
-        // let speedR = 20;
-        // const minY = 0;
-        // const minX = 0;
-        // const maxY = 600;
-        // const maxX = 800;
-        // const midleVertical = ((maxY - minY) / 2) + minY;
-        // const midleCanvas = ((maxX- minX) / 2) + minX;
-        interface playerInfo {
-            name: string,
-            picture: string
-        };
-
-        interface playersCoordinates {
-            playerL: {x: number, y: number}, 
-            playerR: {x: number, y: number}
-        }
-        //*****--*--**
-        // let currentPositionL = { x: (minX + width), y: midleVertical };
-        //     const newPositionL = { ...currentPositionL }; 
-            switch (arrow) {
-                case 'UP':
-                    newPositionL.y -= speedR;
-                    break;
-                case 'DOWN':
-                    newPositionL.y += speedR;
-                    break;
-            }
-            newPositionL.y = Math.max(minY + height/2, Math.min(newPositionL.y, maxY- height/2));
-            // newPositionL.y = Math.max(minY + height/2, Math.min(newPositionL.y, maxY- height/2));
-            console.log('y: ',  newPositionL.y)
-            // Matter.Body.setPosition(paddleLeft, newPositionLeft, []);
-            const data: playersCoordinates = {playerL: newPositionL, playerR: newPositionL};
-            console.log('Coordinates in backend: ', data);
-            client.emit('players-coordinates', data);
-            currentPositionL = newPositionL;
-            // currentPositionL = newPositionR;
-        //*****--*--**
-        // const data: playerInfo[] = [{name: 'med-doba', picture: ''}, {name: 'hmoubal', picture: ''}]; 
-        
-        console.log('data == ', data);
-    }
     //
 
     @SubscribeMessage('challengeFriend')
@@ -146,7 +149,7 @@ export class GameGateway {
             this.gameService.sendWebSocketError(client, verify.error, false);
         }
         else
-            await this.gameService.startGame(client, this.server, verify.input.userId, verify.input.width, verify.input.height)
+            await this.gameService.startGame(client, this.server, verify.input.roomId, verify.input.width, verify.input.height)
     }
 
     async handleDisconnect(client: Socket) {

@@ -1,10 +1,10 @@
 'use client';
-import React, {useContext, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import PongZoneQueue from "../ui/QueueLogic";
 import PongZoneBoot from "../ui/BootLogic";
 import GameResultBar from "../ui/GameResultBar";
-import { useRouter } from "next/navigation";
-import gameSocket, { GameContext } from "../ui/gameSockets";
+import { usePathname, useRouter } from "next/navigation";
+import gameSocket, { GameContext } from "../../context/gameSockets";
 
 
 export const SideBar = () => {
@@ -16,7 +16,14 @@ export const SideBar = () => {
 
 function game() {
 
-    const {data} = useContext(GameContext);
+    const   {data, setData, gameId, setGameId} = useContext(GameContext);
+    
+    const path = usePathname();
+    setInterval(() => {
+        if (path !== `/game/${gameId}`)
+            gameSocket.emit('leaveGame');
+    }, 2000);
+    // const {data} = useContext(GameContext);
 
     console.log('data == ', data);
     // const router = useRouter();
@@ -26,8 +33,8 @@ function game() {
                 {/* <SideBar /> */}
                 <div className="flex flex-col w-[91.74%] h-[97.33%] items-center relative rounded-[10px]">
                     <GameResultBar />
-                    <PongZoneBoot />
-                    {/* <PongZoneQueue /> */}
+                    {/* <PongZoneBoot /> */}
+                    <PongZoneQueue />
                 </div>
             </div>
         </main>

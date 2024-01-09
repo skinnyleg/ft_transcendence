@@ -8,6 +8,11 @@ export interface playersCoordinates {
     playerR: {x: number, y: number}
 }
 
+export interface pladdleCoordinates {
+    x: number,
+    y: number
+}
+
 export interface ballCoordinates {
     x: number,
     y: number

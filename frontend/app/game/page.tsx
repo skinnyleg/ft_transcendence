@@ -1,6 +1,6 @@
 "use client"
 import { useContext, useEffect, useState } from "react";
-import gameSocket, { GameContext } from "./ui/gameSockets";
+import gameSocket, { GameContext } from "../context/gameSockets";
 import { matchInfo } from "./types/interfaces";
 import { useRouter } from "next/navigation";
 import { off } from "process";
@@ -10,30 +10,41 @@ function GameQueue() {
 
     const   router = useRouter();
     const   [progress, setProgress] = useState<number>(5);
-    const   {data, setData} = useContext(GameContext);
-
-    // const time  = setInterval(() => {
-    //     if (progress < 100)
-    //         setProgress(progress + 5);
-    // }, 1000);
+    const   {data, setData, gameId, setGameId} = useContext(GameContext);
     
     useEffect(() => {
-        gameSocket.on('MatchReady', (data: matchInfo[]) => {
+        
+    }, [router, setData]);
+    
+    useEffect(() => {
+            const handleMatchReady = (data: any) => {
             setProgress(100);
             setData(data);
+            setGameId(data);
             console.log('data: ', data);
-            router.push(`/game/${data[0].nickname}vs${data[1].nickname}`);
-        });
-
-        
-        return () => {
-            gameSocket.off('MatchReady');
-            // clearTimeout(time);
-            // if (progress >= 100)
-            //     clearInterval(time);
+            router.push(`/game/${data}`);
+            // router.push(`/game/${Math.floor(Math.random() * 100) + 1}`);
         };
+        
+        gameSocket.on('MatchReady', handleMatchReady);
+        gameSocket.emit('ImReady', 'hello bitch');
+        // handleMatchReady('VSboot');
 
-    }, [progress, gameSocket])
+        return () => {
+            gameSocket.off('MatchReady', handleMatchReady);
+        };
+    },[]);
+    
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setProgress((prevProgress) => (prevProgress < 90 ? prevProgress + 5 : prevProgress));
+        }, 1000);
+    
+        return () => {
+            clearInterval(timer);
+        };
+    }, []);
+
     return (
         <main className="main flex bg-cyan-900 justify-center items-center h-screen w-screen">
             <div className="bg-cyan-100 h-[93.75%] w-[95.83%] flex space-x-[0.87%] items-end justify-center rounded-[15px]">

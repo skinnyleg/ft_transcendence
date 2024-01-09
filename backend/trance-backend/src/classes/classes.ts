@@ -25,6 +25,7 @@ export class GameUser{
 	score : number;
 	roomId : string;
 	win : boolean;
+	lo: boolean;
 }
 
 export class PlayerInfo {

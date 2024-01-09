@@ -1,7 +1,7 @@
 import PlayerInfo, { playerInfoProps } from "./PlayerInfo";
 import MatchScore from "./MatchScore";
 import { useState, useEffect } from "react";
-import gameSocket from "./gameSockets";
+import gameSocket from "../../context/gameSockets";
 import { playerInfo } from "../types/interfaces";
 
 

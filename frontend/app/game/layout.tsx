@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import LayoutClientDashboard from "@/app/ui/layoutClientDashboard";
 import { Metadata } from "next";
-import { GameContext } from "./ui/gameSockets";
+import { GameContext } from "../context/gameSockets";
 import { matchInfo } from "./types/interfaces";
 
 // export const metadata : Metadata = {
@@ -15,9 +15,10 @@ import { matchInfo } from "./types/interfaces";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const   [data, setData] = useState<matchInfo[]>([{id: 'asd', profilePic: 'asda', nickname: 'haitam'}]);
+  const   [gameId, setGameId] = useState<string>('');
 
   return (
-    <GameContext.Provider value={{data, setData}}>
+    <GameContext.Provider value={{data, setData, gameId, setGameId}}>
       <div className="flex bg-main flex-col md:flex-row xl:h-screen lg:h-screen">
           {children}
       </div>

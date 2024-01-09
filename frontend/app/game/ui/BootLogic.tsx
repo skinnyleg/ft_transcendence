@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import Matter from 'matter-js';
-import gameSocket from './gameSockets';
+import gameSocket from '../../context/gameSockets';
 
 
 const PongZoneBoot = () => {
@@ -65,8 +65,10 @@ const PongZoneBoot = () => {
                     gameSocket.emit('ArrowDown'); 
                     break;
             }
-            newPositionLeft.y = Math.max(minY + height/2, Math.min(newPositionLeft.y, maxY- height/2));
-            console.log('y: ',  newPositionLeft.y)
+            console.log('befor y: ',  newPositionLeft.y)
+            // newPositionLeft.y = Math.max(minY + height/2, Math.min(newPositionLeft.y, maxY- height/2));
+            console.log(`front : h-${height} & w-${width} & minY-${minY} & minx-${minX} & maxY-${maxY} & maxY-${maxX}`);
+            console.log('after y: ',  newPositionLeft.y)
             Matter.Body.setPosition(paddleLeft, newPositionLeft, []);
             currentPositionLeft = newPositionLeft;
         };

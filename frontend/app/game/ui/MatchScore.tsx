@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import gameSocket from "./gameSockets";
+import gameSocket from "../../context/gameSockets";
 
 const MatchScore = () => {
 
