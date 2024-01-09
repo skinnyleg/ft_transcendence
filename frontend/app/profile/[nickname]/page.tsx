@@ -347,9 +347,9 @@ const Profile = () => {
     return (
     <main className="flex flex-col h-screen">
         <TopBar />
-        <div className="flex flex-col h-[95%] xl:mt-15 mt-20 lg:mt-5">
-        <div className="grid grid-cols-4 lg:auto-rows-min xl:gap-5 gap-3 w-full h-[] md:grid-row-6 grid-row-6 ">
-            <div className="relative col-start-1 col-end-5 xl:h-[40%] lg:h-[40%] md:h-[200px] h-[200px] row-start-1 row-end-2 w-full shadow-md rounded-xl">
+        <div className="flex flex-col h-screen xl:mt-15 mt-20 lg:mt-5">
+        <div className="grid grid-cols-4 xl:gap-5 gap-3 w-full h-[90%] md:grid-row-6 grid-row-6 ">
+            <div className="relative col-start-1 col-end-5 xl:h-[22vh] lg:h-[22vh] md:h-[200px] h-[200px] row-start-1 row-end-2 w-full shadow-md rounded-xl">
                 <div className="flex relative flex-col text-4xl text-white text-bold-900 rounded-xl xl:h-[100%] lg:h-[100%] md:h-[200px] h-[200px]">
                     <img src={profileData?.userData.BackgroundPic} className="w-full rounded-md h-full object-cover" alt="background Image"></img>
                 </div>
