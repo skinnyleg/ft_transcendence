@@ -97,7 +97,7 @@ const Notifications = () => {
             chatSocket.off('failed');
         }
         //TODO now that added the dependency i need to test error notif again
-    }, [handleNewNotification])
+    }, [chatSocket])
 
 
 
@@ -134,7 +134,7 @@ const Notifications = () => {
             socket.off('notification').off()
             socket.off('notifHistory').off()
         }
-    }, [handleNewNotification]);
+    }, [socket]);
 
     const handleAcceptReq = (data: NotificationsData) => {
         let useId = data.notifData.userId;

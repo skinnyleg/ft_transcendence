@@ -18,7 +18,7 @@ interface ChatTabProps {}
 const ChatTabChannel: FC<ChatTabProps> = () => {
 	const searchParams = useSearchParams();
 	const chatSocket = useContext(chatSocketContext);
-	const {channelId, setChannelId, setChannel, channel, setSearchInputCh} = useContext(ChatContext);
+	const {channelIdRef,channelId, setChannelId, setChannel, channel, setSearchInputCh} = useContext(ChatContext);
 	const router = useRouter()
 
 
@@ -33,6 +33,7 @@ const ChatTabChannel: FC<ChatTabProps> = () => {
 		// chatSocket.emit('getDataCH', {
 		// 	channelName: getChannelName(searchParams),
 		// })
+		// console.log('ref in get ch data == ', channelId);
 		chatSocket.emit('getDataCH', {
 			channelName: channelId,
 		})
@@ -42,10 +43,51 @@ const ChatTabChannel: FC<ChatTabProps> = () => {
 
 	useEffect(() => {
 		chatSocket.on('channelData', (data: ChannelInter) => {
-			console.log('channel data2 == ', data);
+			// console.log('channel data2 == ', data);
 			setChannel(data);
 		})
 		
+
+
+
+		// Old Method
+		// chatSocket.on('joinDone', () => {
+		// 	chatSocket.emit('getUserChannels');
+		// 	chatSocket.emit('getDataCH', {
+		// 		channelName: channelId,
+		// 	})
+		// 	chatSocket.emit('getMessagesCH', {
+		// 		channelName: channelId,
+		// 	})
+		// 	setSearchInputCh('')
+		// })
+
+
+
+		// chatSocket.on('changeDone', (data: {channelName: string}) => {
+		// 	if (checkOpenChannelId(data.channelName, channelId) == true)
+		// 	{
+		// 		chatSocket.emit('getDataCH', {
+		// 			channelName: channelId,
+		// 		})
+		// 	}
+		// })
+
+		// chatSocket.on('PicDone', (data: {channelName: string}) => {
+		// 	chatSocket.emit('getUserChannels')
+		// 	// console.log('chat tab searchParams == ', searchParams.get('channel'))
+		// 	// console.log('chat tab sent from on == ', data.channelName)
+		// 	// console.log('chat tab sent from state == ', channelId)
+		// 	if (checkOpenChannelId(data.channelName, channelId) == true)
+		// 	{
+		// 		chatSocket.emit('getDataCH', {
+		// 			channelName: channelId,
+		// 		})
+		// 	}
+		// })
+
+
+		// New Method
 		chatSocket.on('joinDone', () => {
 			chatSocket.emit('getUserChannels');
 			chatSocket.emit('getDataCH', {
@@ -80,6 +122,15 @@ const ChatTabChannel: FC<ChatTabProps> = () => {
 				})
 			}
 		})
+
+
+
+
+
+
+
+
+
 		// chatSocket.on('outDone', (data: {channelName: string}) => {
 		// 	console.log('chat tab searchParams == ', searchParams.get('channel'))
 		// 	console.log('chat tab sent from on == ', data.channelName)

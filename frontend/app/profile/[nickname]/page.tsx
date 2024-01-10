@@ -1,7 +1,7 @@
 'use client';
 import TopBar from "@/app/ui/top";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Achievements, profileData } from "@/app/interfaces/interfaces";
 import { ArrowTrendingUpIcon,   HandThumbUpIcon, UserPlusIcon, HandRaisedIcon, HandThumbDownIcon } from "@heroicons/react/20/solid";
 import { ArrowTrendingDownIcon,  ChatBubbleLeftEllipsisIcon, UserMinusIcon, WalletIcon, TrophyIcon } from "@heroicons/react/24/outline";
@@ -9,6 +9,7 @@ import { FaUserFriends } from "react-icons/fa";
 import ProgressBar from "@/app/ui/progressBar";
 import Conditional from "@/app/ui/Conditional";
 import { ContextFriendProvider } from "@/app/context/profileContext";
+import { socketContext } from "@/app/context/soketContext";
 
 const matchHistory = [{
     id : "25/122024",
@@ -270,6 +271,7 @@ const Profile = () => {
     const [achievements, setAchievements] = useState<Achievements[]>([])
     const [notAchievements, setNotAchievements] = useState<Achievements[]>([])
     const pathname = usePathname();
+    const socket = useContext(socketContext);
     let nickname : string = pathname.split("/")[2];
 
     useEffect(() => {
@@ -314,6 +316,7 @@ const Profile = () => {
         setisprivateProfile(profileData?.privateProfile);
 
     }, []);
+
     var level : number = profileData?.userData?.level;
     var isblocked : boolean | undefined = profileData?.isBlocked;
     var isfriend : boolean | undefined = profileData?.isfriend;
@@ -337,11 +340,6 @@ const Profile = () => {
     const renderWallet = () => {
         const wallet = profileData?.userData.wallet as number;
         return formatNumber(wallet);
-        // if (wallet < 10)
-        //     return (`0${wallet}`);
-        // if (wallet > 10 && wallet < 1000)
-        //     return (`${wallet}`);
-        // if ()
     }
 
     return (

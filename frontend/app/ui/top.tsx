@@ -62,7 +62,7 @@ export default function TopBar () {
     if (search) {
       debouncedSearchBackend(search);
     }
-  }, [search, debouncedSearchBackend]);
+  }, [search]);
 
   const {profilePic, backgroundPic, nickname} = useContext(picturesContext)
   // console.log("1+++*========", profilePic)

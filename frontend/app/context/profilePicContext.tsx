@@ -25,7 +25,7 @@ export const ContextProvider = ({ children }: { children: any })=> {
               setProfilePic(nickname.profilePic);
               setBackgroundPic(nickname.BackgroundPic);
               setNickname(nickname.nickname);
-              console.log("nick:", nickname);
+              // console.log("nick:", nickname);
             }
           } catch (error) {
             toast.error('Error fetching data');
@@ -34,16 +34,16 @@ export const ContextProvider = ({ children }: { children: any })=> {
         getnickname();
       }, []);
       const updateProfile = (newProfilePic: string, newBackground: string, newNickname: string) => {
-        console.log("1***========", newProfilePic)
-        console.log("2***========", newBackground)
-        console.log("3***========", newNickname)
+        // console.log("1***========", newProfilePic)
+        // console.log("2***========", newBackground)
+        // console.log("3***========", newNickname)
         if (newProfilePic)
             setProfilePic(newProfilePic);
         if (newBackground) setBackgroundPic(newBackground);
         if (newNickname) setNickname(newNickname);
       };
     return (
-        <picturesContext.Provider value={{ profilePic, backgroundPic, nickname, updateProfile }}>
+      <picturesContext.Provider value={{ profilePic, backgroundPic, nickname, updateProfile }}>
         {children}
       </picturesContext.Provider>
     );

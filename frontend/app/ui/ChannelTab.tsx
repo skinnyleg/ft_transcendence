@@ -17,7 +17,7 @@ const ChannelTab = () => {
 	const chatSocket = useContext(chatSocketContext)
 	const searchParams = useSearchParams();
 	const router = useRouter()
-	const {channelId, setChannelId, searchInputCh, setSearchInputCh} = useContext(ChatContext);
+	const {channelIdRef, channelId, setChannelId, searchInputCh, setSearchInputCh} = useContext(ChatContext);
 	const [userChannels, setUserChannels] = useState<ChannelInter[]>([]);
 	const [info, setInfo] = useState<string>('Join Or Create Your Own Channel');
 	const hidden = whichTab(searchParams)
@@ -34,47 +34,81 @@ const ChannelTab = () => {
 		chatSocket.on("ready", () => {
 			chatSocket.emit('getUserChannels');
 		   });
+		   chatSocket.on('queryChannels', (data: ChannelInter[]) => {
+			   // console.log('query channels == ', data)
+			   setUserChannels(data);
+		   })
+		   chatSocket.on('channelDone', (data: ChannelInter) => {
+			   // console.log('inside channel Done append')
+			   setUserChannels((prevuserChannels) => {
+				   return [...prevuserChannels, data]
+			   })
+		   })
+		   chatSocket.on('UserChannels', (data: ChannelInter[]) => {
+			// console.log("channels == ", data);
+			setUserChannels(data);
+		})
+
+
+		return () => {
+			chatSocket.off('ready');
+			chatSocket.off('queryChannels');
+			chatSocket.off('channelDone');
+			chatSocket.off('UserChannels');
+		}
 	}, [])
 	
 	useEffect(() => {
-		chatSocket.on('queryChannels', (data: ChannelInter[]) => {
-			console.log('query channels == ', data)
-			setUserChannels(data);
-		})
 		
-		chatSocket.on('channelDone', (data: ChannelInter) => {
-			// console.log('inside channel Done append')
-			setUserChannels((prevuserChannels) => {
-				return [...prevuserChannels, data]
-			})
-		})
+
+		// Old method 
+		// chatSocket.on('PicDone', (data: {channelName: string}) => {
+		// 	// console.log('change pic')
+		// 	// console.log('searchParams == ', searchParams.get('channel'))
+		// 	// console.log('sent from on == ', data.channelName)
+		// 	// console.log('sent from state == ', channelId)
+		// 	chatSocket.emit('getUserChannels')
+		// 	if (checkOpenChannelId(data.channelName, channelId) === true)
+		// 	{
+		// 		chatSocket.emit('getDataCH', {
+		// 			channelName: channelId,
+		// 		})
+		// 	}
+		// })
+
+		// chatSocket.on('muteDone', (data: {channelName: string}) => {
+		// 	if (checkOpenChannelId(data.channelName, channelId) === true)
+		// 	{
+		// 		chatSocket.emit('getDataCH', {
+		// 			channelName: channelId,
+		// 		})
+		// 	}
+		// })
+
+		//new Method
 		chatSocket.on('PicDone', (data: {channelName: string}) => {
 			// console.log('change pic')
 			// console.log('searchParams == ', searchParams.get('channel'))
 			// console.log('sent from on == ', data.channelName)
 			// console.log('sent from state == ', channelId)
 			chatSocket.emit('getUserChannels')
-			if (checkOpenChannelId(data.channelName, channelId) === true)
-			{
-				chatSocket.emit('getDataCH', {
-					channelName: channelId,
-				})
-			}
+			// if (checkOpenChannelId(data.channelName, channelId) === true)
+			// {
+			// 	chatSocket.emit('getDataCH', {
+			// 		channelName: channelId,
+			// 	})
+			// }
 		})
 		
-		chatSocket.on('UserChannels', (data: ChannelInter[]) => {
-			console.log("channels == ", data);
-			setUserChannels(data);
+		chatSocket.on('muteDone', (data: {channelName: string}) => {
+			// if (checkOpenChannelId(data.channelName, channelId) === true)
+			// {
+			// 	chatSocket.emit('getDataCH', {
+			// 		channelName: channelId,
+			// 	})
+			// }
 		})
 
-		chatSocket.on('muteDone', (data: {channelName: string}) => {
-			if (checkOpenChannelId(data.channelName, channelId) === true)
-			{
-				chatSocket.emit('getDataCH', {
-					channelName: channelId,
-				})
-			}
-		})
 
 		// chatSocket.on('outDone', (data: {channelName: string}) => {
 		// 	console.log('searchParams == ', searchParams.get('channel'))
@@ -88,10 +122,10 @@ const ChannelTab = () => {
 		// 	chatSocket.emit('getUserChannels');
 		// })
 
-		chatSocket.on('messageDoneDM', (data: DmMessageInter) => {
-			console.log("messages Data personal doneasdasdas == ", data);
-			chatSocket.emit('getUserDms');
-		})
+		// chatSocket.on('messageDoneDM', (data: DmMessageInter) => {
+		// 	console.log("messages Data personal doneasdasdas == ", data);
+		// 	chatSocket.emit('getUserDms');
+		// })
 	
 		return () => {
 			chatSocket.off('UserChannels').off()
@@ -101,7 +135,7 @@ const ChannelTab = () => {
 			chatSocket.off('messageDoneDM')
 			// chatSocket.off('outDone')
 		}
-	}, [channelId])
+	}, [])
 
 
 
@@ -124,7 +158,9 @@ const ChannelTab = () => {
 		chatSocket.emit('getUserChannels');
 		setInfo('Join Or Create Your Own Channel')
 	  }
-	}, [searchInputCh, debouncedSearchWebSocket]);
+	}, [searchInputCh]);
+
+
 	return (
 		<div className={`bg-teal-600 rounded-[15px] p-3 shadow-lg w-full h-[49%] flex flex-col`}>
 			<h1 className='text-teal-300 font-bold text-lg mb-1'>CHANNELS</h1>

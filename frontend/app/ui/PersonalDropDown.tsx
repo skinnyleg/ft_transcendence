@@ -48,22 +48,22 @@ const PersonalDropDown: FC<PersonalDropDownProps> = ({userRole, userNick}) => {
 		socket.emit('block-friend', {
 			userId: personal.reciverId
 		})
-		socket.on('notification', (data: string) => {
-			chatSocket.emit('getDataDm', {
-				dmId: personalId
-			})
-		})
+		// socket.on('notification', (data: string) => {
+		// 	chatSocket.emit('getDataDm', {
+		// 		dmId: personalId
+		// 	})
+		// })
 	}
 	
 	const UnblockUser = () => {
 		socket.emit('unblock-friend', {
 			userId: personal.reciverId
 		})
-		socket.on('notification', (data: string) => {
-			chatSocket.emit('getDataDm', {
-				dmId: personalId
-			})
-		})
+		// socket.on('notification', (data: string) => {
+		// 	chatSocket.emit('getDataDm', {
+		// 		dmId: personalId
+		// 	})
+		// })
 	}
 
   return (

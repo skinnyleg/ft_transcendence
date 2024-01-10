@@ -15,7 +15,7 @@ interface ChatContentProps {}
 const ChatContent: FC<ChatContentProps> = () => {
 
 		const scrollableRef = useRef<any>(null);
-		const {channelId, setChannelId, user, channel} = useContext(ChatContext);
+		const {channelIdRef,channelId, setChannelId, user, channel} = useContext(ChatContext);
 		const [messages, setMessages] = useState<MessageInter[]>([])
 		const isJoined = channel?.userRole;
 		const channelType = channel?.channelType;
@@ -43,6 +43,13 @@ const ChatContent: FC<ChatContentProps> = () => {
 			// chatSocket.emit('getMessagesCH', {
 			// 	channelName: channelId,
 			// })
+			
+
+			// Old Method
+			// chatSocket.emit('getMessagesCH', {
+			// 	channelName: channelId,
+			// })
+
 
 			chatSocket.emit('getMessagesCH', {
 				channelName: channelId,
@@ -62,26 +69,52 @@ const ChatContent: FC<ChatContentProps> = () => {
 
 
 			chatSocket.on('messagesCH', (data: MessageInter[]) => {
-				// console.log("message Data == ", data);
-					setMessages(data);
-				})
-				chatSocket.on('messageDoneCH', (data: MessageInter) => {
-					// console.log('got new message == ', data);
-					chatSocket.emit('getUserChannels');
-					if (checkOpenChannelId(data.channelId, channelId) == true)
-					{
-						setMessages((prevMessages) => {
-							console.log('prevmessages == ', prevMessages);
-							const index = prevMessages.length - 1;
-							if (index >= 0 && prevMessages[index].sender === data.sender)
-							{
-								prevMessages[index].picture = '';
-							}
-							console.log('data == ', data);
-							return [...prevMessages, data]
-						})
-					}
-				})
+			// console.log("message Data == ", data);
+				setMessages(data);
+			})
+
+
+			//Old Methi=od
+			// chatSocket.on('messageDoneCH', (data: MessageInter) => {
+			// 	// console.log('got new message == ', data);
+			// 	chatSocket.emit('getUserChannels');
+			// 	if (checkOpenChannelId(data.channelId, channelId) == true)
+			// 	{
+			// 		setMessages((prevMessages) => {
+			// 			console.log('prevmessages == ', prevMessages);
+			// 			const index = prevMessages.length - 1;
+			// 			if (index >= 0 && prevMessages[index].sender === data.sender)
+			// 			{
+			// 				prevMessages[index].picture = '';
+			// 			}
+			// 			console.log('data == ', data);
+			// 			return [...prevMessages, data]
+			// 		})
+			// 	}
+			// })
+
+
+
+			// New Method
+			chatSocket.on('messageDoneCH', (data: MessageInter) => {
+				// console.log('got new message == ', data);
+				chatSocket.emit('getUserChannels');
+				if (checkOpenChannelId(data.channelId, channelId) == true)
+				{
+					setMessages((prevMessages) => {
+						console.log('prevmessages == ', prevMessages);
+						const index = prevMessages.length - 1;
+						if (index >= 0 && prevMessages[index].sender === data.sender)
+						{
+							prevMessages[index].picture = '';
+						}
+						console.log('data == ', data);
+						return [...prevMessages, data]
+					})
+				}
+			})
+
+
 			//TODO weird behavior
 			// chatSocket.on('newName', (data: {newName: string, oldName: string}) => {
 			// 	console.log('am\'I here')

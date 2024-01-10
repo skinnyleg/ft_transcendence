@@ -206,11 +206,12 @@ export class UserService {
 		});
 	}
 
-	async updateFriend(recipientId: string,friendStatus: any)
+	async updateFriend(recipientId: string, senderId: string, friendStatus: any)
 	{
 		const friendExist = await this.prisma.friendStatus.findFirst({
 			where: {
 				userId: recipientId,
+				friendId: senderId,
 			},
 		});
 
@@ -704,7 +705,7 @@ export class UserService {
 		if (!user)
 			throw new NotFoundException('user Doesn\'t exist')
 	
-		await this.updateFriend(recipientId, Status.FRIEND)
+		await this.updateFriend(recipientId, senderId ,Status.FRIEND)
 		await this.setNewFriend(senderId, recipientId, Status.FRIEND)
 		await this.prisma.request.update({
 			where: {

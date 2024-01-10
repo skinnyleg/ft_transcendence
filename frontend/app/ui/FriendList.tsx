@@ -65,7 +65,7 @@ const FriendsList = () => {
           socket.off("statusChange", handleStatusChange);
           socket.off("refreshFriendsList", friendsGet)
         };
-      }, [socket, setFriendList]);
+      }, []);
 
       const sendMessage = (userId: string) => {
         console.log('here')
@@ -73,6 +73,8 @@ const FriendsList = () => {
             receiverId : userId
         })
         chatSocket.on('redirect', (data: {dmId: string}) => {
+            console.log('redirect sent');
+            history.pushState({personalId: data.dmId}, '', '/Chat')
             router.push(`/Chat`)
         })
     }
@@ -88,7 +90,7 @@ const FriendsList = () => {
             var chunk: FriendsData[] = friendsList.slice(index, index + 3);
             
             jsxElements.push(
-                    <div className="flex flex-row w-full h-1/3 gap-1 mt-10 md:mt-28 lg:mt-24 xl:mt-16">
+                    <div className="flex flex-row w-full justify-start items-start h-1/3 gap-1 mt-10 md:mt-28 lg:mt-0 xl:mt-0">
                         {
                             chunk.map((friend) => (
                                 <div  key={friend.id} className="bg-lightQuartze w-1/3 h-full p-2 border rounded-[15px] flex flex-col items-center justify-between">
@@ -119,6 +121,7 @@ const FriendsList = () => {
                                             styles='w-6 h-4 md:w-8 md:h-8  text-button xs:block hover:cursor-pointer'
                                             tooltipId="SendMsgToolTip"
                                             tooltipContent="Send Message"
+                                            clickBehavior={() => sendMessage(friend.id)}
                                         />
                                         {/* <ChatBubbleBottomCenterIcon className="w-6 h-4 md:w-8 md:h-8  text-button xs:block hover:cursor-pointer" onClick={(e) => {sendMessage(friend.id)}}/> */}
                                     </div>
@@ -136,7 +139,7 @@ const FriendsList = () => {
         row-start-5 row-end-6 lg:row-start-2 lg:row-end-4 lg:w-full xl:w-full md:h-[350px] h-[350px] xl:h-[97%] lg:h-[97%] shadow-md">
                 <h4 className="text-xl font-bold text-white p-4">FRIENDS</h4>
             <div className={`${(friendsList.length == 0) ? 'flex' : 'hidden'} w-full h-1/2  justify-center items-center`}><h5 className="text-bold-900 text-3xl">Go socialize</h5></div>
-            <div className={`${(friendsList.length > 0) ? 'flex' : 'hidden'} flex-col  space-y-0 p-2 gap-2 justify-center overflow-y-scroll h-5/6  w-full styled-scrollbar`}>
+            <div className={`${(friendsList.length > 0) ? 'flex' : 'hidden'} flex-col  space-y-0 p-2 gap-2 justify-start overflow-y-scroll h-5/6  w-full styled-scrollbar`}>
                 {chunkedFriends().map((jsxElement) => {
                     return (jsxElement);
                 }) }

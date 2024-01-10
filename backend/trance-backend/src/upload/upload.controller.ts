@@ -56,6 +56,7 @@ export class UploadController {
 		throw new BadRequestException('No Channel Name Given')
 	const newDir =  'http://localhost:8000/' + 'upload/channel/'
 	const filePath = newDir + file.filename
+	console.log('filePath == ', filePath);
 	await this.uploadService.updateChannelPic(filePath, channelName)
     return { valid:true, filename: filePath };
   }

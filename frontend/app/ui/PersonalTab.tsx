@@ -30,13 +30,17 @@ const PersonalTab = () => {
 		chatSocket.on("ready", () => {
 			chatSocket.emit('getUserDms');
 		   });
+
+		   return () => {
+			chatSocket.off('ready');
+		   }
 	}, [])
 	
 	useEffect(() => {
 		
 		
 		chatSocket.on('userDms', (data: DmsInter[]) => {
-			console.log("DMs == ", data);
+			// console.log("DMs == ", data);
 			setUserDms(data);
 		})
 

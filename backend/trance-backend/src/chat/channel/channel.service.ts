@@ -331,7 +331,9 @@ export class ChannelService {
             if((await this.outils.getChannelOwner(channelName)) !== adminId)
                 throw new ForbiddenException('Only owner can mute admins.')
         // expirationTime *= 60;
+        console.log('data now === ', DateTime.now());
         const expiredAt = DateTime.now().plus({ seconds: expirationTime }).toJSDate();
+        console.log('data now === ', DateTime.now().plus({seconds: expirationTime}));
         if ((await this.outils.getStatusInBlacklist(channelName, user2muteId)) === 'MUTED')
             throw new ConflictException('can not mute user twice');
         await this.prisma.blacklist.create({

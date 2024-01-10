@@ -140,9 +140,11 @@ export class FriendsService {
 				const notif = await this.userService.generateNotifData(requestId);
 				const nick = await this.userService.getNickById(sender.id)
 				toSend.socket.emit('notification', `${nick} has blocked you`);
+				toSend.socket.emit('refreshBlockDm')
 				// toSend.socket.emit('refreshBlockIcon', {val: true});
 			}
 			client.emit('notification', 'block request sent successfully');
+			sender.socket.emit('refreshBlockDm')
 			sender.socket.emit('refreshBlockIcon', {val: true});
 		}
 		catch(error)
@@ -163,10 +165,12 @@ export class FriendsService {
 				const notif = await this.userService.generateNotifData(requestId);
 				const nick = await this.userService.getNickById(sender.id)
 				toSend.socket.emit('notification', `${nick} has unblocked you`);
+				toSend.socket.emit('refreshBlockDm')
 				// toSend.socket.emit('refreshBlockIcon', {val: false});
 			}
 			client.emit('notification', 'unblock request sent successfully');
 			sender.socket.emit('refreshBlockIcon', {val: false});
+			sender.socket.emit('refreshBlockDm')
 		}
 		catch(error)
 		{
@@ -200,6 +204,7 @@ export class FriendsService {
 			await this.userService.acceptRequest(sender.id, userId, requestId);
 			if (toSend !== undefined)
 			{
+				console.log(toSend.id, "li ghadi tsifat lih ", sender.id, " li sifat")
 				const nick = await this.userService.getNickById(sender.id)
 				toSend.socket.emit('notification', `${nick} accepted your request`);
 				toSend.socket.emit('refreshFriendIcon', {val: true});

@@ -14,7 +14,7 @@ interface ChatSideBarProps {}
 const ChatSideBar: FC<ChatSideBarProps> = () => {
 
 
-	const {channelId, setChannelId, user, channel, setBarOpen} = useContext(ChatContext);
+	const {channelIdRef,channelId, setChannelId, user, channel, setBarOpen} = useContext(ChatContext);
 
 	const searchParams = useSearchParams()
 	const router = useRouter();
@@ -28,20 +28,42 @@ const ChatSideBar: FC<ChatSideBarProps> = () => {
 
 	useEffect(() => {
 		// console.log('load time users channels')
+
+		//Old Method
+		// chatSocket.emit('getChSidebar', {
+		// 	channelName: channelId
+		// })
+
+		// New Method
 		chatSocket.emit('getChSidebar', {
 			channelName: channelId
 		})
-		return () => {}
 	}, [channelId])
 
 	useEffect(() => {
 
 		chatSocket.on('channelSidebar', (data: ChannelUser[]) => {
-			console.log('sideBar data == ', data);
+			// console.log('sideBar data == ', data);
 			setChannelsUsers(data);
 		})
+
+
+		// Old Method
+		// chatSocket.on('refreshSide', () => {
+		// 	// console.log('refresh == ', channelId)
+		// 	chatSocket.emit('getChSidebar', {
+		// 		channelName: channelId
+		// 	})
+		// 	chatSocket.emit('getDataCH',{
+		// 		channelName: channelId
+		// 	})
+		// })
+
+
+
+		// New Method
 		chatSocket.on('refreshSide', () => {
-			console.log('refresh == ', channelId)
+			// console.log('refresh == ', channelId)
 			chatSocket.emit('getChSidebar', {
 				channelName: channelId
 			})

@@ -16,7 +16,7 @@ const ChannelComponent: FC<channelComponentProps> = ({channel}) => {
 
 
 	const setChannelQuery = () => {
-		console.log('set channel name == ', channel.channelName)
+		// console.log('set channel name == ', channel.channelName)
 		setChannelId(channel.channelName);
 		setPersonalId('');
 		setHideTabs(true);

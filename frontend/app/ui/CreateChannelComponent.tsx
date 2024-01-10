@@ -4,7 +4,7 @@ import { FC, Fragment, useContext, useState } from 'react'
 import { CreateChannelIcon } from './CustomIcons'
 import Image from 'next/image'
 import ChannelTypes from './ChannelTypeSelect'
-import { chatSocketContext } from '../context/soketContext'
+import { ChatContext, chatSocketContext } from '../context/soketContext'
 
 interface CreateChannelProps {}
 
@@ -18,6 +18,7 @@ const CreateChannel: FC<CreateChannelProps> = () => {
 	let [img, setImg] = useState('/GroupChat.png')
 	let [type, setType] = useState('public')
 	const chatSocket = useContext(chatSocketContext)
+	const {channelId, setChannelId} = useContext(ChatContext)
 
 
   function closeModal() {
@@ -53,7 +54,7 @@ const CreateChannel: FC<CreateChannelProps> = () => {
 				const formData = new FormData();
 				formData.append("file", imgData);
 				try {
-					const url = process.env.NEXT_PUBLIC_BACKEND_URL;
+					const url = process.env.NEXT_PUBLIC_BACKEND_HOST;
 					console.log('url == ', url);
 	
 					const results = await fetch(`${url}/upload/ChannelPic`, {
@@ -74,6 +75,7 @@ const CreateChannel: FC<CreateChannelProps> = () => {
 					console.log("error from catch == ", error)
 				}
 			}
+			setChannelId(channelName);
 		})
 		closeModal();
 	}
