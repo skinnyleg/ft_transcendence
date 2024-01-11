@@ -15,7 +15,7 @@ export class GameService {
         private room: room){}
 
     private Users: GameUser[] = [];
-    private players_arr = new Map<string, GameUser[]>();
+    public players_arr = new Map<string, GameUser[]>();
     
     sendWebSocketError(client: Socket, errorMessage: string, exit: boolean) 
 	{
@@ -30,7 +30,7 @@ export class GameService {
 			const token: string = client.handshake.headers.token as string;
 			const payload = await this.jwtService.verifyAsync(token, { secret: process.env.jwtsecret })
 			user = await this.userService.findOneById(payload.sub);
-            this.Users.push({id: user.id, socket: client, isInQueue: false, IsInGame : false, isReady: false, score: 0, roomId: '', win: false});
+            this.Users.push({id: user.id, socket: client, isInQueue: false, IsInGame : false, isReady: false, score: 0, roomId: '', win: false, matchInfos: {}});
             console.log("Users  ===  ", this.Users);
 		}
 		catch (error)
@@ -77,21 +77,22 @@ export class GameService {
         
         console.log("statussss :: ", player2Status)
 
-        // if (player1Status === UserStatus.IN_GAME || player2Status ===  UserStatus.IN_GAME)
-        // {
-        //     challenger.socket.emit('notification', `already in Game`);
-        //     return ;
-        // }
-        // if (opponent.IsInGame === true || challenger.IsInGame === true){
-        //     challenger.socket.emit('notification', `Already in Game`);
-        //     return ;
-        // }
+        if (player1Status === UserStatus.IN_GAME || player2Status ===  UserStatus.IN_GAME)
+        {
+            challenger.socket.emit('error', `already in Game`);
+            return ;
+        }
+        if (opponent.IsInGame === true || challenger.IsInGame === true){
+            challenger.socket.emit('error', `Already in Game`);
+            return ;
+        }
         try {
             const reqId = await this.userService.saveChallengeRequest(challenger.id, opponentId);
             if (opponent !== undefined)
             {
                 const notif = await this.userService.generateNotifData(reqId);
                 opponent.socket.emit('notifHistory', notif);
+                challenger.socket.emit('notification', "Your challenge has been submit");
             }
         }  
         catch(error)
@@ -103,33 +104,34 @@ export class GameService {
     async acceptChallenge(client: Socket, server : Server, opponentId :string, requestID: string){
         const me = this.getUserBySocketId(client.id);
         const challenger = this.getUserById(opponentId);
-        const challengername = await this.userService.getNickById(challenger.id)
-        challenger.socket.join(challenger.id);
-        me.socket.join(challenger.id);
-        challenger.roomId = challenger.id;
-        me.roomId = challenger.id;
         
         const player1Status = await this.userService.getStatus(me.id);
         const player2Status  = await (this.userService.getStatus(challenger.id));
+        if (challenger === undefined){
+            me.socket.emit('notification', 'Wrong Id');
+        }
         if (player1Status === UserStatus.IN_GAME || player2Status ===  UserStatus.IN_GAME)
         {
-            me.socket.emit('notification', `already in Game`);
+            me.socket.emit('notification', `Already in Game`);
             try{await this.userService.updateReq(me.id, challenger.id, requestID);}
             catch(error){
                 this.sendWebSocketError(me.socket, error.message, false);
             }
         }
         if (challenger.IsInGame === true || me.IsInGame === true){
-            me.socket.emit('notification', `${challengername} already in Game`);
+            me.socket.emit('notification', `Already in Game`);
             try{await this.userService.updateReq(me.id, challenger.id, requestID);}
             catch(error){
                 this.sendWebSocketError(me.socket, error.message, false);
             }
         }
         else{
+            challenger.socket.join(challenger.id);
+            me.socket.join(challenger.id);
+            challenger.roomId = challenger.id;
+            me.roomId = challenger.id;
             try{
                 await this.userService.updateReq(me.id, challenger.id, requestID);
-                if (challenger !== undefined){
                     const nick = await this.userService.getNickById(me.id)
                     challenger.socket.emit('notification', `${nick} accepted your challenge`);
                     // emit players info + redirect theme to play √
@@ -138,9 +140,7 @@ export class GameService {
                     me.IsInGame = true;
                     challenger.IsInGame = true;
                     const infos = await this.userService.genarateMatchInfo(this.players_arr.get(me.roomId)[0].id, this.players_arr.get(challenger.roomId)[1].id);
-                    server.to(me.roomId).emit('playersInfo', infos)
-                    server.to(me.roomId).emit('MatchReady', infos);
-                }
+                    server.to(me.roomId).emit('MatchReady', me.roomId);
             } catch (error) {
                 this.sendWebSocketError(me.socket, error.message, false);
             }
@@ -321,8 +321,8 @@ export class GameService {
         // check if it's a valid match (there is a challenge or two player in queue) √
         // distingue who is the client to update the status √ (add map with an arr of two player as value and roomId as key) √
         // Store match Result (match History / Achivements) √ (still have problem on score storing) √
+        
         const player1 = this.getUserBySocketId(client.id);
-        player1.isReady = true;
         const player2 = this.getUserById(userId);
         console.log("is Player Ready", player1.isReady)
         console.log("is Player007 Ready", player2.isReady)
@@ -366,77 +366,130 @@ export class GameService {
             y : (height - 100) / 2,
             score : 0,
         };
-        while(true){
             // abort game before rounds finish X
             
             //listen on IsDrawen so teh update func can send next corr X
-            this.drawPalddles(player1, player2, server, leftPaddel, rightPaddle);
-            this.drawBall(player1, player2, server, ball);
-            ball.x += ball.velocityX;
-            ball.y += ball.velocityY;
-            if (ball.x + ball.raduis > 600 || ball.x - ball.raduis < 0){
-                if(ball.x + ball.raduis > 600){
-                    if (this.players_arr.get(player1.roomId)[1].id == player1.id){
-                        this.players_arr.get(player1.roomId)[1].score++;
+            const intervalId = setInterval(()=>{
+                this.players_arr.get(userId)[0].socket.on('arrow', ((arg)=> {
+                    console.log("whar=t is coming ====== ", arg)
+                    if (arg == 'UP'){
+                        if (player1 == this.players_arr.get(userId)[0])
+                        {
+                            leftPaddel.y += 10;
+                        }
+                        if (player2 == this.players_arr.get(userId)[0])
+                        {
+                            rightPaddle.y += 10;
+                        }
                     }
-                    if (this.players_arr.get(player1.roomId)[1].id == player2.id){
-                        this.players_arr.get(player1.roomId)[1].score++;
+                    if (arg == 'DOWN'){
+                        if (player1 == this.players_arr.get(userId)[0])
+                        {
+                            leftPaddel.y -= 10;
+                        }
+                        if (player2 == this.players_arr.get(userId)[0])
+                        {
+                            rightPaddle.y -= 10;
+                        }
                     }
-                    leftPaddel.score += 1;
-                    server.to(player2.roomId).emit("leftPaddelScore", leftPaddel.score);
+                    this.drawPalddles(player1, player2, server, leftPaddel, rightPaddle);
+                }))
+                this.players_arr.get(userId)[1].socket.on('arrow', ((arg)=> {
+                    console.log("whar=t is coming ====== ", arg)
+                    if (arg == 'UP'){
+                        if (player1 == this.players_arr.get(userId)[1])
+                        {
+                            leftPaddel.y += 10;
+                        }
+                        if (player2 == this.players_arr.get(userId)[1])
+                        {
+                            rightPaddle.y += 10;
+                        }
+                    }
+                    if (arg == 'DOWN'){
+                        if (player1 == this.players_arr.get(userId)[1])
+                        {
+                            leftPaddel.y -= 10;
+                        }
+                        if (player2 == this.players_arr.get(userId)[1])
+                        {
+                            rightPaddle.y -= 10;
+                        }
+                    }
+                    this.drawPalddles(player1, player2, server, leftPaddel, rightPaddle);
+                }))
+                this.drawBall(player1, player2, server, ball);
+                ball.x += ball.velocityX;
+                ball.y += ball.velocityY;
+                if (ball.x + ball.raduis > width || ball.x - ball.raduis < 0){
+                    if(ball.x + ball.raduis > width){
+                        if (this.players_arr.get(player1.roomId)[1].id == player1.id){
+                            this.players_arr.get(player1.roomId)[1].score++;
+                        }
+                        if (this.players_arr.get(player1.roomId)[1].id == player2.id){
+                            this.players_arr.get(player1.roomId)[1].score++;
+                        }
+                        leftPaddel.score += 1;
+                        server.to(player2.roomId).emit("leftPaddelScore", leftPaddel.score);
+                    }
+                    if(ball.x + ball.raduis < 0) {
+                        if (this.players_arr.get(player1.roomId)[0].id == player1.id){
+                            this.players_arr.get(player1.roomId)[0].score++;
+                        }
+                        if (this.players_arr.get(player1.roomId)[0].id == player2.id){
+                            this.players_arr.get(player1.roomId)[0].score++;
+                        }
+                        rightPaddle.score += 1;
+                        server.to(player2.roomId).emit("rightPaddleScore", rightPaddle.score);
+                    }     
+                    ball.x = width / 2;
+                    ball.y = height / 2;
+                    ball.velocityX = -ball.velocityX;
                 }
-                if(ball.x + ball.raduis < 0) {
-                    if (this.players_arr.get(player1.roomId)[0].id == player1.id){
-                        this.players_arr.get(player1.roomId)[0].score++;
-                    }
-                    if (this.players_arr.get(player1.roomId)[0].id == player2.id){
-                        this.players_arr.get(player1.roomId)[0].score++;
-                    }
-                    rightPaddle.score += 1;
-                    server.to(player2.roomId).emit("rightPaddleScore", rightPaddle.score);
-                }     
-                ball.x = width / 2;
-                ball.y = height / 2;
-                ball.velocityX = -ball.velocityX;
-            }
-
-            leftPaddel.y += (ball.y - (leftPaddel.y + leftPaddel.height / 2)) * 0.1;
-
-            if (ball.y + ball.raduis > 400 || ball.y - ball.raduis < 0) {
-                ball.velocityY = -ball.velocityY;
-            }
-
-            let whoareu: leftPaddle = ball.x < 300 ? leftPaddel : rightPaddle;
-        
-            if (this.Collision(ball, whoareu)) {
-                var colidePoint = (ball.y - (whoareu.y + whoareu.height / 2))
-                colidePoint /= whoareu.height / 2;
-                var angle = colidePoint * Math.PI / 4;
-                let direction = (ball.x < 300 ? 1 : -1);
-                ball.velocityX = direction * ball.speed * Math.cos(angle);
-                ball.velocityY = direction * ball.speed * Math.sin(angle);
-            }
-            if (this.players_arr.get(player1.roomId)[0].score === 5  || this.players_arr.get(player1.roomId)[1].score === 5){
-                player1.IsInGame = false;
-                player2.IsInGame = false;
-                if (this.players_arr.get(player1.roomId)[0].score > this.players_arr.get(player1.roomId)[1].score)
-                {
-                    this.players_arr.get(player1.roomId)[0].win = true;
+    
+                if (ball.y + ball.raduis > height || ball.y - ball.raduis < 0) {
+                    ball.velocityY = -ball.velocityY;
                 }
-                if (this.players_arr.get(player1.roomId)[0].score < this.players_arr.get(player1.roomId)[1].score)
-                {
-                    this.players_arr.get(player1.roomId)[1].win = true;
+    
+                let whoareu: leftPaddle = ball.x < width / 2 ? leftPaddel : rightPaddle;
+            
+                if (this.Collision(ball, whoareu)) {
+                    var colidePoint = (ball.y - (whoareu.y + whoareu.height / 2))
+                    colidePoint /= whoareu.height / 2;
+                    var angle = colidePoint * Math.PI / 4;
+                    let direction = (ball.x < width/2 ? 1 : -1);
+                    ball.velocityX = direction * ball.speed * Math.cos(angle);
+                    ball.velocityY = direction * ball.speed * Math.sin(angle);
                 }
-                this.userService.updateStatus(this.players_arr.get(player1.roomId)[0].id, UserStatus.ONLINE);
-                this.userService.updateStatus(this.players_arr.get(player1.roomId)[1].id, UserStatus.ONLINE);
-                this.userService.storeResults(player1, player2);
-                this.userService.updateWinLose(this.players_arr.get(player1.roomId)[0]);
-                this.userService.updateWinLose(this.players_arr.get(player1.roomId)[1]);
-                this.players_arr.get(player1.roomId)[0].isReady = false;
-                this.players_arr.get(player1.roomId)[1].isReady = false;
-                break;
-            }
-        }
+                if (this.players_arr.get(player1.roomId)[0].score === 5  || this.players_arr.get(player1.roomId)[1].score === 5){
+                    player1.IsInGame = false;
+                    player2.IsInGame = false;
+                    if (this.players_arr.get(player1.roomId)[0].score > this.players_arr.get(player1.roomId)[1].score)
+                    {
+                        this.players_arr.get(player1.roomId)[0].win = true;
+                    }
+                    if (this.players_arr.get(player1.roomId)[0].score < this.players_arr.get(player1.roomId)[1].score)
+                    {
+                        this.players_arr.get(player1.roomId)[1].win = true;
+                    }
+                    if (this.players_arr.get(player1.roomId)[0].score > this.players_arr.get(player1.roomId)[1].score){
+                        this.userService.updateAchivements(this.players_arr.get(player1.roomId)[0].id, "Win first match");
+                    }
+                    if (this.players_arr.get(player1.roomId)[0].score < this.players_arr.get(player1.roomId)[1].score){
+                        this.userService.updateAchivements(this.players_arr.get(player1.roomId)[1].id, "Win first match");
+                    }
+                    this.userService.updateAchivements(this.players_arr.get(player1.roomId)[0].id, "Play first match");
+                    this.userService.updateAchivements(this.players_arr.get(player1.roomId)[1].id, "Play first match");
+                    this.userService.updateStatus(this.players_arr.get(player1.roomId)[0].id, UserStatus.ONLINE);
+                    this.userService.updateStatus(this.players_arr.get(player1.roomId)[1].id, UserStatus.ONLINE);
+                    this.userService.storeResults(player1, player2);
+                    this.userService.updateWinLose(this.players_arr.get(player1.roomId)[0]);
+                    this.userService.updateWinLose(this.players_arr.get(player1.roomId)[1]);
+                    this.players_arr.get(player1.roomId)[0].isReady = false;
+                    this.players_arr.get(player1.roomId)[1].isReady = false;
+                    clearInterval(intervalId)
+                }
+            }, 1000 / 10);
         return ;
     }
 
@@ -480,9 +533,11 @@ export class GameService {
             this.players_arr.get(user1.roomId)[0].IsInGame = true;
             this.players_arr.get(user1.roomId)[1].IsInGame = true;
             // infos
-            const infos = await this.userService.genarateMatchInfo(this.players_arr.get(user1.roomId)[0].id, this.players_arr.get(user1.roomId)[0].id);
+            const infos = await this.userService.genarateMatchInfo(this.players_arr.get(user1.roomId)[0].id, this.players_arr.get(user1.roomId)[1].id);
             // Emite that match is ready With players infos √
-            server.to(user1.roomId).emit('MatchReady', infos);
+            this.players_arr.get(user1.roomId)[0].matchInfos = infos;
+            this.players_arr.get(user1.roomId)[1].matchInfos = infos;
+                
             // Match is Ready Backend can start Send corrdinations √
             server.to(user1.roomId).emit('redirectPlayers_match', true);
         }

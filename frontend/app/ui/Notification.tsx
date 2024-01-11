@@ -46,9 +46,6 @@ const Notifications = () => {
         setNewNotification(data);
         setNotificationNumber(notificationNumber);
     }
-    
-
-
 
     const check_notif = (notif: string) => {
         if (notif === 'Forbidden action')

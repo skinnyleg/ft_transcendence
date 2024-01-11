@@ -25,6 +25,13 @@ export class GameGateway {
     QueueMaker(client: Socket){
         this.gameService.handleMatchMaker(client, this.server);
     }
+
+    @SubscribeMessage('ImReady')
+    SendMatchInfos(client : Socket){
+        const user = this.gameService.getUserBySocketId(client.id)
+        client.emit('MatchReady', this.gameService.players_arr.get(user.roomId)[0].matchInfos)
+    }   
+
     @SubscribeMessage('challengeBot')
     async BotMatchMaker(client : Socket){
         this.gameService.challengeBot(client);
@@ -76,8 +83,11 @@ export class GameGateway {
         if (verify.valid == true){
             this.gameService.sendWebSocketError(client, verify.error, false);
         }
-        else
+        else{
+            const player = this.gameService.getUserBySocketId(client.id);
+            player.isReady = true;
             await this.gameService.startGame(client, this.server, verify.input.userId, verify.input.width, verify.input.height)
+        }
     }
 
     async handleDisconnect(client: Socket) {
