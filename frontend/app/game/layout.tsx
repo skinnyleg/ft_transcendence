@@ -14,14 +14,15 @@ import { matchInfo } from "./types/interfaces";
 // }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const   [data, setData] = useState<matchInfo[]>([{id: 'asd', profilePic: 'asda', nickname: 'haitam'}]);
-  const   [gameId, setGameId] = useState<string>('');
+	const   [data, setData] = useState<matchInfo[]>([{id: 'asd', profilePic: 'asda', nickname: 'haitam'}]);
+	const   [gameId, setGameId] = useState<string>('');
+	const   [score, setScore] = useState({playerL: 0, playerR: 0});
 
-  return (
-    <GameContext.Provider value={{data, setData, gameId, setGameId}}>
-      <div className="flex bg-main flex-col md:flex-row xl:h-screen lg:h-screen">
-          {children}
-      </div>
-    </GameContext.Provider>
-  );
+	return (
+		<GameContext.Provider value={{data, setData, gameId, setGameId, score, setScore}}>
+      	<div className="flex bg-main flex-col md:flex-row xl:h-screen lg:h-screen">
+        	{children}
+      	</div>
+    	</GameContext.Provider>
+	);
 }

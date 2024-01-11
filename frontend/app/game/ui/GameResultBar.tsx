@@ -11,10 +11,9 @@ const GameResultBar = () => {
     const [playerR, setPlayerR] = useState<playerInfo | undefined>(undefined);
 
     useEffect(() => {
-        // console.log('here')
         gameSocket.emit('players-data');
         gameSocket.on('players-info', (data: playerInfo[]) => {
-            // console.log('ops here == ', data);
+            console.log('players-info =>=>> ', data);
             setPlayerL(data[0]);
             setPlayerR(data[1]);
         });

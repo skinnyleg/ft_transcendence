@@ -10,9 +10,8 @@ const PongZoneQueue = () => {
 
     const   canvasRef = useRef(null);
     const   [matchready, setMatchready] = useState<boolean>(false);
-    const   [score, setScore] = useState({ L: 0, R: 0 });
     const   [pongzone, setPongzone] = useState({width: 0, height: 0});
-    const   {data, setData, gameId, setGameId} = useContext(GameContext);
+    const   {score, setScore, gameId} = useContext(GameContext);
 
     const width = 20;
     const height = 150;
@@ -47,15 +46,15 @@ const PongZoneQueue = () => {
         const midleVertical = ((maxY - minY) / 2) + minY;
         const midleCanvas = ((maxX- minX) / 2) + minX;
 
-        let wallTop = Bodies.rectangle(400, 0, 800, 20, { isStatic: true });
-        let wallBottom = Bodies.rectangle(400, 600, 800, 20, { isStatic: true });
-        let wallLeft = Bodies.rectangle(0, 300, 20, 600, { isStatic: true });
-        let wallRight = Bodies.rectangle(800, 300, 20, 600, { isStatic: true });
+        let wallTop = Bodies.rectangle(400, 0, maxX, 5, { isStatic: true });
+        let wallBottom = Bodies.rectangle(400, 600, maxX, 5, { isStatic: true });
+        let wallLeft = Bodies.rectangle(0, 300, 5, maxY, { isStatic: true });
+        let wallRight = Bodies.rectangle(800, 300, 5, maxY, { isStatic: true });
 
         Composite.add(engine.world, [wallTop, wallBottom, wallLeft, wallRight]);
 
         const   ball = Matter.Bodies.circle(midleCanvas, midleVertical, 10, {
-            isStatic: false,
+            // isStatic: false,
             restitution: 1, // Bounciness of the ball
             friction: 0, // Friction of the ball
             inertia: Infinity,
@@ -71,7 +70,7 @@ const PongZoneQueue = () => {
                 
         Composite.add(engine.world, [paddleLeft, paddleRight, ball]);
         // Matter.Events.on(engine, 'beforeUpdate', function() {
-        //     engine.world.gravity.y = 0;
+        //     engine.world.gravity = 0;
         // });     
         
         const handleKey = (event) => {
@@ -109,17 +108,15 @@ const PongZoneQueue = () => {
                 var pair = pairs[i]; 
                 if ((pair.bodyA === ball && pair.bodyB === wallLeft) || (pair.bodyA === wallLeft && pair.bodyB === ball))
                 {
-                    setScore({L: score.R, R: (score.R + 1)});
+                    setScore({playerL: score.playerL, playerR: (++score.playerR)});
                     Matter.Body.setPosition(ball, { x: midleCanvas, y: midleVertical });
-                    Matter.Body.setVelocity(ball, { x: 0, y: 0 })
                     Matter.Body.setVelocity(ball, { x: 5, y: 5 });
                     gameSocket.emit('scoreLeft');
                 }
                 else if ((pair.bodyA === ball && pair.bodyB === wallRight) || (pair.bodyA === wallRight && pair.bodyB === ball))
                 {
-                    setScore({L: (score.L + 1), R: score.R});
+                    setScore({playerL: (++score.playerL), playerR: score.playerR});
                     Matter.Body.setPosition(ball, { x: midleCanvas, y: midleVertical });
-                    Matter.Body.setVelocity(ball, { x: 0, y: 0 })
                     Matter.Body.setVelocity(ball, { x: -5, y: 5 })
                     gameSocket.emit('scoreRight');
                 }
