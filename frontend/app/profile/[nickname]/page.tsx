@@ -420,7 +420,7 @@ const Profile = () => {
                     <h1 className="text-cyan-900 text-[40px] lg:text-[50px] font-semibold">{renderWallet()}</h1>
                 </div>
             </div>
-            <div className="bg-cyan-600 lg:col-span-2 col-span-4 lg:row-start-4  lg:row-end-5 row-start-5 row-end-6 w-full xl:h-[45%] lg:h-[35%] h-[450px] shadow-md rounded-xl">
+            <div className="bg-cyan-600 lg:col-span-2 col-span-4 lg:row-start-4  lg:row-end-5 row-start-5 row-end-6 w-full xl:h-[45%] lg:h-[43.5%] h-[450px] shadow-md rounded-xl">
                  <h1 className="text-bold text-3xl text-center mt-2 text-cyan-900">MATCH HISTORY</h1>
                 <div className=" h-[95%] pt-2 pb-2">
                     <div className="lg:w-[95.31%] xl:w-[90%] w-[98%] mt-5 h-[90%] mx-auto styled-scrollbar overflow-y-scroll">
@@ -457,7 +457,7 @@ const Profile = () => {
                     </div>
                 </div>
             </div>
-            <div className=" bg-cyan-600 lg:col-span-2 col-span-4 lg:row-start-4 lg:row-end-5 row-start-6 row-end-7 w-full xl:h-[45%] lg:h-[35%] h-[450px] shadow-md rounded-xl"> 
+            <div className=" bg-cyan-600 lg:col-span-2 col-span-4 lg:row-start-4 lg:row-end-5 row-start-6 row-end-7 w-full xl:h-[45%] lg:h-[43.5%] h-[450px] shadow-md rounded-xl"> 
                 <h2 className="text-bold text-3xl text-center mt-2 text-cyan-900">ACHIEVEMENT</h2>
                 <div className="  h-[95%] pt-2 ">
                     <div className="lg:w-[95.31%] xl:w-[90%] w-[98%]  mx-auto h-[90%] flex mt-5 flex-col gap-2 overflow-y-auto styled-scrollbar">
