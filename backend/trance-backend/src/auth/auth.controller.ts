@@ -1,27 +1,24 @@
-import { Body, Controller, ForbiddenException, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, Res, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { AuthGuard } from '@nestjs/passport';
 import { intraAuthGuard } from './42.guard';
+import { authDto } from './Dto/authDto';
+import { tokenDto } from './Dto/tokenDto';
+import { JwtAuthGuard } from './jwt.guard';
+import { REFRESHEXP, REFRESHSECRET, TOKENEXP, TOKENSECRET } from 'src/classes/classes';
+import { RefreshJwtAuthGuard } from './refresh.guard';
+import { getId } from 'src/utils/getId';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
 
-	// @Post('signup')
-	// signUp(@Body() authDto: AuthDto)
-	// {
-	// 	console.log("entered here")
-	// 	return this.authService.signUp(authDto.username, authDto.password)
-	// }
 
-
-
-	// @Post('signin')
-	// async signIn(@Body() authDto: AuthDto, @Req() req, @Res() res)
-	// {
-	// 	await this.authService.signIn(authDto.username, authDto.password, req, res)
-	// }
+	@Post('signin')
+	async signIn(@Body() payload : authDto,  @Res() res)
+	{
+		return await this.authService.signIn(payload.username, payload.password, res);
+	}
 
 	@Get('42')
 	@UseGuards(intraAuthGuard)
@@ -30,34 +27,64 @@ export class AuthController {
 	@Get('42/callback')
 	@UseGuards(intraAuthGuard)
 	async intra42AuthRedirect(@Req() request, @Res() response)
-	{//request contains user_data, response used to bake cookies
-		// pass the user data to the function that signs the jwt token
+	{
+		response.cookie('id', request.user.id, {signed: true})
 		if (request.user.isEnabled === true)
 		{
-			response.cookie('login', request.user.login)
-			response.redirect(`http://localhost:3000/qrLogin`);
-			// response.redirect(`http://localhost:3000/smsVerification`);
+			response.redirect(`${process.env.FrontendHost}/Qr`);
 			return;
 		}
-		response.cookie('login', request.user.login)
-		const token = await this.authService.createToken(request.user.id, request.user.login);
-		console.log("token form user == ", request.user.token)
-		response.cookie('token', token);
-		// console.log("before cookie == ", request.user.token)
-		// response.cookie('accesstoken', request.user.token);
-		response.redirect(`http://localhost:3000/${request.user.login}`);
+		const token = await this.authService.createToken(request.user.id, request.user.nickname, TOKENEXP, TOKENSECRET)
+		const refresh = await this.authService.createToken(request.user.id, request.user.nickname, REFRESHEXP, REFRESHSECRET)
+		response.cookie('token', token)
+		response.cookie('refresh', refresh)
+		if (request.user.FirstLogin === true)
+		{
+			response.redirect(`${process.env.FrontendHost}/settings`);
+			return ;
+		}
+		response.redirect(`${process.env.FrontendHost}/Dashboard`);
 	}
 
+	@UseGuards(JwtAuthGuard)
 	@Get('signout')
-	signOut(@Req() req, @Res() res)
+	signOut(@Res() res)
 	{
-		return this.authService.signOut(req,res)
+		return this.authService.signOut(res)
 	}
 
 
+	@UseGuards(JwtAuthGuard)
+	@Get('CheckToken')
+	CheckToken(@Res() res)
+	{
+		res.status(200).send({message: "true"})
+	}
 
 
+	@UseGuards(JwtAuthGuard)
+	@Get('CheckFirstLogin')
+	async CheckFirstLogin(@Req() request, @Res() res)
+	{
+		const id = request.user.sub;
+		return await this.authService.checkFirstLogin(id, res);
+	}
 
+	@UseGuards(JwtAuthGuard)
+	@Post('UpdateFirstLogin')
+	async UpdateFirstLogin(@Req() request, @Res() res)
+	{
+		const id = request.user.sub;
+		return await this.authService.updateFirstLogin(id, res);
+	}
+
+	@UseGuards(RefreshJwtAuthGuard)
+	@Get('refresh')
+	refreshTokens(@Req() req, @Res() res)
+	{
+		const id = req.user.sub;
+		return this.authService.refreshTokens(req, res, id);
+	}
 
 }
 

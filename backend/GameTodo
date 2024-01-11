@@ -1,0 +1,10 @@
+create game gateway 
+Join game with queue Bot
+challenge request is timed / or depend on user status
+RabiMerzak20@zetina1100
+
+
+
+(node:53298) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 arrow listeners added to [Socket]. Use emitter.setMaxListeners() to increase limit
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:53298) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 arrow listeners added to [Socket]. Use emitter.setMaxListeners() to increase limit

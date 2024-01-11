@@ -1,0 +1,27 @@
+
+
+requested Events:
+
+add-friend : send a friend request to a user. (done ...)
+
+remove-friend : send a Unfriend request to a user. (done ...)
+
+accept-request: when a user accept a friend request
+
+refuse-request: when a user refuse a friend request
+
+block: block user/friend (chat/game)
+
+unblock: unblock user/friend
+
+listened Events:
+
+statusChange : when a user status change to something else
+
+error : when an error occurs with web socket i send a string displying the error
+
+notification: sent to the user if online to notify him of any type of request
+
+notifHistory: update the notofication history on the frontend
+
+

@@ -14,10 +14,20 @@ enum UserStatus {
   ONLINE
   OFFLINE
   IN_GAME
+  IN_QUEUE
+}
+
+enum RequestType {
+  FRIEND
+  CHALLENGE
+  MESSAGE
+  UNFRIEND
+  BLOCKED
+  UNBLOCKED
+  JOINCHANNEL
 }
 
 enum Status {
-  MUTED
   FRIEND
   BLOCKED
   PENDING
@@ -28,87 +38,142 @@ enum AchievementStatus {
   NOTDONE
 }
 
-model User {
-  id          Int        @id @default(autoincrement())
-  intraId     String     @unique
-  email       String
-  login       String     @unique
-  password    String?
-  firstName   String
-  lastName    String
-  profilePic  String
-  wallet      Int
-  level       Int
-  grade       String
-  token       String
-  nickname    String?
-  status      UserStatus
-  isEnabled   Boolean    @default(false)
-  Secret      String?
-  otpauth_url String?
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt()
+enum Membership {
+  BLOCKED
+  MUTED
+  KICK
+  BAN
+  ACTIVE
+}
 
+enum Role {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum Types {
+  PRIVATE
+  PUBLIC
+  PROTECTED
+}
+
+model User {
+  id            String     @id @default(uuid())
+  intraId       Int        @unique
+  password      String
+  profilePic    String
+  BackgroundPic String
+  wallet        Int
+  level         Int
+  Rank          Int        @default(0)
+  nickname      String     @unique
+  status        UserStatus
+  isEnabled     Boolean    @default(false)
+  Secret        String?
+  otpauth_url   String?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt()
+  setPass       Boolean    @default(false)
+  Wins          Int        @default(0)
+  Losses        Int        @default(0)
+  FirstLogin    Boolean    @default(true)
+
+  adminIn Channel[] @relation("Admins")
+
+  BlockedBy    String[]
+  usersBlocked String[]
+  userRequests Request[]
   channels     Channel[]
   Message      Message[]
-  Match        Match[]
-  Chat         Chat[]
+  Dm           Dm[]           @relation("directmessage")
+  player       Game[]         @relation(name: "player")
+  opponent     Game[]         @relation(name: "opponent")
   users        FriendStatus[]
   achievements Achievement[]
 }
 
-model FriendStatus {
-  id     Int    @id @default(autoincrement())
-  user   User   @relation(fields: [userId], references: [id])
-  status Status
-  userId Int
+model Request {
+  id                   String      @id @default(uuid())
+  user                 User        @relation(fields: [userId], references: [id])
+  userId               String
+  senderId             String
+  typeOfRequest        RequestType
+  descriptionOfRequest String
+  emitted              Boolean     @default(false)
+  responded            Boolean     @default(false)
+  channelName          String?     
 }
 
-model Channel {
-  id       Int       @id @default(autoincrement())
-  type     String
-  users    User[]
-  messages Message[]
-  // Define other fields for the channel as needed
-}
-
-model Message {
-  id        Int      @id @default(autoincrement())
-  content   String
-  sender    User     @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-  channel   Channel? @relation(fields: [channelId], references: [id])
-  channelId Int?
-  userId    Int
-  Chat      Chat?    @relation(fields: [chatId], references: [id])
-  chatId    Int?
-}
-
-// Define an Achievement model (you can further customize this)
 model Achievement {
-  id          Int               @id @default(autoincrement())
+  id          String            @id @default(uuid())
   title       String
   description String
   status      AchievementStatus
-  score       Int
+  userScore   Int               @default(0)
+  totalScore  Int
   User        User?             @relation(fields: [userId], references: [id])
-  userId      Int?
+  userId      String
+}
+
+model FriendStatus {
+  id       String @id @default(uuid())
+  user     User   @relation(fields: [userId], references: [id])
+  userId   String
+  status   Status
+  friendId String
+}
+
+// Define an Achievement model (you can further customize this)
+
+model Message {
+  id        String   @id @default(uuid())
+  content   String
+  sender    User     @relation(fields: [senderId], references: [id])
+  senderId  String
+  createdAt DateTime @default(now())
+  channel   Channel? @relation(fields: [channelId], references: [id])
+  channelId String?
+  Dm        Dm?      @relation(fields: [dmId], references: [id])
+  dmId      String?
+}
+
+model Channel {
+  id        String      @id @default(uuid())
+  name      String      @unique
+  picture   String      @default("")
+  owner     String
+  type      Types
+  password  String?
+  users     User[]
+  admins    User[]      @relation("Admins")
+  blacklist Blacklist[]
+  messages  Message[]
+  updatedAt DateTime    @default(now()) @updatedAt
+}
+
+model Dm {
+  id        String    @id @default(uuid())
+  updatedAt DateTime  @default(now()) @updatedAt
+  members   User[]    @relation("directmessage")
+  messages  Message[]
+}
+
+model Blacklist {
+  id        String     @id @default(uuid())
+  nickname  String
+  status    Membership
+  expiredAt DateTime?
+  channelId String
+  channel   Channel    @relation(fields: [channelId], references: [id])
 }
 
 // Define a Match model
-model Match {
-  id      Int  @id @default(autoincrement())
-  wins    Int
-  losses  Int
-  score   Int
-  against User @relation(fields: [userId], references: [id])
-  userId  Int
-}
-
-// Define a Chat model
-model Chat {
-  id       Int       @id @default(autoincrement())
-  toUser   User      @relation(fields: [userId], references: [id])
-  messages Message[]
-  userId   Int
+model Game {
+  id         String @id @default(uuid())
+  MatchScore Int[]
+  opponentId String
+  userId     String
+  player     User   @relation(name: "player", fields: [userId], references: [id])
+  opponent   User?  @relation(name: "opponent", fields: [opponentId], references: [id])
 }

@@ -1,0 +1,30 @@
+[
+  {
+    "id": "Win first match",
+    "title": "Win first match",
+    "description": "You won your first ever match",
+    "userScore": 0,
+    "totalScore": 1
+  },
+  {
+    "id": "First Login",
+    "title": "First Login",
+    "description": "Welcome to Pong Zone",
+    "userScore": 0,
+    "totalScore": 1
+  },
+  {
+    "id": "lose a match",
+    "title": "lose a match",
+    "description": "You lost your first ever match",
+    "userScore": 0,
+    "totalScore": 1
+  },
+  {
+    "id": "Win five matches",
+    "title": "Win five matches",
+    "description": "You won five matches",
+    "userScore": 0,
+    "totalScore": 5
+  }
+]
