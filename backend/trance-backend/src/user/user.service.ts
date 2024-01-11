@@ -157,6 +157,59 @@ export class UserService {
 		return (notDoneAchievements);
 	}
 
+	async updateAchivements(userId: string, type: string){
+		const currentUser = await this.prisma.user.findFirst({
+			where: {
+				id: userId,
+			},
+			select: {
+				id: true,
+				Wins: true,
+			}
+		});
+		const AchivementId = await this.prisma.achievement.findFirst({
+			where: {
+				title: type,
+				userId: userId,
+			},
+			select: {
+				id: true,
+			}
+		});
+
+		if (!currentUser)
+			throw new NotFoundException('user not found')
+
+		if (currentUser.Wins === 5){
+			const fiveMatchId = await this.prisma.achievement.findFirst({
+				where: {
+					title: type,
+					userId:userId
+				},
+				select: {
+					id: true,
+				}
+			});
+			const Achivements = await this.prisma.achievement.update({
+				where: {
+					id: fiveMatchId.id,
+				},
+				data: {
+					status: AchievementStatus.DONE,
+				},
+			});
+			return;
+		}
+		const Achivements = await this.prisma.achievement.update({
+		where: {
+			id : AchivementId.id,
+		},
+		data: {
+			status: AchievementStatus.DONE,
+		},
+		});
+		return ;
+	}
 
 	async getFriendsCards(id: string)
 	{
@@ -307,6 +360,8 @@ export class UserService {
 		const id = await this.generateRequest(challengerId, opponentId, RequestType.CHALLENGE);
 		return id;
 	}
+
+
 
 	async genarateMatchInfo(me : string, opponentId : string){
 		var infos;

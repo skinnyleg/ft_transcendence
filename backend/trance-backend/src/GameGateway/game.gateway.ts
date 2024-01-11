@@ -9,53 +9,53 @@ import { BotDto, GameSettingsDto } from "./Dto/GameSettingsDto";
 
 let num: number = 0;
 const width = 20;
-        const height = 150;
-        let speedR = 20;
-        const minY = 0;
-        const minX = 0;
-        const maxY = 600;
-        const maxX = 800;
-        const midleVertical = ((maxY - minY) / 2) + minY;
-        const midleCanvas = ((maxX- minX) / 2) + minX;
-        let currentPositionL = { x: (minX + width), y: midleVertical };
-            const newPositionL = { ...currentPositionL }; 
+const height = 150;
+let speedR = 20;
+const minY = 0;
+const minX = 0;
+const maxY = 600;
+const maxX = 800;
+const midleVertical = ((maxY - minY) / 2) + minY;
+const midleCanvas = ((maxX- minX) / 2) + minX;
+let currentPositionL = { x: (minX + width), y: midleVertical };
+const newPositionL = { ...currentPositionL }; 
 
-            @WebSocketGateway({ namespace: 'GameGateway', cors: {
-                origin: process.env.FrontendHost,
-                allowedHeaders: ["token"],
-                credentials: true
-            }
-        })
-        export class GameGateway {
-            
-            constructor(private readonly gameService: GameService, private makeQueue : makeQueue) {}
-            private readonly buffer: any[] = [];
-            
-            @WebSocketServer()
-            
-            server: Server;
-            async handleConnection(client: Socket){
-                // console.log('med-doba: ', num++);
-                await this.gameService.saveUser(client);
-            }
-            
-            @SubscribeMessage('PlayQueue')
-            QueueMaker(client: Socket){
-                this.gameService.handleMatchMaker(client, this.server);
-                //
-                if (!this.buffer.includes(client)) {
-                    console.log('times');
-                    this.buffer.push(client);
-                }
+@WebSocketGateway({ namespace: 'GameGateway', cors: {
+    origin: process.env.FrontendHost,
+    allowedHeaders: ["token"],
+    credentials: true
+}
+})
+export class GameGateway {
+    
+    constructor(private readonly gameService: GameService, private makeQueue : makeQueue) {}
+    private readonly buffer: any[] = [];
+    
+    @WebSocketServer()
+    
+    server: Server;
+    async handleConnection(client: Socket){
+        // console.log('med-doba: ', num++);
+        await this.gameService.saveUser(client);
+    }
+    
+    // @SubscribeMessage('PlayQueue')
+    // QueueMaker(client: Socket){
+    //     this.gameService.handleMatchMaker(client, this.server);
+    //     //
+    //     if (!this.buffer.includes(client)) {
+    //         console.log('times');
+    //         this.buffer.push(client);
+    //     }
+    // }
+    
+    removeFromBuffer(index: number)
+    {
+        if (index > -1 && index <= this.buffer.length) {
+            console.log('times');
+            this.buffer.splice(index, 1);
         }
-        
-        removeFromBuffer(index: number)
-        {
-            if (index > -1 && index <= this.buffer.length) {
-                console.log('times');
-              this.buffer.splice(index, 1);
-            }
-        }
+    }
     @SubscribeMessage('ImReady')
     QueueReady(client: Socket){
         // if (this.buffer.length >= 2) {
@@ -91,6 +91,17 @@ const width = 20;
         }
         console.log("Queue length 2222 ===  ", this.makeQueue.getQueue().length);
     }
+
+    @SubscribeMessage('PlayQueue')
+    QueueMaker(client: Socket){
+        this.gameService.handleMatchMaker(client, this.server);
+    }
+
+    @SubscribeMessage('ImReady')
+    SendMatchInfos(client : Socket){
+        const user = this.gameService.getUserBySocketId(client.id)
+        client.emit('MatchReady', this.gameService.players_arr.get(user.roomId)[0].matchInfos)
+    }   
 
     @SubscribeMessage('challengeBot')
     async BotMatchMaker(client : Socket){
