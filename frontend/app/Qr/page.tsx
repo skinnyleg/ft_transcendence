@@ -13,7 +13,7 @@ const VerifyCode :  React.FC = () => {
   useEffect(() => {
     // Initialize refs only once
     setInputRefs(Array(6).fill(null).map(() => React.createRef<HTMLInputElement>()));
-  }, []);
+  });
 
   const [error, setError] = useState<string | null>(null)
   const router = useRouter();
