@@ -23,3 +23,10 @@ export interface matchInfo {
     profilePic: string;
     nickname: string;
 }
+
+export interface MatchInfo{
+    id: string;
+    profilePic: string;
+    nickname: string;
+    opponentId: string;
+}[]

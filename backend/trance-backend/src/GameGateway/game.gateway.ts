@@ -68,7 +68,8 @@ export class GameGateway {
             this.gameService.players_arr.get(user1.roomId)[0].IsInGame = true;
             this.gameService.players_arr.get(user1.roomId)[1].IsInGame = true;
             // Match is Ready Backend can start Send corrdinations √
-            const infos = this.userService.genarateMatchInfo(this.gameService.players_arr.get(user1.roomId)[0].id, this.gameService.players_arr.get(user1.roomId)[1].id)
+            const roomId = this.gameService.players_arr.get(user1.roomId)[1].roomId;
+            const infos = this.userService.genarateMatchInfo(this.gameService.players_arr.get(user1.roomId)[0].id, this.gameService.players_arr.get(user1.roomId)[1].id, roomId)
             this.server.to(this.gameService.players_arr.get(user1.roomId)[0].roomId).emit('MatchReady', infos);
         }
     }
