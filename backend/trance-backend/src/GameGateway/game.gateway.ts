@@ -6,6 +6,7 @@ import { oponentDto } from "./Dto/userId";
 import { validateAndSendError } from "src/utils/validateInputWebsocket";
 import { RequestActionDto } from "src/friends/Dto/requestDto";
 import { BotDto, GameSettingsDto } from "./Dto/GameSettingsDto";
+import { UserService } from "src/user/user.service";
 
 let num: number = 0;
 const width = 20;
@@ -28,26 +29,15 @@ const newPositionL = { ...currentPositionL };
 })
 export class GameGateway {
     
-    constructor(private readonly gameService: GameService, private makeQueue : makeQueue) {}
+    constructor(private readonly gameService: GameService, private makeQueue : makeQueue, private userService: UserService) {}
     private readonly buffer: any[] = [];
     
     @WebSocketServer()
     
     server: Server;
     async handleConnection(client: Socket){
-        // console.log('med-doba: ', num++);
         await this.gameService.saveUser(client);
     }
-    
-    // @SubscribeMessage('PlayQueue')
-    // QueueMaker(client: Socket){
-    //     this.gameService.handleMatchMaker(client, this.server);
-    //     //
-    //     if (!this.buffer.includes(client)) {
-    //         console.log('times');
-    //         this.buffer.push(client);
-    //     }
-    // }
     
     removeFromBuffer(index: number)
     {
@@ -58,17 +48,9 @@ export class GameGateway {
     }
     @SubscribeMessage('ImReady')
     QueueReady(client: Socket){
-        // if (this.buffer.length >= 2) {
-        //     this.buffer[0].emit('MatchReady', `match-${num}`);
-        //     this.buffer[1].emit('MatchReady', `match-${num++}`);
-        //     this.removeFromBuffer(0);
-        //     this.removeFromBuffer(0);
-        //     console.log('ImReady lenght == ',  this.buffer.length);
-        // }
         var queueLength =  this.makeQueue.getQueue().length;
-        console.log("Queue length 1111 ===  ", queueLength);
+        // console.log("Queue length 1111 ===  ", queueLength);
         if (queueLength >= 2){
-            // dequeue and get users √
             const player1 = this.makeQueue.dequeue();
             var user1 = this.gameService.getUserBySocketId(player1.id);
             const player2 = this.makeQueue.dequeue();
@@ -85,11 +67,10 @@ export class GameGateway {
             // update Status
             this.gameService.players_arr.get(user1.roomId)[0].IsInGame = true;
             this.gameService.players_arr.get(user1.roomId)[1].IsInGame = true;
-            // infos
             // Match is Ready Backend can start Send corrdinations √
-            this.server.to(this.gameService.players_arr.get(user1.roomId)[0].roomId).emit('MatchReady', user1.roomId);
+            const infos = this.userService.genarateMatchInfo(this.gameService.players_arr.get(user1.roomId)[0].id, this.gameService.players_arr.get(user1.roomId)[1].id)
+            this.server.to(this.gameService.players_arr.get(user1.roomId)[0].roomId).emit('MatchReady', infos);
         }
-        console.log("Queue length 2222 ===  ", this.makeQueue.getQueue().length);
     }
 
     @SubscribeMessage('PlayQueue')
@@ -97,11 +78,11 @@ export class GameGateway {
         this.gameService.handleMatchMaker(client, this.server);
     }
 
-    @SubscribeMessage('ImReady')
-    SendMatchInfos(client : Socket){
-        const user = this.gameService.getUserBySocketId(client.id)
-        client.emit('MatchReady', this.gameService.players_arr.get(user.roomId)[0].matchInfos)
-    }   
+    // @SubscribeMessage('ImReady')
+    // SendMatchInfos(client : Socket){
+    //     const user = this.gameService.getUserBySocketId(client.id)
+    //     client.emit('MatchReady', this.gameService.players_arr.get(user.roomId)[0].matchInfos)
+    // }   
 
     @SubscribeMessage('challengeBot')
     async BotMatchMaker(client : Socket){
@@ -118,11 +99,6 @@ export class GameGateway {
             this.gameService.startBotGame(client, verify.input.width, verify.input.height);
         }
     }
-    
-    //
-    // @SubscribeMessage('arrow')
-    // @SubscribeMessage('players-data')
-    //
 
     @SubscribeMessage('challengeFriend')
     async challengeFriend(client : Socket, payload : Record<string, any>){

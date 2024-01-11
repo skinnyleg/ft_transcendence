@@ -135,16 +135,18 @@ export class GameService {
                 if (bool){
                     const nick = await this.userService.getNickById(me.id)
                     challenger.socket.emit('notification', `${nick} accepted your challenge`);
-                    // emit players info + redirect theme to play √
-                    server.to(me.roomId).emit('redirectPlayers_match', true);
                     this.players_arr.set(me.roomId, [me, challenger]);
                     me.IsInGame = true;
                     challenger.IsInGame = true;
-                    server.to(me.roomId).emit('MatchReady', me.roomId);
+                    // emit players info + redirect theme to play √
+                    server.to(me.roomId).emit('redirectPlayers_match', me.roomId);
+                    // server.to(me.roomId).emit('MatchReady', me.roomId);
                 }
                 else
                 {
-                    throw new NotAcceptableException('Request Expired');
+                    me.socket.emit('notification', `Request Expired`);
+                    this.sendWebSocketError(me.socket, 'Request Expired', false);
+                    return ;
                 }
 
             } catch (error) {
