@@ -168,7 +168,7 @@ const Settings : React.FC = () => {
               if (res.status === 200){
                 const isfirst = await res.json();
                 (isfirst.FirstLogin === true) && toast.info("This is your first time\n you can change your nickname, set your Password or enable 2FA", {
-                    toastId: "info", autoClose: 7000,});
+                    toastId: "info", autoClose: 1000,});
               }
               else{
                 toast.error("Error faild load ressources", {toastId: "top-right", autoClose: 4000,});
