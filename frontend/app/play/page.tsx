@@ -2,6 +2,8 @@
 import React, { useEffect, useRef } from "react"
 
 const Play : React.FC = () => {
+    return (null);
+
     const canvasRef = useRef<HTMLCanvasElement>(null)
     
     let leftPaddle = {
