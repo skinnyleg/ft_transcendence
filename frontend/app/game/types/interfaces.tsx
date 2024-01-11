@@ -29,3 +29,10 @@ export type playerInfoProps = {
     textPos: string,
     playerInfo: playerInfo | undefined,
 }
+export interface MatchInfo{
+    id: string;
+    profilePic: string;
+    nickname: string;
+    opponentId: string;
+    roomId: string;
+}[]

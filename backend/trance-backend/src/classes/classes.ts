@@ -43,6 +43,13 @@ export class Match{
 	isMeWhoWon : boolean;
 }
 
+export class MatchInfos{
+	id: string;
+	profilePic: string;
+	nickname: string;
+	opponentId: string;
+}[]
+
 export class PlayerInfo {
 	id: string;
 	profilePic: string;

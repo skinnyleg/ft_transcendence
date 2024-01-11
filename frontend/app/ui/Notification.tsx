@@ -9,6 +9,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import gameSocket from "../context/gameSockets";
 import { useRouter } from "next/navigation";
+import { MatchInfo } from "../game/types/interfaces";
 
 
 
@@ -129,8 +130,8 @@ const Notifications = () => {
         });
 
 
-        gameSocket.on('redirectPlayers_match', (data: {roomId: string}) => {
-            router.push(`/game/${data.roomId}`);
+        gameSocket.on('redirectPlayers_match', (data: MatchInfo[]) => {
+            router.push(`/game/${data[0].id}`);
         })
 
         return () => {

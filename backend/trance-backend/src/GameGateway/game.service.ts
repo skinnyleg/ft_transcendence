@@ -2,7 +2,7 @@ import { ConflictException, Injectable, NotAcceptableException } from "@nestjs/c
 import { JwtService } from "@nestjs/jwt";
 import { Status, User, UserStatus } from "@prisma/client";
 import { Socket, Server } from "socket.io";
-import { Ball, GameUser, gatewayUser, leftPaddle } from "src/classes/classes";
+import { Ball, GameUser, MatchInfos, gatewayUser, leftPaddle } from "src/classes/classes";
 import { UserService } from "src/user/user.service";
 import { makeQueue, room } from "./Queue.service";
 
@@ -64,7 +64,7 @@ export class GameService {
     async challengeBot(client : Socket){
         const player = this.getUserBySocketId(client.id);
         player.IsInGame = true;
-        const infos = await this.userService.genarateMatchInfo(player.id, null);
+        const infos = await this.userService.genarateMatchInfo(player.id, null, null);
         player.socket.emit('playersInfo', infos)
         player.socket.emit('redirectPlayers_match', true);
     }
@@ -139,7 +139,8 @@ export class GameService {
                     me.IsInGame = true;
                     challenger.IsInGame = true;
                     // emit players info + redirect theme to play √
-                    server.to(me.roomId).emit('redirectPlayers_match', me.roomId);
+                    const infos : MatchInfos = await this.userService.genarateMatchInfo(this.players_arr.get(me.roomId)[0].id, this.players_arr.get(me.roomId)[1].id, me.roomId)
+                    server.to(me.roomId).emit('redirectPlayers_match', infos);
                     // server.to(me.roomId).emit('MatchReady', me.roomId);
                 }
                 else

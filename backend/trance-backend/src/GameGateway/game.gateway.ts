@@ -7,6 +7,7 @@ import { validateAndSendError } from "src/utils/validateInputWebsocket";
 import { RequestActionDto } from "src/friends/Dto/requestDto";
 import { BotDto, GameSettingsDto } from "./Dto/GameSettingsDto";
 import { UserService } from "src/user/user.service";
+import { MatchInfos } from "src/classes/classes";
 
 @WebSocketGateway({ namespace: 'GameGateway', cors: {
     origin: process.env.FrontendHost,
@@ -26,7 +27,7 @@ export class GameGateway {
     }
     
     @SubscribeMessage('ImReady')
-    QueueReady(client: Socket){
+    async QueueReady(client: Socket){
         var queueLength =  this.makeQueue.getQueue().length;
         // console.log("Queue length 1111 ===  ", queueLength);
         if (queueLength >= 2){
@@ -47,7 +48,8 @@ export class GameGateway {
             this.gameService.players_arr.get(user1.roomId)[0].IsInGame = true;
             this.gameService.players_arr.get(user1.roomId)[1].IsInGame = true;
             // Match is Ready Backend can start Send corrdinations √
-            const infos = this.userService.genarateMatchInfo(this.gameService.players_arr.get(user1.roomId)[0].id, this.gameService.players_arr.get(user1.roomId)[1].id)
+            const roomId = this.gameService.players_arr.get(user1.roomId)[1].roomId;
+            const infos : MatchInfos = await this.userService.genarateMatchInfo(this.gameService.players_arr.get(user1.roomId)[0].id, this.gameService.players_arr.get(user1.roomId)[1].id, roomId)
             this.server.to(this.gameService.players_arr.get(user1.roomId)[0].roomId).emit('MatchReady', infos);
         }
     }
