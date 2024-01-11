@@ -387,7 +387,6 @@ export class UserService {
 				}
 			});
 			infos = [{...player1, opponentId: player2.id}, {...player2, opponentId: player1.id}];
-			console.log("jjjjjj", infos)
 			return infos;
 		}
 		infos = [player1];

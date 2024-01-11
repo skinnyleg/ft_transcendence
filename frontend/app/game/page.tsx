@@ -27,7 +27,7 @@ function GameQueue() {
         };
         
         gameSocket.on('MatchReady', handleMatchReady);
-        gameSocket.emit('ImReady', 'hello bitch');
+        gameSocket.emit('ImReady');
         // handleMatchReady('VSboot');
 
         return () => {

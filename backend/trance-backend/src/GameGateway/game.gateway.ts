@@ -7,19 +7,6 @@ import { validateAndSendError } from "src/utils/validateInputWebsocket";
 import { RequestActionDto } from "src/friends/Dto/requestDto";
 import { BotDto, GameSettingsDto } from "./Dto/GameSettingsDto";
 
-let num: number = 0;
-const width = 20;
-const height = 150;
-let speedR = 20;
-const minY = 0;
-const minX = 0;
-const maxY = 600;
-const maxX = 800;
-const midleVertical = ((maxY - minY) / 2) + minY;
-const midleCanvas = ((maxX- minX) / 2) + minX;
-let currentPositionL = { x: (minX + width), y: midleVertical };
-const newPositionL = { ...currentPositionL }; 
-
 @WebSocketGateway({ namespace: 'GameGateway', cors: {
     origin: process.env.FrontendHost,
     allowedHeaders: ["token"],
@@ -29,7 +16,7 @@ const newPositionL = { ...currentPositionL };
 export class GameGateway {
     
     constructor(private readonly gameService: GameService, private makeQueue : makeQueue) {}
-    private readonly buffer: any[] = [];
+    // private readonly buffer: any[] = [];
     
     @WebSocketServer()
     
@@ -49,13 +36,13 @@ export class GameGateway {
     //     }
     // }
     
-    removeFromBuffer(index: number)
-    {
-        if (index > -1 && index <= this.buffer.length) {
-            console.log('times');
-            this.buffer.splice(index, 1);
-        }
-    }
+    // removeFromBuffer(index: number)
+    // {
+    //     if (index > -1 && index <= this.buffer.length) {
+    //         console.log('times');
+    //         this.buffer.splice(index, 1);
+    //     }
+    // }
     @SubscribeMessage('ImReady')
     QueueReady(client: Socket){
         // if (this.buffer.length >= 2) {
@@ -88,6 +75,8 @@ export class GameGateway {
             // infos
             // Match is Ready Backend can start Send corrdinations √
             this.server.to(this.gameService.players_arr.get(user1.roomId)[0].roomId).emit('MatchReady', user1.roomId);
+            //added by med-doba
+
         }
         console.log("Queue length 2222 ===  ", this.makeQueue.getQueue().length);
     }
@@ -97,11 +86,11 @@ export class GameGateway {
         this.gameService.handleMatchMaker(client, this.server);
     }
 
-    @SubscribeMessage('ImReady')
-    SendMatchInfos(client : Socket){
-        const user = this.gameService.getUserBySocketId(client.id)
-        client.emit('MatchReady', this.gameService.players_arr.get(user.roomId)[0].matchInfos)
-    }   
+    // @SubscribeMessage('ImReady')
+    // SendMatchInfos(client : Socket){
+    //     const user = this.gameService.getUserBySocketId(client.id)
+    //     client.emit('MatchReady', this.gameService.players_arr.get(user.roomId)[0].matchInfos)
+    // }   
 
     @SubscribeMessage('challengeBot')
     async BotMatchMaker(client : Socket){

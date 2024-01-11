@@ -31,7 +31,7 @@ export class GameService {
 			const payload = await this.jwtService.verifyAsync(token, { secret: process.env.jwtsecret })
 			user = await this.userService.findOneById(payload.sub);
             this.Users.push({id: user.id, socket: client, isInQueue: false, IsInGame : false, isReady: false, score: 0, roomId: '', win: false, matchInfos: {}});
-            console.log("Users  ===  ", this.Users);
+            // console.log("Users  ===  ", this.Users);
 		}
 		catch (error)
 		{
@@ -155,8 +155,8 @@ export class GameService {
             if (challenger !== undefined){
                 const nick = await this.userService.getNickById(me.id)
                 challenger.socket.emit('notification', `${nick} refused your challenge`);
-                console.log("Me === ", me.id);
-                console.log("oppo === ", challenger.id);
+                // console.log("Me === ", me.id);
+                // console.log("oppo === ", challenger.id);
             }
         } catch (error) {
             this.sendWebSocketError(me.socket, error.message, false);
@@ -407,7 +407,8 @@ export class GameService {
             this.players_arr.get(roomId)[0].socket.emit('rightPaddle', rightPaddle)
             this.players_arr.get(roomId)[1].socket.emit('rightPaddle', rightPaddle)
         }))
-        console.log('how many times')
+        server.to(this.players_arr.get(roomId)[0].roomId).emit('drawBall');
+        // console.log('how many times')
         // const intervalId = setInterval(()=>{
         // console.log('event receive back');
         //     // abort game before rounds finish X
@@ -504,36 +505,5 @@ export class GameService {
         if (this.makeQueue.enQueue(client) == true){
             await this.userService.updateStatus(user.id, UserStatus.IN_QUEUE);
         }
-        var queueLength =  this.makeQueue.getQueue().length;
-        console.log("Queue length 1111 ===  ", queueLength);
-        
-        if (queueLength >= 2){
-            // dequeue and get users √
-            const player1 = this.makeQueue.dequeue();
-            var user1 = this.getUserBySocketId(player1.id);
-            const player2 = this.makeQueue.dequeue();
-            var user2 = this.getUserBySocketId(player2.id);
-            user1.roomId= user2.id;
-            user2.roomId= user2.id;
-            // add user to player_arr √
-            this.players_arr.set(user1.roomId, [user1, user2]);
-            this.players_arr.get(user1.roomId)[0].isInQueue = false;
-            this.players_arr.get(user1.roomId)[1].isInQueue = false;
-            user1.socket.join(user1.roomId);
-            user2.socket.join(user2.roomId);
-            this.players_arr.get(user1.roomId)
-            // update Status
-            this.players_arr.get(user1.roomId)[0].IsInGame = true;
-            this.players_arr.get(user1.roomId)[1].IsInGame = true;
-            // infos
-            const infos = await this.userService.genarateMatchInfo(this.players_arr.get(user1.roomId)[0].id, this.players_arr.get(user1.roomId)[1].id);
-            // Emite that match is ready With players infos √
-            this.players_arr.get(user1.roomId)[0].matchInfos = infos;
-            this.players_arr.get(user1.roomId)[1].matchInfos = infos;
-                
-            // Match is Ready Backend can start Send corrdinations √
-            server.to(user1.roomId).emit('redirectPlayers_match', true);
-        }
-        console.log("Queue length 2222 ===  ", this.makeQueue.getQueue().length);
     }
 }

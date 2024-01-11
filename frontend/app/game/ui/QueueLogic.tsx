@@ -23,7 +23,7 @@ const PongZoneQueue = () => {
         const { Engine, Render, World, Bodies, Composite, Runner} = Matter;
         
         const engine = Engine.create({
-            // gravity: {x: 0, y: 0, scale: 0},
+            gravity: {x: 0, y: 0, scale: 0},
             positionIterations: 10,
             velocityIterations: 8,
         });
@@ -68,13 +68,11 @@ const PongZoneQueue = () => {
         });
         const   paddleLeft = Bodies.rectangle(minX + width, midleVertical, width, height, { isStatic: true });
         const   paddleRight = Bodies.rectangle(maxX - width, midleVertical, width, height, { isStatic: true });
-        
-        // Matter.Body.applyForce(ball, ball.position, {x: 0.0035, y: 0.001});
-        
+                
         Composite.add(engine.world, [paddleLeft, paddleRight, ball]);
-        Matter.Events.on(engine, 'beforeUpdate', function() {
-            engine.world.gravity.y = 0;
-        });     
+        // Matter.Events.on(engine, 'beforeUpdate', function() {
+        //     engine.world.gravity.y = 0;
+        // });     
         
         const handleKey = (event) => {
             switch (event.key) {
@@ -93,6 +91,7 @@ const PongZoneQueue = () => {
         gameSocket.on('leftPaddle', (Cordinates: any) => {
             const paddleL: pladdleCoordinates  = {x: Cordinates.x, y: Cordinates.y};
             Matter.Body.setPosition(paddleLeft, paddleL);
+            Matter.Body.setPosition(paddleRight, {x: paddleRight.position.x, y: paddleL.y});
         });
                 
         gameSocket.on('rightPaddle', (Cordinates: any) => {
@@ -100,45 +99,39 @@ const PongZoneQueue = () => {
             Matter.Body.setPosition(paddleRight, paddleL);
         });
         
-        console.log('befor');
-        Matter.Body.setVelocity(ball, { x: 6, y: 6 })
-        //==================
+        gameSocket.on('drawBall', () => {
+            Matter.Body.setVelocity(ball, { x: 5, y: 5 })
+        });
         let timer: any;
         Matter.Events.on(engine, 'collisionStart', function(event) {
             var pairs = event.pairs;
-            // Change the direction of the ball when it hits a paddle
-            for (var i = 0, j = pairs.length; i != j; ++i)
-            {
+            for (var i = 0, j = pairs.length; i != j; ++i) {
                 var pair = pairs[i]; 
-                if ((pair.bodyA === ball && pair.bodyB === wallLeft) ||
-                (pair.bodyA === wallLeft && pair.bodyB === ball)) {
+                if ((pair.bodyA === ball && pair.bodyB === wallLeft) || (pair.bodyA === wallLeft && pair.bodyB === ball))
+                {
                     setScore({L: score.R, R: (score.R + 1)});
-                    Matter.Body.setVelocity(ball, { x: 0, y: 0 })
                     Matter.Body.setPosition(ball, { x: midleCanvas, y: midleVertical });
-                    setTimeout(() => {
-                        Matter.Body.setVelocity(ball, { x: 6, y: 6 })
-                    }, 50);
-                    console.log('here we go again');
+                    Matter.Body.setVelocity(ball, { x: 0, y: 0 })
+                    Matter.Body.setVelocity(ball, { x: 5, y: 5 });
                     gameSocket.emit('scoreLeft');
                 }
-                else if ((pair.bodyA === ball && pair.bodyB === wallRight) ||
-                (pair.bodyA === wallRight && pair.bodyB === ball)) {
+                else if ((pair.bodyA === ball && pair.bodyB === wallRight) || (pair.bodyA === wallRight && pair.bodyB === ball))
+                {
                     setScore({L: (score.L + 1), R: score.R});
-                    Matter.Body.setVelocity(ball, { x: 0, y: 0 })
                     Matter.Body.setPosition(ball, { x: midleCanvas, y: midleVertical });
-                    setTimeout(() => {
-                        Matter.Body.setVelocity(ball, { x: -6, y: 6 })
-                    }, 50);
-                    console.log('here we go again');
+                    Matter.Body.setVelocity(ball, { x: 0, y: 0 })
+                    Matter.Body.setVelocity(ball, { x: -5, y: 5 })
                     gameSocket.emit('scoreRight');
                 }
-                else if ((pair.bodyA === ball || pair.bodyB === ball)) {
-                    Matter.Body.set(ball, { restitution: 1, friction: 0 }); // n9adro n7aydoha
-                    console.log('lol im enter');
+                if ((pair.bodyA === ball && pair.bodyB === paddleRight) || (pair.bodyA === paddleRight && pair.bodyB === ball)) {
+                    Matter.Body.setVelocity(ball, { x: 8, y: 8 })
+                }
+                else if ((pair.bodyA === ball && pair.bodyB === paddleLeft) || (pair.bodyA === paddleLeft && pair.bodyB === ball)) {
+                    Matter.Body.setVelocity(ball, { x: 5, y: 5 })              
                 }
             }
+            Matter.Body.set(ball, { restitution: 1, friction: 0 }); // n9adro n7aydoha
         });
-        //==================
         
         Render.run(render);
         const runner = Runner.create();
@@ -146,9 +139,8 @@ const PongZoneQueue = () => {
         
         return () => {
             Render.stop(render);
-            // World.clear(engine.world);
             Engine.clear(engine);
-            // clearTimeout(timer);
+            clearTimeout(timer);
             gameSocket.off('drawBall');
             gameSocket.off('leftPaddle');
             gameSocket.off('rightPaddle');
