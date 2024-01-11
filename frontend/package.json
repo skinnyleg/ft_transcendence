@@ -50,6 +50,7 @@
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.5",
+    "@types/matter-js": "^0.19.6",
     "@types/node": "20.9.0",
     "@types/react": "18.2.37",
     "@types/react-cookies": "^0.1.3",

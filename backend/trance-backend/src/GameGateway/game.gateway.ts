@@ -148,8 +148,11 @@ const width = 20;
         if (verify.valid == true){
             this.gameService.sendWebSocketError(client, verify.error, false);
         }
-        else
+        else{
+            const player = this.gameService.getUserBySocketId(client.id);
+            player.isReady = true;
             await this.gameService.startGame(client, this.server, verify.input.roomId, verify.input.width, verify.input.height)
+        }
     }
 
     async handleDisconnect(client: Socket) {

@@ -3,6 +3,7 @@ import Matter from 'matter-js';
 import gameSocket, { GameContext } from '../../context/gameSockets';
 import { ballCoordinates, pladdleCoordinates, playersCoordinates } from '../types/interfaces';
 import { usePathname } from 'next/navigation';
+import { exit } from 'process';
 
 
 const PongZoneQueue = () => {
@@ -11,16 +12,21 @@ const PongZoneQueue = () => {
 
     const width = 20;
     const height = 150;
-    // let speedR = 20;
-    // let speedL = 20;
     
     const   [matchready, setMatchready] = useState<boolean>(false);
     const   [pongzone, setPongzone] = useState({width: 0, height: 0});
     const   {data, setData, gameId, setGameId} = useContext(GameContext);
     
     useEffect(() => {
+
         const { Engine, Render, World, Bodies, Composite, Runner} = Matter;
-        const engine = Engine.create();
+        
+        const engine = Engine.create({
+            gravity: {x: 0, y: 0, scale: 0},
+            positionIterations: 10,
+            velocityIterations: 8,
+        });
+        
         const render = Render.create({
             canvas: canvasRef.current,
             engine: engine,
@@ -40,34 +46,46 @@ const PongZoneQueue = () => {
         const midleVertical = ((maxY - minY) / 2) + minY;
         const midleCanvas = ((maxX- minX) / 2) + minX;
 
+        let wallTop = Bodies.rectangle(400, 0, 800, 20, { isStatic: true , friction: 0,restitution: 1,});
+        let wallBottom = Bodies.rectangle(400, 600, 800, 20, { isStatic: true /*, friction: 0,restitution: 1,*/});
+        let wallLeft = Bodies.rectangle(0, 300, 20, 600, { isStatic: true/* , friction: 0,restitution: 1,*/});
+        let wallRight = Bodies.rectangle(800, 300, 20, 600, { isStatic: true/*, friction: 0 ,restitution: 1,*/});
+
+        Composite.add(engine.world, [wallTop, wallBottom, wallLeft, wallRight]);
+
         const ball = Matter.Bodies.circle(midleCanvas, midleVertical, 10, {
             // isStatic: false,
-            restitution: 0.8, // Bounciness of the ball
-            friction: 0.1, // Friction of the ball
-            density: 0.04, // Density of the ball
+            restitution: 1, // Bounciness of the ball
+            friction: 0, // Friction of the ball
+            inertia: Infinity,
+            frictionAir: 0,
+            // density: 0.04, // Density of the ball
+            // frictionStatic: 0,
             render: {
                 fillStyle: 'red', // Color of the ball
                 strokeStyle: 'green', // Border color of the ball
                 lineWidth: 5, // Border width of the ball
             },
         });
-        ball.force.y = 0;
-        let paddleLeft = Bodies.rectangle(minX + width, midleVertical, width, height, { isStatic: true });
-        let paddleRight = Bodies.rectangle(maxX - width, midleVertical, width, height, { isStatic: true });
-        var floor = Matter.Bodies.rectangle(maxX / 2, maxY, maxX, 5, {
+        let paddleLeft = Bodies.rectangle(minX + width, midleVertical, width, height, {
             isStatic: true,
-            render: {
-               visible: true,
-            }
-          });          
+            // friction: 0,
+            // restitution: 1,
+        });
+        let paddleRight = Bodies.rectangle(maxX - width, midleVertical, width, height, {
+            isStatic: true ,
+            // friction: 0,
+            // restitution: 1,
+        });
 
-        var world = Matter.World.create({
-            gravity: { x: 0, y: 0 }
-         });
-        Composite.add(engine.world, [paddleLeft, paddleRight, ball, floor]);
+        // ball.force.y = 0;       
+        Matter.Body.applyForce(ball, ball.position, {x: 0.035, y: 0.01});
+        // engine.world.gravity.y = 0;
+
+        Composite.add(engine.world, [paddleLeft, paddleRight, ball]);
         Matter.Events.on(engine, 'beforeUpdate', function() {
             engine.world.gravity.y = 0;
-        });          
+        });     
         
         const handleKey = (event) => {
             switch (event.key) {
@@ -84,39 +102,64 @@ const PongZoneQueue = () => {
         document.addEventListener('keydown', handleKey);
 
         gameSocket.on('leftPaddle', (Cordinates: any) => {
-            console.log('Coordinates left : ', Cordinates);
             const paddleL: pladdleCoordinates  = {x: Cordinates.x, y: Cordinates.y};
             Matter.Body.setPosition(paddleLeft, paddleL);
         });
 
         gameSocket.on('rightPaddle', (Cordinates: any) => {
-            console.log('Coordinates right : ', Cordinates);
             const paddleL: pladdleCoordinates  = {x: Cordinates.x, y: Cordinates.y};
             Matter.Body.setPosition(paddleRight, paddleL);
         });
-        
-        gameSocket.on('drawBall', (Cordinates: any) => {
-            console.log('Coordinates ball : ', Cordinates)
-            const ballCordinates: ballCoordinates  = {x: Cordinates.veloX, y: Cordinates.veloY};
-            // Matter.Body.setVelocity(ball, { x: 3.5, y: -3.5 });
-            Matter.Body.setVelocity(ball, ballCordinates);
-        });
 
-        
+        //==================
+        Matter.Events.on(engine, 'collisionStart', function(event) {
+            var pairs = event.pairs;
+            
+            // Change the direction of the ball when it hits a paddle
+            for (var i = 0, j = pairs.length; i != j; ++i) {
+                var pair = pairs[i];
+            
+                if ((pair.bodyA === ball && pair.bodyB === paddleLeft) ||
+                    (pair.bodyA === paddleLeft && pair.bodyB === ball) ||
+                    (pair.bodyA === ball && pair.bodyB === paddleRight) ||
+                    (pair.bodyA === paddleRight && pair.bodyB === ball)) {
+            
+                    // Reverse the horizontal velocity of the ball
+                    // ball.velocity.x *= -1;
+                    // Matter.Body.set(ball, );
+                }
+            
+                // Scoring
+                if ((pair.bodyA === ball && pair.bodyB === paddleLeft) ||
+                    (pair.bodyA === paddleLeft && pair.bodyB === ball)) {
+            
+                    // Increase score for player 2
+                    // score2++;
+                } else if ((pair.bodyA === ball && pair.bodyB === paddleRight) ||
+                            (pair.bodyA === paddleRight && pair.bodyB === ball)) {
+            
+                    // Increase score for player 1
+                    // score1++;
+                }
+            }
+            });
+        //==================
+
         Render.run(render);
         const runner = Runner.create();
         Runner.run(runner, engine);
         
         return () => {
-            Render.stop(render);
-            World.clear(engine.world);
-            Engine.clear(engine);
+            // Render.stop(render);
+            // World.clear(engine.world);
+            // Engine.clear(engine);
             gameSocket.off('drawBall');
             gameSocket.off('leftPaddle');
             gameSocket.off('rightPaddle');
         };
         
     }, [matchready]);
+
 
     const path = usePathname();
     const startGame = () => {
