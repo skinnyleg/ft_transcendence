@@ -19,6 +19,7 @@ import { GiThroneKing } from "react-icons/gi";
 import { useRouter } from 'next/navigation';
 import MuteUser from './MuteUser';
 import { ChatContext, chatSocketContext } from '../context/soketContext';
+import gameSocket from '../context/gameSockets';
 
 
 
@@ -37,6 +38,10 @@ const UserDropDown: FC<UserDropDownProps> = ({userRole, userCardRole, userNick, 
 	const chatSocket = useContext(chatSocketContext);
 
 	const router = useRouter();
+
+	const challenge_friend = (friend_id: string) => {
+        gameSocket.emit('challengeFriend', {userId: friend_id})
+    }
 
 	const viewProfile = () => {
 		router.push(`/profile/${userNick}`)
@@ -157,6 +162,7 @@ const UserDropDown: FC<UserDropDownProps> = ({userRole, userCardRole, userNick, 
 			  <Menu.Item>
 				{({ active }) => (
 				  <button
+					onClick={() => {challenge_friend(userId)}}
 					className={`${
 					  active ? 'bg-violet-500 text-white' : 'text-gray-900'
 					} group flex w-full items-center gap-4 rounded-md px-2 py-2 text-sm`}

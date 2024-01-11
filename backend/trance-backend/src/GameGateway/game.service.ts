@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from "@nestjs/common";
+import { ConflictException, Injectable, NotAcceptableException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { Status, User, UserStatus } from "@prisma/client";
 import { Socket, Server } from "socket.io";
@@ -131,16 +131,24 @@ export class GameService {
             challenger.roomId = challenger.id;
             me.roomId = challenger.id;
             try{
-                await this.userService.updateReq(me.id, challenger.id, requestID);
+                const bool = await this.userService.updateReq(me.id, challenger.id, requestID);
+                if (bool){
                     const nick = await this.userService.getNickById(me.id)
                     challenger.socket.emit('notification', `${nick} accepted your challenge`);
-                    // emit players info + redirect theme to play √
-                    server.to(me.roomId).emit('redirectPlayers_match', true);
                     this.players_arr.set(me.roomId, [me, challenger]);
                     me.IsInGame = true;
                     challenger.IsInGame = true;
-                    const infos = await this.userService.genarateMatchInfo(this.players_arr.get(me.roomId)[0].id, this.players_arr.get(challenger.roomId)[1].id);
-                    server.to(me.roomId).emit('MatchReady', me.roomId);
+                    // emit players info + redirect theme to play √
+                    server.to(me.roomId).emit('redirectPlayers_match', me.roomId);
+                    // server.to(me.roomId).emit('MatchReady', me.roomId);
+                }
+                else
+                {
+                    me.socket.emit('notification', `Request Expired`);
+                    this.sendWebSocketError(me.socket, 'Request Expired', false);
+                    return ;
+                }
+
             } catch (error) {
                 this.sendWebSocketError(me.socket, error.message, false);
             }

@@ -20,6 +20,7 @@ import { FaUserCircle } from "react-icons/fa";
 import { RiPingPongFill } from "react-icons/ri";
 import { ImBlocked } from "react-icons/im";
 import { TbLockOpen } from "react-icons/tb";
+import gameSocket from '../context/gameSockets';
 
 
 interface PersonalDropDownProps {
@@ -39,6 +40,11 @@ const PersonalDropDown: FC<PersonalDropDownProps> = ({userRole, userNick}) => {
 	const socket = useContext(socketContext);
 
 	const router = useRouter();
+
+	const challenge_friend = (friend_id: string) => {
+        gameSocket.emit('challengeFriend', {userId: friend_id})
+    }
+
 
 	const viewProfile = () => {
 		router.push(`/profile/${userNick}`)
@@ -143,6 +149,7 @@ const PersonalDropDown: FC<PersonalDropDownProps> = ({userRole, userNick}) => {
 							<Menu.Item>
 							{({ active }) => (
 								<button
+								onClick={() => challenge_friend(personal.reciverId)}
 								className={`${
 									active ? 'bg-violet-500 text-white' : 'text-gray-900'
 								} group flex w-full items-center gap-4 rounded-md px-2 py-2 text-sm`}

@@ -28,6 +28,21 @@ export class GameUser{
 	matchInfos: any;
 }
 
+export class Match{
+	id : string;
+	winner : {
+		nickname : string;
+		profilePic: string;
+	};
+	loser : {
+		nickname : string;
+		profilePic: string;
+	};
+    winnerScore : number;
+	loserScore : number;
+	isMeWhoWon : boolean;
+}
+
 export class PlayerInfo {
 	id: string;
 	profilePic: string;
