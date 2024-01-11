@@ -16,6 +16,7 @@
     "@mui/icons-material": "^5.14.18",
     "@mui/material": "^5.14.18",
     "@nextui-org/react": "^2.2.9",
+    "@react-stately/form": "^3.0.0",
     "auth": "^0.0.1",
     "axios": "^1.6.2",
     "cookies-next": "^4.1.0",
