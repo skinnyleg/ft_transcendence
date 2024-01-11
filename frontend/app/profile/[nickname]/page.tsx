@@ -284,8 +284,6 @@ const Profile = () => {
                 });
                 if (res.ok) {
                     const profileData = await res.json();
-                    // console.log(profileData);
-                    console.log("profile data == ", profileData);
                     setProfileData(profileData);
                 }
             } catch (error) {
