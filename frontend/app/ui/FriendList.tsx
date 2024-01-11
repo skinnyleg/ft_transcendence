@@ -7,6 +7,7 @@ import { chatSocketContext, socket, socketContext } from "../context/soketContex
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { IconWithTooltip } from "./CustomIcons";
+import gameSocket from "../context/gameSockets";
 
 
 interface FriendsData {
@@ -74,9 +75,13 @@ const FriendsList = () => {
         })
         chatSocket.on('redirect', (data: {dmId: string}) => {
             console.log('redirect sent');
-            history.pushState({personalId: data.dmId}, '', '/Chat')
+            // history.pushState({personalId: data.dmId}, '', '/Chat')
             router.push(`/Chat`)
         })
+    }
+
+    const challenge_friend = (friend_id: string) => {
+        gameSocket.emit('challengeFriend', {userId: friend_id})
     }
 
     const redirectToProfile = (nickname: string) => {
@@ -113,6 +118,7 @@ const FriendsList = () => {
                                             styles='w-6 h-4 md:w-8 md:h-8  text-button xs:block hover:cursor-pointer'
                                             tooltipId="ChallengeToolTip"
                                             tooltipContent="Challenge"
+                                            clickBehavior={() => challenge_friend(friend.id)}
                                         />
                                         {/* <GiPingPongBat  className="w-6 h-4 md:w-8 md:h-8  text-button xs:block hover:cursor-pointer" /> */}
                                         {/* <button onClick={(e) => {sendMessage(friend.id)}} className="bg-button rounded-md px-2 py-1 text-white text-xs lg:block md:block xs:hidden">Chat</button> */}

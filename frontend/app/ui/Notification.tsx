@@ -7,6 +7,8 @@ import { CheckIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import React from 'react';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import gameSocket from "../context/gameSockets";
+import { useRouter } from "next/navigation";
 
 
 
@@ -19,6 +21,7 @@ const Notifications = () => {
     const socket = useContext(socketContext);
     const chatSocket = useContext(chatSocketContext);
     const {channelId, personalId} = useContext(ChatContext);
+    const router = useRouter();
 
     useEffect(() => {
         const notif = async() => {
@@ -97,6 +100,48 @@ const Notifications = () => {
     }, [chatSocket])
 
 
+    useEffect(() => {
+        gameSocket.on("notification", (notif) => {
+            console.log("ni=otif sent" ,notif);
+            toast.success(notif, {
+                toastId: 'gameNotifSucces',
+                autoClose: 500
+            });
+        });
+
+
+        gameSocket.on("error", (notif) => {
+            console.log('error notif == ', notif)
+            if (check_notif(notif) === true)
+                return ;
+            toast.error(notif, {
+                toastId: 'gameNotifError',
+                autoClose: 500
+            });
+        });
+
+        gameSocket.on("notifHistory", (data: NotificationsData) => {
+            console.log("data gameSocket == ", data);
+            setNotifications((prevNotifications) => {
+                return [...prevNotifications, data];
+            });
+            handleNewNotification(data);
+        });
+
+
+        gameSocket.on('redirectPlayers_match', (data: {roomId: string}) => {
+            router.push(`/game/${data.roomId}`);
+        })
+
+        return () => {
+            gameSocket.off('notification');
+            gameSocket.off('notifHistory');
+            gameSocket.off('error');
+            gameSocket.off('redirectPlayers_match');
+        }
+        //TODO now that added the dependency i need to test error notif again
+    }, [gameSocket])
+
 
     useEffect(() => {
         socket.on("notification", (notif) => {
@@ -170,6 +215,9 @@ const Notifications = () => {
                 value: false,
                 requestId: data.requestId
             })
+        }
+        else if (data.notifData.typeOfRequest === 'CHALLENGE'){
+            gameSocket.emit('acceptChallenge', {userId: data.notifData.userId, requestId: data.requestId});
         }
         else
             socket.emit("refuse-request", {userId : useId , requestId : reqId});
