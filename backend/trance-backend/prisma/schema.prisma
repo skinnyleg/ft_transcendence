@@ -102,7 +102,9 @@ model Request {
   descriptionOfRequest String
   emitted              Boolean     @default(false)
   responded            Boolean     @default(false)
-  channelName          String?     
+  channelName          String?     @unique
+  createdAt            DateTime    @default(now())
+  expiresAt  DateTime  @default(dbgenerated("NOW() + interval '10 second'"))
 }
 
 model Achievement {
@@ -174,6 +176,9 @@ model Game {
   MatchScore Int[]
   opponentId String
   userId     String
+  winner     String
+  winnerScore Int
+  loserScore  Int
   player     User   @relation(name: "player", fields: [userId], references: [id])
   opponent   User?  @relation(name: "opponent", fields: [opponentId], references: [id])
 }

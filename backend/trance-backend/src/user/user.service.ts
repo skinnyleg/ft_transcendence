@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotAcceptableException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { authenticator } from 'otplib';
 import { AchievementStatus, RequestType, Status, User, UserStatus } from '@prisma/client';
@@ -6,7 +6,7 @@ import { hashPass } from 'src/utils/bcryptUtils';
 import { generateNickname } from 'src/utils/generateNickname';
 import * as fs from 'fs';
 import * as path from 'path';
-import { GameUser, NotificationData, PlayerInfo } from 'src/classes/classes';
+import { GameUser, Match, NotificationData, PlayerInfo } from 'src/classes/classes';
 import { notDeepEqual } from 'assert';
 import { info } from 'console';
 
@@ -406,6 +406,9 @@ export class UserService {
 				id: requestId,
 				senderId: challenger,
 				responded: false,
+			},
+			select :{
+				expiresAt: true,
 			}
 		});
 
@@ -418,7 +421,7 @@ export class UserService {
 		})
 		if (!user)
 			throw new NotFoundException('user Doesn\'t exist')
-	
+		const date = new Date();
 		await this.prisma.request.update({
 			where: {
 				id: requestId
@@ -427,9 +430,14 @@ export class UserService {
 				emitted: true,
 				responded: true,
 			}
-		  });
+		});
 		
+		if (date.getDate > request.expiresAt.getDate){
+			return false;
+		}
+		return true;
 	}
+
 	// END OF GAME SECTION
 
 	async saveRequest(senderId: string, recipientId: string)
@@ -995,6 +1003,9 @@ export class UserService {
 
 	async storeResults(player1 : GameUser, player2 : GameUser){
 		var score: number[];
+		const winner : string = (player1.score > player2.score) ? player1.id : player2.id;
+		const winnerscore : number = (player1.score > player2.score) ? player1.score : player2.score;
+		const loserscore : number = (player1.score > player2.score) ? player2.score : player1.score;
 		score = [player1.score, player2.score];
 		console.log("playerId1", player1.id)
 		console.log("playerId222", player2.id)
@@ -1003,7 +1014,9 @@ export class UserService {
 			{
 				data:
 				{
-					MatchScore: score,
+					winner: winner,
+					winnerScore: winnerscore,
+					loserScore: loserscore,
 					player:{connect: {id : player1.id}},
 					opponent:{connect: {id : player2.id}},
 				},
@@ -1041,18 +1054,52 @@ export class UserService {
 		}
 	}
 
+	getWinner(id : string, winnerId : string){
+		if (id === winnerId)
+			return true;
+		return false;
+	}
+
 	async getMatchs(id : string){
+		let Matches : Match[] ;
+		let isMewhowin = false;
+		let winnerUser : User;
+		let loserUser : User;
 		const matches = await this.prisma.game.findMany({
 			where:{
-				OR: [
-					{userId: id,},
-					{opponentId: id},
-				],
+				userId: id,
 			},
 		})
-		if (matches){
-			return matches
+		if (!matches){
+			return [];
 		}
+		for(const match of matches){
+			if (this.getWinner(id, match.winner) === true){
+				isMewhowin = true;
+				winnerUser = await this.findOneById(id);
+				loserUser = await this.findOneById(match.opponentId);
+			}
+			else{
+				isMewhowin = false;
+				winnerUser = await this.findOneById(match.opponentId);
+				loserUser = await this.findOneById(match.userId);
+			}
+			const obj: Match = {
+				id : match.id,
+				winner : {
+					nickname: winnerUser.nickname,
+					profilePic: winnerUser.profilePic
+				},
+				loser : {
+					nickname: loserUser.nickname,
+					profilePic: loserUser.profilePic
+				},
+				isMeWhoWon: isMewhowin,
+				winnerScore : match.winnerScore,
+				loserScore: match.loserScore,
+			}
+			Matches.push(obj);
+		};
 		return [];
 	}
 
