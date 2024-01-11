@@ -10,19 +10,30 @@ function GameQueue() {
 
     const   router = useRouter();
     const   [progress, setProgress] = useState<number>(5);
-    const   {data, setData, gameId, setGameId} = useContext(GameContext);
+    const   {data, setData, gameId, setGameId, playerL, playerR, setPlayerL, setPlayerR} = useContext(GameContext);
     
-    useEffect(() => {
+    // useEffect(() => {
         
-    }, [router, setData]);
+    // }, [router, setData]);
     
     useEffect(() => {
             const handleMatchReady = (data: any) => {
+            console.log('dat ==> ', data);
             setProgress(100);
             setData(data);
             setGameId(data);
             console.log('data: ', data);
-            router.push(`/game/${data}`);
+            router.push(`/game/${data[0]?.id}`);
+            // data[0].id
+            data[0].profilePic
+            data[0].nickname
+            data[0].opponentId
+            // data[1].id
+            data[1].profilePic
+            data[1].nickname
+            data[1].opponentId
+            setPlayerL({name: data[0].nickname, picture: data[0].profilePic});
+            setPlayerR();
             // router.push(`/game/${Math.floor(Math.random() * 100) + 1}`);
         };
         

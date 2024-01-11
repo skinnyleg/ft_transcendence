@@ -23,3 +23,9 @@ export interface matchInfo {
     profilePic: string;
     nickname: string;
 }
+
+export type playerInfoProps = {
+    style: string,
+    textPos: string,
+    playerInfo: playerInfo | undefined,
+}

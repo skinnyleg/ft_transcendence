@@ -1,10 +1,4 @@
-import { playerInfo } from "../types/interfaces";
-
-export type playerInfoProps = {
-    style: string,
-    textPos: string,
-    playerInfo: playerInfo | undefined,
-}
+import { playerInfo, playerInfoProps } from "../types/interfaces";
 
 const PlayerInfo: React.FC<playerInfoProps> = ({style, textPos, playerInfo}) => {
 
