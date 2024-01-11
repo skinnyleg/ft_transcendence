@@ -366,11 +366,9 @@ const Profile = () => {
             <div className="col-span-4 lg:row-start-3 lg:row-end-4 row-start-4 row-end-5 flex flex-col md:flex-row justify-evenly  gap-2 items-center  w-full xl:h-[150px] lg:h-[150px] md:h-[12vh] h-[500px] rounded-3xl">
                 <div className="w-full md:w-1/4 h-[40%] md:h-[90%] bg-cyan-600 rounded-3xl flex flex-row justify-between items-center p-2 gap-2 ">
                     <div className="flex flex-row gap-2">
-                        {/* <div className="w-fit h-fit bg-red-500"> */}
                             <svg xmlns="http://www.w3.org/2000/svg" width="75" height="75" viewBox="0 0 75 75" fill="none">
                                 <path d="M6.25 28.1249H15.625V65.625H6.25C4.52412 65.625 3.125 64.2259 3.125 62.5V31.2499C3.125 29.524 4.52412 28.1249 6.25 28.1249ZM22.7903 24.0846L42.7919 4.08315C43.3416 3.53331 44.2122 3.47147 44.8341 3.938L47.4984 5.93625C49.0131 7.07225 49.6956 9.0079 49.2284 10.8427L45.6244 24.9999H65.625C69.0769 24.9999 71.875 27.7981 71.875 31.2499V37.8259C71.875 38.6425 71.715 39.4509 71.4044 40.2056L61.7344 63.6897C61.2522 64.8606 60.1109 65.625 58.8447 65.625H25C23.2741 65.625 21.875 64.2259 21.875 62.5V26.2943C21.875 25.4655 22.2043 24.6707 22.7903 24.0846Z" fill="#D4F1F4"/>
                             </svg>
-                        {/* </div> */}
                         <div className="flex flex-col">
                             <h1 className="text-cyan-900 text-[20px] font-semibold w-[47px]">WINS</h1>
                             <p className="text-cyan-100 text-[16px] font-semibold">PING PONG ZONE</p>
@@ -457,7 +455,7 @@ const Profile = () => {
             </div>
             <div className=" bg-cyan-600 lg:col-span-2 col-span-4 lg:row-start-4 lg:row-end-5 row-start-6 row-end-7 w-full xl:h-[45%] lg:h-[35%] h-[450px] shadow-md rounded-xl"> 
                 <h2 className="text-bold text-3xl text-center mt-2 text-cyan-900">ACHIEVEMENT</h2>
-                <div className="  h-[95%] pt-2 ">
+                <div className="h-[95%] pt-2 ">
                     <div className="lg:w-[95.31%] xl:w-[90%] w-[98%]  mx-auto h-[90%] flex mt-5 flex-col gap-2 overflow-y-auto styled-scrollbar">
                       {
                         achievements.map((achievement) => {
