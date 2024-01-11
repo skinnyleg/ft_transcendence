@@ -85,5 +85,5 @@ export default async function middleware(request: NextRequest){
 }
  
 export const config = {
-  matcher: ['/Dashboard', '/settings', '/profile/:path*', '/Chat', '/Leaderboard']
+  matcher: ['/Dashboard', '/settings', '/profile/:path*', '/Chat', '/Leaderboard', '/game']
 }

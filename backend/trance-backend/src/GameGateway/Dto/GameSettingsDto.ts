@@ -6,7 +6,7 @@ export class GameSettingsDto {
     height: number;
 	width: number;
     @IsUUID('4', { message: 'Invalid UUID format' })
-	userId: string;
+	roomId: string;
 }
 
 export class BotDto{
