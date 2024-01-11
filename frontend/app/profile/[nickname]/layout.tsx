@@ -10,9 +10,9 @@ export const metadata : Metadata = {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  
+
   return (
-    <div className="flex bg-main flex-col md:flex-row h-screen overflow-y-scroll styled-scrollbar">
+    <div className="flex bg-main flex-col md:flex-row h-screen overflow-y-auto styled-scrollbar">
       <LayoutClinet>
         <ContextFriendProvider>
           {children}
