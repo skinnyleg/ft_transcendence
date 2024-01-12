@@ -5,6 +5,7 @@ import { Socket, Server } from "socket.io";
 import { Ball, GameUser, MatchInfos, gatewayUser, leftPaddle } from "src/classes/classes";
 import { UserService } from "src/user/user.service";
 import { makeQueue, room } from "./Queue.service";
+import { FriendsService } from "src/friends/friends.service";
 
 
 @Injectable()
@@ -12,7 +13,8 @@ export class GameService {
     constructor(private jwtService: JwtService,
         private userService: UserService,
         private makeQueue : makeQueue,
-        private room: room){}
+        private room: room,
+        private friendsService: FriendsService){}
 
     private Users: GameUser[] = [];
     public players_arr = new Map<string, GameUser[]>();
@@ -43,7 +45,8 @@ export class GameService {
     async deleteUser(client: Socket){
         try {
 			const user = this.getUserBySocketId(client.id);
-			await this.userService.updateStatus(user.id, UserStatus.ONLINE)
+			await this.userService.updateStatus(user.id, UserStatus.OFFLINE)
+            await this.emitToFriendsStatusGame(user.id, UserStatus.OFFLINE);
             this.makeQueue.deleteUserQueue(client)
 			this.Users = this.Users.filter((u) => u.socket.id !== client.id);
 		}
@@ -150,7 +153,7 @@ export class GameService {
                 }
                 else
                 {
-                    me.socket.emit('notification', `Request Expired`);
+                    me.socket.emit('error', `Challenge Request Expired`);
                     this.sendWebSocketError(me.socket, 'Request Expired', false);
                     return ;
                 }
@@ -246,6 +249,7 @@ export class GameService {
             return ;
         }
         this.userService.updateStatus(player.id, UserStatus.IN_GAME); // what if there is more than one match
+        await this.emitToFriendsStatusGame(player.id, UserStatus.IN_GAME);
         var ball : Ball = {
             x: width / 2,
             y : height / 2,
@@ -310,7 +314,8 @@ export class GameService {
                     player.win = true;
                 }
                 await this.userService.updateWinLose(player);
-                await this.userService.updateStatus(player.id, UserStatus.ONLINE); 
+                await this.userService.updateStatus(player.id, UserStatus.ONLINE);
+                await this.emitToFriendsStatusGame(player.id, UserStatus.ONLINE);
                 break; 
             }
         }
@@ -328,7 +333,7 @@ export class GameService {
 
     // use Global rooms each contains 2 player before start  the game √
 
-    handleMatchFinish(arg, roomId){
+    async handleMatchFinish(arg, roomId){
         this.players_arr.get(roomId)[0].score = arg.playerL.score;
         this.players_arr.get(roomId)[1].score = arg.playerR.score;
         
@@ -347,6 +352,8 @@ export class GameService {
         this.userService.storeResults(this.players_arr.get(roomId)[0], this.players_arr.get(roomId)[1]);
         this.userService.updateStatus(this.players_arr.get(roomId)[0].id, UserStatus.ONLINE);
         this.userService.updateStatus(this.players_arr.get(roomId)[1].id, UserStatus.ONLINE);
+        await this.emitToFriendsStatusGame(this.players_arr.get(roomId)[0].id, UserStatus.ONLINE);
+        await this.emitToFriendsStatusGame(this.players_arr.get(roomId)[1].id, UserStatus.ONLINE);
         this.userService.updateWinLose(this.players_arr.get(roomId)[0]);
         this.userService.updateWinLose(this.players_arr.get(roomId)[1]);
     }
@@ -381,6 +388,9 @@ export class GameService {
         }
         this.userService.updateStatus(this.players_arr.get(player1.roomId)[1].id, UserStatus.IN_GAME);
         this.userService.updateStatus(this.players_arr.get(player1.roomId)[0].id, UserStatus.IN_GAME);
+        await this.emitToFriendsStatusGame(this.players_arr.get(player1.roomId)[0].id, UserStatus.IN_GAME);
+        await this.emitToFriendsStatusGame(this.players_arr.get(player1.roomId)[1].id, UserStatus.IN_GAME);
+
         const midleVertical = ((height - 0) / 2) + 0;
         const midleCanvas = ((width- 0) / 2) + 0;
         var ball : Ball = {
@@ -445,6 +455,19 @@ export class GameService {
         return ;
     }
 
+
+    async emitToFriendsStatusGame(id: string, status: UserStatus)
+    {
+		const friends = await this.userService.getFriends(id);
+		for (const friend of friends) {
+		  const friendUser = this.getUserById(friend.friendId);
+		  if (friendUser) {
+			friendUser.socket.emit('statusChange', { id: id, status });
+		  }
+		}
+    }
+
+
     async handleMatchMaker(client : Socket, server : Server){
         // Need to optimize this queue so can distiguish each room fo two players √
         // emit to client that is in Queue room √
@@ -461,7 +484,11 @@ export class GameService {
             return ;
         }
         if (this.makeQueue.enQueue(client) == true){
+            console.log(
+                "is In Queue"
+            )
             await this.userService.updateStatus(user.id, UserStatus.IN_QUEUE);
+			await this.emitToFriendsStatusGame(user.id, UserStatus.IN_QUEUE);
         }
     }
 }

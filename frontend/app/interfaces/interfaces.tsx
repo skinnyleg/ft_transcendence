@@ -3,7 +3,8 @@ import { inter } from "../ui/fonts";
 export enum UserStatus {
   online = 'ONLINE',
   offline =  'OFFLINE',
-  IN_GAME = 'IN_GAME'
+  IN_GAME = 'IN_GAME',
+  IN_QUEUE = "IN_QUEUE"
 }
 
 export interface dashboardData {
@@ -177,3 +178,19 @@ export interface LeaderboardData {
   Rank: number;
   self: boolean;
 };
+
+export interface Match
+{
+    id : string;
+    winner : {
+        nickname : string;
+        profilePic: string;
+    };
+    loser : {
+        nickname : string;
+        profilePic: string;
+    };
+    winnerScore : number;
+    loserScore : number;
+    isMeWhoWon : boolean;
+}

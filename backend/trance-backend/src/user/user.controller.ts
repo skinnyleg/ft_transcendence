@@ -6,6 +6,7 @@ import { NicknameDto } from './Dto/nicknameDto';
 import { ChangePasswordDto } from './Dto/passwordDto';
 import { searchBarDto } from './Dto/searchBarDto';
 import { Enable2FADto } from './Dto/enable2FADto';
+import { IdDto } from './Dto/IdDto';
 
 @Controller('user')
 export class UserController {
@@ -108,18 +109,26 @@ export class UserController {
 		return this.userService.getLeaderboard(id);
 	}
 
-	@Get('Achievements')
-	@UseGuards(JwtAuthGuard)
- 	getAchievements(@Req() req) {
-		const id = getId(req);
-		return this.userService.getAchievements(id);
-	}
-
+	
 	@Post('FriendStatus')
 	@UseGuards(JwtAuthGuard)
- 	getFriendStatus(@Body() payload: NicknameDto, @Req() req) {
+	getFriendStatus(@Body() payload: NicknameDto, @Req() req) {
 		const id = getId(req);
 		return this.userService.getFriendStatus(id, payload.nickname);
 	}
+	
+	@Post('Achievements')
+	@UseGuards(JwtAuthGuard)
+	 getAchievements(@Body() payload: IdDto, @Req() req) {
+		const id = getId(req);
+		return this.userService.getAchievements(payload.userId);
+	}
+
+	@UseGuards(JwtAuthGuard)
+    @Post('MatchHistory')
+    matchHistory(@Body() payload: IdDto, @Req() req){
+        // const id = getId(req);
+        return this.userService.getMatchs(payload.userId);
+    }
 }
 

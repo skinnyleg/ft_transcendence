@@ -433,8 +433,7 @@ export class UserService {
 				responded: true,
 			}
 		});
-		
-		if (date.getDate > request.expiresAt.getDate){
+		if (date.getTime() > request.expiresAt.getTime()){
 			return false;
 		}
 		return true;
