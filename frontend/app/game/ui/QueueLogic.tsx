@@ -107,18 +107,12 @@ const PongZoneQueue = () => {
             var pairs = event.pairs;
             for (var i = 0, j = pairs.length; i != j; ++i) {
                 var pair = pairs[i]; 
-                if (score.playerL === 3) {
-                    Matter.Body.setVelocity(ball, { x: 0, y: 0 });
-                    gameSocket.emit('playerLeftWin');
-                    route.push('/Dashboard');
-                    return ;
-                }
-                else if (score.playerR === 3) {
-                    Matter.Body.setVelocity(ball, { x: 0, y: 0 });
-                    gameSocket.emit('playerRighttWin');
-                    route.push('/Dashboard');
-                    return ;
-                }
+                    // route.push('/Dashboard');
+                    (score.playerR === 3 || score.playerL === 3) && (Matter.Body.setVelocity(ball, { x: 0, y: 0 }));
+                    (score.playerR === 3) ? gameSocket.emit('playerRighttWin') : score.playerL === 3 ?  gameSocket.emit('playerLeftWin') : '';
+                    (score.playerR === 3 || score.playerL === 3) && route.push('/Dashboard');
+                    // return ;
+                    // return ;
                 if ((pair.bodyA === ball && pair.bodyB === wallLeft) || (pair.bodyA === wallLeft && pair.bodyB === ball))
                 {
                     setScore({playerL: score.playerL, playerR: (++score.playerR)});

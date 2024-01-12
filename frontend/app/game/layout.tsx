@@ -19,9 +19,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 	const   [score, setScore] = useState({playerL: 0, playerR: 0});
 	const 	[playerL, setPlayerL] = useState<playerInfo | undefined>(undefined);
     const 	[playerR, setPlayerR] = useState<playerInfo | undefined>(undefined);
+	const	[matchType, setmatchTypes] = useState('');
 
 	return (
-		<GameContext.Provider value={{data, setData, gameId, setGameId, score, setScore, playerL, setPlayerL, playerR, setPlayerR}}>
+		<GameContext.Provider value={{data, setData, gameId, setGameId, score, setScore, playerL, setPlayerL, playerR, setPlayerR, matchType, setmatchTypes}}>
       	<div className="flex bg-main flex-col md:flex-row xl:h-screen lg:h-screen">
         	{children}
       	</div>
