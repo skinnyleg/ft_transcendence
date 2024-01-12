@@ -25,6 +25,22 @@ export class GameUser{
 	score : number;
 	roomId : string;
 	win : boolean;
+	matchInfos: any;
+}
+
+export class Match{
+	id : string;
+	winner : {
+		nickname : string;
+		profilePic: string;
+	};
+	loser : {
+		nickname : string;
+		profilePic: string;
+	};
+    winnerScore : number;
+	loserScore : number;
+	isMeWhoWon : boolean;
 }
 
 export class PlayerInfo {

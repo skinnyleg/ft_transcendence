@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import checkAuth from "./checktoken";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const checkVerification = async (token:string | undefined) => {
     try {      
@@ -51,14 +53,30 @@ const refreshToken = async (refreshtoken : string) => {
       return result;
     }
   } catch (error) {
-      console.error("Error during authentication check:", error);
-      return ;
+    console.error("Error during authentication check:", error);
+    return ;
   }
 }
 
+const firstLoginAchiv = async (token : string | undefined) => {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/FirstLogin`, {
+        method: "GET",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+    });
+    if (res.ok) {
+        console.log("success");
+    }
+    } catch (error) {
+    console.error("Error during check:", error);
+}
+}
+
 export default async function middleware(request: NextRequest){
-    let token  = request.cookies.get("token")?.value;
+    let token = request.cookies.get("token")?.value;
     const refreshtoken  = request.cookies.get("refresh");
+<<<<<<< HEAD
     // let response: NextResponse = new NextResponse;
     // if (IsExpired){
     //   const {token , refresh} = await refreshToken(refreshtoken?.value as string);
@@ -70,16 +88,23 @@ export default async function middleware(request: NextRequest){
     //   return response;
 
     // }
+=======
+>>>>>>> Zeno
     const succes = await checkAuth(token);
-    // let isFirstTime = await checkVerification(token);
-    // if (request.nextUrl.pathname === '/settings')
-    //   isFirstTime = false;
+    let isFirstTime = await checkVerification(token);
+    if (isFirstTime){
+      await firstLoginAchiv(token);
+    }
     if (succes){
       return NextResponse.next();
     }
+<<<<<<< HEAD
     // if (isFirstTime)
     //   return NextResponse.redirect(new URL("http://localhost:3000/settings"));
       return NextResponse.redirect(new URL("/", "http://localhost:3000/"));
+=======
+    return NextResponse.redirect(new URL("/", "http://localhost:3000/"));
+>>>>>>> Zeno
 }
  
 export const config = {
