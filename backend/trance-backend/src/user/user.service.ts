@@ -167,6 +167,10 @@ export class UserService {
 				Wins: true,
 			}
 		});
+
+		if (!currentUser)
+			throw new NotFoundException('user not found')
+
 		const AchivementId = await this.prisma.achievement.findFirst({
 			where: {
 				title: type,
@@ -177,8 +181,8 @@ export class UserService {
 			}
 		});
 
-		if (!currentUser)
-			throw new NotFoundException('user not found')
+		if (!AchivementId)
+			throw new NotFoundException('acheivement not found')
 
 		if (currentUser.Wins === 5){
 			const fiveMatchId = await this.prisma.achievement.findFirst({
