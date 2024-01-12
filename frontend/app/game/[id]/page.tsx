@@ -22,6 +22,10 @@ function game() {
         if (path !== `/game/${gameId}`)
             gameSocket.emit('leaveGame');
     }, 2000);
+    
+    gameSocket.on('abort', (arg) => {  
+        console.log("IDSADSDEWDEWFDEWDFEWFEWfewfew");
+    });
     // const {data} = useContext(GameContext);
 
     console.log('data == ', data);
