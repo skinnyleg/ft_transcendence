@@ -2,13 +2,14 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import Matter from 'matter-js';
 import gameSocket, { GameContext } from '../../context/gameSockets';
 import { ballCoordinates, pladdleCoordinates, playersCoordinates } from '../types/interfaces';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { exit } from 'process';
 
 
 const PongZoneQueue = () => {
 
     const   canvasRef = useRef(null);
+    const   route = useRouter();
     const   [matchready, setMatchready] = useState<boolean>(false);
     const   [pongzone, setPongzone] = useState({width: 0, height: 0});
     const   {score, setScore, gameId} = useContext(GameContext);
@@ -106,6 +107,18 @@ const PongZoneQueue = () => {
             var pairs = event.pairs;
             for (var i = 0, j = pairs.length; i != j; ++i) {
                 var pair = pairs[i]; 
+                if (score.playerL === 3) {
+                    Matter.Body.setVelocity(ball, { x: 0, y: 0 });
+                    gameSocket.emit('playerLeftWin');
+                    route.push('/Dashboard');
+                    return ;
+                }
+                else if (score.playerR === 3) {
+                    Matter.Body.setVelocity(ball, { x: 0, y: 0 });
+                    gameSocket.emit('playerRighttWin');
+                    route.push('/Dashboard');
+                    return ;
+                }
                 if ((pair.bodyA === ball && pair.bodyB === wallLeft) || (pair.bodyA === wallLeft && pair.bodyB === ball))
                 {
                     setScore({playerL: score.playerL, playerR: (++score.playerR)});

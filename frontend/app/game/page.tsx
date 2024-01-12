@@ -21,19 +21,19 @@ function GameQueue() {
             console.log('dat ==> ', data);
             setProgress(100);
             setData(data);
-            setGameId(data);
+            setGameId(data[0].roomId);
             console.log('data: ', data);
-            router.push(`/game/${data[0]?.id}`);
-            // data[0].id
+            router.push(`/game/${data[0].roomId}`);
+            data[0].id
             data[0].profilePic
             data[0].nickname
             data[0].opponentId
-            // data[1].id
+            data[1].id
             data[1].profilePic
             data[1].nickname
             data[1].opponentId
             setPlayerL({name: data[0].nickname, picture: data[0].profilePic});
-            setPlayerR();
+            setPlayerR({name: data[1].nickname, picture: data[1].profilePic});
             // router.push(`/game/${Math.floor(Math.random() * 100) + 1}`);
         };
         
