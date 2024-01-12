@@ -19,7 +19,7 @@ export default function LayoutClientDashboard({
     return (
         <socketContext.Provider value={socket}>
             <ContextProvider>
-                <ToastContainer />
+            <ToastContainer pauseOnFocusLoss={false}  />
                 <div className={`flex-none md:w-0 w-20 lg:w-20`}>
                     <NavBar handleShowMenu={handleShowMenu} />
                 </div>

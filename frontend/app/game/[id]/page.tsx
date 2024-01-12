@@ -15,7 +15,6 @@ export const SideBar = () => {
 }
 
 function game() {
-
     const   {data, setData, gameId, setGameId} = useContext(GameContext);
     
     const path = usePathname();

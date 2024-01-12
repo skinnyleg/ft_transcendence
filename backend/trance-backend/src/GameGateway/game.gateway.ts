@@ -57,7 +57,7 @@ export class GameGateway {
     @SubscribeMessage('PlayQueue')
     QueueMaker(client: Socket){
         this.gameService.handleMatchMaker(client, this.server);
-    }  
+    }
 
     @SubscribeMessage('challengeBot')
     async BotMatchMaker(client : Socket){

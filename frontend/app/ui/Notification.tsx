@@ -180,6 +180,8 @@ const Notifications = () => {
     }, [socket]);
 
     const handleAcceptReq = (data: NotificationsData) => {
+        console.log('helo')
+        console.log("sadsacdwacdescfDEfdwfeW", data.notifData);
         let useId = data.notifData.userId;
         let reqId = data.requestId;
         if (data.notifData.typeOfRequest === 'JOINCHANNEL')
@@ -191,8 +193,12 @@ const Notifications = () => {
                 requestId: data.requestId
             })
         }
+        else if (data.notifData.typeOfRequest === 'CHALLENGE'){
+            gameSocket.emit('acceptChallenge', {userId: data.notifData.userId, requestId: data.requestId});
+        }
         else
         {
+            console.log('here')
             socket.emit("accept-request", {userId : useId , requestId : reqId});
             socket.on('refreshPersonalTab', () => {
                 chatSocket.emit('getUserDms');
@@ -218,7 +224,7 @@ const Notifications = () => {
             })
         }
         else if (data.notifData.typeOfRequest === 'CHALLENGE'){
-            gameSocket.emit('acceptChallenge', {userId: data.notifData.userId, requestId: data.requestId});
+            gameSocket.emit('refuseChallenge', {userId: data.notifData.userId, requestId: data.requestId});
         }
         else
             socket.emit("refuse-request", {userId : useId , requestId : reqId});

@@ -1,4 +1,4 @@
-import PlayerInfo, { playerInfoProps } from "./PlayerInfo";
+import PlayerInfo from "./PlayerInfo";
 import MatchScore from "./MatchScore";
 import { useState, useEffect, useContext } from "react";
 import gameSocket, { GameContext } from "../../context/gameSockets";
@@ -9,6 +9,8 @@ const GameResultBar = () => {
 
     // const [playerL, setPlayerL] = useState<playerInfo | undefined>(undefined);
     const {playerL, playerR} = useContext(GameContext);
+    // const [playerL, setPlayerL] = useState<playerInfo | undefined>(undefined);
+    // const [playerR, setPlayerR] = useState<playerInfo | undefined>(undefined);
 
     useEffect(() => {
         gameSocket.emit('players-data');
