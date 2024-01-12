@@ -30,7 +30,6 @@ const newPositionL = { ...currentPositionL };
 export class GameGateway {
     
     constructor(private readonly gameService: GameService, private makeQueue : makeQueue, private userService: UserService) {}
-    private readonly buffer: any[] = [];
     
     @WebSocketServer()
     
@@ -39,13 +38,6 @@ export class GameGateway {
         await this.gameService.saveUser(client);
     }
     
-    removeFromBuffer(index: number)
-    {
-        if (index > -1 && index <= this.buffer.length) {
-            console.log('times');
-            this.buffer.splice(index, 1);
-        }
-    }
     @SubscribeMessage('ImReady')
     QueueReady(client: Socket){
         var queueLength =  this.makeQueue.getQueue().length;
@@ -78,12 +70,6 @@ export class GameGateway {
     QueueMaker(client: Socket){
         this.gameService.handleMatchMaker(client, this.server);
     }
-
-    // @SubscribeMessage('ImReady')
-    // SendMatchInfos(client : Socket){
-    //     const user = this.gameService.getUserBySocketId(client.id)
-    //     client.emit('MatchReady', this.gameService.players_arr.get(user.roomId)[0].matchInfos)
-    // }   
 
     @SubscribeMessage('challengeBot')
     async BotMatchMaker(client : Socket){

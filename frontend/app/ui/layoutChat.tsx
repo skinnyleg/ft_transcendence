@@ -23,7 +23,7 @@ export default function LayoutChat({
         <socketContext.Provider value={socket}>
             <ContextProvider>
                 <chatSocketContext.Provider value={chatSocket}>
-                <ToastContainer />
+                <ToastContainer pauseOnFocusLoss={false}  />
                     <main className={`h-screen`}>
                         <div className={`flex-none md:w-0 w-20 lg:w-20`}>
                             <NavBar handleShowMenu={handleShowMenu} />

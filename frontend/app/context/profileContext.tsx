@@ -8,7 +8,6 @@ export const FriendStatusContext = createContext<any>({});
 
 
 export const ContextFriendProvider = ({ children }: { children: any })=> {
-    
     const pathname = usePathname();
     let nickname : string = pathname.split("/")[2];
     console.log("niiimkm ===== ", nickname);
@@ -31,10 +30,10 @@ export const ContextFriendProvider = ({ children }: { children: any })=> {
       }
     };
     useEffect(() => {
-        getFriendshipStatus();
-      }, []);   
-      console.log("friendshipStatus: ", friendshipStatus);
-
+      getFriendshipStatus();
+      console.log("lolo11111");
+    });   
+    
     const updateStatus = () => {
       getFriendshipStatus();
     }
