@@ -16,7 +16,7 @@ interface ChatTabProps {}
 
 
 const ChatTabChannel: FC<ChatTabProps> = () => {
-	const searchParams = useSearchParams();
+	// const searchParams = useSearchParams();
 	const chatSocket = useContext(chatSocketContext);
 	const {channelIdRef,channelId, setChannelId, setChannel, channel, setSearchInputCh} = useContext(ChatContext);
 	const router = useRouter()

@@ -204,7 +204,6 @@ export class FriendsService {
 			await this.userService.acceptRequest(sender.id, userId, requestId);
 			if (toSend !== undefined)
 			{
-				console.log(toSend.id, "li ghadi tsifat lih ", sender.id, " li sifat")
 				const nick = await this.userService.getNickById(sender.id)
 				toSend.socket.emit('notification', `${nick} accepted your request`);
 				toSend.socket.emit('refreshFriendIcon', {val: true});

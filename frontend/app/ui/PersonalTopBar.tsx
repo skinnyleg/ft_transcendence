@@ -21,7 +21,7 @@ interface PersonalTopBarProps {}
 const PersonalTopBar: FC<PersonalTopBarProps> = () => {
 
 	const router = useRouter();
-	const searchParams = useSearchParams()
+	// const searchParams = useSearchParams()
 	const {personalId, setPersonalId, personal, setPersonal, setHideTabs} = useContext(ChatContext);
 	const [status,setStatus] = useState<string>('')
 	const socket = useContext(socketContext);

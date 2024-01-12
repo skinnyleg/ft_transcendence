@@ -36,8 +36,9 @@ const Themes = ({ handleThemeChange }: ThemesProps) => {
           spaceBetween={10}
           slidesPerView={3}
           breakpoints={breakPoints}
-          onSlideChange={() => console.log('slide change')}
-          onSwiper={(swiper) => console.log(swiper)}>
+          // onSlideChange={() => console.log('slide change')}
+          // onSwiper={(swiper) => console.log(swiper)}
+          >
             {['/52.jpg', '/yo.jpg', '/yo1.jpg', '/42.jpg'].map((image, index) => (
               <SwiperSlide
                 key={index}

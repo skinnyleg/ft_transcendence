@@ -10,10 +10,10 @@ import { useRouter } from 'next/navigation';
 interface RightBarProps {}
 
 const RightBar: FC<RightBarProps> = ({}) => {
-	const searchParams = useSearchParams()
+	// const searchParams = useSearchParams()
 
-	const hidden = isHidden(searchParams)
-	const which = whichTab(searchParams)
+	// const hidden = isHidden(searchParams)
+	// const which = whichTab(searchParams)
 	// const sideBar = isBarOpen(searchParams)
 	const {channelId, barOpen, personalId, hideTabs} = useContext(ChatContext)
 	const router = useRouter()

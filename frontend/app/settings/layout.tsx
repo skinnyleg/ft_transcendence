@@ -4,10 +4,12 @@ import { Metadata } from "next";
 
 export const metadata : Metadata = {
   title: 'settings',
-  description: 'Pong Platform Login Page',
-  viewport: 'width=device-width, initial-scale=1',
+  description: 'Pong Platform Settings Page',
   icons: ''
+}
 
+export const viewport = {
+  content: 'width=device-width, initial-scale=1'
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {

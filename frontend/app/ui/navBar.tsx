@@ -6,7 +6,7 @@ import clsx from "clsx";
 import { Inter } from "next/font/google"
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 import {profileNickPic, responseData} from "@/app/interfaces/interfaces";
 import { useDebouncedCallback } from "use-debounce";
@@ -24,6 +24,8 @@ function NavBar ({handleShowMenu}: NavBarProps)
 {
   const [show, setShow] = useState(false);
   var currentPath = usePathname();
+  // console.log('pathname == ', currentPath)
+  const router = useRouter();  
 
 
   const [search, setSearch] = useState('');
@@ -142,27 +144,25 @@ return (
           />
         </div>
         <div className="flex flex-col flex-grow mt-20">
-            <Link href="/Dashboard" className={clsx(`flex items-center mt-15 justify-center mt-10 px-15 font-medium text-gray-400
-               hover:text-accents`, {'text-accents'  : currentPath === "/Dashboard",
-            })}>
+            <div className={clsx(`flex items-center mt-15 justify-center mt-10 px-15 font-medium 
+               hover:text-accents`, {'text-accents'  : currentPath === "/Dashboard", 'text-gray-400'  : currentPath !== "/Dashboard"
+              })} onClick={() => {router.push('/Dashboard')}}>
               <HomeIcon className="w-10 ml-3 h-6 mr-4 xl:w-20 xl:h-20" />
-            </Link>
-            <Link href="/Chat" className={clsx(`flex items-center mt-10 justify-center xl:mt-15 xl:w-20 xl:h-20 px-15 font-medium text-gray-400
-              hover:text-accents`, {'text-accents'  : currentPath === "/Chat",
-            })}>
+            </div>
+            <div className={clsx(`flex items-center mt-10 justify-center xl:mt-15 xl:w-20 xl:h-20 px-15 font-medium 
+              hover:text-accents`, {'text-accents'  : currentPath === "/Chat", 'text-gray-400'  : currentPath !== "/Chat"})} onClick={() => {router.push('/Chat')}}>
               <ChatBubbleBottomCenterIcon className="w-10 ml-3 h-6 mr-4 xl:w-20 xl:h-20" />
-            </Link>
-            <Link href="/Leaderboard" className={clsx(`flex items-center mt-15 justify-center xl:mt-15 mt-10 px-15 font-medium text-gray-400
-              hover:text-accents`, {'text-accents'  : currentPath === "/Leaderboard",
-            })}>
+            </div>
+            <div className={clsx(`flex items-center mt-15 justify-center xl:mt-15 mt-10 px-15 font-medium 
+              hover:text-accents`, {'text-accents'  : currentPath === "/Leaderboard", 'text-gray-400'  : currentPath !== "/Leaderboard"
+              })} onClick={() => {router.push('/Leaderboard')}}>
               <TrophyIcon className="w-10 h-6 ml-3 mr-4 xl:w-20 xl:h-20" />
-            </Link>
-            <Link href="/settings"
-              className={clsx(`flex items-center mt-15 justify-center mt-10 xl:mt-15 px-15 font-medium text-gray-400 hover:text-accents`, {
-              'text-accents'  : currentPath === "/Leaderboard",
-              })}>
+            </div>
+            <div className={clsx(`flex items-center mt-15 justify-center mt-10 xl:mt-15 px-15 font-medium  hover:text-accents`, {
+              'text-accents'  : currentPath === "/settings", 'text-gray-400'  : currentPath !== "/settings"
+                })} onClick={() => {router.push('/settings')}}>
               <Cog6ToothIcon className="w-10 ml-3 h-6 mr-4 xl:w-20 xl:h-20" />
-            </Link>
+            </div>
         </div>
         <div className="absolute bottom-5 justify-center text-gray-500 xl:mt-15 items-center flex w-full ">
           <Link href={`${process.env.NEXT_PUBLIC_BACKEND_HOST}/auth/signout`} 

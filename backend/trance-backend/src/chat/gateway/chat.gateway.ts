@@ -41,6 +41,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 	server: Server;
 
 	private usersSockets: {userId: string, socket: any}[] = [];
+	private saveDmId: string = '';
 
 	async onModuleInit() {
 		try
@@ -341,6 +342,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 		}
 	}
 
+
+	@SubscribeMessage('getSaveDmId')
+	sendSavedDmId(@ConnectedSocket() client: Socket)
+	{
+		client.emit('sentDmId', {dmId: this.saveDmId});
+		this.saveDmId = '';
+	}
+
 	@SubscribeMessage('sendMsgDM')
 	async	handleSendMessageDm(@MessageBody() data: sendMessageDm, @ConnectedSocket() client: Socket)
 	{
@@ -352,9 +361,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			const receiverSocket = this.usersSockets.find(user => user.userId === receId);
 			const { dmId, receiverId } = await this.DmService.generateDm(receId, user.id, receiverSocket);
 			const blockedList = await this.DmOutils.getBlockedUsers(user.id);
-			if (blockedList.find((blockUser => blockUser === receiverId)))
-				return client.emit('notification', `user is blocked`);
 			if (data.content) {
+				if (blockedList.find((blockUser => blockUser === receiverId)))
+					return client.emit('notification', `user is blocked`);
 				const message = await this.DmService.creatMessageDm(dmId, user.id, data.content);
 				await this.DmOutils.updateDmupdatedAt(dmId, message.createdAt);
 				const buffer = await this.DmOutils.fillDmsBuffer(message, user.id, dmId);
@@ -366,7 +375,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 				this.server.to(dmId).emit('messageDoneDM', buffer);
 			}
 			else
-				client.emit('redirect', {dmId})
+			{
+				this.saveDmId = dmId;
+				client.emit('redirect', {dmId: this.saveDmId})
+			}
 		}
 		catch (error) {
 			this.DmOutils.Error(client, 'sendMsgDM', error, 'send DM failed');

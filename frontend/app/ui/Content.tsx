@@ -10,7 +10,7 @@ interface ContentProps {}
 
 
 const Content: FC<ContentProps> = ({}) => {
-	const searchParams = useSearchParams();
+	// const searchParams = useSearchParams();
 	const {channelId, personalId, barOpen, hideTabs} = useContext(ChatContext);
 
 	return (

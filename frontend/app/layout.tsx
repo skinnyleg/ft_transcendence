@@ -14,7 +14,10 @@ const bebas_neue = Bebas_Neue({
 export const metadata: Metadata = {
   title: 'Login',
   description: 'Pong Platform Login Page',
-  viewport: 'width=device-width, initial-scale=1',
+}
+
+export const viewport = {
+  content: 'width=device-width, initial-scale=1'
 }
 
 export default function RootLayout({

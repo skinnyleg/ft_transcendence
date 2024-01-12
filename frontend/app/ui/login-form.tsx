@@ -62,7 +62,7 @@ export default function LoginForm() {
         <h1 className={`${lusitana.className} mb-3 lg:text-2xl md:text-xl text-xl`}>
           Please log in to continue.
         </h1>
-        <div className="w-4/5">
+        <div className="w-full md:w-4/5">
           <div className="mt-10">
             <label
               className="ml-6 mb-3 mt-5 text-xs hidden lg:block md:block font-medium text-white"
@@ -72,7 +72,7 @@ export default function LoginForm() {
             </label>
             <div className="relative">
               <input
-                className="peer md:ml-6 md:mt-2 text-gray-700 block md:w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
+                className="peer md:ml-6 md:mt-2 text-gray-700 block w-full md:w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
                 id="username" 
                 type="username"
                 name="username"
@@ -89,7 +89,7 @@ export default function LoginForm() {
             </label>
             <div className="relative">
               <input
-                className="md:ml-6 text-gray-700 peer block md:w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
+                className="md:ml-6 text-gray-700 peer block w-full md:w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
                 id="password"
                 type="password"
                 name="password"
@@ -131,7 +131,7 @@ function LoginButton() {
  const { pending } = useFormStatus();
 
  return (
-    <button className="mt-5 ml-6 w-4/5 bg-button border border-gray-500 rounded-lg px-4 py-[7px] flex items-center justify-between" aria-disabled={pending}>
+    <button className="mt-5 md:ml-6 w-full md:w-4/5 bg-button border border-gray-500 rounded-lg px-4 py-[7px] flex items-center justify-between" aria-disabled={pending}>
       <span className="text-white items-center">Log in</span>
       <ArrowRightIcon className="h-4 w-4 text-white" />
     </button>

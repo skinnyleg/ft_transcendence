@@ -11,7 +11,6 @@ const checkVerification = async (token:string | undefined) => {
           'Authorization': `Bearer ${token}`
       },
       });
-      console.log("status", res.status);
       if (res.status === 401) {
         console.log("fuck");
         return true;
@@ -59,7 +58,6 @@ const refreshToken = async (refreshtoken : string) => {
 
 export default async function middleware(request: NextRequest){
     let token  = request.cookies.get("token")?.value;
-    console.log('token in middleware === ', token);
     const refreshtoken  = request.cookies.get("refresh");
     // let response: NextResponse = new NextResponse;
     // if (IsExpired){
@@ -70,18 +68,18 @@ export default async function middleware(request: NextRequest){
     //   response.cookies.set("token", token as string);
     //   response.cookies.set("refresh", refresh as string);
     //   return response;
+
     // }
     const succes = await checkAuth(token);
     // let isFirstTime = await checkVerification(token);
     // if (request.nextUrl.pathname === '/settings')
     //   isFirstTime = false;
     if (succes){
-      console.log('here 200')
       return NextResponse.next();
     }
     // if (isFirstTime)
     //   return NextResponse.redirect(new URL("http://localhost:3000/settings"));
-    return NextResponse.redirect(new URL("/", "http://localhost:3000/"));
+      return NextResponse.redirect(new URL("/", "http://localhost:3000/"));
 }
  
 export const config = {

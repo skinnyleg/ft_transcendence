@@ -9,7 +9,7 @@ import { ChatContext } from '../context/soketContext';
 interface LeftBarProps {}
 
 const LeftBar: FC<LeftBarProps> = ({}) => {
-	const searchParams = useSearchParams();
+	// const searchParams = useSearchParams();
 	const {channelId, personalId, barOpen} = useContext(ChatContext);
 
 		return (

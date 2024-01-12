@@ -704,7 +704,32 @@ export class UserService {
 		})
 		if (!user)
 			throw new NotFoundException('user Doesn\'t exist')
-	
+
+			
+		const friendStatus = await this.prisma.friendStatus.findFirst({
+		where: {
+			OR: [
+			{
+				userId: senderId,
+				friendId: recipientId,
+				status: {
+				in: [Status.FRIEND, Status.PENDING], // Check for FRIEND or PENDING status
+				},
+			},
+			{
+				userId: recipientId,
+				friendId: senderId,
+				status: {
+				in: [Status.FRIEND, Status.PENDING], // Check for FRIEND or PENDING status
+				},
+			},
+			],
+		},
+		});
+		
+		if (friendStatus)
+			throw new ConflictException('you are already friends or already got a request from this user')
+
 		await this.updateFriend(recipientId, senderId ,Status.FRIEND)
 		await this.setNewFriend(senderId, recipientId, Status.FRIEND)
 		await this.prisma.request.update({
@@ -1300,9 +1325,9 @@ export class UserService {
 
 	async getFriendStatus(id: string, nickname: string)
 	{
-		console.log("nickname", nickname);
+		// console.log("nickname", nickname);
 		const user = await this.findOneByNickname(nickname);
-		console.log("userID", user.id);
+		// console.log("userID", user.id);
 
 		if (!user)
 			throw new NotFoundException('User Not Found')
@@ -1330,7 +1355,7 @@ export class UserService {
 				return ({status: 'BLOCKED'})
 			return ({status: 'NONE'})
 		}
-		console.log("friendStatus", friendStatus.status);
+		// console.log("friendStatus", friendStatus.status);
 		return {status: friendStatus.status};
 	}
 }
