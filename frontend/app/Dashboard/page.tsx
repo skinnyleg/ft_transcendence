@@ -12,6 +12,8 @@ import {dashboardData, profileData} from '../interfaces/interfaces';
 import { QuestionMarkCircleIcon, QueueListIcon } from '@heroicons/react/24/outline';
 import { ToastContainer, toast } from 'react-toastify';
 import TopThree from '../ui/TopThree';
+import { ClassNames } from '@emotion/react';
+import GameType from '../game/ui/GameType';
 
 
 function Dashboard() {
@@ -19,6 +21,7 @@ function Dashboard() {
   const [dashboardData, setDashboardData] = useState<dashboardData | undefined>(undefined);
   const [theme, setTheme] = useState('yo1.jpg');
   const [powerup, setPowerup] = useState('FireBall');
+  const	[gameType, setgameType] = useState<string>('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -52,9 +55,8 @@ function Dashboard() {
       <div className="flex flex-col h-[95%] lg:mt-5 md:mt-10 mt-10 xl:mt-5">
         <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-5 lg:grid-rows-3 gap-5 w-full h-full mt-4 md:grid-row-5 grid-row-5">
           <div className="relative p-0 rounded-md col-span-1 lg:col-span-3 lg:h-[100%] md:h-[300px] h-[300px] xl:h-[100%] lg:w-full shadow-md" style={{backgroundImage: `url(${theme})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
-            <FaRobot className="text-accents w-8 h-8 absolute right-5 top-5"/>
-            <QueueListIcon className="text-accents w-8 h-8 absolute right-12 mr-2 top-5" />
-            <PlayButton theme = {theme} PowerUp={powerup}/>
+            <GameType typeSetter={setgameType}/>
+            <PlayButton theme={theme} PowerUp={powerup} gameType={gameType}/>
           </div>
           
           <TopThree />

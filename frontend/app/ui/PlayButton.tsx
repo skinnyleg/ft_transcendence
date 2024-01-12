@@ -1,17 +1,24 @@
-interface PlayButtonProps { theme: string; PowerUp: string; }
+interface PlayButtonProps { theme: string; PowerUp: string; gameType: string}
 import {Button, ButtonGroup} from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 import gameSocket from "../context/gameSockets";
 
 
-const PlayButton = ({ theme, PowerUp }:PlayButtonProps) => {
+const PlayButton = ({ theme, PowerUp, gameType }:PlayButtonProps) => {
 
     const router = useRouter()
+
     const redirectToGame = () => {
-        gameSocket.emit('PlayQueue');
-        gameSocket.on('InQueue', () => {
-            router.push('/game')
-        });
+        if (gameType === 'QUEUE')
+        {
+            gameSocket.emit('PlayQueue');
+            gameSocket.on('InQueue', () => { router.push('/game') });
+        }
+        else if (gameType === 'BOT')
+        {
+            gameSocket.emit('PlayBot');
+            router.push('/game');
+        }
     };
 
     return (

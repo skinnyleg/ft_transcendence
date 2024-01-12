@@ -37,7 +37,7 @@ const PongZoneBoot = () => {
         const midleCanvas = ((maxX- minX) / 2) + minX;
 
         const ball = Matter.Bodies.circle(midleCanvas, midleVertical, 10, {
-            isStatic: true,
+            isStatic: false,
             restitution: 0.8, // Bounciness of the ball
             friction: 0.1, // Friction of the ball
             density: 0.04, // Density of the ball
@@ -58,18 +58,18 @@ const PongZoneBoot = () => {
             switch (event.key) {
                 case 'ArrowUp':
                     newPositionLeft.y -= speedR;
-                    gameSocket.emit('ArrowUp'); 
+                    // gameSocket.emit('ArrowUp'); 
                     break;
                 case 'ArrowDown':
                     newPositionLeft.y += speedR;
-                    gameSocket.emit('ArrowDown'); 
+                    // gameSocket.emit('ArrowDown'); 
                     break;
             }
             console.log('befor y: ',  newPositionLeft.y)
-            // newPositionLeft.y = Math.max(minY + height/2, Math.min(newPositionLeft.y, maxY- height/2));
-            console.log(`front : h-${height} & w-${width} & minY-${minY} & minx-${minX} & maxY-${maxY} & maxY-${maxX}`);
-            console.log('after y: ',  newPositionLeft.y)
-            Matter.Body.setPosition(paddleLeft, newPositionLeft, []);
+            newPositionLeft.y = Math.max(minY + height/2, Math.min(newPositionLeft.y, maxY- height/2));
+            // console.log(`front : h-${height} & w-${width} & minY-${minY} & minx-${minX} & maxY-${maxY} & maxY-${maxX}`);
+            // console.log('after y: ',  newPositionLeft.y)
+            Matter.Body.setPosition(paddleLeft, newPositionLeft);
             currentPositionLeft = newPositionLeft;
         };
 
