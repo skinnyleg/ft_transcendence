@@ -8,12 +8,16 @@ import { ToastContainer, toast } from 'react-toastify';
 
 const VerifyCode :  React.FC = () => {
   /// Never Ever Use useRef inside callBack it's against react hooks rules 
-  const [inputRefs, setInputRefs] = useState<React.RefObject<HTMLInputElement>[]>([]);
+  const [inputRefs, setInputRefs] = useState<React.RefObject<HTMLInputElement>[]>(Array(6).fill(null).map(() => React.createRef<HTMLInputElement>()));
 
   useEffect(() => {
     // Initialize refs only once
-    setInputRefs(Array(6).fill(null).map(() => React.createRef<HTMLInputElement>()));
-  }, [setInputRefs]);
+    // setInputRefs(Array(6).fill(null).map(() => React.createRef<HTMLInputElement>()));
+    inputRefs[0].current?.focus();
+  }, []);
+  
+  // useEffect(() => {
+  // }, [inputRefs])
 
   const [error, setError] = useState<string | null>(null)
   const router = useRouter();
@@ -29,7 +33,9 @@ const VerifyCode :  React.FC = () => {
       });
       if (response.ok) {
         const data = await response.json();
-        toast.success('Verification successfull!');
+        toast.success('Verification successfull!', {
+          autoClose: 500,
+        });
         router.replace('/Dashboard');
       }
       else {

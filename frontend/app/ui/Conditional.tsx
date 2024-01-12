@@ -78,10 +78,10 @@ const Conditional = ({isfriend, privateProfile, userId, isBlocked} : DataProps )
     }
 
     const sendMessage = () => {
-        console.log('here')
         chatSocket.emit('sendMsgDM', {
             receiverId : userId
         })
+
         chatSocket.on('redirect', (data: {dmId: string}) => {
             router.push(`/Chat`)
         })

@@ -18,7 +18,7 @@ interface ChannelNameProps {
 const ChannelName: FC<ChannelNameProps> = ({isOpen, setIsOpen}) => {
 
 	const [name, setName] = useState<string>('');
-	const searchParams = useSearchParams();
+	// const searchParams = useSearchParams();
 	const router = useRouter();
 	const chatSocket = useContext(chatSocketContext);
 	const {channelId, setChannelId} = useContext(ChatContext);

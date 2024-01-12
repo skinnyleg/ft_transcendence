@@ -12,12 +12,12 @@ const PersonalTab = () => {
 
 
 	const chatSocket = useContext(chatSocketContext)
-	const searchParams = useSearchParams();
+	// const searchParams = useSearchParams();
 	const router = useRouter()
 	const {channelId, setChannelId,personalId, searchInputDm, setSearchInputDm} = useContext(ChatContext);
 	const [userDms, setUserDms] = useState<DmsInter[]>([]);
 	const [info, setInfo] = useState<string>('Add Some Friends');
-	const hidden = whichTab(searchParams)
+	// const hidden = whichTab(searchParams)
 
 
 	const deleteChannelQuery = () => {

@@ -16,7 +16,7 @@ const ChatSideBar: FC<ChatSideBarProps> = () => {
 
 	const {channelIdRef,channelId, setChannelId, user, channel, setBarOpen} = useContext(ChatContext);
 
-	const searchParams = useSearchParams()
+	// const searchParams = useSearchParams()
 	const router = useRouter();
 	const val = channel?.userRole as string;
 	const isJoined = val !== 'none' ? true : false;

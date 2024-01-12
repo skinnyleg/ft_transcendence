@@ -15,12 +15,12 @@ import { checkOpenChannelId, isHidden, whichTab } from './ChatUtils';
 const ChannelTab = () => {
 
 	const chatSocket = useContext(chatSocketContext)
-	const searchParams = useSearchParams();
+	// const searchParams = useSearchParams();
 	const router = useRouter()
 	const {channelIdRef, channelId, setChannelId, searchInputCh, setSearchInputCh} = useContext(ChatContext);
 	const [userChannels, setUserChannels] = useState<ChannelInter[]>([]);
 	const [info, setInfo] = useState<string>('Join Or Create Your Own Channel');
-	const hidden = whichTab(searchParams)
+	// const hidden = whichTab(searchParams)
 
 
 

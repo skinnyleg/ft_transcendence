@@ -19,7 +19,7 @@ interface ChatTabProps {}
 
 
 const ChatTabPersonal: FC<ChatTabProps> = () => {
-	const searchParams = useSearchParams();
+	// const searchParams = useSearchParams();
 	const chatSocket = useContext(chatSocketContext);
 	const {personalId, setPersonalId, setPersonal, personal, setSearchInputDm} = useContext(ChatContext);
 	const router = useRouter()

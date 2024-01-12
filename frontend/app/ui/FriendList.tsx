@@ -73,9 +73,8 @@ const FriendsList = () => {
         chatSocket.emit('sendMsgDM', {
             receiverId : userId
         })
+
         chatSocket.on('redirect', (data: {dmId: string}) => {
-            console.log('redirect sent');
-            // history.pushState({personalId: data.dmId}, '', '/Chat')
             router.push(`/Chat`)
         })
     }
@@ -95,7 +94,7 @@ const FriendsList = () => {
             var chunk: FriendsData[] = friendsList.slice(index, index + 3);
             
             jsxElements.push(
-                    <div className="flex flex-row w-full justify-start items-start h-1/3 gap-1 mt-10 md:mt-28 lg:mt-0 xl:mt-0">
+                    <div key={index} className="flex flex-row w-full justify-start items-start h-1/3 gap-1 mt-10 md:mt-28 lg:mt-0 xl:mt-0">
                         {
                             chunk.map((friend) => (
                                 <div  key={friend.id} className="bg-lightQuartze w-1/3 h-full p-2 border rounded-[15px] flex flex-col items-center justify-between">

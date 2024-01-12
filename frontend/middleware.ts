@@ -13,7 +13,6 @@ const checkVerification = async (token:string | undefined) => {
           'Authorization': `Bearer ${token}`
       },
       });
-      console.log("status", res.status);
       if (res.status === 401) {
         console.log("fuck");
         return true;
@@ -77,6 +76,20 @@ const firstLoginAchiv = async (token : string | undefined) => {
 export default async function middleware(request: NextRequest){
     let token = request.cookies.get("token")?.value;
     const refreshtoken  = request.cookies.get("refresh");
+<<<<<<< HEAD
+    // let response: NextResponse = new NextResponse;
+    // if (IsExpired){
+    //   const {token , refresh} = await refreshToken(refreshtoken?.value as string);
+    //   console.log('token == ', token)
+    //   console.log('refresh == ', refresh)
+    //   // token  = refresh;
+    //   response.cookies.set("token", token as string);
+    //   response.cookies.set("refresh", refresh as string);
+    //   return response;
+
+    // }
+=======
+>>>>>>> Zeno
     const succes = await checkAuth(token);
     let isFirstTime = await checkVerification(token);
     if (isFirstTime){
@@ -85,7 +98,13 @@ export default async function middleware(request: NextRequest){
     if (succes){
       return NextResponse.next();
     }
+<<<<<<< HEAD
+    // if (isFirstTime)
+    //   return NextResponse.redirect(new URL("http://localhost:3000/settings"));
+      return NextResponse.redirect(new URL("/", "http://localhost:3000/"));
+=======
     return NextResponse.redirect(new URL("/", "http://localhost:3000/"));
+>>>>>>> Zeno
 }
  
 export const config = {

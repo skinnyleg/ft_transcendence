@@ -21,7 +21,7 @@ const ChatContent: FC<ChatContentProps> = () => {
 		const channelType = channel?.channelType;
 		const addBlur = (isJoined === 'none') && (channelType === 'PROTECTED' || channelType === 'PRIVATE');
 		const chatSocket = useContext(chatSocketContext);
-		const searchParams = useSearchParams()
+		// const searchParams = useSearchParams()
 
 		useEffect(() => {
 			// console.log("ref obj == ", scrollableRef.current)

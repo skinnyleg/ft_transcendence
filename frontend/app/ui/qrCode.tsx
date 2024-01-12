@@ -24,6 +24,7 @@ const VerificationInput: React.FC<VerificationInputProps> = ({ inputRefs, onSubm
       inputRefs[index + 1]?.current?.focus();
     }
     if (newCode.length === 6) {
+      console.log('here submitting')
       onSubmit(newCode);
     }
   };
