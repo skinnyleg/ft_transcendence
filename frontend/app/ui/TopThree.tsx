@@ -43,7 +43,7 @@ const TopThree = ()=> {
         <div key={index} className="flex flex-row p-2 rounded-[15px] w-full mb-0 h-1/3 items-center py-0 bg-cyan-600">
         <div className="flex-grow flex flex-row items-center justify-between">
           <div className='flex flex-row items-center gap-4'>
-            <img src='/yo.jpg' alt={`user Picture ` + index} className="w-14 h-14 lg:w-12 lg:h-12 xl:w-16 xl:h-16 rounded-[15px]" />
+            <img src='/yo.jpg' alt={`user Picture ` + index} className="w-14 h-14 lg:w-12 lg:h-12 xl:w-14 xl:h-14 rounded-[15px]" />
             <div className="text-[35px] font-semibold ">Unknown</div>
           </div>
           <div className='w-fit h-fit'>
@@ -68,7 +68,7 @@ const TopThree = ()=> {
               <div key={userRank.id} className="flex flex-row p-2 rounded-[15px] w-full mb-0 h-1/3 items-center py-0 bg-cyan-600">
               <div className="flex-grow flex flex-row items-center justify-between">
                 <div className='flex flex-row items-center gap-4'>
-                  <img src={userRank.profilePic} alt={`user Picture ` + userRank.id} className="w-14 h-14 lg:w-12 lg:h-12 xl:w-16 xl:h-16 rounded-[15px] "/>
+                  <img src={userRank.profilePic} alt={`user Picture ` + userRank.id} className="w-14 h-14 lg:w-12 lg:h-12 xl:w-14 xl:h-14 rounded-[15px] "/>
                   <div className=" text-[35px] font-semibold ">{userRank.nickname}</div>
                 </div>
                 <div className='w-fit h-fit'>

@@ -2,7 +2,7 @@
 import TopBar from "@/app/ui/top";
 import { usePathname } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
-import { Achievements, profileData } from "@/app/interfaces/interfaces";
+import { Achievements, Match, profileData } from "@/app/interfaces/interfaces";
 import { ArrowTrendingUpIcon,   HandThumbUpIcon, UserPlusIcon, HandRaisedIcon, HandThumbDownIcon } from "@heroicons/react/20/solid";
 import { ArrowTrendingDownIcon,  ChatBubbleLeftEllipsisIcon, UserMinusIcon, WalletIcon, TrophyIcon } from "@heroicons/react/24/outline";
 import { FaUserFriends } from "react-icons/fa";
@@ -10,256 +10,258 @@ import ProgressBar from "@/app/ui/progressBar";
 import Conditional from "@/app/ui/Conditional";
 import { ContextFriendProvider } from "@/app/context/profileContext";
 import { socketContext } from "@/app/context/soketContext";
+import { MatchInfo } from "@/app/game/types/interfaces";
 
-const matchHistory = [{
-    id : "25/122024",
-    winner : {
-        nickname:"player 1",
-        profilePic:"/yo.jpg",
-    },
-    loser : {
-        nickname : "player2",
-        profilePic : "/yo.jpg",
-    },
-    winnerScore : 2,
-    loserScore : 1,
-    isMeWhoWon : true,
-},
-{
-    id : "6/2/2024",
-    winner : {
-        nickname:"player 1",
-        profilePic:"/yo.jpg",
-    },
-    loser : {
-        nickname : "player2",
-        profilePic : "/yo.jpg",
-    },
-    winnerScore : 2,
-    loserScore : 1,
-    isMeWhoWon : false,
 
-},
-{
-    id : "26/12/2024",
-    winner : {
-        nickname:"player 1",
-        profilePic:"/yo.jpg",
-    },
-    loser : {
-        nickname : "player2",
-        profilePic : "/yo.jpg",
-    },
-    winnerScore : 2,
-    loserScore : 1,
-    isMeWhoWon : false,
+// const matchHistory = [{
+//     id : "25/122024",
+//     winner : {
+//         nickname:"player 1",
+//         profilePic:"/yo.jpg",
+//     },
+//     loser : {
+//         nickname : "player2",
+//         profilePic : "/yo.jpg",
+//     },
+//     winnerScore : 2,
+//     loserScore : 1,
+//     isMeWhoWon : true,
+// },
+// {
+//     id : "6/2/2024",
+//     winner : {
+//         nickname:"player 1",
+//         profilePic:"/yo.jpg",
+//     },
+//     loser : {
+//         nickname : "player2",
+//         profilePic : "/yo.jpg",
+//     },
+//     winnerScore : 2,
+//     loserScore : 1,
+//     isMeWhoWon : false,
 
-},
-{
-    id : "26/12/2024",
-    winner : {
-        nickname:"player 1",
-        profilePic:"/yo.jpg",
-    },
-    loser : {
-        nickname : "player2",
-        profilePic : "/yo.jpg",
-    },
-    winnerScore : 2,
-    loserScore : 1,
-    isMeWhoWon : false,
+// },
+// {
+//     id : "26/12/2024",
+//     winner : {
+//         nickname:"player 1",
+//         profilePic:"/yo.jpg",
+//     },
+//     loser : {
+//         nickname : "player2",
+//         profilePic : "/yo.jpg",
+//     },
+//     winnerScore : 2,
+//     loserScore : 1,
+//     isMeWhoWon : false,
 
-},
-{
-    id : "26/12/2024",
-    winner : {
-        nickname:"player 1",
-        profilePic:"/yo.jpg",
-    },
-    loser : {
-        nickname : "player2",
-        profilePic : "/yo.jpg",
-    },
-    winnerScore : 2,
-    loserScore : 1,
-    isMeWhoWon : false,
+// },
+// {
+//     id : "26/12/2024",
+//     winner : {
+//         nickname:"player 1",
+//         profilePic:"/yo.jpg",
+//     },
+//     loser : {
+//         nickname : "player2",
+//         profilePic : "/yo.jpg",
+//     },
+//     winnerScore : 2,
+//     loserScore : 1,
+//     isMeWhoWon : false,
 
-},
-{
-    id : "26/12/2024",
-    winner : {
-        nickname:"player 1",
-        profilePic:"/yo.jpg",
-    },
-    loser : {
-        nickname : "player2",
-        profilePic : "/yo.jpg",
-    },
-    winnerScore : 2,
-    loserScore : 1,
-    isMeWhoWon : false,
+// },
+// {
+//     id : "26/12/2024",
+//     winner : {
+//         nickname:"player 1",
+//         profilePic:"/yo.jpg",
+//     },
+//     loser : {
+//         nickname : "player2",
+//         profilePic : "/yo.jpg",
+//     },
+//     winnerScore : 2,
+//     loserScore : 1,
+//     isMeWhoWon : false,
 
-},
-{
-    id : "26/12/2024",
-    winner : {
-        nickname:"player 1",
-        profilePic:"/yo.jpg",
-    },
-    loser : {
-        nickname : "player2",
-        profilePic : "/yo.jpg",
-    },
-    winnerScore : 2,
-    loserScore : 1,
-    isMeWhoWon : false,
+// },
+// {
+//     id : "26/12/2024",
+//     winner : {
+//         nickname:"player 1",
+//         profilePic:"/yo.jpg",
+//     },
+//     loser : {
+//         nickname : "player2",
+//         profilePic : "/yo.jpg",
+//     },
+//     winnerScore : 2,
+//     loserScore : 1,
+//     isMeWhoWon : false,
 
-},
-{
-    id : "26/12/2024",
-    winner : {
-        nickname:"player 1",
-        profilePic:"/yo.jpg",
-    },
-    loser : {
-        nickname : "player2",
-        profilePic : "/yo.jpg",
-    },
-    winnerScore : 2,
-    loserScore : 1,
-    isMeWhoWon : false,
+// },
+// {
+//     id : "26/12/2024",
+//     winner : {
+//         nickname:"player 1",
+//         profilePic:"/yo.jpg",
+//     },
+//     loser : {
+//         nickname : "player2",
+//         profilePic : "/yo.jpg",
+//     },
+//     winnerScore : 2,
+//     loserScore : 1,
+//     isMeWhoWon : false,
 
-},
-{
-    id : "26/12/2024",
-    winner : {
-        nickname:"player 1",
-        profilePic:"/yo.jpg",
-    },
-    loser : {
-        nickname : "player2",
-        profilePic : "/yo.jpg",
-    },
-    winnerScore : 2,
-    loserScore : 1,
-    isMeWhoWon : false,
+// },
+// {
+//     id : "26/12/2024",
+//     winner : {
+//         nickname:"player 1",
+//         profilePic:"/yo.jpg",
+//     },
+//     loser : {
+//         nickname : "player2",
+//         profilePic : "/yo.jpg",
+//     },
+//     winnerScore : 2,
+//     loserScore : 1,
+//     isMeWhoWon : false,
 
-},
-{
-    id : "26/12/2024",
-    winner : {
-        nickname:"player 1",
-        profilePic:"/yo.jpg",
-    },
-    loser : {
-        nickname : "player2",
-        profilePic : "/yo.jpg",
-    },
-    winnerScore : 2,
-    loserScore : 1,
-    isMeWhoWon : false,
+// },
+// {
+//     id : "26/12/2024",
+//     winner : {
+//         nickname:"player 1",
+//         profilePic:"/yo.jpg",
+//     },
+//     loser : {
+//         nickname : "player2",
+//         profilePic : "/yo.jpg",
+//     },
+//     winnerScore : 2,
+//     loserScore : 1,
+//     isMeWhoWon : false,
 
-},
-{
-    id : "26/12/2024",
-    winner : {
-        nickname:"player 1",
-        profilePic:"/yo.jpg",
-    },
-    loser : {
-        nickname : "player2",
-        profilePic : "/yo.jpg",
-    },
-    winnerScore : 2,
-    loserScore : 1,
-    isMeWhoWon : false,
+// },
+// {
+//     id : "26/12/2024",
+//     winner : {
+//         nickname:"player 1",
+//         profilePic:"/yo.jpg",
+//     },
+//     loser : {
+//         nickname : "player2",
+//         profilePic : "/yo.jpg",
+//     },
+//     winnerScore : 2,
+//     loserScore : 1,
+//     isMeWhoWon : false,
 
-},
-{
-    id : "26/22424",
-    winner : {
-        nickname:"player 1",
-        profilePic:"/yo.jpg",
-    },
-    loser : {
-        nickname : "player2",
-        profilePic : "/yo.jpg",
-    },
-    winnerScore : 2,
-    loserScore : 1,
-    isMeWhoWon : true,
-},
-,
-{
-    id : "26//2424",
-    winner : {
-        nickname:"player 1",
-        profilePic:"/yo.jpg",
-    },
-    loser : {
-        nickname : "player2",
-        profilePic : "/yo.jpg",
-    },
-    winnerScore : 2,
-    loserScore : 1,
-    isMeWhoWon : true,
-},
-{
-    id : "224/2424",
-    winner : {
-        nickname:"player 1",
-        profilePic:"/yo.jpg",
-    },
-    loser : {
-        nickname : "player2",
-        profilePic : "/yo.jpg",
-    },
-    winnerScore : 2,
-    loserScore : 1,
-    isMeWhoWon : true,
-},
-{
-    id : "46/32424",
-    winner : {
-        nickname:"player 1",
-        profilePic:"/yo.jpg",
-    },
-    loser : {
-        nickname : "player2",
-        profilePic : "/yo.jpg",
-    },
-    winnerScore : 2,
-    loserScore : 1,
-    isMeWhoWon : true,
-},
-{
-    id : "29/120/2424",
-    winner : {
-        nickname:"player 1",
-        profilePic:"/yo.jpg",
-    },
-    loser : {
-        nickname : "player2",
-        profilePic : "/yo.jpg",
-    },
-    winnerScore : 2,
-    loserScore : 1,
-    isMeWhoWon : true,
-},
-{
-    id : "24/185/2424",
-    winner : {
-        nickname:"med-doba",
-        profilePic:"/yo.jpg",
-    },
-    loser : {
-        nickname : "yimazoua",
-        profilePic : "/yo.jpg",
-    },
-    winnerScore : 2,
-    loserScore : 1,
-    isMeWhoWon : false,
-},]
+// },
+// {
+//     id : "26/12/2024",
+//     winner : {
+//         nickname:"player 1",
+//         profilePic:"/yo.jpg",
+//     },
+//     loser : {
+//         nickname : "player2",
+//         profilePic : "/yo.jpg",
+//     },
+//     winnerScore : 2,
+//     loserScore : 1,
+//     isMeWhoWon : false,
+
+// },
+// {
+//     id : "26/22424",
+//     winner : {
+//         nickname:"player 1",
+//         profilePic:"/yo.jpg",
+//     },
+//     loser : {
+//         nickname : "player2",
+//         profilePic : "/yo.jpg",
+//     },
+//     winnerScore : 2,
+//     loserScore : 1,
+//     isMeWhoWon : true,
+// },
+// ,
+// {
+//     id : "26//2424",
+//     winner : {
+//         nickname:"player 1",
+//         profilePic:"/yo.jpg",
+//     },
+//     loser : {
+//         nickname : "player2",
+//         profilePic : "/yo.jpg",
+//     },
+//     winnerScore : 2,
+//     loserScore : 1,
+//     isMeWhoWon : true,
+// },
+// {
+//     id : "224/2424",
+//     winner : {
+//         nickname:"player 1",
+//         profilePic:"/yo.jpg",
+//     },
+//     loser : {
+//         nickname : "player2",
+//         profilePic : "/yo.jpg",
+//     },
+//     winnerScore : 2,
+//     loserScore : 1,
+//     isMeWhoWon : true,
+// },
+// {
+//     id : "46/32424",
+//     winner : {
+//         nickname:"player 1",
+//         profilePic:"/yo.jpg",
+//     },
+//     loser : {
+//         nickname : "player2",
+//         profilePic : "/yo.jpg",
+//     },
+//     winnerScore : 2,
+//     loserScore : 1,
+//     isMeWhoWon : true,
+// },
+// {
+//     id : "29/120/2424",
+//     winner : {
+//         nickname:"player 1",
+//         profilePic:"/yo.jpg",
+//     },
+//     loser : {
+//         nickname : "player2",
+//         profilePic : "/yo.jpg",
+//     },
+//     winnerScore : 2,
+//     loserScore : 1,
+//     isMeWhoWon : true,
+// },
+// {
+//     id : "24/185/2424",
+//     winner : {
+//         nickname:"med-doba",
+//         profilePic:"/yo.jpg",
+//     },
+//     loser : {
+//         nickname : "yimazoua",
+//         profilePic : "/yo.jpg",
+//     },
+//     winnerScore : 2,
+//     loserScore : 1,
+//     isMeWhoWon : false,
+// },]
 
 
 const Profile = () => {
@@ -269,6 +271,7 @@ const Profile = () => {
     const [isprivateProfile, setisprivateProfile] = useState<boolean | undefined>(false);
     const [profileData, setProfileData] = useState<profileData | undefined>(undefined);
     const [achievements, setAchievements] = useState<Achievements[]>([])
+    const [matchHistory, setMatchHistory] = useState<Match[]>([])
     const [notAchievements, setNotAchievements] = useState<Achievements[]>([])
     const pathname = usePathname();
     const socket = useContext(socketContext);
@@ -290,12 +293,22 @@ const Profile = () => {
                 console.error("Error during authentication check:", error);
             }
         };
+
+        getProfileData();
+        setIsFriend(profileData?.isfriend);
+        setisprivateProfile(profileData?.privateProfile);
+
+    }, []);
+
+
+    useEffect(() => {
         const getAchievements = async () => {
             try {
                 const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/Achievements`, {
-                    method: "GET",
+                    method: "POST",
                     credentials: "include",
                     headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({userId: profileData?.userData.id})
                 });
                 if (res.ok) {
                     const achievementsData = await res.json();
@@ -308,12 +321,28 @@ const Profile = () => {
                 console.error("Error during authentication check:", error);
             }
         };
-        getAchievements();
-        getProfileData();
-        setIsFriend(profileData?.isfriend);
-        setisprivateProfile(profileData?.privateProfile);
 
-    }, []);
+        const getMatchHistory = async () => {
+            try {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/MatchHistory`, {
+                    method: "POST",
+                    credentials: "include",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({userId: profileData?.userData.id})
+                });
+                if (res.ok) {
+                    const MatchData = await res.json();
+                    setMatchHistory(MatchData);
+                    // console.log(profileData);
+                    console.log("achievement == ", MatchData);
+                }
+            } catch (error) {
+                console.error("Error during authentication check:", error);
+            }
+        };
+        getAchievements();
+        getMatchHistory();
+    }, [profileData])
 
     var level : number = profileData?.userData?.level;
     var isblocked : boolean | undefined = profileData?.isBlocked;
@@ -416,18 +445,18 @@ const Profile = () => {
                     <h1 className="text-cyan-900 text-[40px] lg:text-[50px] font-semibold">{renderWallet()}</h1>
                 </div>
             </div>
-            <div className="bg-cyan-600 lg:col-span-2 col-span-4 lg:row-start-4  lg:row-end-5 row-start-5 row-end-6 w-full xl:h-[45%] lg:h-[43.5%] h-[450px] shadow-md rounded-xl">
+            <div className="bg-cyan-600 lg:col-span-2 col-span-4 lg:row-start-4  lg:row-end-5 row-start-5 row-end-6 w-full xl:h-[48vh] lg:h-[48vh] h-[450px] shadow-md rounded-xl">
                  <h1 className="text-bold text-3xl text-center mt-2 text-cyan-900">MATCH HISTORY</h1>
                 <div className=" h-[95%] pt-2 pb-2">
-                    <div className="lg:w-[95.31%] xl:w-[90%] w-[98%] mt-5 h-[90%] mx-auto styled-scrollbar overflow-y-scroll">
+                    <div className="lg:w-[95.31%] xl:w-[90%] w-[98%] mt-5 h-[80%] mx-auto styled-scrollbar overflow-y-auto">
                         {
                             matchHistory.map((match) => {
                                 return (
                                     <div key={match?.id}
-                                        className=" mb-2 w-full h-[18.75%] p-2 flex flex-row justify-between items-center rounded-[15px] border bg-cyan-100 border-lightQuartze">
+                                        className=" mb-2 w-full h-[20%] p-2 flex flex-row justify-between items-center rounded-[15px] border bg-cyan-100 border-lightQuartze">
                                         <div className=" flex flex-row items-center gap-5">
                                             <img src={match?.loser.profilePic}
-                                                className="rounded-full max-w-[55px] max-h-[55px] min-w-[55px] min-h-[55px]"
+                                                className="rounded-full max-w-[40px] max-h-[40px] min-w-[40px] min-h-[40px]"
                                             />
                                             <h2 className="text-teal-600">{match?.loser.nickname}</h2>
                                         </div>
@@ -442,7 +471,7 @@ const Profile = () => {
                                         <div className="flex flex-row items-center gap-5">
                                             <h2 className="text-teal-600">{match?.winner.nickname}</h2>
                                             <img src={match?.winner.profilePic}
-                                                className="rounded-full max-w-[55px] max-h-[55px] min-w-[55px] min-h-[55px]"
+                                                className="rounded-full max-w-[40px] max-h-[40px] min-w-[40px] min-h-[40px]"
                                             />
                                         </div>
                                     </div>
@@ -453,16 +482,16 @@ const Profile = () => {
                     </div>
                 </div>
             </div>
-            <div className=" bg-cyan-600 lg:col-span-2 col-span-4 lg:row-start-4 lg:row-end-5 row-start-6 row-end-7 w-full xl:h-[45%] lg:h-[43.5%] h-[450px] shadow-md rounded-xl"> 
+            <div className=" bg-cyan-600 lg:col-span-2 col-span-4 lg:row-start-4 lg:row-end-5 row-start-6 row-end-7 w-full xl:h-[48vh] lg:h-[48vh] h-[450px] shadow-md rounded-xl"> 
                 <h2 className="text-bold text-3xl text-center mt-2 text-cyan-900">ACHIEVEMENT</h2>
                 <div className="h-[95%] pt-2 ">
-                    <div className="lg:w-[95.31%] xl:w-[90%] w-[98%]  mx-auto h-[90%] flex mt-5 flex-col gap-2 overflow-y-auto styled-scrollbar">
+                    <div className="lg:w-[95.31%]  xl:w-[90%] w-[98%]  mx-auto h-[80%] flex mt-5 flex-col gap-2 overflow-y-auto styled-scrollbar">
                       {
                         achievements.map((achievement) => {
                             return (
-                                <div key={achievement.id} className="p-2 rounded-[15px] border bg-cyan-100 border-lightQuartze w-full h-[18.75%] xl:h-[14%]">
+                                <div key={achievement.id} className="p-2 rounded-[15px] flex flex-col justify-between border bg-cyan-100 border-lightQuartze w-full h-[18%] lg:h-[26%] xl:h-[20%]">
                                     <h2 className="font-bold text-[15px] lg:text-[20px]">{achievement.title}</h2>
-                                    <p className="text-xs text-gray-500 ml-2 lg:text-sm lg:block md:block hidden">{achievement.description}</p>
+                                    <p className="text-xs text-gray-500 ml-2 lg:text-sm lg:block md:block">{achievement.description}</p>
                                 </div>
                             )
                         })
@@ -470,7 +499,7 @@ const Profile = () => {
                       {
                         notAchievements.map((achievement) => {
                             return (
-                                <div key={achievement.id} className="p-2 rounded-[15px] flex flex-col justify-between border bg-gray-400 border-gray-500 w-full h-[18.75%] xl:h-[14%]">
+                                <div key={achievement.id} className="p-2 rounded-[15px] flex flex-col justify-between border bg-gray-400 border-gray-500 w-full h-[18%] lg:h-[26%] xl:h-[20%]">
                                     <h2 className="font-bold text-[15px] lg:text-[20px]">{achievement.title}</h2>
                                     <p className="text-xs text-gray-500 ml-2 lg:text-sm lg:block md:block">{achievement.description}</p>
                                 </div>

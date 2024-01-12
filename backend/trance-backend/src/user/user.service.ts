@@ -167,6 +167,10 @@ export class UserService {
 				Wins: true,
 			}
 		});
+
+		if (!currentUser)
+			throw new NotFoundException('user not found')
+
 		const AchivementId = await this.prisma.achievement.findFirst({
 			where: {
 				title: type,
@@ -177,8 +181,8 @@ export class UserService {
 			}
 		});
 
-		if (!currentUser)
-			throw new NotFoundException('user not found')
+		if (!AchivementId)
+			throw new NotFoundException('acheivement not found')
 
 		if (currentUser.Wins === 5){
 			const fiveMatchId = await this.prisma.achievement.findFirst({
@@ -429,8 +433,7 @@ export class UserService {
 				responded: true,
 			}
 		});
-		
-		if (date.getDate > request.expiresAt.getDate){
+		if (date.getTime() > request.expiresAt.getTime()){
 			return false;
 		}
 		return true;
@@ -776,14 +779,14 @@ export class UserService {
 				userId: senderId,
 				friendId: recipientId,
 				status: {
-				in: [Status.FRIEND, Status.PENDING], // Check for FRIEND or PENDING status
+				in: [Status.FRIEND], // Check for FRIEND or PENDING status
 				},
 			},
 			{
 				userId: recipientId,
 				friendId: senderId,
 				status: {
-				in: [Status.FRIEND, Status.PENDING], // Check for FRIEND or PENDING status
+				in: [Status.FRIEND], // Check for FRIEND or PENDING status
 				},
 			},
 			],

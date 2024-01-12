@@ -5,6 +5,7 @@ import { Socket, Server } from "socket.io";
 import { Ball, GameUser, MatchInfos, gatewayUser, leftPaddle } from "src/classes/classes";
 import { UserService } from "src/user/user.service";
 import { makeQueue, room } from "./Queue.service";
+import { FriendsService } from "src/friends/friends.service";
 
 
 @Injectable()
@@ -12,7 +13,8 @@ export class GameService {
     constructor(private jwtService: JwtService,
         private userService: UserService,
         private makeQueue : makeQueue,
-        private room: room){}
+        private room: room,
+        private friendsService: FriendsService){}
 
     private Users: GameUser[] = [];
     public players_arr = new Map<string, GameUser[]>();
@@ -40,10 +42,13 @@ export class GameService {
 		}
 	}
 
-    async deleteUser(client: Socket){
+    async deleteUser(client: Socket, server: Server){
         try {
-			const user = this.getUserBySocketId(client.id);
-			await this.userService.updateStatus(user.id, UserStatus.ONLINE)
+            const user = this.getUserBySocketId(client.id);
+            server.to(user.roomId).emit("abort", true);
+            this.players_arr.delete(user.roomId);
+			await this.userService.updateStatus(user.id, UserStatus.OFFLINE)
+            await this.emitToFriendsStatusGame(user.id, UserStatus.OFFLINE);
             this.makeQueue.deleteUserQueue(client)
 			this.Users = this.Users.filter((u) => u.socket.id !== client.id);
 		}
@@ -61,28 +66,35 @@ export class GameService {
         return this.Users.find((user) => user.id === userId);
     }
 
+    /** challenge Bot */
     async challengeBot(client : Socket){
         const player = this.getUserBySocketId(client.id);
         player.IsInGame = true;
         const infos = await this.userService.genarateMatchInfo(player.id, null, null);
-        player.socket.emit('playersInfo', infos)
-        player.socket.emit('redirectPlayers_match', true);
+        // Emit player infos to redirect him 
+        player.socket.emit('BotReady', infos);
     }
+    /** End c */
 
     async challenge(client: Socket, opponentId){
         const challenger = this.getUserBySocketId(client.id);
+        if (!challenger){
+            client.emit('error', "Wrong Nickname")
+            return ;
+        }
+
         const opponent = this.getUserById(opponentId);
         const player1Status = await this.userService.getStatus(challenger.id);
         const player2Status  = await this.userService.getStatus(opponentId);
         
-        console.log("statussss :: ", player2Status)
         if (player1Status === UserStatus.OFFLINE || player2Status ===  UserStatus.OFFLINE){
             challenger.socket.emit('error', `Player OFFLINE`);
             return ;
         }
-        if (player1Status === UserStatus.IN_GAME || player2Status ===  UserStatus.IN_GAME)
+        if (player1Status === UserStatus.IN_GAME || player2Status ===  UserStatus.IN_GAME
+            || player1Status === UserStatus.IN_QUEUE || player2Status ===  UserStatus.IN_QUEUE)
         {
-            challenger.socket.emit('error', `already in Game`);
+            challenger.socket.emit('error', `already in Game Or In Queue`);
             return ;
         }
         if (opponent.IsInGame === true || challenger.IsInGame === true){
@@ -106,22 +118,23 @@ export class GameService {
     }
 
     async acceptChallenge(client: Socket, server : Server, opponentId :string, requestID: string){
-        console.log("IMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM here")
         const me = this.getUserBySocketId(client.id);
         const challenger = this.getUserById(opponentId);
         
-        const player1Status = await this.userService.getStatus(me.id);
-        const player2Status  = await (this.userService.getStatus(challenger.id));
         if (challenger === undefined){
             me.socket.emit('notification', 'Wrong Id');
         }
-        if (player1Status === UserStatus.IN_GAME || player2Status ===  UserStatus.IN_GAME)
+        const player1Status = await this.userService.getStatus(me.id);
+        const player2Status  = await (this.userService.getStatus(challenger.id));
+        if (player1Status === UserStatus.IN_GAME || player2Status ===  UserStatus.IN_GAME
+            || player1Status === UserStatus.IN_QUEUE || player2Status ===  UserStatus.IN_QUEUE)
         {
-            me.socket.emit('notification', `Already in Game`);
+            me.socket.emit('notification', `Already in Game Or Queue`);
             try{await this.userService.updateReq(me.id, challenger.id, requestID);}
             catch(error){
                 this.sendWebSocketError(me.socket, error.message, false);
             }
+            return ;
         }
         if (challenger.IsInGame === true || me.IsInGame === true){
             me.socket.emit('notification', `Already in Game`);
@@ -129,6 +142,7 @@ export class GameService {
             catch(error){
                 this.sendWebSocketError(me.socket, error.message, false);
             }
+            return ;
         }
         else{
             challenger.socket.join(challenger.id);
@@ -150,7 +164,7 @@ export class GameService {
                 }
                 else
                 {
-                    me.socket.emit('notification', `Request Expired`);
+                    me.socket.emit('error', `Challenge Request Expired`);
                     this.sendWebSocketError(me.socket, 'Request Expired', false);
                     return ;
                 }
@@ -175,160 +189,77 @@ export class GameService {
         }
     }
     
-    async drawPaddlesBot(player: GameUser, BotPaddel: leftPaddle , PlayerPaddle: leftPaddle){
-        player.socket.emit("drawBotPaddles", BotPaddel)
-        player.socket.emit("drawPlayerPaddles", PlayerPaddle)
-    }
+    // async drawPaddlesBot(player: GameUser, BotPaddel: leftPaddle , PlayerPaddle: leftPaddle){
+    //     player.socket.emit("drawBotPaddles", BotPaddel)
+    //     player.socket.emit("drawPlayerPaddles", PlayerPaddle)
+    // }
 
-    drawBallBot(player, ball: Ball){
-        player.socket.emit("drawBall", (ball))
-    }
-
-    Collision(b, p){
-
-        b.top = b.y - b.raduis;
-        b.bottom = b.y + b.raduis;
-        b.left = b.x - b.raduis;
-        b.right = b.x + b.raduis;
-    
-        p.top = p.y;
-        p.bottom = p.y + p.height;
-        p.left = p.x;
-        p.right = p.x + p.width; 
-    
-        return (
-            b.right > p.left &&
-            b.bottom > p.top &&
-            b.left < p.right &&
-            b.top < p.bottom
-        );
-    };
-
-    update(palyer, ball, PlayerPaddle, BotPaddel, width, height){
-        ball.x += ball.velocityX;
-        ball.y += ball.velocityY;
-        if (ball.x + ball.raduis > 600 || ball.x - ball.raduis < 0){
-            if(ball.x + ball.raduis > 600) {
-                BotPaddel.score += 1;
-                palyer.socket.emit("BotScore", BotPaddel.score);
-            }
-            if(ball.x + ball.raduis < 0) {
-                PlayerPaddle.score += 1;
-                palyer.socket.emit("playerScore", PlayerPaddle.score);
-            }
-            ball.x = width / 2;
-            ball.y = height / 2;
-            ball.velocityX = -ball.velocityX;
-        }
-        
-        BotPaddel.y += (ball.y - (BotPaddel.y + BotPaddel.height / 2)) * 0.1;
-                                                                                                                                                                                      
-        if (ball.y + ball.raduis > 400 || ball.y - ball.raduis < 0) {
-            ball.velocityY = -ball.velocityY;
-        }
-
-        let player: leftPaddle = ball.x < 300 ? leftPaddle : PlayerPaddle;
-    
-        if (this.Collision(ball, player)) {
-            var colidePoint = (ball.y - (player.y + player.height / 2))
-            colidePoint /= player.height / 2;
-            var angle = colidePoint * Math.PI / 4;
-            let direction = (ball.x < 300 ? 1 : -1);
-            ball.velocityX = direction * ball.speed * Math.cos(angle);
-            ball.velocityY = direction * ball.speed * Math.sin(angle);
-        }
-    }
+    // drawBallBot(player, ball: Ball){
+    //     player.socket.emit("drawBall", (ball))
+    // }
 
     async startBotGame(client: Socket, width: number, height : number){
         const player = this.getUserBySocketId(client.id);
+        const playerStatus = await this.userService.getStatus(player.id);
+        
         if (player.IsInGame === false){
             player.socket.emit("error", "You're Not In Game");
             return ;
         }
-        this.userService.updateStatus(player.id, UserStatus.IN_GAME); // what if there is more than one match
-        var ball : Ball = {
-            x: width / 2,
-            y : height / 2,
-            raduis : 20,
-            speed: 2,
-            velocityX: 5,
-            velocityY: 5,
-        };
-        var BotPaddel : leftPaddle = {
-            height: 100,
-            width: 10,
-            x : 0,
-            y: (height - 100) / 2,
-            score : 0,
-        };
-        var PlayerPaddle : leftPaddle = {
-            height: 100,
-            width: 10,
-            x : width - 10,
-            y: (height - 100) / 2,
-            score : 0,
-        };
-        while(true){
-            this.drawPaddlesBot(player, BotPaddel, PlayerPaddle);
-            this.drawBallBot(player, ball);
-            ball.x += ball.velocityX;
-            ball.y += ball.velocityY;
-            if (ball.x + ball.raduis > 600 || ball.x - ball.raduis < 0){
-                if(ball.x + ball.raduis > 600) {
-                    BotPaddel.score += 1;
-                    player.socket.emit("BotScore", BotPaddel.score);
-                }
-                if(ball.x + ball.raduis < 0) {
-                    PlayerPaddle.score += 1;
-                    player.socket.emit("playerScore", PlayerPaddle.score);
-                }     
-                ball.x = width / 2;
-                ball.y = height / 2;
-                ball.velocityX = -ball.velocityX;
-            }
-
-            BotPaddel.y += (ball.y - (BotPaddel.y + BotPaddel.height / 2)) * 0.1;
-
-            if (ball.y + ball.raduis > 400 || ball.y - ball.raduis < 0) {
-                ball.velocityY = -ball.velocityY;
-            }
-
-            let whoareu: leftPaddle = ball.x < 300 ? BotPaddel : PlayerPaddle;
-        
-            if (this.Collision(ball, whoareu)) {
-                var colidePoint = (ball.y - (whoareu.y + whoareu.height / 2))
-                colidePoint /= whoareu.height / 2;
-                var angle = colidePoint * Math.PI / 4;
-                let direction = (ball.x < 300 ? 1 : -1);
-                ball.velocityX = direction * ball.speed * Math.cos(angle);
-                ball.velocityY = direction * ball.speed * Math.sin(angle);
-            }
-            if (BotPaddel.score === 5  || PlayerPaddle.score === 5){
-                player.IsInGame = false;
-                if (PlayerPaddle.score > BotPaddel.score)
-                {
-                    player.win = true;
-                }
-                await this.userService.updateWinLose(player);
-                await this.userService.updateStatus(player.id, UserStatus.ONLINE); 
-                break; 
-            }
+        if (playerStatus === UserStatus.IN_GAME || playerStatus ===  UserStatus.IN_QUEUE)
+        {
+            player.socket.emit('notification', `Already in Game Or Queue`);
+            return ;
         }
+        await this.userService.updateStatus(player.id, UserStatus.IN_GAME); // what if there is more than one match
+        await this.emitToFriendsStatusGame(player.id, UserStatus.IN_GAME);
+        // var ball : Ball = {
+        //     x: width / 2,
+        //     y : height / 2,
+        //     raduis : 20,
+        //     speed: 2,
+        //     velocityX: 5,
+        //     velocityY: 5,
+        // };
+        // var BotPaddel : leftPaddle = {
+        //     height: 100,
+        //     width: 10,
+        //     x : 0,
+        //     y: (height - 100) / 2,
+        //     score : 0,
+        // };
+        // var PlayerPaddle : leftPaddle = {
+        //     height: 100,
+        //     width: 10,
+        //     x : width - 10,
+        //     y: (height - 100) / 2,
+        //     score : 0,
+        // };
+
+        // player.socket.on('arrow', ((arg)=> {
+        //     switch (arg) {
+        //         case 'UP':
+        //         if (PlayerPaddle.y > 0  + PlayerPaddle.height / 2)
+        //             PlayerPaddle.y -= 10;
+        //             break;
+        //         case 'DOWN':
+        //             if (PlayerPaddle.y < (height - PlayerPaddle.height / 2))
+        //                 PlayerPaddle.y += 10;
+        //             break;
+        //     }
+        //     player.socket.emit('leftPaddle', PlayerPaddle);
+        // }));
+
+        player.socket.on("endBotMatch", (async () => {
+            await this.userService.updateStatus(player.id, UserStatus.ONLINE);
+            await this.emitToFriendsStatusGame(player.id, UserStatus.ONLINE);
+        }));
         return ;
-    }
-
-    drawPalddles(player1, player2, server, leftPaddel, rightPaddle){
-        server.to(player2.roomId).emit("leftPaddle",  leftPaddel);
-        // server.to(player2.roomId).emit("rightPaddle", rightPaddle);
-    }
-
-    drawBall(player2, server, ball){
-        server.to(player2.roomId).emit("drawBall", ball);
     }
 
     // use Global rooms each contains 2 player before start  the game √
 
-    handleMatchFinish(arg, roomId){
+    async handleMatchFinish(arg, roomId){
         this.players_arr.get(roomId)[0].score = arg.playerL.score;
         this.players_arr.get(roomId)[1].score = arg.playerR.score;
         
@@ -347,6 +278,8 @@ export class GameService {
         this.userService.storeResults(this.players_arr.get(roomId)[0], this.players_arr.get(roomId)[1]);
         this.userService.updateStatus(this.players_arr.get(roomId)[0].id, UserStatus.ONLINE);
         this.userService.updateStatus(this.players_arr.get(roomId)[1].id, UserStatus.ONLINE);
+        await this.emitToFriendsStatusGame(this.players_arr.get(roomId)[0].id, UserStatus.ONLINE);
+        await this.emitToFriendsStatusGame(this.players_arr.get(roomId)[1].id, UserStatus.ONLINE);
         this.userService.updateWinLose(this.players_arr.get(roomId)[0]);
         this.userService.updateWinLose(this.players_arr.get(roomId)[1]);
     }
@@ -381,60 +314,61 @@ export class GameService {
         }
         this.userService.updateStatus(this.players_arr.get(player1.roomId)[1].id, UserStatus.IN_GAME);
         this.userService.updateStatus(this.players_arr.get(player1.roomId)[0].id, UserStatus.IN_GAME);
-        const midleVertical = ((height - 0) / 2) + 0;
-        const midleCanvas = ((width- 0) / 2) + 0;
-        var ball : Ball = {
-            x: width / 2,
-            y : height / 2,
-            raduis : 20,
-            speed: 2,
-            velocityX: 5,
-            velocityY: 5,
-        };
-        var leftPaddel : leftPaddle = {
-            height: 150,
-            width: 20,
-            x : 20,
-            y: (height / 2),
-            score : 0,
-        };
-        var rightPaddle : leftPaddle = {
-            height: 150,
-            width: 20,
-            x : width - 20,
-            y : (height) / 2,
-            score : 0,
-        };
+        await this.emitToFriendsStatusGame(this.players_arr.get(player1.roomId)[0].id, UserStatus.IN_GAME);
+        await this.emitToFriendsStatusGame(this.players_arr.get(player1.roomId)[1].id, UserStatus.IN_GAME);
 
-        this.players_arr.get(roomId)[0].socket.on('arrow', ((arg)=> {
-            switch (arg) {
-                case 'UP':
-                if (leftPaddel.y > 0  + leftPaddel.height / 2)
-                    leftPaddel.y -= 10;
-                    break;
-                case 'DOWN':
-                    if (leftPaddel.y < (height - leftPaddel.height / 2))
-                        leftPaddel.y += 10;
-                    break;
-            }
-            this.players_arr.get(roomId)[0].socket.emit('leftPaddle', leftPaddel)
-            this.players_arr.get(roomId)[1].socket.emit('leftPaddle', leftPaddel)
-        }))
-        this.players_arr.get(roomId)[1].socket.on('arrow', ((arg)=> {
-            switch (arg) {
-                case 'UP':
+        // var ball : Ball = {
+        //     x: width / 2,
+        //     y : height / 2,
+        //     raduis : 20,
+        //     speed: 2,
+        //     velocityX: 5,
+        //     velocityY: 5,
+        // };
+        // var leftPaddel : leftPaddle = {
+        //     height: 150,
+        //     width: 20,
+        //     x : 20,
+        //     y: (height / 2),
+        //     score : 0,
+        // };
+        // var rightPaddle : leftPaddle = {
+        //     height: 150,
+        //     width: 20,
+        //     x : width - 20,
+        //     y : (height) / 2,
+        //     score : 0,
+        // };
+
+        // this.players_arr.get(roomId)[0].socket.on('arrow', ((arg)=> {
+        //     switch (arg) {
+        //         case 'UP':
+        //         if (leftPaddel.y > 0  + leftPaddel.height / 2)
+        //             leftPaddel.y -= 10;
+        //             break;
+        //         case 'DOWN':
+        //             if (leftPaddel.y < (height - leftPaddel.height / 2))
+        //                 leftPaddel.y += 10;
+        //             break;
+        //     }
+        //     this.players_arr.get(roomId)[0].socket.emit('leftPaddle', leftPaddel)
+        //     this.players_arr.get(roomId)[1].socket.emit('leftPaddle', leftPaddel)
+        // }))
+        // this.players_arr.get(roomId)[1].socket.on('arrow', ((arg)=> {
+        //     switch (arg) {
+        //         case 'UP':
                     
-                if (rightPaddle.y > 0 + rightPaddle.height / 2)
-                    rightPaddle.y -= 10;
-                    break;
-                case 'DOWN':
-                    if (rightPaddle.y < (height - rightPaddle.height / 2))    
-                        rightPaddle.y += 10;
-                    break;
-            }
-            this.players_arr.get(roomId)[0].socket.emit('rightPaddle', rightPaddle)
-            this.players_arr.get(roomId)[1].socket.emit('rightPaddle', rightPaddle)
-        }))
+        //         if (rightPaddle.y > 0 + rightPaddle.height / 2)
+        //             rightPaddle.y -= 10;
+        //             break;
+        //         case 'DOWN':
+        //             if (rightPaddle.y < (height - rightPaddle.height / 2))    
+        //                 rightPaddle.y += 10;
+        //             break;
+        //     }
+        //     this.players_arr.get(roomId)[0].socket.emit('rightPaddle', rightPaddle)
+        //     this.players_arr.get(roomId)[1].socket.emit('rightPaddle', rightPaddle)
+        // }))
         
         this.players_arr.get(roomId)[0].socket.on('EndGame', ((arg) => {
             this.handleMatchFinish(arg, roomId)
@@ -444,6 +378,19 @@ export class GameService {
         }));
         return ;
     }
+
+
+    async emitToFriendsStatusGame(id: string, status: UserStatus)
+    {
+		const friends = await this.userService.getFriends(id);
+		for (const friend of friends) {
+		  const friendUser = this.getUserById(friend.friendId);
+		  if (friendUser) {
+			friendUser.socket.emit('statusChange', { id: id, status });
+		  }
+		}
+    }
+
 
     async handleMatchMaker(client : Socket, server : Server){
         // Need to optimize this queue so can distiguish each room fo two players √
@@ -462,6 +409,7 @@ export class GameService {
         }
         if (this.makeQueue.enQueue(client) == true){
             await this.userService.updateStatus(user.id, UserStatus.IN_QUEUE);
+			await this.emitToFriendsStatusGame(user.id, UserStatus.IN_QUEUE);
         }
     }
 }

@@ -61,9 +61,11 @@ const FriendsList = () => {
           }
         };
         socket.on("statusChange", handleStatusChange);
+        gameSocket.on("statusChange", handleStatusChange);
         socket.on("refreshFriendsList", friendsGet);
         return () => {
           socket.off("statusChange", handleStatusChange);
+          gameSocket.off("statusChange", handleStatusChange);
           socket.off("refreshFriendsList", friendsGet)
         };
       }, []);
@@ -100,11 +102,12 @@ const FriendsList = () => {
                                 <div  key={friend.id} className="bg-lightQuartze w-1/3 h-full p-2 border rounded-[15px] flex flex-col items-center justify-between">
                                 <div className="flex items-center justify-center relative hover:cursor-pointer" onClick={() => redirectToProfile(friend.nickname)}>
                                     <img src={friend.profilePic} alt={`Friend ` + friend.id} className="w-6 h-6 md:w-8 md:h-8 xl:w-10 xl:h-10 lg:w-6 lg:h-6 rounded-full" />
-                                    <span className={clsx(` h-2 w-2  xl:h-3 xl:w-3 rounded-full absolute transform translate-y-2 translate-x-[10px] xl:translate-y-3 xl:translate-x-[15px]`
+                                    <span className={clsx(` h-2 w-2  animate-pulse xl:h-3 xl:w-3 rounded-full absolute transform translate-y-2 translate-x-[10px] xl:translate-y-3 xl:translate-x-[15px]`
                                     , {
                                         'bg-green-500'  : friend.status === UserStatus.online,
                                         'bg-red-500'    : friend.status === UserStatus.offline,
                                         'bg-yellow-500' : friend.status === UserStatus.IN_GAME,
+                                        'bg-gray-500' : friend.status === UserStatus.IN_QUEUE,
                                         })}></span>
                                     </div>
                                     <div className="font-bold text-sm lg:text-lg xs:max-chars-5">
