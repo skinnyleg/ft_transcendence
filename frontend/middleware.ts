@@ -84,7 +84,7 @@ export default async function middleware(request: NextRequest){
     if (succes){
       return NextResponse.next();
     }
-    return NextResponse.redirect(new URL("/", `${process.env.NEXT_PUBLIC_BACKEND_HOST}/`));
+    return NextResponse.redirect(new URL("/", `${process.env.NEXT_PUBLIC_FRONTEND_HOST}/`));
 }
  
 export const config = {
