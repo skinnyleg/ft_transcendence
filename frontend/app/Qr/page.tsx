@@ -14,7 +14,7 @@ const VerifyCode :  React.FC = () => {
     // Initialize refs only once
     // setInputRefs(Array(6).fill(null).map(() => React.createRef<HTMLInputElement>()));
     inputRefs[0].current?.focus();
-  }, []);
+  }, [inputRefs]);
   
   // useEffect(() => {
   // }, [inputRefs])

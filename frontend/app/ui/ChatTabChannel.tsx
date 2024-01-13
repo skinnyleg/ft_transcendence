@@ -37,7 +37,7 @@ const ChatTabChannel: FC<ChatTabProps> = () => {
 		chatSocket.emit('getDataCH', {
 			channelName: channelId,
 		})
-	}, [channelId])
+	}, [channelId, chatSocket])
 
 
 
@@ -161,7 +161,7 @@ const ChatTabChannel: FC<ChatTabProps> = () => {
 			chatSocket.off('changeDone')
 			// chatSocket.off('refreshSide')
 		}
-	}, [channelId])
+	}, [channelId, chatSocket, setChannel, setSearchInputCh])
 
 
 	if (channel === undefined)

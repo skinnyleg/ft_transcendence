@@ -460,7 +460,8 @@ const Profile = () => {
                                         <div className=" flex flex-row items-center gap-5">
                                             <img src={match?.loser.profilePic}
                                                 className="rounded-full max-w-[40px] max-h-[40px] min-w-[40px] min-h-[40px]"
-                                            />
+                                                alt="loser picture"
+                                                />
                                             <h2 className="text-teal-600">{match?.loser.nickname}</h2>
                                         </div>
                                         <div className="bg-cyan-600 w-[20.41%] h-[56%] rounded-[30px] flex flex-row justify-evenly items-center">
@@ -475,6 +476,7 @@ const Profile = () => {
                                             <h2 className="text-teal-600">{match?.winner.nickname}</h2>
                                             <img src={match?.winner.profilePic}
                                                 className="rounded-full max-w-[40px] max-h-[40px] min-w-[40px] min-h-[40px]"
+                                                alt="winner picture"
                                             />
                                         </div>
                                     </div>

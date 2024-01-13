@@ -29,7 +29,7 @@ const PowerUps = ({handlePowerUpChange}: PowerUpsProps) => {
             <SwiperSlide 
             key={index}
             className="relative rounded-md">
-                <img onClick={() => powerupshandle(powerups[index])} src={image} className="w-[100px] h-[100px] rounded-full" />
+                <img onClick={() => powerupshandle(powerups[index])} src={image} alt={`Game Themes`} className="w-[100px] h-[100px] rounded-full" />
           </SwiperSlide>
           ))}
         </Swiper>

@@ -159,7 +159,7 @@ const Chat: React.FC<ChatProps> = () => {
 			chatSocket.off('outDone')
 			chatSocket.off('newName')
 		}
-	}, [channelId])
+	}, [channelId, chatSocket])
 
 	useEffect(() => {
 		const fetchUser = async () => {
@@ -193,7 +193,7 @@ const Chat: React.FC<ChatProps> = () => {
 		// deleteChannelQuery();
 		// if (state && state.personalId)
 		// 	setPersonalId(state.personalId);
-	}, [])
+	}, [chatSocket])
 	
 
 

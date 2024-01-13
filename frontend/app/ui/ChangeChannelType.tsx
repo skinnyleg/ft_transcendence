@@ -52,7 +52,7 @@ function openModal() {
 		else
 			setIsRequired(false);
 
-  }, [type])
+  }, [type, currentType])
 
 
   	const handleSubmit = (e: React.ChangeEvent<HTMLFormElement>) => {
@@ -78,7 +78,10 @@ function openModal() {
 				newType: type?.toUpperCase()
 			})
 		}
+		setError('');
 		setIsOpen(false)
+		setPassword('')
+		setConfPassword('')
 	}
 
 

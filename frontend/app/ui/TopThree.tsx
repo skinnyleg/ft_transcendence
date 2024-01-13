@@ -1,11 +1,15 @@
 'use client';
 import React, { useEffect, useRef, useState } from 'react';
 import { LeaderboardData } from '../interfaces/interfaces';
+import GoldMedal from "../../public/GoldMedal.svg";
+import SilverMedal from "../../public/SilverMedal.svg";
+import BronzeMedal from "../../public/BronzeMedal.svg";
+import Image from 'next/image';
 
 const medals = [
-  '/goldMedalNo.png',
-  '/silverMedalNo.png',
-  '/bronzeMedalNo.png'
+  GoldMedal,
+  SilverMedal,
+  BronzeMedal
 ]
 
 const TopThree = ()=> {
@@ -47,7 +51,12 @@ const TopThree = ()=> {
             <div className="text-[35px] font-semibold ">Unknown</div>
           </div>
           <div className='w-fit h-fit'>
-            <img src={medals[index]} alt={`medal` + (index)} className='w-11 h-12 rounded-[15px]'/>
+            {/* <img src={medals[index]} alt={`medal` + (index)} className='w-11 h-12 rounded-[15px]'/> */}
+            <Image
+              priority
+              src={medals[index]}
+              alt={`medal` + (index)}
+            />
           </div>
         </div>
       </div>
@@ -72,7 +81,12 @@ const TopThree = ()=> {
                   <div className=" text-[35px] font-semibold ">{userRank.nickname}</div>
                 </div>
                 <div className='w-fit h-fit'>
-                  <img src={medals[index]} alt={`medal` + (index)} className='w-11 h-12 rounded-[15px]'/>
+                  {/* <img src={medals[index]} alt={`medal` + (index)} className='w-11 h-12 rounded-[15px]'/> */}
+                  <Image
+                    priority
+                    src={medals[index]}
+                    alt={`medal` + (index)}
+                  />
                 </div>
               </div>
             </div>
@@ -85,28 +99,6 @@ const TopThree = ()=> {
             jsxElement
           )
         })}
-      {/* Not done achievements */}
-      {/* {notDoneAchievements?.map((notdoneAchievement) => (
-          <div key={notdoneAchievement.id} className="bg-white flex-none p-4 border rounded flex items-center py-2">
-            <div className="flex-grow">
-              <div className="font-bold text-[15px] lg:text-[20px]">{notdoneAchievement.title}</div>
-              <p className="text-xs text-gray-500 ml-2 lg:text-sm lg:block md:block hidden">
-                {notdoneAchievement.description}</p>
-            </div>
-            <img src={imgObj[notdoneAchievement.title]} alt={`Achievement ` + notdoneAchievement.id} className="w-10 h-10 ml-4" />
-          </div>
-        ))} */}
-        {/* // Done achievements */}
-        {/* {doneAchievements?.map((doneAchievement) => (
-          <div key={doneAchievement.id} className="bg-white flex-none p-4 border rounded flex items-center">
-            <div className="flex-grow">
-              <div className="font-bold">{doneAchievement.title}</div>
-              <p className="text-sm text-gray-500 ml-2">
-                {doneAchievement.description}</p>
-            </div>
-            <img src={imgObj[doneAchievement.title]} alt={`Achievement ` + doneAchievement.id} className="w-10 h-10 ml-4" />
-          </div>
-        ))} */}
 </div>
 
     </div>

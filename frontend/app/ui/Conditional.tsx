@@ -55,7 +55,7 @@ const Conditional = ({isfriend, privateProfile, userId, isBlocked} : DataProps )
             socket.off('refreshFriendIcon')
             socket.off('refreshBlockIcon')
         }
-    }, [])
+    }, [socket])
 
     // Events Emiter
     const handleAddFriend = () => {

@@ -68,7 +68,7 @@ const FriendsList = () => {
           gameSocket.off("statusChange", handleStatusChange);
           socket.off("refreshFriendsList", friendsGet)
         };
-      }, []);
+      }, [socket]);
 
       const sendMessage = (userId: string) => {
         console.log('here')

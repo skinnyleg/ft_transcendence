@@ -66,7 +66,7 @@ function NavBar ({handleShowMenu}: NavBarProps)
     if (search) {
       debouncedSearchBackend(search);
     }
-  }, [search]);
+  }, [search, debouncedSearchBackend]);
 
 //   useEffect(() => {
 //     const getnickname = async () => {

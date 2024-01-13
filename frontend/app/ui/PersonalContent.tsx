@@ -43,7 +43,7 @@ const PersonalContent: FC<PersonalContentProps> = () => {
 			chatSocket.emit('getMessagesDM', {
 				dmId: personalId,
 			})
-		}, [personalId])
+		}, [personalId, chatSocket])
 
 
 		useEffect(() => {
@@ -79,7 +79,7 @@ const PersonalContent: FC<PersonalContentProps> = () => {
 				// chatSocket.off('newName')
 				// chatSocket.off('changeDone')
 			}
-		},[personalId])
+		},[personalId, chatSocket])
 
 
 

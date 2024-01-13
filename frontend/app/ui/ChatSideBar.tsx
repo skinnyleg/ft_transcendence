@@ -38,7 +38,7 @@ const ChatSideBar: FC<ChatSideBarProps> = () => {
 		chatSocket.emit('getChSidebar', {
 			channelName: channelId
 		})
-	}, [channelId])
+	}, [channelId, chatSocket])
 
 	useEffect(() => {
 
@@ -75,7 +75,7 @@ const ChatSideBar: FC<ChatSideBarProps> = () => {
 			chatSocket.off('channelSidebar')
 			chatSocket.off('refreshSide')
 		}
-	}, [channelId])
+	}, [channelId, chatSocket])
 
 	const filteredUsers = () => {
 		if (search === '')
