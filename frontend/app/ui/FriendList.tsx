@@ -76,7 +76,7 @@ const FriendsList = () => {
             receiverId : userId
         })
 
-        chatSocket.on('redirect', (data: {dmId: string}) => {
+        chatSocket.on('redirect', () => {
             router.push(`/Chat`)
         })
     }

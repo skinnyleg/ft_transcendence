@@ -2,7 +2,7 @@ import PlayerInfo from "./PlayerInfo";
 import MatchScore from "./MatchScore";
 import { useState, useEffect, useContext } from "react";
 import gameSocket, { GameContext } from "../../context/gameSockets";
-import { playerInfo } from "../types/interfaces";
+import { playerInfo, playerInfoProps } from "../types/interfaces";
 
 
 const GameResultBar = () => {

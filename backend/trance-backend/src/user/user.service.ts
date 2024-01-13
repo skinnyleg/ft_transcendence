@@ -7,13 +7,15 @@ import { generateNickname } from 'src/utils/generateNickname';
 import * as fs from 'fs';
 import * as path from 'path';
 import { GameUser, Match, NotificationData, PlayerInfo } from 'src/classes/classes';
-import { notDeepEqual } from 'assert';
-import { info } from 'console';
+import axios from 'axios';
 
 @Injectable()
 export class UserService {
 
 	constructor(private readonly prisma: PrismaService){}
+
+
+
 
 
 	async findOneByIntraId(intraId: number)
@@ -24,6 +26,16 @@ export class UserService {
 			}
 		})
 		return user;
+	}
+
+	async downloadImage(url: string, filename: string)
+	{
+		const response = await axios.get(url, { responseType: 'arraybuffer' });
+
+		fs.writeFile(filename, response.data, (err) => {
+		  if (err) throw err;
+		  console.log('Image downloaded successfully!');
+		});
 	}
 
 	async findOneById(Id: string)
@@ -912,10 +924,62 @@ export class UserService {
 		return ({doneAchievements, notDoneAchievements})
 	}
 
+	generateImgName(profilePic: string)
+	{
+		const parts = profilePic.split('/')
+		const newName = parts.pop();
+		return newName;
+	}
+
+
+	async changeUserImg(userData: any)
+	{
+		if (userData.profilePic === '' || userData.profilePic === undefined || userData.profilePic === null)
+			userData.profilePic = '/defaultAvatarPic.png';
+		else
+		{
+			let imgName = this.generateImgName(userData.profilePic);
+			await this.downloadImage(userData.profilePic, `./uploads/avatar/${imgName}`);
+			userData.profilePic = `${process.env.BackendHost}/upload/profile/${imgName}`;
+		}
+	}
+
+
+	async firstFriend(recipientId: string, senderId: string)
+	{
+		const userOneFriends = await this.prisma.friendStatus.count({
+			where: {
+				userId: recipientId,
+			}
+		})
+
+		if (userOneFriends === 1)
+			await this.updateAchivements(recipientId, 'make first friend')
+
+
+		const userTwoFriends = await this.prisma.friendStatus.count({
+			where: {
+					userId: senderId,
+				}
+			})
+	
+		if (userTwoFriends === 1)
+			await this.updateAchivements(senderId, 'make first friend')
+	}
+
 	async create(userData: any)
 	{
 		const nick = await generateNickname(userData.nickname);
 		const hashedPass : string = await hashPass(userData.password);
+		try {
+			await this.changeUserImg(userData);
+
+		}
+		catch (error)
+		{
+			console.log('Something Went Wrong');
+			return null;
+		}
 		const user = await this.prisma.user.create({
 			data: {
 			intraId: userData.intraId,

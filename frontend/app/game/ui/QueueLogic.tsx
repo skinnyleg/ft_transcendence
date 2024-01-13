@@ -8,7 +8,7 @@ import { exit } from 'process';
 
 const PongZoneQueue = () => {
 
-    const   canvasRef = useRef(null);
+    const   canvasRef = useRef<HTMLCanvasElement>(null);
     const   route = useRouter();
     const   [matchready, setMatchready] = useState<boolean>(false);
     const   [pongzone, setPongzone] = useState({width: 0, height: 0});
@@ -29,7 +29,7 @@ const PongZoneQueue = () => {
         });
         
         const render = Render.create({
-            canvas: canvasRef.current,
+            canvas: canvasRef.current === null ? undefined : canvasRef.current,
             engine: engine,
             options: {
                 background: '#ffffff',
@@ -74,7 +74,7 @@ const PongZoneQueue = () => {
         //     engine.world.gravity = 0;
         // });     
         
-        const handleKey = (event) => {
+        const handleKey = (event: KeyboardEvent) => {
             switch (event.key) {
                 case 'ArrowUp':
                     console.log('times--')

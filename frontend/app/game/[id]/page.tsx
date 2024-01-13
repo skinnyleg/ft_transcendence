@@ -5,16 +5,11 @@ import PongZoneBoot from "../ui/BootLogic";
 import GameResultBar from "../ui/GameResultBar";
 import { usePathname, useRouter } from "next/navigation";
 import gameSocket, { GameContext } from "../../context/gameSockets";
+import SideBar from "../ui/SideBar";
 
 
-export const SideBar = () => {
-    return (
-        <div className="bg-cyan-600 w-[5.65%] h-[97.33%] rounded-[10px] ml-[0.87%]">
-        </div>
-    );
-}
 
-function game() {
+function Game() {
     const   {data, setData, gameId, setGameId} = useContext(GameContext);
     
     const path = usePathname();
@@ -39,4 +34,4 @@ function game() {
         </main>
     );
 }
-export default game;
+export default Game;

@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Matter from 'matter-js';
 import gameSocket from '../../context/gameSockets';
 
 
 const PongZoneBoot = () => {
 
-    const canvasRef = useRef(null);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
     const width = 20;
     const height = 150;
     let speedR = 20;
@@ -18,7 +18,7 @@ const PongZoneBoot = () => {
         const   { Engine, Render, World, Bodies, Composite, Runner} = Matter;
         const engine = Engine.create();
         const render = Render.create({
-            canvas: canvasRef.current,
+            canvas: canvasRef.current === null ? undefined : canvasRef.current,
             engine: engine,
             options: {
                 background: '#ffffff',
@@ -53,7 +53,7 @@ const PongZoneBoot = () => {
 
         
         let currentPositionLeft = { x: (minX + width), y: midleVertical };
-        const handleKey = (event) => {
+        const handleKey = (event : KeyboardEvent) => {
             const newPositionLeft = { ...currentPositionLeft }; 
             switch (event.key) {
                 case 'ArrowUp':
@@ -69,7 +69,7 @@ const PongZoneBoot = () => {
             // newPositionLeft.y = Math.max(minY + height/2, Math.min(newPositionLeft.y, maxY- height/2));
             console.log(`front : h-${height} & w-${width} & minY-${minY} & minx-${minX} & maxY-${maxY} & maxY-${maxX}`);
             console.log('after y: ',  newPositionLeft.y)
-            Matter.Body.setPosition(paddleLeft, newPositionLeft, []);
+            // Matter.Body.setPosition(paddleLeft, newPositionLeft, []);
             currentPositionLeft = newPositionLeft;
         };
 

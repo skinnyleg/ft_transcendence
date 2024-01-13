@@ -25,6 +25,9 @@ export class ChannelService {
         const {name, type, picture, password } = data;
         const type_: Types = type as Types;
         let hashedPass = password;
+        const testName = name.trim();
+        if (testName === '')
+            throw new BadRequestException('Invalid Name.');
         if (type === 'PROTECTED' && (!password || password.length < 4 || password.length > 8))
             throw new BadRequestException('Invalid password.');
         else if ((type === 'PUBLIC' || type === 'PRIVATE') && password)

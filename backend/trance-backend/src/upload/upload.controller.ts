@@ -76,7 +76,7 @@ export class UploadController {
 		} catch (error) {
 			// Handle other errors (e.g., server error)
 			// console.error(error);
-			res.status(500).send('Internal Server Error');
+			res.status(404).send('Not Found');
 		}
 	}
 	
@@ -95,7 +95,7 @@ export class UploadController {
 		} catch (error) {
 			// Handle other errors (e.g., server error)
 			// console.error(error);
-			res.status(500).send('Internal Server Error');
+			res.status(404).send('Not Found');
 		}
 	}
 
@@ -114,7 +114,7 @@ export class UploadController {
 		} catch (error) {
 			// Handle other errors (e.g., server error)
 			// console.error(error);
-			res.status(500).send('Internal Server Error');
+			res.status(404).send('Not Found');
 		}
 	}
 

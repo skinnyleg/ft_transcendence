@@ -200,6 +200,7 @@ export class FriendsService {
 	{
 		const toSend = this.getUserById(userId);
 		const sender = this.getUserBySocketId(client.id);
+		await this.userService.firstFriend(userId, sender.id);
 		try {
 			await this.userService.acceptRequest(sender.id, userId, requestId);
 			if (toSend !== undefined)

@@ -28,6 +28,11 @@ export class AuthController {
 	@UseGuards(intraAuthGuard)
 	async intra42AuthRedirect(@Req() request, @Res() response)
 	{
+		if (request.user === null)
+		{
+			response.status(500).send({msg: 'Something Went Wrong'})
+			return ;
+		}
 		response.cookie('id', request.user.id, {signed: true})
 		if (request.user.isEnabled === true)
 		{
