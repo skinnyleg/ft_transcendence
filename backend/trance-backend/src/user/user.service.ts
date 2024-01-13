@@ -157,6 +157,7 @@ export class UserService {
 		return (notDoneAchievements);
 	}
 
+
 	async updateAchivements(userId: string, type: string){
 		const currentUser = await this.prisma.user.findFirst({
 			where: {

@@ -218,7 +218,7 @@ export class GameService {
         const playerStatus = await this.userService.getStatus(player.id);
         
         if (player.IsInGame === false){
-            player.socket.emit("error", "You're Not In Game");
+            player.socket.emit('error', "You're Not In Game");
             return ;
         }
         if (playerStatus === UserStatus.IN_GAME || playerStatus ===  UserStatus.IN_QUEUE)
@@ -228,44 +228,8 @@ export class GameService {
         }
         await this.userService.updateStatus(player.id, UserStatus.IN_GAME); // what if there is more than one match
         await this.emitToFriendsStatusGame(player.id, UserStatus.IN_GAME);
-        // var ball : Ball = {
-        //     x: width / 2,
-        //     y : height / 2,
-        //     raduis : 20,
-        //     speed: 2,
-        //     velocityX: 5,
-        //     velocityY: 5,
-        // };
-        // var BotPaddel : leftPaddle = {
-        //     height: 100,
-        //     width: 10,
-        //     x : 0,
-        //     y: (height - 100) / 2,
-        //     score : 0,
-        // };
-        // var PlayerPaddle : leftPaddle = {
-        //     height: 100,
-        //     width: 10,
-        //     x : width - 10,
-        //     y: (height - 100) / 2,
-        //     score : 0,
-        // };
 
-        // player.socket.on('arrow', ((arg)=> {
-        //     switch (arg) {
-        //         case 'UP':
-        //         if (PlayerPaddle.y > 0  + PlayerPaddle.height / 2)
-        //             PlayerPaddle.y -= 10;
-        //             break;
-        //         case 'DOWN':
-        //             if (PlayerPaddle.y < (height - PlayerPaddle.height / 2))
-        //                 PlayerPaddle.y += 10;
-        //             break;
-        //     }
-        //     player.socket.emit('leftPaddle', PlayerPaddle);
-        // }));
-
-        player.socket.on("endBotMatch", (async () => {
+        player.socket.on('endBotMatch', (async () => {
             await this.userService.updateStatus(player.id, UserStatus.ONLINE);
             await this.emitToFriendsStatusGame(player.id, UserStatus.ONLINE);
         }));
@@ -316,15 +280,15 @@ export class GameService {
         // problem who is the 2nd player √ (add rom id as a userGame attribute) √
         if (!player2)
         {
-            player1.socket.emit("error", "Player Not connected")
+            player1.socket.emit('error', "Player Not connected")
             return ;
         }
         if (!player1.IsInGame){
-            player1.socket.emit("error", "Your not in Game ...");
+            player1.socket.emit('error', "Your not in Game ...");
             return ;
         }
         if (player2.IsInGame === false){
-            player1.socket.emit("error", "Player Not in Game, Send him a challenge request");
+            player1.socket.emit('error', "Player Not in Game, Send him a challenge request");
             return ;
         }
         this.userService.updateStatus(this.players_arr.get(player1.roomId)[1].id, UserStatus.IN_GAME);
@@ -332,59 +296,8 @@ export class GameService {
         await this.emitToFriendsStatusGame(this.players_arr.get(player1.roomId)[0].id, UserStatus.IN_GAME);
         await this.emitToFriendsStatusGame(this.players_arr.get(player1.roomId)[1].id, UserStatus.IN_GAME);
 
-        // var ball : Ball = {
-        //     x: width / 2,
-        //     y : height / 2,
-        //     raduis : 20,
-        //     speed: 2,
-        //     velocityX: 5,
-        //     velocityY: 5,
-        // };
-        // var leftPaddel : leftPaddle = {
-        //     height: 150,
-        //     width: 20,
-        //     x : 20,
-        //     y: (height / 2),
-        //     score : 0,
-        // };
-        // var rightPaddle : leftPaddle = {
-        //     height: 150,
-        //     width: 20,
-        //     x : width - 20,
-        //     y : (height) / 2,
-        //     score : 0,
-        // };
+        // server.to(roomId).emit()
 
-        // this.players_arr.get(roomId)[0].socket.on('arrow', ((arg)=> {
-        //     switch (arg) {
-        //         case 'UP':
-        //         if (leftPaddel.y > 0  + leftPaddel.height / 2)
-        //             leftPaddel.y -= 10;
-        //             break;
-        //         case 'DOWN':
-        //             if (leftPaddel.y < (height - leftPaddel.height / 2))
-        //                 leftPaddel.y += 10;
-        //             break;
-        //     }
-        //     this.players_arr.get(roomId)[0].socket.emit('leftPaddle', leftPaddel)
-        //     this.players_arr.get(roomId)[1].socket.emit('leftPaddle', leftPaddel)
-        // }))
-        // this.players_arr.get(roomId)[1].socket.on('arrow', ((arg)=> {
-        //     switch (arg) {
-        //         case 'UP':
-                    
-        //         if (rightPaddle.y > 0 + rightPaddle.height / 2)
-        //             rightPaddle.y -= 10;
-        //             break;
-        //         case 'DOWN':
-        //             if (rightPaddle.y < (height - rightPaddle.height / 2))    
-        //                 rightPaddle.y += 10;
-        //             break;
-        //     }
-        //     this.players_arr.get(roomId)[0].socket.emit('rightPaddle', rightPaddle)
-        //     this.players_arr.get(roomId)[1].socket.emit('rightPaddle', rightPaddle)
-        // }))
-        
         this.players_arr.get(roomId)[0].socket.on('EndGame', ((arg) => {
             this.handleMatchFinish(arg, roomId)
         }));
