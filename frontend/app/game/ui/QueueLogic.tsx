@@ -93,7 +93,6 @@ const PongZoneQueue = () => {
             Matter.Body.setPosition(paddleLeft, paddleL);
             Matter.Body.setPosition(paddleRight, {x: paddleRight.position.x, y: paddleL.y});
         });
-                
         gameSocket.on('rightPaddle', (Cordinates: any) => {
             const paddleL: pladdleCoordinates  = {x: Cordinates.x, y: Cordinates.y};
             Matter.Body.setPosition(paddleRight, paddleL);

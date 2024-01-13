@@ -169,6 +169,7 @@ export class UserService {
 		return (notDoneAchievements);
 	}
 
+
 	async updateAchivements(userId: string, type: string){
 		const currentUser = await this.prisma.user.findFirst({
 			where: {
@@ -791,14 +792,14 @@ export class UserService {
 				userId: senderId,
 				friendId: recipientId,
 				status: {
-				in: [Status.FRIEND, Status.PENDING], // Check for FRIEND or PENDING status
+				in: [Status.FRIEND], // Check for FRIEND or PENDING status
 				},
 			},
 			{
 				userId: recipientId,
 				friendId: senderId,
 				status: {
-				in: [Status.FRIEND, Status.PENDING], // Check for FRIEND or PENDING status
+				in: [Status.FRIEND], // Check for FRIEND or PENDING status
 				},
 			},
 			],

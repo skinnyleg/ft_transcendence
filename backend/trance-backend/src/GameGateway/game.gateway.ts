@@ -59,7 +59,7 @@ export class GameGateway {
         this.gameService.handleMatchMaker(client, this.server);
     }
 
-    @SubscribeMessage('challengeBot')
+    @SubscribeMessage('PlayBot')
     async BotMatchMaker(client : Socket){
         this.gameService.challengeBot(client);
     }
@@ -118,7 +118,7 @@ export class GameGateway {
     }
 
     async handleDisconnect(client: Socket) {
-		await this.gameService.deleteUser(client)
+		await this.gameService.deleteUser(client, this.server)
 		client.disconnect();
 	}
 }

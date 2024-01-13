@@ -21,7 +21,7 @@ export class UploadController {
 	if (file === undefined)
 		throw new BadRequestException('Server doesn\'t this upload')
 	const id = getId(req);
-	const newDir =  'http://localhost:8000/' + 'upload/profile/'
+	const newDir = process.env.BackendHost + '/upload/profile/'
 	const filePath = newDir + file.filename
 	await this.uploadService.updateProfilePic(filePath, id)
     return { valid:true, filename: filePath };
@@ -35,7 +35,7 @@ export class UploadController {
 	if (file === undefined)
 		throw new BadRequestException('Server doesn\'t this upload')
 	const id = getId(req);
-	const newDir =  'http://localhost:8000/' + 'upload/background/'
+	const newDir =  process.env.BackendHost + '/upload/background/'
 	const filePath = newDir + file.filename
 	await this.uploadService.updateBackgroundPic(filePath, id)
     return { valid:true, filename: filePath };
@@ -54,7 +54,7 @@ export class UploadController {
 	const channelName = req.headers.channelname;
 	if (channelName === undefined || channelName === '')
 		throw new BadRequestException('No Channel Name Given')
-	const newDir =  'http://localhost:8000/' + 'upload/channel/'
+	const newDir =  process.env.BackendHost + '/upload/channel/'
 	const filePath = newDir + file.filename
 	console.log('filePath == ', filePath);
 	await this.uploadService.updateChannelPic(filePath, channelName)

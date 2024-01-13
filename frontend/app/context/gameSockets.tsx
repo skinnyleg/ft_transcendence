@@ -7,7 +7,7 @@ import React from 'react';
 const cookies = new Cookies();
 const token = cookies.get('token');
 
-const gameSocket = io('http://localhost:8000/GameGateway', {
+const gameSocket = io(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/GameGateway`, {
     withCredentials: true, // Required if your server is using credentials
     transportOptions: {
         polling: {
