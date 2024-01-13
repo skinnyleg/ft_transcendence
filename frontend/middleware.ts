@@ -84,9 +84,9 @@ export default async function middleware(request: NextRequest){
     if (succes){
       return NextResponse.next();
     }
-    return NextResponse.redirect(new URL("/", "http://localhost:3000/"));
+    return NextResponse.redirect(new URL("/", `${process.env.NEXT_PUBLIC_BACKEND_HOST}/`));
 }
  
 export const config = {
-  matcher: ['/Dashboard', '/settings', '/profile/:path*', '/Chat', '/Leaderboard', '/game']
+  matcher: ['/Dashboard', '/settings', '/profile/:path*', '/Chat', '/Leaderboard', '/game/:path*']
 }
