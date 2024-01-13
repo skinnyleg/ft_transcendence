@@ -80,7 +80,7 @@ export class GameService {
     }
 
     /** challenge Bot */
-    async challengeBot(client : Socket, playload: string){
+    async challengeBot(client : Socket, playload: any){
         const player = this.getUserBySocketId(client.id);
         const playerStatus = await this.userService.getStatus(player.id);
         if (playerStatus === UserStatus.IN_GAME || playerStatus ===  UserStatus.IN_QUEUE)

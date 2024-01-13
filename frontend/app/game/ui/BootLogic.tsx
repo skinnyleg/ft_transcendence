@@ -15,8 +15,16 @@ const PongZoneBoot = () => {
     const   route = useRouter();
     const   [matchready, setMatchready] = useState<boolean>(false);
     const   [pongzone, setPongzone] = useState({width: 0, height: 0});
-    const   {gameMape, score, setScore, gameId} = useContext(GameContext);
+    const   {powerUps, gameMape, score, setScore, gameId} = useContext(GameContext);
     
+    // set power ups
+    // gameSocket.on('playerSettings', (data: any) => {
+        const   speedMeter = (powerUps == 'speedMeter') ? {x: 9 , y: 9 } : {x:6 , y: 6};
+        const   ZoomIn = (powerUps == 'ZoomIn') ? 225 : 150;
+        const   Shrink = (powerUps == 'Shrink') ? 100 : 150;
+        const   ExtraTime = (powerUps == 'ExtraTime') ? 5 : 4;
+    // });
+
     useEffect(() => {
 
         const   { Engine, Render, World, Bodies, Composite, Runner} = Matter;
@@ -65,8 +73,8 @@ const PongZoneBoot = () => {
                 lineWidth: 5, // Border width of the ball
             },
         });
-        let paddleLeft = Bodies.rectangle(minX + width, midleVertical, width, height, { isStatic: true });
-        let paddleRight = Bodies.rectangle(maxX - width, midleVertical, width, height, { isStatic: true });
+        let paddleLeft = Bodies.rectangle(minX + width, midleVertical, width, ZoomIn, { isStatic: true });
+        let paddleRight = Bodies.rectangle(maxX - width, midleVertical, width, Shrink, { isStatic: true });
         
         Composite.add(engine.world, [paddleLeft, paddleRight, ball]);
 
@@ -84,7 +92,7 @@ const PongZoneBoot = () => {
                     newPositionLeft.y += speedR;
                     break;
             }
-            newPositionLeft.y = Math.max(minY + height/2, Math.min(newPositionLeft.y, maxY- height/2));
+            newPositionLeft.y = Math.max(minY + ZoomIn/2, Math.min(newPositionLeft.y, maxY- ZoomIn/2));
             Matter.Body.setPosition(paddleLeft, newPositionLeft);
             currentPositionLeft = newPositionLeft;
         };
@@ -96,9 +104,9 @@ const PongZoneBoot = () => {
         setInterval(() => {   
             const newPositionRight = { ...currentPositionRight };
             newPositionRight.y = ball.position.y - (speedR + 10);
-            newPositionRight.y = Math.max(minY + height/2, Math.min(newPositionRight.y, maxY - height/2));
+            newPositionRight.y = Math.max(minY + Shrink/2, Math.min(newPositionRight.y, maxY - Shrink/2));
             Matter.Body.setPosition(paddleRight, newPositionRight);
-        }, 150);
+        }, 500);
 
         gameSocket.on('drawBallBot', () => {
             Matter.Body.setVelocity(ball, { x: 5, y: 5 })
@@ -113,31 +121,31 @@ const PongZoneBoot = () => {
                 {
                     setScore({playerL: score.playerL, playerR: (++score.playerR)});
                     Matter.Body.setPosition(ball, { x: midleCanvas, y: midleVertical });
-                    (score.playerR !== 3 && score.playerL !== 3) && Matter.Body.setVelocity(ball, { x: -vilocityBallX, y: 5 })
+                    (score.playerR !== ExtraTime && score.playerL !== ExtraTime) && Matter.Body.setVelocity(ball, { x: -vilocityBallX, y: 5 })
                 }
                 else if ((pair.bodyA === ball && pair.bodyB === wallRight) || (pair.bodyA === wallRight && pair.bodyB === ball))
                 {
                     setScore({playerL: (++score.playerL), playerR: score.playerR});
                     Matter.Body.setPosition(ball, { x: midleCanvas, y: midleVertical });
-                    (score.playerR !== 3 && score.playerL !== 3) && Matter.Body.setVelocity(ball, { x: -vilocityBallX, y: 5 })
+                    (score.playerR !== ExtraTime && score.playerL !== ExtraTime) && Matter.Body.setVelocity(ball, { x: -vilocityBallX, y: 5 })
                 }
                 if ((pair.bodyA === ball && pair.bodyB === paddleRight) || (pair.bodyA === paddleRight && pair.bodyB === ball)) {
                     ball.velocity.y *= -1
-                    Matter.Body.setVelocity(ball, { x: -vilocityBallX, y: 8 })
+                    Matter.Body.setVelocity(ball, { x: -vilocityBallX, y: 6 })
                 }
                 else if ((pair.bodyA === ball && pair.bodyB === paddleLeft) || (pair.bodyA === paddleLeft && pair.bodyB === ball)) {
                     ball.velocity.x *= -1
-                    Matter.Body.setVelocity(ball, { x: -vilocityBallX, y: 5 })              
+                    Matter.Body.setVelocity(ball, { x: -speedMeter.x, y: speedMeter.y })              
                 }
-                (score.playerR === 3 || score.playerL === 3) && (Matter.Body.setVelocity(ball, { x: 0, y: 0 }));
-                (score.playerR === 3 || score.playerL === 3) && (gameSocket.emit('gameBotEnd'));
-                (score.playerR === 3 || score.playerL === 3) && route.push('/Dashboard');
-                if (score.playerR === 3 || score.playerL === 3) {
+                (score.playerR === ExtraTime || score.playerL === ExtraTime) && (Matter.Body.setVelocity(ball, { x: 0, y: 0 }));
+                (score.playerR === ExtraTime || score.playerL === ExtraTime) && (gameSocket.emit('gameBotEnd'));
+                (score.playerR === ExtraTime || score.playerL === ExtraTime) && route.push('/Dashboard');
+                if (score.playerR === ExtraTime || score.playerL === ExtraTime) {
                     gameSocket.emit('endBotMatch');
                     return ;
                 }
+                Matter.Body.set(ball, { restitution: 1, friction: 0 }); // n9adro n7aydoha
             }
-            Matter.Body.set(ball, { restitution: 1, friction: 0 }); // n9adro n7aydoha
         });
         
         Render.run(render);
