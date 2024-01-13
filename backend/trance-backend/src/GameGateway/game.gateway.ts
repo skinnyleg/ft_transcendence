@@ -72,8 +72,9 @@ export class GameGateway {
     }
 
     @SubscribeMessage('PlayBot')
-    async BotMatchMaker(client : Socket){
-        this.gameService.challengeBot(client);
+    async BotMatchMaker(client : Socket, payload: string){
+        this.gameService.challengeBot(client, payload);
+        // client.emit('gameBotTheme', payload);
     }
 
     @SubscribeMessage('StartBotGame')

@@ -10,12 +10,12 @@ const PongZoneBoot = () => {
     const width = 20;
     const height = 150;
     let speedR = 20;
-    let speedL = 20;
+    let vilocityBallX = 6;
 
     const   route = useRouter();
     const   [matchready, setMatchready] = useState<boolean>(false);
     const   [pongzone, setPongzone] = useState({width: 0, height: 0});
-    const   {score, setScore, gameId} = useContext(GameContext);
+    const   {gameMape, score, setScore, gameId} = useContext(GameContext);
     
     useEffect(() => {
 
@@ -31,7 +31,8 @@ const PongZoneBoot = () => {
             canvas: canvasRef.current === null ? undefined : canvasRef.current,
             engine: engine,
             options: {
-                background: '#ffffff',
+                // background: '#ffffff',
+                background: 'transparent',
                 wireframes: false,
             } 
         });
@@ -83,7 +84,6 @@ const PongZoneBoot = () => {
                     newPositionLeft.y += speedR;
                     break;
             }
-            // console.log('befor y: ',  newPositionLeft.y)
             newPositionLeft.y = Math.max(minY + height/2, Math.min(newPositionLeft.y, maxY- height/2));
             Matter.Body.setPosition(paddleLeft, newPositionLeft);
             currentPositionLeft = newPositionLeft;
@@ -95,16 +95,9 @@ const PongZoneBoot = () => {
 
         setInterval(() => {   
             const newPositionRight = { ...currentPositionRight };
-            // if (newPositionRight.y <=  (maxY - height/2) && (newPositionRight.y !=  (minY + height/2)))
-            //     newPositionRight.y += speedL;
-            // else if (newPositionRight.y >=  (minY + height/2) && (newPositionRight.y != (maxY - height/2)))
-            //     newPositionRight.y -= speedL;
-            // speedL *= -1;
-            // speedL = -speedL;
-            newPositionRight.y = ball.position.y;
+            newPositionRight.y = ball.position.y - (speedR + 10);
             newPositionRight.y = Math.max(minY + height/2, Math.min(newPositionRight.y, maxY - height/2));
             Matter.Body.setPosition(paddleRight, newPositionRight);
-            // currentPositionRight = newPositionRight;
         }, 150);
 
         gameSocket.on('drawBallBot', () => {
@@ -113,44 +106,35 @@ const PongZoneBoot = () => {
         });
 
         Matter.Events.on(engine, 'collisionStart', function(event) {
-            console.log('entered collison func')
             var pairs = event.pairs;
-            (score.playerR === 3 || score.playerL === 3) && (Matter.Body.setVelocity(ball, { x: 0, y: 0 }));
-            (score.playerR === 3 || score.playerL === 3) && (gameSocket.emit('gameBotEnd'));
-            (score.playerR === 3 || score.playerL === 3) && route.push('/Dashboard');
-            if (score.playerR === 3 || score.playerL === 3)
-                return ;
             for (var i = 0, j = pairs.length; i != j; ++i) {
                 var pair = pairs[i]; 
                 if ((pair.bodyA === ball && pair.bodyB === wallLeft) || (pair.bodyA === wallLeft && pair.bodyB === ball))
                 {
-                    Matter.Body.setVelocity(ball, { x: 0, y: 0 });
-                    // score.playerR += 1
-                    console.log('scoore R befor : ', score.playerR)
                     setScore({playerL: score.playerL, playerR: (++score.playerR)});
-                    console.log('scoore R after : ', score.playerR)
                     Matter.Body.setPosition(ball, { x: midleCanvas, y: midleVertical });
-                    Matter.Body.setVelocity(ball, { x: 5, y: 5 });
-                    gameSocket.emit('scoreLeft');
-                    break ;
+                    (score.playerR !== 3 && score.playerL !== 3) && Matter.Body.setVelocity(ball, { x: -vilocityBallX, y: 5 })
                 }
                 else if ((pair.bodyA === ball && pair.bodyB === wallRight) || (pair.bodyA === wallRight && pair.bodyB === ball))
                 {
-                    // score.playerL += 1
-                    Matter.Body.setVelocity(ball, { x: 0, y: 0 });
-                    console.log('scoore L befor : ', score.playerL)
                     setScore({playerL: (++score.playerL), playerR: score.playerR});
-                    console.log('scoore L after : ', score.playerL)
                     Matter.Body.setPosition(ball, { x: midleCanvas, y: midleVertical });
-                    Matter.Body.setVelocity(ball, { x: -5, y: 5 })
-                    gameSocket.emit('scoreRight');
-                    break ;
+                    (score.playerR !== 3 && score.playerL !== 3) && Matter.Body.setVelocity(ball, { x: -vilocityBallX, y: 5 })
                 }
                 if ((pair.bodyA === ball && pair.bodyB === paddleRight) || (pair.bodyA === paddleRight && pair.bodyB === ball)) {
-                    Matter.Body.setVelocity(ball, { x: 8, y: 8 })
+                    ball.velocity.y *= -1
+                    Matter.Body.setVelocity(ball, { x: -vilocityBallX, y: 8 })
                 }
                 else if ((pair.bodyA === ball && pair.bodyB === paddleLeft) || (pair.bodyA === paddleLeft && pair.bodyB === ball)) {
-                    Matter.Body.setVelocity(ball, { x: 5, y: 5 })              
+                    ball.velocity.x *= -1
+                    Matter.Body.setVelocity(ball, { x: -vilocityBallX, y: 5 })              
+                }
+                (score.playerR === 3 || score.playerL === 3) && (Matter.Body.setVelocity(ball, { x: 0, y: 0 }));
+                (score.playerR === 3 || score.playerL === 3) && (gameSocket.emit('gameBotEnd'));
+                (score.playerR === 3 || score.playerL === 3) && route.push('/Dashboard');
+                if (score.playerR === 3 || score.playerL === 3) {
+                    gameSocket.emit('endBotMatch');
+                    return ;
                 }
             }
             Matter.Body.set(ball, { restitution: 1, friction: 0 }); // n9adro n7aydoha
@@ -174,10 +158,13 @@ const PongZoneBoot = () => {
         gameSocket.emit('ballPermission');
     };
 
+    console.log('map == ', gameMape);
     return (
-        <div className="bg-transparent w-[100%] h-[80%] rounded-[10px] justify-center absolute bottom-0">
+        <div
+        style={{ '--image-url': `url(${gameMape})` } as React.CSSProperties} 
+        className={`bg-cover bg-center bg-[image:var(--image-url)] w-[100%] h-[80%] rounded-[10px] justify-center absolute bottom-0`}>
             { !matchready && <button onClick={startGame}>START GAME</button>}
-            { matchready && <canvas ref={canvasRef} className='bg-transparent w-[100%] h-[100%] rounded-[10px]'/>}
+            { matchready && <canvas ref={canvasRef} className='w-[100%] h-[100%] rounded-[10px]'/>}
         </div>
     );
 };

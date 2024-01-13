@@ -8,7 +8,7 @@ import { usePathname } from "next/navigation";
 function    BotGame(){
 
     const   path = usePathname();
-    const   {gameId, setGameId, setPlayerL, setPlayerR} = useContext(GameContext);
+    const   {setGameMape, setGameId, setPlayerL, setPlayerR} = useContext(GameContext);
 
     useEffect(() => {
 
@@ -21,9 +21,11 @@ function    BotGame(){
         };
 
         gameSocket.on('BotReady', handleBotReady);
+        gameSocket.on('gameBotTheme', (theme: any) => { setGameMape(theme); console.log('game map e received: ', theme)});
         
         return () => {
             gameSocket.off('BotReady', handleBotReady);
+            gameSocket.off('gameBotTheme', (theme: any) => { setGameMape(theme)});
         };
 
     },[]);
@@ -39,7 +41,7 @@ function    BotGame(){
             <div className="bg-cyan-100 h-[93.75%] w-[95.83%] flex space-x-[0.87%] items-end justify-center rounded-[15px]">
                 <div className="flex flex-col w-[91.74%] h-[97.33%] items-center relative rounded-[10px]">
                         <GameResultBar />
-                        {<PongZoneBoot />} 
+                        <PongZoneBoot />
                 </div>
             </div>
         </main>
