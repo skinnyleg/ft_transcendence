@@ -3,7 +3,6 @@ import Matter from 'matter-js';
 import gameSocket, { GameContext } from '../../context/gameSockets';
 import { ballCoordinates, pladdleCoordinates, playersCoordinates } from '../types/interfaces';
 import { usePathname, useRouter } from 'next/navigation';
-import { exit } from 'process';
 
 
 const PongZoneQueue = () => {
@@ -16,7 +15,6 @@ const PongZoneQueue = () => {
 
     const width = 20;
     const height = 150;
-    
     
     useEffect(() => {
 
@@ -55,7 +53,7 @@ const PongZoneQueue = () => {
         Composite.add(engine.world, [wallTop, wallBottom, wallLeft, wallRight]);
 
         const   ball = Matter.Bodies.circle(midleCanvas, midleVertical, 10, {
-            // isStatic: false,
+            isStatic: false,
             restitution: 1, // Bounciness of the ball
             friction: 0, // Friction of the ball
             inertia: Infinity,
@@ -69,10 +67,7 @@ const PongZoneQueue = () => {
         const   paddleLeft = Bodies.rectangle(minX + width, midleVertical, width, height, { isStatic: true });
         const   paddleRight = Bodies.rectangle(maxX - width, midleVertical, width, height, { isStatic: true });
                 
-        Composite.add(engine.world, [paddleLeft, paddleRight, ball]);
-        // Matter.Events.on(engine, 'beforeUpdate', function() {
-        //     engine.world.gravity = 0;
-        // });     
+        Composite.add(engine.world, [paddleLeft, paddleRight, ball]);    
         
         const handleKey = (event: KeyboardEvent) => {
             switch (event.key) {
@@ -98,20 +93,19 @@ const PongZoneQueue = () => {
             Matter.Body.setPosition(paddleRight, paddleL);
         });
         
-        gameSocket.on('drawBall', () => {
+        gameSocket.on('StartDrawing', () => {
             Matter.Body.setVelocity(ball, { x: 5, y: 5 })
         });
-        let timer: any;
+
         Matter.Events.on(engine, 'collisionStart', function(event) {
             var pairs = event.pairs;
             for (var i = 0, j = pairs.length; i != j; ++i) {
                 var pair = pairs[i]; 
-                    // route.push('/Dashboard');
-                    (score.playerR === 3 || score.playerL === 3) && (Matter.Body.setVelocity(ball, { x: 0, y: 0 }));
-                    (score.playerR === 3) ? gameSocket.emit('playerRighttWin') : score.playerL === 3 ?  gameSocket.emit('playerLeftWin') : '';
-                    (score.playerR === 3 || score.playerL === 3) && route.push('/Dashboard');
-                    // return ;
-                    // return ;
+                (score.playerR === 3 || score.playerL === 3) && (Matter.Body.setVelocity(ball, { x: 0, y: 0 }));
+                (score.playerR === 3) ? gameSocket.emit('playerRighttWin') : score.playerL === 3 ?  gameSocket.emit('playerLeftWin') : '';
+                (score.playerR === 3 || score.playerL === 3) && route.push('/Dashboard');
+                if (score.playerR === 3 || score.playerL === 3)
+                    return ;
                 if ((pair.bodyA === ball && pair.bodyB === wallLeft) || (pair.bodyA === wallLeft && pair.bodyB === ball))
                 {
                     setScore({playerL: score.playerL, playerR: (++score.playerR)});
@@ -143,8 +137,7 @@ const PongZoneQueue = () => {
         return () => {
             Render.stop(render);
             Engine.clear(engine);
-            clearTimeout(timer);
-            gameSocket.off('drawBall');
+            gameSocket.off('StartDrawing');
             gameSocket.off('leftPaddle');
             gameSocket.off('rightPaddle');
         };
