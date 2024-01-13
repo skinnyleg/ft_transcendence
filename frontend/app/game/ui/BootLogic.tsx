@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import Matter from 'matter-js';
 import gameSocket, { GameContext } from '../../context/gameSockets';
 import { useRouter } from 'next/navigation';
@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 
 const PongZoneBoot = () => {
 
-    const canvasRef = useRef(null);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
     const width = 20;
     const height = 150;
     let speedR = 20;
@@ -28,7 +28,7 @@ const PongZoneBoot = () => {
         });
 
         const render = Render.create({
-            canvas: canvasRef.current,
+            canvas: canvasRef.current === null ? undefined : canvasRef.current,
             engine: engine,
             options: {
                 // background: '#ffffff',
@@ -162,7 +162,7 @@ const PongZoneBoot = () => {
     return (
         <div
         style={{ '--image-url': `url(${gameMape})` } as React.CSSProperties} 
-        className={`bg-cover bg-center bg-[image:var(--image-url)] w-[100%] h-[80%] rounded-[10px] justify-center absolute bottom-0`}>
+        className={`bg-black bg-cover bg-center bg-[image:var(--image-url)] w-[100%] h-[80%] rounded-[10px] justify-center absolute bottom-0`}>
             { !matchready && <button onClick={startGame}>START GAME</button>}
             { matchready && <canvas ref={canvasRef} className='w-[100%] h-[100%] rounded-[10px]'/>}
         </div>

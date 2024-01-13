@@ -40,7 +40,7 @@ const ChatTabPersonal: FC<ChatTabProps> = () => {
 				dmId: personalId
 			})
 		})
-	}, [personalId])
+	}, [personalId, chatSocket, socket])
 
 
 
@@ -117,7 +117,7 @@ const ChatTabPersonal: FC<ChatTabProps> = () => {
 			// chatSocket.off('changeDone')
 			// chatSocket.off('outDone')
 		}
-	}, [])
+	}, [chatSocket, setPersonal])
 
 
 	if (personal === undefined)

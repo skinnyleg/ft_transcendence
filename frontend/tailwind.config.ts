@@ -11,7 +11,11 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      
+
+      fontFamily: {
+        gilroy: ['Gilroy', 'sans-serif'],
+        'bebas-neue': ['"Bebas Neue"', 'sans-serif'],
+      },
       gridTemplateRows: {
         '5' : 'repeat(5, minmax(0, 1fr))',
       },

@@ -41,7 +41,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 	server: Server;
 
 	private usersSockets: {userId: string, socket: any}[] = [];
-	private saveDmId: string = '';
+	private saveDmId: {userId: string, dmId: string}[] = [];
 
 	async onModuleInit() {
 		try
@@ -49,7 +49,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			console.log('------ WebSocket Gateway started ------');
 			this.usersSockets.length = 0;
 			await this.Outils.pushMutedUsers();
-			await this.Outils.MuteExpiration();
+			// await this.Outils.MuteExpiration();
 		}
 		catch (error) {
 			console.log('error<onModuleInit>: ', error.message);
@@ -346,8 +346,17 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 	@SubscribeMessage('getSaveDmId')
 	sendSavedDmId(@ConnectedSocket() client: Socket)
 	{
-		client.emit('sentDmId', {dmId: this.saveDmId});
-		this.saveDmId = '';
+		const user2 = client.data.user;
+		if (this.saveDmId.length === 0 || user2 === undefined)
+		{
+			client.emit('sentDmId', {dmId: ''})
+			return ;
+		}
+		const userDmId = this.saveDmId.find((user) => user.userId === user2.id)
+		console.log('array before1 ==' , this.saveDmId);
+		client.emit('sentDmId', {dmId: userDmId.dmId});
+		this.saveDmId = this.saveDmId.filter((user) => user.userId !== user2.id)
+		console.log('array before2 ==' , this.saveDmId);
 	}
 
 	@SubscribeMessage('sendMsgDM')
@@ -376,8 +385,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			}
 			else
 			{
-				this.saveDmId = dmId;
-				client.emit('redirect', {dmId: this.saveDmId})
+				this.saveDmId.push({userId: user.id, dmId: dmId});
+				client.emit('redirect')
 			}
 		}
 		catch (error) {

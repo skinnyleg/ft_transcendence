@@ -66,7 +66,7 @@ function NavBar ({handleShowMenu}: NavBarProps)
     if (search) {
       debouncedSearchBackend(search);
     }
-  }, [search]);
+  }, [search, debouncedSearchBackend]);
 
 //   useEffect(() => {
 //     const getnickname = async () => {
@@ -144,21 +144,21 @@ return (
           />
         </div>
         <div className="flex flex-col flex-grow mt-20">
-            <div className={clsx(`flex items-center mt-15 justify-center mt-10 px-15 font-medium 
+            <div className={clsx(`hover:cursor-pointer flex items-center mt-15 justify-center mt-10 px-15 font-medium 
                hover:text-accents`, {'text-accents'  : currentPath === "/Dashboard", 'text-gray-400'  : currentPath !== "/Dashboard"
               })} onClick={() => {router.push('/Dashboard')}}>
               <HomeIcon className="w-10 ml-3 h-6 mr-4 xl:w-20 xl:h-20" />
             </div>
-            <div className={clsx(`flex items-center mt-10 justify-center xl:mt-15 xl:w-20 xl:h-20 px-15 font-medium 
+            <div className={clsx(`hover:cursor-pointer flex items-center mt-10 justify-center xl:mt-15 xl:w-20 xl:h-20 px-15 font-medium 
               hover:text-accents`, {'text-accents'  : currentPath === "/Chat", 'text-gray-400'  : currentPath !== "/Chat"})} onClick={() => {router.push('/Chat')}}>
               <ChatBubbleBottomCenterIcon className="w-10 ml-3 h-6 mr-4 xl:w-20 xl:h-20" />
             </div>
-            <div className={clsx(`flex items-center mt-15 justify-center xl:mt-15 mt-10 px-15 font-medium 
+            <div className={clsx(`hover:cursor-pointer flex items-center mt-15 justify-center xl:mt-15 mt-10 px-15 font-medium 
               hover:text-accents`, {'text-accents'  : currentPath === "/Leaderboard", 'text-gray-400'  : currentPath !== "/Leaderboard"
               })} onClick={() => {router.push('/Leaderboard')}}>
               <TrophyIcon className="w-10 h-6 ml-3 mr-4 xl:w-20 xl:h-20" />
             </div>
-            <div className={clsx(`flex items-center mt-15 justify-center mt-10 xl:mt-15 px-15 font-medium  hover:text-accents`, {
+            <div className={clsx(`hover:cursor-pointer flex items-center mt-15 justify-center mt-10 xl:mt-15 px-15 font-medium  hover:text-accents`, {
               'text-accents'  : currentPath === "/settings", 'text-gray-400'  : currentPath !== "/settings"
                 })} onClick={() => {router.push('/settings')}}>
               <Cog6ToothIcon className="w-10 ml-3 h-6 mr-4 xl:w-20 xl:h-20" />
@@ -170,7 +170,11 @@ return (
             hover:text-accents`, {
           'text-accents'  : currentPath === "/",
           })}>
-            <ArrowLeftOnRectangleIcon className="xl:w-[75%] lg:w-[60%] md:w-[50%] w-[50%]" />
+            {/* <ArrowLeftOnRectangleIcon className="xl:w-[75%] lg:w-[60%] md:w-[50%] w-[50%]" /> */}
+            <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" viewBox="0 0 45 45" fill="none">
+              <rect width="45" height="45" rx="10" fill="#05445E"/>
+              <path d="M18.75 20.625V15L28.125 22.5L18.75 30V24.375H1.875V20.625H18.75ZM4.60837 28.125H8.59035C10.8155 33.6221 16.2049 37.5 22.5 37.5C30.7843 37.5 37.5 30.7843 37.5 22.5C37.5 14.2157 30.7843 7.5 22.5 7.5C16.2049 7.5 10.8155 11.3778 8.59035 16.875H4.60837C6.99763 9.26792 14.1044 3.75 22.5 3.75C32.8552 3.75 41.25 12.1447 41.25 22.5C41.25 32.8552 32.8552 41.25 22.5 41.25C14.1044 41.25 6.99763 35.7321 4.60837 28.125Z" fill="#a8a29e"/>
+            </svg>
           </Link>
         </div>
       </div>

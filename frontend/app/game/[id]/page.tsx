@@ -5,8 +5,9 @@ import PongZoneBoot from "../ui/BootLogic";
 import GameResultBar from "../ui/GameResultBar";
 import { usePathname, useRouter } from "next/navigation";
 import gameSocket, { GameContext } from "../../context/gameSockets";
+import SideBar from "../ui/SideBar";
 
-function game() {
+function Game() {
 
     const   {data, setData, gameId, setGameId, gameType} = useContext(GameContext);
     
@@ -30,4 +31,4 @@ function game() {
         </main>
     );
 }
-export default game;
+export default Game;

@@ -56,7 +56,7 @@ const ChannelTab = () => {
 			chatSocket.off('channelDone');
 			chatSocket.off('UserChannels');
 		}
-	}, [])
+	}, [chatSocket])
 	
 	useEffect(() => {
 		
@@ -100,6 +100,8 @@ const ChannelTab = () => {
 			// }
 		})
 		
+
+		// maybe here TODO
 		chatSocket.on('muteDone', (data: {channelName: string}) => {
 			// if (checkOpenChannelId(data.channelName, channelId) === true)
 			// {
@@ -135,7 +137,7 @@ const ChannelTab = () => {
 			chatSocket.off('messageDoneDM')
 			// chatSocket.off('outDone')
 		}
-	}, [])
+	}, [chatSocket])
 
 
 
@@ -158,7 +160,7 @@ const ChannelTab = () => {
 		chatSocket.emit('getUserChannels');
 		setInfo('Join Or Create Your Own Channel')
 	  }
-	}, [searchInputCh]);
+	}, [searchInputCh, chatSocket, debouncedSearchWebSocket]);
 
 
 	return (

@@ -38,7 +38,7 @@ const ChatSideBar: FC<ChatSideBarProps> = () => {
 		chatSocket.emit('getChSidebar', {
 			channelName: channelId
 		})
-	}, [channelId])
+	}, [channelId, chatSocket])
 
 	useEffect(() => {
 
@@ -75,7 +75,7 @@ const ChatSideBar: FC<ChatSideBarProps> = () => {
 			chatSocket.off('channelSidebar')
 			chatSocket.off('refreshSide')
 		}
-	}, [channelId])
+	}, [channelId, chatSocket])
 
 	const filteredUsers = () => {
 		if (search === '')
@@ -122,7 +122,7 @@ const ChatSideBar: FC<ChatSideBarProps> = () => {
 					<IconWithTooltip
 						icon={IoIosArrowBack}
 						styles='w-8 h-8 hover:cursor-pointer block lg:hidden text-black'
-						tooltipId="backToolTip"
+						tooltipId="LeftBackToolTip"
 						tooltipContent="Go Back"
 						clickBehavior={handleCloseSideBar}
 					/>

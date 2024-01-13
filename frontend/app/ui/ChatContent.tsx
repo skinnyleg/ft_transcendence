@@ -54,7 +54,7 @@ const ChatContent: FC<ChatContentProps> = () => {
 			chatSocket.emit('getMessagesCH', {
 				channelName: channelId,
 			})
-		}, [channelId])
+		}, [channelId, chatSocket])
 
 
 		useEffect(() => {
@@ -135,7 +135,7 @@ const ChatContent: FC<ChatContentProps> = () => {
 				chatSocket.off('newName')
 				// chatSocket.off('changeDone')
 			}
-		},[channelId])
+		},[channelId, chatSocket])
 
 
 

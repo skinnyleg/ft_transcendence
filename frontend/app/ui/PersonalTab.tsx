@@ -34,7 +34,7 @@ const PersonalTab = () => {
 		   return () => {
 			chatSocket.off('ready');
 		   }
-	}, [])
+	}, [chatSocket])
 	
 	useEffect(() => {
 		
@@ -64,7 +64,7 @@ const PersonalTab = () => {
 			chatSocket.off('refreshUserDms').off()
 			// chatSocket.off('outDone')
 		}
-	}, [])
+	}, [chatSocket])
 
 
 	// ${hidden === 'personal' ? 'w-[79%]' : 'w-full'}

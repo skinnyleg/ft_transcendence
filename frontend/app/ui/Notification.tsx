@@ -248,7 +248,7 @@ const Notifications = () => {
                     <div className="flex flex-col">
                     {showNotifications && notifications.map((notification) => (
                         <div key={notification.requestId} className="flex justify-between items-center p-2 hover:bg-gray-100 z-10">
-                            <img src={notification.notifData.userProfilePic} alt="profile" className="w-1/7 h-10 rounded-full" />
+                            <img src={notification.notifData.userProfilePic} alt="profile" className="rounded-full max-w-[40px] max-h-[40px] min-w-[40px] min-h-[40px]" />
                             <p className="ml-1 w-1/2 text-black text-sm">{notification.notifData.description}</p>
                             <div className="flex w-1/4 h-10 justify-between rounded-full bg-slate-100">
                             {/* ${notification.notifData.typeOfRequest === 'FRIEND' ? 'block' : 'hidden'} */}

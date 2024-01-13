@@ -7,8 +7,8 @@ import { usePathname, useRouter } from 'next/navigation';
 
 const PongZoneQueue = () => {
 
+    const   canvasRef = useRef<HTMLCanvasElement>(null);
     const   route = useRouter();
-    const   canvasRef = useRef(null);
     const   [matchready, setMatchready] = useState<boolean>(false);
     const   [pongzone, setPongzone] = useState({width: 0, height: 0});
     const   {score, setScore, gameId} = useContext(GameContext);
@@ -27,7 +27,7 @@ const PongZoneQueue = () => {
         });
         
         const render = Render.create({
-            canvas: canvasRef.current,
+            canvas: canvasRef.current === null ? undefined : canvasRef.current,
             engine: engine,
             options: {
                 background: '#ffffff',
@@ -69,7 +69,7 @@ const PongZoneQueue = () => {
                 
         Composite.add(engine.world, [paddleLeft, paddleRight, ball]);    
         
-        const handleKey = (event) => {
+        const handleKey = (event: KeyboardEvent) => {
             switch (event.key) {
                 case 'ArrowUp':
                     console.log('times--')

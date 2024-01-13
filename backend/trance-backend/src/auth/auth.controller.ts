@@ -28,6 +28,11 @@ export class AuthController {
 	@UseGuards(intraAuthGuard)
 	async intra42AuthRedirect(@Req() request, @Res() response)
 	{
+		if (request.user === 'NO')
+		{
+			response.redirect(`${process.env.FrontendHost}/`);
+			return ;
+		}
 		response.cookie('id', request.user.id, {signed: true})
 		if (request.user.isEnabled === true)
 		{
@@ -84,6 +89,16 @@ export class AuthController {
 	{
 		const id = req.user.sub;
 		return this.authService.refreshTokens(req, res, id);
+	}
+
+	@Get('clearCookies')
+	deleteCookies(@Res() res)
+	{
+		console.log('cookies are being cleared');
+		res.clearCookie('token');
+		res.clearCookie('refresh');
+		res.clearCookie('id');
+		res.status(200).send({msg: "Cookies Cleared"})
 	}
 
 }

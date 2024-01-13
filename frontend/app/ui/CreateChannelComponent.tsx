@@ -18,7 +18,7 @@ const CreateChannel: FC<CreateChannelProps> = () => {
 	let [img, setImg] = useState('/GroupChat.png')
 	let [type, setType] = useState('public')
 	const chatSocket = useContext(chatSocketContext)
-	const {channelId, setChannelId} = useContext(ChatContext)
+	const {channelId, setChannelId, personalId} = useContext(ChatContext)
 
 
   function closeModal() {
@@ -75,7 +75,11 @@ const CreateChannel: FC<CreateChannelProps> = () => {
 					console.log("error from catch == ", error)
 				}
 			}
-			setChannelId(channelName);
+			if (personalId === '')
+			{
+				// console.log('personalId === ', personalId)
+				setChannelId(channelName);
+			}
 		})
 		closeModal();
 	}

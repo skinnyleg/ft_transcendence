@@ -37,7 +37,7 @@ const ChatTypeBar: FC<ChatTypeBarProps> = () => {
 			chatSocket.on('refreshSide', () => {
 				setBarValue('Join')
 			})
-		}, [])
+		}, [chatSocket])
 
 		
 		const pressEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
