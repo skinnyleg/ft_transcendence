@@ -32,9 +32,9 @@ export class GameGateway {
         var queueLength =  this.makeQueue.getQueue().length;
         // console.log("Queue length 1111 ===  ", queueLength);
         if (queueLength >= 2){
-            const player1 = this.makeQueue.dequeue();
+            const player1 = this.makeQueue.dequeue(client);
             var user1 = this.gameService.getUserBySocketId(player1.id);
-            const player2 = this.makeQueue.dequeue();
+            const player2 = this.makeQueue.dequeue(null);
             var user2 = this.gameService.getUserBySocketId(player2.id);
             user1.roomId= user2.id;
             user2.roomId= user2.id;

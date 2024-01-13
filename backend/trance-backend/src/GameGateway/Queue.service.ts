@@ -18,8 +18,13 @@ export class makeQueue {
       }
     }
     
-    dequeue(): Socket | undefined {
-      return this.queue.shift();
+    dequeue(client): Socket | undefined {
+      const index = this.queue.indexOf(client)
+      if (index >= 0){
+        return this.queue.splice(index, 1)[0];
+      }
+      else if (client == null)
+        return this.queue.shift();
     }
     deleteUserQueue(client : Socket){
       const index = this.queue.indexOf(client);
