@@ -34,7 +34,6 @@ export class UserService {
 
 		fs.writeFile(filename, response.data, (err) => {
 		  if (err) throw err;
-		  console.log('Image downloaded successfully!');
 		});
 	}
 
@@ -308,8 +307,8 @@ export class UserService {
 			},
 		});
 
-		console.log('firend instance == ', friendExist)
-		console.log('id is == ', recipientId)
+		// console.log('firend instance == ', friendExist)
+		// console.log('id is == ', recipientId)
 		if (!friendExist)
 			throw new NotFoundException('no instanse found')
 
@@ -953,17 +952,18 @@ export class UserService {
 				userId: recipientId,
 			}
 		})
-
+		console.log('user1 == ', userOneFriends)
 		if (userOneFriends === 1)
-			await this.updateAchivements(recipientId, 'make first friend')
-
-
+		await this.updateAchivements(recipientId, 'make first friend')
+	
+	
 		const userTwoFriends = await this.prisma.friendStatus.count({
 			where: {
-					userId: senderId,
-				}
-			})
+				userId: senderId,
+			}
+		})
 	
+		console.log('user2 == ', userTwoFriends)
 		if (userTwoFriends === 1)
 			await this.updateAchivements(senderId, 'make first friend')
 	}
@@ -974,12 +974,11 @@ export class UserService {
 		const hashedPass : string = await hashPass(userData.password);
 		try {
 			await this.changeUserImg(userData);
-
 		}
 		catch (error)
 		{
 			console.log('Something Went Wrong');
-			return null;
+			return 'NO';
 		}
 		const user = await this.prisma.user.create({
 			data: {

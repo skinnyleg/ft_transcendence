@@ -94,6 +94,7 @@ export class FriendsService {
 			if (toSend !== undefined)
 			{
 				const notif = await this.userService.generateNotifData(requestId);
+				// console.log('notification === ', notif);
 				toSend.socket.emit('notifHistory', notif);
 			}
 			client.emit('notification', 'Friend request sent successfully');
@@ -200,9 +201,9 @@ export class FriendsService {
 	{
 		const toSend = this.getUserById(userId);
 		const sender = this.getUserBySocketId(client.id);
-		await this.userService.firstFriend(userId, sender.id);
 		try {
 			await this.userService.acceptRequest(sender.id, userId, requestId);
+			await this.userService.firstFriend(userId, sender.id);
 			if (toSend !== undefined)
 			{
 				const nick = await this.userService.getNickById(sender.id)

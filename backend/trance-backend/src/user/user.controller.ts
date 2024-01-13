@@ -120,7 +120,7 @@ export class UserController {
 	@Post('Achievements')
 	@UseGuards(JwtAuthGuard)
 	 getAchievements(@Body() payload: IdDto, @Req() req) {
-		const id = getId(req);
+		// const id = getId(req);
 		return this.userService.getAchievements(payload.userId);
 	}
 

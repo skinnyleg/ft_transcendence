@@ -147,7 +147,7 @@ const FriendsList = () => {
         row-start-5 row-end-6 lg:row-start-2 lg:row-end-4 lg:w-full xl:w-full md:h-[350px] h-[350px] xl:h-[97%] lg:h-[97%] shadow-md">
                 <h4 className="text-xl font-bold text-white p-4">FRIENDS</h4>
             <div className={`${(friendsList.length == 0) ? 'flex' : 'hidden'} w-full h-1/2  justify-center items-center`}><h5 className="text-bold-900 text-3xl">Go socialize</h5></div>
-            <div className={`${(friendsList.length > 0) ? 'flex' : 'hidden'} flex-col  space-y-0 p-2 gap-2 justify-start overflow-y-scroll h-5/6  w-full styled-scrollbar`}>
+            <div className={`${(friendsList.length > 0) ? 'flex' : 'hidden'} flex-col  space-y-0 p-2 gap-2 justify-start overflow-y-auto h-5/6  w-full styled-scrollbar`}>
                 {chunkedFriends().map((jsxElement) => {
                     return (jsxElement);
                 }) }

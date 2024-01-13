@@ -122,7 +122,7 @@ const ChatSideBar: FC<ChatSideBarProps> = () => {
 					<IconWithTooltip
 						icon={IoIosArrowBack}
 						styles='w-8 h-8 hover:cursor-pointer block lg:hidden text-black'
-						tooltipId="backToolTip"
+						tooltipId="LeftBackToolTip"
 						tooltipContent="Go Back"
 						clickBehavior={handleCloseSideBar}
 					/>
