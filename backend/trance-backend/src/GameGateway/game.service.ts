@@ -296,7 +296,7 @@ export class GameService {
         await this.emitToFriendsStatusGame(this.players_arr.get(player1.roomId)[0].id, UserStatus.IN_GAME);
         await this.emitToFriendsStatusGame(this.players_arr.get(player1.roomId)[1].id, UserStatus.IN_GAME);
 
-        // server.to(roomId).emit()
+        server.to(roomId).emit('startDarawing');
 
         this.players_arr.get(roomId)[0].socket.on('EndGame', ((arg) => {
             this.handleMatchFinish(arg, roomId)
