@@ -243,16 +243,21 @@ export class GameService {
     // use Global rooms each contains 2 player before start  the game √
 
     async handleMatchFinish(arg, roomId){
-        this.players_arr.get(roomId)[0].score = arg.playerL.score;
-        this.players_arr.get(roomId)[1].score = arg.playerR.score;
+        const players = this.players_arr.get(roomId)
+        if (!players)
+            return ;
+        players[0].score = arg.playerL.score;
+        players[1].score = arg.playerR.score;
         
         if (arg.playerL.score > arg.playerR.score)
         {
             this.players_arr.get(roomId)[0].win = true;
+            this.userService.updateAchivements(this.players_arr.get(roomId)[0].id, "Win first match");
         }
         if (arg.playerL.score < arg.playerR.score)
         {
             this.players_arr.get(roomId)[1].win = true;
+            this.userService.updateAchivements(this.players_arr.get(roomId)[1].id, "Win first match");
         }
         this.players_arr.get(roomId)[0].IsInGame = false;
         this.players_arr.get(roomId)[1].IsInGame = false;
@@ -343,13 +348,7 @@ export class GameService {
         this.players_arr.get(roomId)[1].socket.emit('StartDrawing')
         
         this.players_arr.get(player1.roomId)[0].socket.on('EndGame', ((arg) => {
-            console.log("Hellooooooooo 1111")
             this.handleMatchFinish(arg, player1.roomId);
-            return ;
-        }));
-        this.players_arr.get(player1.roomId)[1].socket.on('EndGame', ((arg) => {
-            console.log("Hellooooooooo 2222 ")
-            this.handleMatchFinish(arg, player1.roomId)
             return ;
         }));
         return ;

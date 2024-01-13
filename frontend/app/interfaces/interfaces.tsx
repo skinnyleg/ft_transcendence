@@ -181,16 +181,16 @@ export interface LeaderboardData {
 
 export interface Match
 {
-    id : string;
-    winner : {
-        nickname : string;
-        profilePic: string;
-    };
-    loser : {
-        nickname : string;
-        profilePic: string;
-    };
-    winnerScore : number;
-    loserScore : number;
-    isMeWhoWon : boolean;
-}
+  id : string;
+	winner : {
+		nickname : string;
+		profilePic: string;
+	};
+	loser : {
+		nickname : string;
+		profilePic: string;
+	};
+  winnerScore : number;
+	loserScore : number;
+	isMeWhoWon : boolean;
+}[]
