@@ -1,7 +1,7 @@
 'use client';
 import TopBar from '../ui/top';
 import Themes from '../ui/Themes';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import PowerUps from '../ui/PowerUps';
 import PlayButton from '../ui/PlayButton';
 import axios from 'axios';
@@ -14,6 +14,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import TopThree from '../ui/TopThree';
 import { ClassNames } from '@emotion/react';
 import GameType from '../game/ui/GameType';
+import { GameContext } from '../context/gameSockets';
 
 
 function Dashboard() {
@@ -21,7 +22,8 @@ function Dashboard() {
   const [dashboardData, setDashboardData] = useState<dashboardData | undefined>(undefined);
   const [theme, setTheme] = useState('yo1.jpg');
   const [powerup, setPowerup] = useState('FireBall');
-  const	[gameType, setgameType] = useState<string>('');
+  const	[gameTypes, setgameTypes] = useState<string>('');
+  // const {gameType, setGameType} = useContext(GameContext);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -55,8 +57,8 @@ function Dashboard() {
       <div className="flex flex-col h-[95%] lg:mt-5 md:mt-10 mt-10 xl:mt-5">
         <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-5 lg:grid-rows-3 gap-5 w-full h-full mt-4 md:grid-row-5 grid-row-5">
           <div className="relative p-0 rounded-md col-span-1 lg:col-span-3 lg:h-[100%] md:h-[300px] h-[300px] xl:h-[100%] lg:w-full shadow-md" style={{backgroundImage: `url(${theme})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
-            <GameType typeSetter={setgameType}/>
-            <PlayButton theme={theme} PowerUp={powerup} gameType={gameType}/>
+            <GameType typeSetter={setgameTypes}/>
+            <PlayButton theme={theme} PowerUp={powerup} gameType_={gameTypes}/>
           </div>
           
           <TopThree />

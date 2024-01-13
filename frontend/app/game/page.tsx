@@ -8,11 +8,12 @@ function GameQueue() {
 
     const   router = useRouter();
     const   [progress, setProgress] = useState<number>(5);
-    const   {setData, setGameId, setPlayerL, setPlayerR, matchType, setmatchTypes} = useContext(GameContext);
-    
+    const   {setData, setGameId, setPlayerL, setPlayerR, gameType, setGameType} = useContext(GameContext);
+
     useEffect(() => {
         const handleGameReady = (data: any) => {
             setProgress(100);
+            setGameType('QUEUE');
             setData(data);
             setGameId(data[0].roomId);
             setPlayerL({name: data[0].nickname, picture: data[0].profilePic});
@@ -20,16 +21,22 @@ function GameQueue() {
             router.push(`/game/${data[0].roomId}`);
         };
         
-        const handleMatchReady = (data: any) => {
-            {id , nickname, picture}
-            router.push(`/game/${data.id}`);
-        };
+        // const handleBotReady = (data: any) => {
+        //     setProgress(100);
+        //     setGameType('BOT');
+        //     // console.log("data front : ", data)
+        //     setGameId(data.id);
+        //     setPlayerL({name: data.nickname, picture: data.profilePic});
+        //     setPlayerR({name: 'BOT', picture: '/WhatsApp Image 2023-11-08 at 17.00.12_964408e7.jpg'});
+        //     router.push(`/game/${data.id}`);
+        // };
 
         gameSocket.on('MatchReady', handleGameReady);
-        gameSocket.on('BotReady', handleMatchReady);
+        // gameSocket.on('BotReady', handleBotReady);
         
         return () => {
-            gameSocket.off('MatchReady', handleMatchReady);
+            gameSocket.off('MatchReady', handleGameReady);
+            // gameSocket.off('BotReady', handleBotReady);
         };
     },[]);
     

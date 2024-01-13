@@ -3,7 +3,6 @@ import Matter from 'matter-js';
 import gameSocket, { GameContext } from '../../context/gameSockets';
 import { ballCoordinates, pladdleCoordinates, playersCoordinates } from '../types/interfaces';
 import { usePathname, useRouter } from 'next/navigation';
-import { exit } from 'process';
 
 
 const PongZoneQueue = () => {
@@ -94,7 +93,7 @@ const PongZoneQueue = () => {
             Matter.Body.setPosition(paddleRight, paddleL);
         });
         
-        gameSocket.on('drawBall', () => {
+        gameSocket.on('StartDrawing', () => {
             Matter.Body.setVelocity(ball, { x: 5, y: 5 })
         });
 
@@ -105,6 +104,8 @@ const PongZoneQueue = () => {
                 (score.playerR === 3 || score.playerL === 3) && (Matter.Body.setVelocity(ball, { x: 0, y: 0 }));
                 (score.playerR === 3) ? gameSocket.emit('playerRighttWin') : score.playerL === 3 ?  gameSocket.emit('playerLeftWin') : '';
                 (score.playerR === 3 || score.playerL === 3) && route.push('/Dashboard');
+                if (score.playerR === 3 || score.playerL === 3)
+                    return ;
                 if ((pair.bodyA === ball && pair.bodyB === wallLeft) || (pair.bodyA === wallLeft && pair.bodyB === ball))
                 {
                     setScore({playerL: score.playerL, playerR: (++score.playerR)});
@@ -136,7 +137,7 @@ const PongZoneQueue = () => {
         return () => {
             Render.stop(render);
             Engine.clear(engine);
-            gameSocket.off('drawBall');
+            gameSocket.off('StartDrawing');
             gameSocket.off('leftPaddle');
             gameSocket.off('rightPaddle');
         };

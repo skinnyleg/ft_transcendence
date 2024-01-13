@@ -71,8 +71,12 @@ export class GameService {
         const player = this.getUserBySocketId(client.id);
         player.IsInGame = true;
         const infos = await this.userService.genarateMatchInfo(player.id, null, null);
-        // Emit player infos to redirect him 
-        player.socket.emit('BotReady', infos);
+        console.log("hheheeeheh22222eheehhdehchec", infos)
+        // Emit player infos to redirect him
+        client.on('ImReadyBot', () => {
+            client.emit('BotReady', infos);
+        }) ;
+        client.on('ballPermission', () => { client.emit('drawBallBot') });
     }
     /** End c */
 
@@ -339,7 +343,7 @@ export class GameService {
         //     y : (height) / 2,
         //     score : 0,
         // };
-
+        server.to(this.players_arr.get(player1.roomId)[0].roomId).emit("StartDrawing")
         // this.players_arr.get(roomId)[0].socket.on('arrow', ((arg)=> {
         //     switch (arg) {
         //         case 'UP':
