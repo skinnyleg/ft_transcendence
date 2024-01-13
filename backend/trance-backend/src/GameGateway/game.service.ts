@@ -81,7 +81,7 @@ export class GameService {
     }
 
     /** challenge Bot */
-    async challengeBot(client : Socket, playload: string){
+    async challengeBot(client : Socket, playload: any){
         const player = this.getUserBySocketId(client.id);
         player.IsInGame = true;
         const infos = await this.userService.genarateMatchInfo(player.id, null, null);

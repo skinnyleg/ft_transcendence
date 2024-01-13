@@ -8,7 +8,7 @@ import { usePathname } from "next/navigation";
 function    BotGame(){
 
     const   path = usePathname();
-    const   {setGameMape, setGameId, setPlayerL, setPlayerR} = useContext(GameContext);
+    const   {setPowerUps, setGameMape, setGameId, setPlayerL, setPlayerR} = useContext(GameContext);
 
     useEffect(() => {
 
@@ -21,7 +21,10 @@ function    BotGame(){
         };
 
         gameSocket.on('BotReady', handleBotReady);
-        gameSocket.on('gameBotTheme', (theme: any) => { setGameMape(theme); console.log('game map e received: ', theme)});
+        gameSocket.on('gameBotTheme', (gameInfo: any) => {
+            setGameMape(gameInfo.theme_);
+            setPowerUps(gameInfo.powerUp_);
+        });
         
         return () => {
             gameSocket.off('BotReady', handleBotReady);

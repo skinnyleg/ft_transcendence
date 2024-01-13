@@ -13,12 +13,12 @@ const PlayButton = ({ theme, PowerUp, gameType_ }:PlayButtonProps) => {
     const redirectToGame = () => {
         if (gameType_ === 'QUEUE')
         {
-            gameSocket.emit('PlayQueue');
+            gameSocket.emit('PlayQueue', {theme_: theme, powerUp_: PowerUp});
             gameSocket.on('InQueue', () => { router.push('/game') });
         }
         else if (gameType_ === 'BOT')
         {
-            gameSocket.emit('PlayBot', theme);
+            gameSocket.emit('PlayBot', {theme_: theme, powerUp_: PowerUp});
             router.push('/game/bot');
         }
     };
