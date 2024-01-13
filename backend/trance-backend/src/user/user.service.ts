@@ -394,7 +394,7 @@ export class UserService {
 			infos = [{...playerL, opponentId: playerR.id, roomId: roomId}, {...playerR, opponentId: playerL.id, roomId: roomId}];
 			return infos;
 		}
-		infos = [playerL];
+		infos = playerL;
 		return (infos);
 	}
 

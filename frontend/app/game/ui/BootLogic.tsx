@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import Matter from 'matter-js';
-import gameSocket from '../../context/gameSockets';
+import gameSocket, { GameContext } from '../../context/gameSockets';
+import { useRouter } from 'next/navigation';
 
 
 const PongZoneBoot = () => {
@@ -9,19 +10,29 @@ const PongZoneBoot = () => {
     const width = 20;
     const height = 150;
     let speedR = 20;
-    let speedL = 20;
+    let vilocityBallX = 6;
 
+    const   route = useRouter();
     const   [matchready, setMatchready] = useState<boolean>(false);
     const   [pongzone, setPongzone] = useState({width: 0, height: 0});
+    const   {gameMape, score, setScore, gameId} = useContext(GameContext);
     
     useEffect(() => {
+
         const   { Engine, Render, World, Bodies, Composite, Runner} = Matter;
-        const engine = Engine.create();
+
+        const engine = Engine.create({
+            gravity: {x: 0, y: 0, scale: 0},
+            positionIterations: 10,
+            velocityIterations: 8,
+        });
+
         const render = Render.create({
             canvas: canvasRef.current,
             engine: engine,
             options: {
-                background: '#ffffff',
+                // background: '#ffffff',
+                background: 'transparent',
                 wireframes: false,
             } 
         });
@@ -31,16 +42,23 @@ const PongZoneBoot = () => {
         const maxY: number = render.bounds.max.y;
         const maxX: number = render.bounds.max.x;
         setPongzone({width: maxX, height: maxY});
-        console.log('render', render.bounds);
 
         const midleVertical = ((maxY - minY) / 2) + minY;
         const midleCanvas = ((maxX- minX) / 2) + minX;
 
+        let wallTop = Bodies.rectangle(400, 0, maxX, 5, { isStatic: true });
+        let wallBottom = Bodies.rectangle(400, 600, maxX, 5, { isStatic: true });
+        let wallLeft = Bodies.rectangle(0, 300, 5, maxY, { isStatic: true });
+        let wallRight = Bodies.rectangle(800, 300, 5, maxY, { isStatic: true });
+
+        Composite.add(engine.world, [wallTop, wallBottom, wallLeft, wallRight]);
+
         const ball = Matter.Bodies.circle(midleCanvas, midleVertical, 10, {
-            isStatic: true,
-            restitution: 0.8, // Bounciness of the ball
-            friction: 0.1, // Friction of the ball
-            density: 0.04, // Density of the ball
+            isStatic: false,
+            restitution: 1, // Bounciness of the ball
+            friction: 0, // Friction of the ball
+            inertia: Infinity,
+            frictionAir: 0,
             render: {
                 fillStyle: 'red', // Color of the ball
                 strokeStyle: 'green', // Border color of the ball
@@ -49,73 +67,104 @@ const PongZoneBoot = () => {
         });
         let paddleLeft = Bodies.rectangle(minX + width, midleVertical, width, height, { isStatic: true });
         let paddleRight = Bodies.rectangle(maxX - width, midleVertical, width, height, { isStatic: true });
-        console.log('render == ', render.bounds.max.x)
-
         
-        let currentPositionLeft = { x: (minX + width), y: midleVertical };
-        const handleKey = (event) => {
-            const newPositionLeft = { ...currentPositionLeft }; 
+        Composite.add(engine.world, [paddleLeft, paddleRight, ball]);
+
+        let   currentPositionLeft = { x: (minX + width), y: midleVertical };
+
+        const handleKey = (event: any) => {
+
+            let   newPositionLeft = { ...currentPositionLeft }; 
+
             switch (event.key) {
                 case 'ArrowUp':
                     newPositionLeft.y -= speedR;
-                    gameSocket.emit('ArrowUp'); 
                     break;
                 case 'ArrowDown':
                     newPositionLeft.y += speedR;
-                    gameSocket.emit('ArrowDown'); 
                     break;
             }
-            console.log('befor y: ',  newPositionLeft.y)
-            // newPositionLeft.y = Math.max(minY + height/2, Math.min(newPositionLeft.y, maxY- height/2));
-            console.log(`front : h-${height} & w-${width} & minY-${minY} & minx-${minX} & maxY-${maxY} & maxY-${maxX}`);
-            console.log('after y: ',  newPositionLeft.y)
-            Matter.Body.setPosition(paddleLeft, newPositionLeft, []);
+            newPositionLeft.y = Math.max(minY + height/2, Math.min(newPositionLeft.y, maxY- height/2));
+            Matter.Body.setPosition(paddleLeft, newPositionLeft);
             currentPositionLeft = newPositionLeft;
         };
 
         document.addEventListener('keydown', handleKey);
 
         let currentPositionRight = { x: (maxX - width), y: midleVertical };
+
         setInterval(() => {   
             const newPositionRight = { ...currentPositionRight };
-            if (newPositionRight.y >=  (maxY - height/2))
-                speedL = -speedL;
-            if (newPositionRight.y >=  (minY + height/2))
-                speedL *= -1;
-            newPositionRight.y += speedL;
+            newPositionRight.y = ball.position.y - (speedR + 10);
             newPositionRight.y = Math.max(minY + height/2, Math.min(newPositionRight.y, maxY - height/2));
             Matter.Body.setPosition(paddleRight, newPositionRight);
-            currentPositionRight = newPositionRight;
         }, 150);
 
-        // gameSocket.on('moveUp', (data) => {
-        //     Matter.Body.setPosition(paddleRight, newPositionRight);
-        // });
-        // gameSocket.on('moveDown', (data) => {
-        //     Matter.Body.setPosition(paddleRight, newPositionRight);
-        // });
+        gameSocket.on('drawBallBot', () => {
+            Matter.Body.setVelocity(ball, { x: 5, y: 5 })
+            console.log('drawBall event has received');
+        });
+
+        Matter.Events.on(engine, 'collisionStart', function(event) {
+            var pairs = event.pairs;
+            for (var i = 0, j = pairs.length; i != j; ++i) {
+                var pair = pairs[i]; 
+                if ((pair.bodyA === ball && pair.bodyB === wallLeft) || (pair.bodyA === wallLeft && pair.bodyB === ball))
+                {
+                    setScore({playerL: score.playerL, playerR: (++score.playerR)});
+                    Matter.Body.setPosition(ball, { x: midleCanvas, y: midleVertical });
+                    (score.playerR !== 3 && score.playerL !== 3) && Matter.Body.setVelocity(ball, { x: -vilocityBallX, y: 5 })
+                }
+                else if ((pair.bodyA === ball && pair.bodyB === wallRight) || (pair.bodyA === wallRight && pair.bodyB === ball))
+                {
+                    setScore({playerL: (++score.playerL), playerR: score.playerR});
+                    Matter.Body.setPosition(ball, { x: midleCanvas, y: midleVertical });
+                    (score.playerR !== 3 && score.playerL !== 3) && Matter.Body.setVelocity(ball, { x: -vilocityBallX, y: 5 })
+                }
+                if ((pair.bodyA === ball && pair.bodyB === paddleRight) || (pair.bodyA === paddleRight && pair.bodyB === ball)) {
+                    ball.velocity.y *= -1
+                    Matter.Body.setVelocity(ball, { x: -vilocityBallX, y: 8 })
+                }
+                else if ((pair.bodyA === ball && pair.bodyB === paddleLeft) || (pair.bodyA === paddleLeft && pair.bodyB === ball)) {
+                    ball.velocity.x *= -1
+                    Matter.Body.setVelocity(ball, { x: -vilocityBallX, y: 5 })              
+                }
+                (score.playerR === 3 || score.playerL === 3) && (Matter.Body.setVelocity(ball, { x: 0, y: 0 }));
+                (score.playerR === 3 || score.playerL === 3) && (gameSocket.emit('gameBotEnd'));
+                (score.playerR === 3 || score.playerL === 3) && route.push('/Dashboard');
+                if (score.playerR === 3 || score.playerL === 3) {
+                    gameSocket.emit('endBotMatch');
+                    return ;
+                }
+            }
+            Matter.Body.set(ball, { restitution: 1, friction: 0 }); // n9adro n7aydoha
+        });
         
-        Composite.add(engine.world, [paddleLeft, paddleRight, ball]);
         Render.run(render);
         const runner = Runner.create();
         Runner.run(runner, engine);
 
         return () => {
             Render.stop(render);
+            Engine.clear(engine);
+            gameSocket.off('drawBallBot');
         };
 
     }, [matchready]);
 
     const startGame = () => {
         setMatchready(true);
-        console.log('startGame: ', matchready);
         gameSocket.emit('PongZone', {id: '', ...pongzone});
+        gameSocket.emit('ballPermission');
     };
 
+    console.log('map == ', gameMape);
     return (
-        <div className="bg-transparent w-[100%] h-[80%] rounded-[10px] justify-center absolute bottom-0">
+        <div
+        style={{ '--image-url': `url(${gameMape})` } as React.CSSProperties} 
+        className={`bg-cover bg-center bg-[image:var(--image-url)] w-[100%] h-[80%] rounded-[10px] justify-center absolute bottom-0`}>
             { !matchready && <button onClick={startGame}>START GAME</button>}
-            { matchready && <canvas ref={canvasRef} className='bg-transparent w-[100%] h-[100%] rounded-[10px]'/>}
+            { matchready && <canvas ref={canvasRef} className='w-[100%] h-[100%] rounded-[10px]'/>}
         </div>
     );
 };

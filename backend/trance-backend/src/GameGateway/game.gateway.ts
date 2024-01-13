@@ -8,6 +8,7 @@ import { RequestActionDto } from "src/friends/Dto/requestDto";
 import { BotDto, GameSettingsDto } from "./Dto/GameSettingsDto";
 import { UserService } from "src/user/user.service";
 import { MatchInfos } from "src/classes/classes";
+import { UserStatus } from "@prisma/client";
 
 @WebSocketGateway({ namespace: 'GameGateway', cors: {
     origin: process.env.FrontendHost,
@@ -59,9 +60,21 @@ export class GameGateway {
         this.gameService.handleMatchMaker(client, this.server);
     }
 
+    @SubscribeMessage('endBotMatch')
+    endBotGame(client : Socket){
+        let user = this.gameService.getUserBySocketId(client.id)
+        user.isReady = false;
+        user.IsInGame = false;
+        user.isInQueue = false;
+        console.log("is Player In Gmae or Queue 00000");
+        this.userService.updateStatus(user.id, UserStatus.ONLINE);
+        this.gameService.emitToFriendsStatusGame(user.id, UserStatus.ONLINE);
+    }
+
     @SubscribeMessage('PlayBot')
-    async BotMatchMaker(client : Socket){
-        this.gameService.challengeBot(client);
+    async BotMatchMaker(client : Socket, payload: string){
+        this.gameService.challengeBot(client, payload);
+        // client.emit('gameBotTheme', payload);
     }
 
     @SubscribeMessage('StartBotGame')

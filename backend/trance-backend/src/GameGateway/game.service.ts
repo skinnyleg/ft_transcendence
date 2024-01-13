@@ -81,13 +81,17 @@ export class GameService {
     }
 
     /** challenge Bot */
-    async challengeBot(client : Socket){
+    async challengeBot(client : Socket, playload: string){
         const player = this.getUserBySocketId(client.id);
         player.IsInGame = true;
         const infos = await this.userService.genarateMatchInfo(player.id, null, null);
-        // Emit player infos to redirect him 
-        // player.socket.on('') imReadyBot
-        player.socket.emit('BotReady', infos);
+        // Emit player infos to redirect him
+        client.on('ImReadyBot', () => {
+            client.emit('BotReady', infos);
+            console.log();
+            client.emit('gameBotTheme', playload);
+        }) ;
+        client.on('ballPermission', () => { client.emit('drawBallBot') });
     }
     /** End c */
 
@@ -228,11 +232,6 @@ export class GameService {
         }
         await this.userService.updateStatus(player.id, UserStatus.IN_GAME); // what if there is more than one match
         await this.emitToFriendsStatusGame(player.id, UserStatus.IN_GAME);
-
-        player.socket.on('endBotMatch', (async () => {
-            await this.userService.updateStatus(player.id, UserStatus.ONLINE);
-            await this.emitToFriendsStatusGame(player.id, UserStatus.ONLINE);
-        }));
         return ;
     }
 
@@ -296,13 +295,58 @@ export class GameService {
         await this.emitToFriendsStatusGame(this.players_arr.get(player1.roomId)[0].id, UserStatus.IN_GAME);
         await this.emitToFriendsStatusGame(this.players_arr.get(player1.roomId)[1].id, UserStatus.IN_GAME);
 
-        server.to(roomId).emit('startDarawing');
-
-        this.players_arr.get(roomId)[0].socket.on('EndGame', ((arg) => {
-            this.handleMatchFinish(arg, roomId)
+        //=--=
+        var leftPaddel : leftPaddle = {
+            height: 150,
+            width: 20,
+            x : 20,
+            y: (height / 2),
+            score : 0,
+        };
+        var rightPaddle : leftPaddle = {
+            height: 150,
+            width: 20,
+            x : width - 20,
+            y : (height) / 2,
+            score : 0,
+        };
+        this.players_arr.get(roomId)[0].socket.on('arrow', ((arg)=> {
+            switch (arg) {
+                case 'UP':
+                if (leftPaddel.y > 0  + leftPaddel.height / 2)
+                    leftPaddel.y -= 10;
+                    break;
+                case 'DOWN':
+                    if (leftPaddel.y < (height - leftPaddel.height / 2))
+                        leftPaddel.y += 10;
+                    break;
+            }
+            this.players_arr.get(roomId)[0].socket.emit('leftPaddle', leftPaddel)
+            this.players_arr.get(roomId)[1].socket.emit('leftPaddle', leftPaddel)
+        }))
+        this.players_arr.get(roomId)[1].socket.on('arrow', ((arg)=> {
+            switch (arg) {
+                case 'UP':
+                    if (rightPaddle.y > 0 + rightPaddle.height / 2)
+                    rightPaddle.y -= 10;
+                    break;
+                case 'DOWN':
+                    if (rightPaddle.y < (height - rightPaddle.height / 2))    
+                        rightPaddle.y += 10;
+                    break;
+            }
+            this.players_arr.get(roomId)[0].socket.emit('rightPaddle', rightPaddle)
+            this.players_arr.get(roomId)[1].socket.emit('rightPaddle', rightPaddle)
+        }))
+        //=--=
+       
+        server.to(player1.roomId).emit('StartDrawing')
+        
+        this.players_arr.get(player1.roomId)[0].socket.on('EndGame', ((arg) => {
+            this.handleMatchFinish(arg, player1.roomId)
         }));
-        this.players_arr.get(roomId)[1].socket.on('EndGame', ((arg) => {
-           this.handleMatchFinish(arg, roomId)
+        this.players_arr.get(player1.roomId)[1].socket.on('EndGame', ((arg) => {
+           this.handleMatchFinish(arg, player1.roomId)
         }));
         return ;
     }
@@ -326,13 +370,13 @@ export class GameService {
         // distingue who is the client to update the status √
         const user = this.getUserBySocketId(client.id)
         const playerStatus = await this.userService.getStatus(user.id);
-        if (playerStatus === UserStatus.IN_GAME || playerStatus === UserStatus.IN_QUEUE)
+        if (playerStatus === UserStatus.IN_GAME)
         {
-            user.socket.emit('error', `Already in Game`);
+            user.socket.emit('error', `Already in Game here `);
             return ;
         }
         if (user.IsInGame === true){
-            user.socket.emit('error', `Already in Game`);
+            user.socket.emit('error', `Already in Game 11111`);
             return ;
         }
         if (this.makeQueue.enQueue(client) == true){
