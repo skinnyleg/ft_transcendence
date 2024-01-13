@@ -183,7 +183,7 @@ const Settings : React.FC = () => {
       useEffect(() => {
         const UpdateStatus = async () => {
             try{
-                const results = await axios.post("http://localhost:8000/auth/UpdateFirstLogin", {}, {withCredentials:true});
+                const results = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/auth/UpdateFirstLogin`, {}, {withCredentials:true});
                 console.log("res == ", results);
                 if (results.status === 200)
                 {

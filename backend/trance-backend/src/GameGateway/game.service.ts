@@ -46,9 +46,23 @@ export class GameService {
         try {
             const user = this.getUserBySocketId(client.id);
             server.to(user.roomId).emit("abort", true);
+            const pl1 = this.players_arr.get(user.roomId)[0];
+            const pl2 = this.players_arr.get(user.roomId)[1];
+            for (const player of this.Users){
+                if (player.id == pl1.id || player.id == pl2.id){
+                    player.isInQueue = false;
+                    player.IsInGame = false;
+                    player.isReady = false;
+                    player.matchInfos = [];
+                    player.roomId = '';
+                    player.win = false;
+                    await this.userService.updateStatus(player.id, UserStatus.ONLINE)
+                    await this.emitToFriendsStatusGame(player.id, UserStatus.ONLINE);
+                }
+            }
             this.players_arr.delete(user.roomId);
-			await this.userService.updateStatus(user.id, UserStatus.OFFLINE)
-            await this.emitToFriendsStatusGame(user.id, UserStatus.OFFLINE);
+			await this.userService.updateStatus(user.id, UserStatus.ONLINE)
+            await this.emitToFriendsStatusGame(user.id, UserStatus.ONLINE);
             this.makeQueue.deleteUserQueue(client)
 			this.Users = this.Users.filter((u) => u.socket.id !== client.id);
 		}
@@ -71,7 +85,6 @@ export class GameService {
         const player = this.getUserBySocketId(client.id);
         player.IsInGame = true;
         const infos = await this.userService.genarateMatchInfo(player.id, null, null);
-        console.log("hheheeeheh22222eheehhdehchec", infos)
         // Emit player infos to redirect him
         client.on('ImReadyBot', () => {
             client.emit('BotReady', infos);

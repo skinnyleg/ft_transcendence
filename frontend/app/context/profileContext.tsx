@@ -14,7 +14,7 @@ export const ContextFriendProvider = ({ children }: { children: any })=> {
     const [friendshipStatus, setFriendshipStatus] = useState('');
     const getFriendshipStatus = async () => {
       try {
-        const res = await fetch(`http://localhost:8000/user/FriendStatus`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/FriendStatus`, {
           method: "Post",
           credentials: "include",
           headers: { "Content-Type": "application/json" },

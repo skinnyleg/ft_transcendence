@@ -26,5 +26,12 @@
     "description": "You won five matches",
     "userScore": 0,
     "totalScore": 5
+  },
+  {
+    "id": "clean Shoot",
+    "title": "clean Shoot",
+    "description": "Clean Shoot",
+    "userScore": 0,
+    "totalScore": 5
   }
 ]

@@ -110,7 +110,7 @@ return (
              focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-transparent fixed xs:mt-[4%] md:mt-[1%] left-0 right-0 z-10`}
           />
         </div>
-        <Link href={`http://localhost:3000/profile/${nickname}`}>
+        <Link href={`${process.env.NEXT_PUBLIC_FRONTEND_HOST}/profile/${nickname}`}>
           <img
               className="max-w-[32px] max-h-[32px] min-w-[32px] min-h-[32px] rounded-full mr-2"
               src={profilePic}
