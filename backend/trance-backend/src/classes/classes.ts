@@ -26,6 +26,8 @@ export class GameUser{
 	roomId : string;
 	win : boolean;
 	matchInfos: any;
+	theme: string;
+	powerUp: string;
 }
 
 export class Match{
