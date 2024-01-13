@@ -81,13 +81,15 @@ export class GameService {
     }
 
     /** challenge Bot */
-    async challengeBot(client : Socket){
+    async challengeBot(client : Socket, playload: string){
         const player = this.getUserBySocketId(client.id);
         player.IsInGame = true;
         const infos = await this.userService.genarateMatchInfo(player.id, null, null);
         // Emit player infos to redirect him
         client.on('ImReadyBot', () => {
             client.emit('BotReady', infos);
+            console.log();
+            client.emit('gameBotTheme', playload);
         }) ;
         client.on('ballPermission', () => { client.emit('drawBallBot') });
     }
@@ -292,7 +294,50 @@ export class GameService {
         this.userService.updateStatus(this.players_arr.get(player1.roomId)[0].id, UserStatus.IN_GAME);
         await this.emitToFriendsStatusGame(this.players_arr.get(player1.roomId)[0].id, UserStatus.IN_GAME);
         await this.emitToFriendsStatusGame(this.players_arr.get(player1.roomId)[1].id, UserStatus.IN_GAME);
-
+        //=--=
+        var leftPaddel : leftPaddle = {
+            height: 150,
+            width: 20,
+            x : 20,
+            y: (height / 2),
+            score : 0,
+        };
+        var rightPaddle : leftPaddle = {
+            height: 150,
+            width: 20,
+            x : width - 20,
+            y : (height) / 2,
+            score : 0,
+        };
+        this.players_arr.get(roomId)[0].socket.on('arrow', ((arg)=> {
+            switch (arg) {
+                case 'UP':
+                if (leftPaddel.y > 0  + leftPaddel.height / 2)
+                    leftPaddel.y -= 10;
+                    break;
+                case 'DOWN':
+                    if (leftPaddel.y < (height - leftPaddel.height / 2))
+                        leftPaddel.y += 10;
+                    break;
+            }
+            this.players_arr.get(roomId)[0].socket.emit('leftPaddle', leftPaddel)
+            this.players_arr.get(roomId)[1].socket.emit('leftPaddle', leftPaddel)
+        }))
+        this.players_arr.get(roomId)[1].socket.on('arrow', ((arg)=> {
+            switch (arg) {
+                case 'UP':
+                    if (rightPaddle.y > 0 + rightPaddle.height / 2)
+                    rightPaddle.y -= 10;
+                    break;
+                case 'DOWN':
+                    if (rightPaddle.y < (height - rightPaddle.height / 2))    
+                        rightPaddle.y += 10;
+                    break;
+            }
+            this.players_arr.get(roomId)[0].socket.emit('rightPaddle', rightPaddle)
+            this.players_arr.get(roomId)[1].socket.emit('rightPaddle', rightPaddle)
+        }))
+        //=--=
        
         server.to(player1.roomId).emit('StartDrawing')
         

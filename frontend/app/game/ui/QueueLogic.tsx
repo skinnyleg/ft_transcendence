@@ -94,6 +94,7 @@ const PongZoneQueue = () => {
         });
         
         gameSocket.on('StartDrawing', () => {
+            console.log('inside drawing ball');
             Matter.Body.setVelocity(ball, { x: 5, y: 5 })
         });
 
@@ -104,21 +105,21 @@ const PongZoneQueue = () => {
                 (score.playerR === 3 || score.playerL === 3) && (Matter.Body.setVelocity(ball, { x: 0, y: 0 }));
                 (score.playerR === 3) ? gameSocket.emit('playerRighttWin') : score.playerL === 3 ?  gameSocket.emit('playerLeftWin') : '';
                 (score.playerR === 3 || score.playerL === 3) && route.push('/Dashboard');
-                if (score.playerR === 3 || score.playerL === 3)
+                if (score.playerR === 3 || score.playerL === 3) {
+                    gameSocket.emit('EndGame', {playerL: {score: score.playerL}, playerR: {score: score.playerR}});
                     return ;
+                }
                 if ((pair.bodyA === ball && pair.bodyB === wallLeft) || (pair.bodyA === wallLeft && pair.bodyB === ball))
                 {
                     setScore({playerL: score.playerL, playerR: (++score.playerR)});
                     Matter.Body.setPosition(ball, { x: midleCanvas, y: midleVertical });
                     Matter.Body.setVelocity(ball, { x: 5, y: 5 });
-                    gameSocket.emit('scoreLeft');
                 }
                 else if ((pair.bodyA === ball && pair.bodyB === wallRight) || (pair.bodyA === wallRight && pair.bodyB === ball))
                 {
                     setScore({playerL: (++score.playerL), playerR: score.playerR});
                     Matter.Body.setPosition(ball, { x: midleCanvas, y: midleVertical });
                     Matter.Body.setVelocity(ball, { x: -5, y: 5 })
-                    gameSocket.emit('scoreRight');
                 }
                 if ((pair.bodyA === ball && pair.bodyB === paddleRight) || (pair.bodyA === paddleRight && pair.bodyB === ball)) {
                     Matter.Body.setVelocity(ball, { x: 8, y: 8 })

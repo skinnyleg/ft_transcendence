@@ -20,23 +20,11 @@ function GameQueue() {
             setPlayerR({name: data[1].nickname, picture: data[1].profilePic});
             router.push(`/game/${data[0].roomId}`);
         };
-        
-        // const handleBotReady = (data: any) => {
-        //     setProgress(100);
-        //     setGameType('BOT');
-        //     // console.log("data front : ", data)
-        //     setGameId(data.id);
-        //     setPlayerL({name: data.nickname, picture: data.profilePic});
-        //     setPlayerR({name: 'BOT', picture: '/WhatsApp Image 2023-11-08 at 17.00.12_964408e7.jpg'});
-        //     router.push(`/game/${data.id}`);
-        // };
 
         gameSocket.on('MatchReady', handleGameReady);
-        // gameSocket.on('BotReady', handleBotReady);
         
         return () => {
             gameSocket.off('MatchReady', handleGameReady);
-            // gameSocket.off('BotReady', handleBotReady);
         };
     },[]);
     

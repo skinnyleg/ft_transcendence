@@ -14,7 +14,6 @@ import { ToastContainer, toast } from 'react-toastify';
 import TopThree from '../ui/TopThree';
 import { ClassNames } from '@emotion/react';
 import GameType from '../game/ui/GameType';
-import { GameContext } from '../context/gameSockets';
 
 
 function Dashboard() {
@@ -22,8 +21,7 @@ function Dashboard() {
   const [dashboardData, setDashboardData] = useState<dashboardData | undefined>(undefined);
   const [theme, setTheme] = useState('yo1.jpg');
   const [powerup, setPowerup] = useState('FireBall');
-  const	[gameTypes, setgameTypes] = useState<string>('');
-  // const {gameType, setGameType} = useContext(GameContext);
+  const	[gameTypes, setgameTypes] = useState<string>("BOT");
 
   useEffect(() => {
     const fetchData = async () => {

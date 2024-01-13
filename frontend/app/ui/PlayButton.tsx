@@ -18,8 +18,8 @@ const PlayButton = ({ theme, PowerUp, gameType_ }:PlayButtonProps) => {
         }
         else if (gameType_ === 'BOT')
         {
-            gameSocket.emit('PlayBot');
-            router.push('/game/bot/');
+            gameSocket.emit('PlayBot', theme);
+            router.push('/game/bot');
         }
     };
 

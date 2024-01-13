@@ -24,7 +24,7 @@ function game() {
             <div className="bg-cyan-100 h-[93.75%] w-[95.83%] flex space-x-[0.87%] items-center rounded-[15px]">
                 <div className="flex flex-col w-[91.74%] h-[97.33%] items-center relative rounded-[10px]">
                     <GameResultBar />
-                    {gameType === 'QUEUE' ?   <PongZoneQueue /> : null} 
+                    <PongZoneQueue />
                 </div>
             </div>
         </main>

@@ -39,7 +39,7 @@ const Themes = ({ handleThemeChange }: ThemesProps) => {
           // onSlideChange={() => console.log('slide change')}
           // onSwiper={(swiper) => console.log(swiper)}
           >
-            {['/52.jpg', '/yo.jpg', '/yo1.jpg', '/42.jpg'].map((image, index) => (
+            {['/52.jpg', '/yo.jpg', '/yo1.jpg'].map((image, index) => (
               <SwiperSlide
                 key={index}
                 className="relative rounded-md">
