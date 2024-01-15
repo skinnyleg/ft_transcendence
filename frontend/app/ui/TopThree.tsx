@@ -71,7 +71,7 @@ const TopThree = ()=> {
       <div className="flex flex-col  p-0  h-full  w-full justify-between gap-2">
 
         {
-          leaderboardData.slice(0, 3).map((userRank, index) => {
+          leaderboardData.length > 0 && leaderboardData.slice(0, 3).map((userRank, index) => {
             count++;
             return (
               <div key={userRank.id} className="flex flex-row p-2 rounded-[15px] w-full mb-0 h-1/3 items-center py-0 bg-cyan-600">
