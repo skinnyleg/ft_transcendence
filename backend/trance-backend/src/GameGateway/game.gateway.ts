@@ -9,6 +9,7 @@ import { BotDto, GameSettingsDto } from "./Dto/GameSettingsDto";
 import { UserService } from "src/user/user.service";
 import { MatchInfos } from "src/classes/classes";
 import { UserStatus } from "@prisma/client";
+import { ThemeDto } from "./Dto/ThemeDto";
 
 @WebSocketGateway({ namespace: 'GameGateway', cors: {
     origin: process.env.FrontendHost,
@@ -50,8 +51,17 @@ export class GameGateway {
             this.gameService.players_arr.get(user1.roomId)[0].IsInGame = true;
             this.gameService.players_arr.get(user1.roomId)[1].IsInGame = true;
             // Match is Ready Backend can start Send corrdinations √
+
+            const theme0  = this.gameService.players_arr.get(user1.roomId)[0].theme;
+            const theme1  = this.gameService.players_arr.get(user1.roomId)[1].theme;
+            const power0  = this.gameService.players_arr.get(user1.roomId)[0].powerUp;
+            const power1  = this.gameService.players_arr.get(user1.roomId)[1].powerUp;
             const roomId = this.gameService.players_arr.get(user1.roomId)[1].roomId;
+            console.log('ops0 : ', theme0, power0);
+            console.log('ops1 : ', theme1, power1);
             const infos : MatchInfos = await this.userService.genarateMatchInfo(this.gameService.players_arr.get(user1.roomId)[0].id, this.gameService.players_arr.get(user1.roomId)[1].id, roomId)
+            this.gameService.players_arr.get(roomId)[0].socket.emit('playerSettings', ({theme: theme0, power: power0, id: 0, powerOpponenent: power1}))
+            this.gameService.players_arr.get(roomId)[1].socket.emit('playerSettings', ({theme: theme1, power: power1, id: 1, powerOpponenent: power0}))
             this.server.to(this.gameService.players_arr.get(user1.roomId)[0].roomId).emit('MatchReady', infos);
             this.makeQueue.deleteUserQueue(user1);
         }
@@ -60,8 +70,13 @@ export class GameGateway {
     }
 
     @SubscribeMessage('PlayQueue')
-    QueueMaker(client: Socket){
-        this.gameService.handleMatchMaker(client, this.server);
+    async QueueMaker(client: Socket, payload: Record<string, any>){
+        // console.log("palsss", payload);
+        // const verify = await validateAndSendError(payload, ThemeDto);
+        // if (verify.valid == true){
+        //     this.gameService.sendWebSocketError(client, verify.error, false);
+        // }
+        this.gameService.handleMatchMaker(client, this.server, payload.theme_, payload.powerUp_);
     }
 
     @SubscribeMessage('endBotMatch')

@@ -32,7 +32,7 @@ export class GameService {
 			const token: string = client.handshake.headers.token as string;
 			const payload = await this.jwtService.verifyAsync(token, { secret: process.env.jwtsecret })
 			user = await this.userService.findOneById(payload.sub);
-            this.Users.push({id: user.id, socket: client, isInQueue: false, IsInGame : false, isReady: false, score: 0, roomId: '', win: false, matchInfos: {}});
+            this.Users.push({id: user.id, socket: client, isInQueue: false, IsInGame : false, isReady: false, score: 0, roomId: '', win: false, matchInfos: {}, theme: '', powerUp: ''});
             // console.log("Users  ===  ", this.Users);
 		}
 		catch (error)
@@ -367,11 +367,13 @@ export class GameService {
     }
 
 
-    async handleMatchMaker(client : Socket, server : Server){
+    async handleMatchMaker(client : Socket, server : Server, theme : string, powerUp: string){
         // Need to optimize this queue so can distiguish each room fo two players √
         // emit to client that is in Queue room √
         // distingue who is the client to update the status √
-        const user = this.getUserBySocketId(client.id)
+        const user = this.getUserBySocketId(client.id);
+        user.theme = theme;
+        user.powerUp = powerUp;
         const playerStatus = await this.userService.getStatus(user.id);
         if (playerStatus === UserStatus.IN_GAME)
         {

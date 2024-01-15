@@ -11,10 +11,48 @@ const PongZoneQueue = () => {
     const   route = useRouter();
     const   [matchready, setMatchready] = useState<boolean>(false);
     const   [pongzone, setPongzone] = useState({width: 0, height: 0});
-    const   {score, setScore, gameId} = useContext(GameContext);
+    const   {powerUps, score, setScore, gameId, settings} = useContext(GameContext);
 
     const width = 20;
     const height = 150;
+    let   ExtraTime : number;
+    let   speedMeterL: {x: number, y: number};
+    let   speedMeterR: {x: number, y: number};
+    let   ZoomInR: number = 150;
+    let   ZoomInL: number = 150;
+    let   ShrinkR: number = 150;
+    let   ShrinkL: number = 150;
+
+
+        if (settings.id === 0) {
+            speedMeterL = (settings.powerUps === 'speedMeter') ? {x: 9 , y: 9 } : {x:6 , y: 6};
+            ZoomInL = (settings.powerUps === 'ZoomIn') ? 225 : 150;
+            ShrinkR = (settings.powerUps === 'Shrink') ? 100 : 150;
+            ExtraTime = (settings.powerUps === 'ExtraTime') ? 5 : 4;
+            console.log('settings L : ', settings);
+            //
+            speedMeterR = (settings.powerOpponenent === 'speedMeter') ? {x: 9 , y: 9 } : {x:6 , y: 6};
+            ZoomInR = (settings.powerOpponenent === 'ZoomIn') ? 225 : 150;
+            ShrinkL = (settings.powerOpponenent === 'Shrink') ? 100 : 150;
+            ExtraTime = (settings.powerOpponenent === 'ExtraTime') ?  8 : 7;
+            //
+        }
+        else if (settings.id === 1) {
+            speedMeterR = (settings.powerUps === 'speedMeter') ? {x: 9 , y: 9 } : {x:6 , y: 6};
+            ZoomInR = (settings.powerUps === 'ZoomIn') ? 225 : 150;
+            ShrinkL = (settings.powerUps === 'Shrink') ? 100 : 150;
+            ExtraTime = (settings.powerUps === 'ExtraTime') ? 8 : 7;
+            console.log('settings R : ', settings);
+            //
+            speedMeterL = (settings.powerOpponenent === 'speedMeter') ? {x: 9 , y: 9 } : {x:6 , y: 6};
+            ZoomInL = (settings.powerOpponenent === 'ZoomIn') ? 225 : 150;
+            ShrinkR = (settings.powerOpponenent === 'Shrink') ? 100 : 150;
+            ExtraTime = (settings.powerOpponenent === 'ExtraTime') ? 5 : 4;
+            console.log('settings L : ', settings);
+            //
+        }
+        ShrinkL = (ShrinkL === 100) ? ShrinkL : ZoomInL;
+        ShrinkR = (ShrinkR === 100) ? ShrinkR : ZoomInR;
     
     useEffect(() => {
 
@@ -30,7 +68,8 @@ const PongZoneQueue = () => {
             canvas: canvasRef.current === null ? undefined : canvasRef.current,
             engine: engine,
             options: {
-                background: '#ffffff',
+                // background: '#ffffff',
+                background: 'transparent',
                 wireframes: false,
             } 
         });
@@ -64,8 +103,8 @@ const PongZoneQueue = () => {
                 lineWidth: 10, // Border width of the ball
             },
         });
-        const   paddleLeft = Bodies.rectangle(minX + width, midleVertical, width, height, { isStatic: true });
-        const   paddleRight = Bodies.rectangle(maxX - width, midleVertical, width, height, { isStatic: true });
+        const   paddleLeft = Bodies.rectangle(minX + width, midleVertical, width, ShrinkL, { isStatic: true });
+        const   paddleRight = Bodies.rectangle(maxX - width, midleVertical, width, ShrinkR, { isStatic: true });
                 
         Composite.add(engine.world, [paddleLeft, paddleRight, ball]);    
         
@@ -95,17 +134,17 @@ const PongZoneQueue = () => {
         
         gameSocket.on('StartDrawing', () => {
             console.log('inside drawing ball');
-            Matter.Body.setVelocity(ball, { x: 5, y: 5 })
+            Matter.Body.setVelocity(ball, { x: 6, y: 6 })
         });
 
         Matter.Events.on(engine, 'collisionStart', function(event) {
             var pairs = event.pairs;
             for (var i = 0, j = pairs.length; i != j; ++i) {
                 var pair = pairs[i]; 
-                (score.playerR === 3 || score.playerL === 3) && (Matter.Body.setVelocity(ball, { x: 0, y: 0 }));
-                (score.playerR === 3) ? gameSocket.emit('playerRighttWin') : score.playerL === 3 ?  gameSocket.emit('playerLeftWin') : '';
-                (score.playerR === 3 || score.playerL === 3) && route.push('/Dashboard');
-                if (score.playerR === 3 || score.playerL === 3) {
+                (score.playerR === ExtraTime || score.playerL === ExtraTime) && (Matter.Body.setVelocity(ball, { x: 0, y: 0 }));
+                (score.playerR === ExtraTime) ? gameSocket.emit('playerRighttWin') : score.playerL === ExtraTime ?  gameSocket.emit('playerLeftWin') : '';
+                (score.playerR === ExtraTime || score.playerL === ExtraTime) && route.push('/Dashboard');
+                if (score.playerR === ExtraTime || score.playerL === ExtraTime) {
                     gameSocket.emit('EndGame', {playerL: {score: score.playerL}, playerR: {score: score.playerR}});
                     return ;
                 }
@@ -122,13 +161,13 @@ const PongZoneQueue = () => {
                     Matter.Body.setVelocity(ball, { x: -5, y: 5 })
                 }
                 if ((pair.bodyA === ball && pair.bodyB === paddleRight) || (pair.bodyA === paddleRight && pair.bodyB === ball)) {
-                    Matter.Body.setVelocity(ball, { x: 8, y: 8 })
+                    Matter.Body.setVelocity(ball, { x: speedMeterR.x, y: speedMeterR.y })
                 }
                 else if ((pair.bodyA === ball && pair.bodyB === paddleLeft) || (pair.bodyA === paddleLeft && pair.bodyB === ball)) {
-                    Matter.Body.setVelocity(ball, { x: 5, y: 5 })              
+                    Matter.Body.setVelocity(ball, { x: speedMeterL.x, y: speedMeterL.y })              
                 }
+                Matter.Body.set(ball, { restitution: 1, friction: 0 }); // n9adro n7aydoha
             }
-            Matter.Body.set(ball, { restitution: 1, friction: 0 }); // n9adro n7aydoha
         });
         
         Render.run(render);
@@ -155,9 +194,11 @@ const PongZoneQueue = () => {
     };
 
     return (
-        <div className="bg-transparent w-[100%] h-[80%] rounded-[10px] justify-center absolute bottom-0">
+        <div
+        style={{ '--image-url': `url(${settings.theme})` } as React.CSSProperties}
+        className="bg-transparent bg-cover bg-center bg-[image:var(--image-url)] w-[100%] h-[80%] rounded-[10px] justify-center absolute bottom-0">
             { !matchready && <button onClick={startGame}>START GAME</button>}
-            { matchready && <canvas ref={canvasRef} className='bg-transparent w-[100%] h-[100%] rounded-[10px]'/>}
+            { matchready && <canvas ref={canvasRef} className='w-[100%] h-[100%] rounded-[10px]'/>}
         </div>
     );
 };

@@ -17,13 +17,11 @@ const PongZoneBoot = () => {
     const   [pongzone, setPongzone] = useState({width: 0, height: 0});
     const   {powerUps, gameMape, score, setScore, gameId} = useContext(GameContext);
     
-    // set power ups
-    // gameSocket.on('playerSettings', (data: any) => {
-        const   speedMeter = (powerUps == 'speedMeter') ? {x: 9 , y: 9 } : {x:6 , y: 6};
-        const   ZoomIn = (powerUps == 'ZoomIn') ? 225 : 150;
-        const   Shrink = (powerUps == 'Shrink') ? 100 : 150;
-        const   ExtraTime = (powerUps == 'ExtraTime') ? 5 : 4;
-    // });
+
+    const   speedMeter = (powerUps == 'speedMeter') ? {x: 9 , y: 9 } : {x:6 , y: 6};
+    const   ZoomIn = (powerUps == 'ZoomIn') ? 225 : 150;
+    const   Shrink = (powerUps == 'Shrink') ? 100 : 150;
+    const   ExtraTime = (powerUps == 'ExtraTime') ? 5 : 4;
 
     useEffect(() => {
 
@@ -166,7 +164,7 @@ const PongZoneBoot = () => {
         gameSocket.emit('ballPermission');
     };
 
-    console.log('map == ', gameMape);
+    // console.log('map == ', gameMape);
     return (
         <div
         style={{ '--image-url': `url(${gameMape})` } as React.CSSProperties} 
