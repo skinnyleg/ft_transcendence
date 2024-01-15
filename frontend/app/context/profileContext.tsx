@@ -32,7 +32,7 @@ export const ContextFriendProvider = ({ children }: { children: any })=> {
     useEffect(() => {
       getFriendshipStatus();
       // console.log("lolo11111");
-    });   
+    }, []);   
     
     const updateStatus = () => {
       getFriendshipStatus();

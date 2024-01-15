@@ -141,7 +141,7 @@ const Notifications = () => {
             gameSocket.off('redirectPlayers_match');
         }
         //TODO now that added the dependency i need to test error notif again
-    }, [])
+    }, [gameSocket])
 
 
     useEffect(() => {

@@ -1141,11 +1141,22 @@ export class UserService {
 		});
 	
 		// Sort players by score in descending order
-		players.sort((a, b) => b.Wins - a.Wins);
+
+		const playersWinRate = players.map((player) => {
+			const totalGames = player.Wins + player.Losses;
+			let winrate = totalGames > 0 ? (player.Wins / totalGames) * 100 : 0;
+
+			return {
+					winrate: winrate,
+					...player
+				};
+			});
+
+		const sortedPlayers = playersWinRate.sort((a, b) => b.winrate - a.winrate);
 	
 		// Update ranks based on sorted positions
-		for (let rank = 1; rank <= players.length; rank++) {
-			const player = players[rank - 1];
+		for (let rank = 1; rank <= sortedPlayers.length; rank++) {
+			const player = sortedPlayers[rank - 1];
 			await this.prisma.user.update({
 				where: {
 					id: player.id,

@@ -46,10 +46,30 @@ const FriendsList = () => {
     friendsGet();
     }, [])
 
+    useEffect(() => {
+        const handleStatusChange = (stat : {id : string, status : UserStatus}) => {
+            console.log('in status change')
+            if (stat.status !== undefined) {
+            setFriendList((prevFriendsList) => {
+              return prevFriendsList.map((friend) => {
+                if (friend.id === stat.id) {
+                  return { ...friend, status: stat.status };
+                }
+                return friend;
+              });
+            });
+          }
+        };
+        gameSocket.on("statusChange", handleStatusChange);
+        return () => {
+            gameSocket.off("statusChange", handleStatusChange);
+        };
+      }, [gameSocket]);
     
     useEffect(() => {
         const handleStatusChange = (stat : {id : string, status : UserStatus}) => {
-          if (stat.status !== undefined) {
+            console.log('in status change')
+            if (stat.status !== undefined) {
             setFriendList((prevFriendsList) => {
               return prevFriendsList.map((friend) => {
                 if (friend.id === stat.id) {
@@ -62,11 +82,12 @@ const FriendsList = () => {
         };
         socket.on("statusChange", handleStatusChange);
         gameSocket.on("statusChange", handleStatusChange);
+        console.log("is socket connected == ", gameSocket.connected);
         socket.on("refreshFriendsList", friendsGet);
         return () => {
-          socket.off("statusChange", handleStatusChange);
-          gameSocket.off("statusChange", handleStatusChange);
-          socket.off("refreshFriendsList", friendsGet)
+            socket.off("statusChange", handleStatusChange);
+            gameSocket.off("statusChange", handleStatusChange);  
+            socket.off("refreshFriendsList", friendsGet)
         };
       }, [socket]);
 
