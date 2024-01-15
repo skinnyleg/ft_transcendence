@@ -29,7 +29,7 @@ const GamePowerUps = ({powerUpSetter}: any) => {
             <div className="bg-cyan-600 w-full h-[65%] rounded-[15px] flex flex-nowrap justify-between items-center p-2">
                 <div 
                 onClick={() => {handlePower('speedMeter')}}
-                className={` w-[22.5%] h-[90%] rounded-[15px] ${power === 'speedMeter' ? "bg-teal-300" : 'bg-cyan-100'}`}>
+                className={` hover:cursor-pointer w-[22.5%] h-[90%] rounded-[15px] ${power === 'speedMeter' ? "bg-teal-300" : 'bg-cyan-100'}`}>
                     <Image 
                         className="w-full h-full"
                         src={speedMeter}
@@ -37,7 +37,7 @@ const GamePowerUps = ({powerUpSetter}: any) => {
                     />
                 </div>
                 <div onClick={() => {handlePower('ZoomIn')}}
-                className={` w-[22.5%] h-[90%] rounded-[15px] ${power === 'ZoomIn' ? "bg-teal-300" : 'bg-cyan-100'}`}>
+                className={`hover:cursor-pointer w-[22.5%] h-[90%] rounded-[15px] ${power === 'ZoomIn' ? "bg-teal-300" : 'bg-cyan-100'}`}>
                     <Image 
                         className="w-full h-full"
                         src={ZoomIn}
@@ -45,7 +45,7 @@ const GamePowerUps = ({powerUpSetter}: any) => {
                     />
                 </div>
                 <div onClick={() => {handlePower('Shrink')}}
-                className={` w-[22.5%] h-[90%] rounded-[15px] ${power === 'Shrink' ? "bg-teal-300" : 'bg-cyan-100'}`}>
+                className={`hover:cursor-pointer w-[22.5%] h-[90%] rounded-[15px] ${power === 'Shrink' ? "bg-teal-300" : 'bg-cyan-100'}`}>
                     <Image 
                         className="w-full h-full"
                         src={Shrink}
@@ -53,7 +53,7 @@ const GamePowerUps = ({powerUpSetter}: any) => {
                     />
                 </div>
                 <div onClick={() => {handlePower('ExtraTime')}}
-                className={` w-[22.5%] h-[90%] rounded-[15px] ${power === 'ExtraTime' ? "bg-teal-300" : 'bg-cyan-100'}`}>
+                className={`hover:cursor-pointer w-[22.5%] h-[90%] rounded-[15px] ${power === 'ExtraTime' ? "bg-teal-300" : 'bg-cyan-100'}`}>
                     <Image
                         // proper
                         className="w-full h-full"

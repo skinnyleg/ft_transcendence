@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import Matter from 'matter-js';
 import gameSocket, { GameContext } from '../../context/gameSockets';
 import { useRouter } from 'next/navigation';
+import StartButton from './StartButton';
 
 
 const PongZoneBoot = () => {
@@ -139,6 +140,11 @@ const PongZoneBoot = () => {
                 (score.playerR === ExtraTime || score.playerL === ExtraTime) && (gameSocket.emit('gameBotEnd'));
                 (score.playerR === ExtraTime || score.playerL === ExtraTime) && route.push('/Dashboard');
                 if (score.playerR === ExtraTime || score.playerL === ExtraTime) {
+                    console.log('right score === ', score.playerR);
+                    console.log('left score === ', score.playerL);
+                    console.log('final Score === ', ExtraTime);
+                    Matter.Body.setVelocity(ball, { x: 0, y: 0 });
+                    console.log('match ended');
                     gameSocket.emit('endBotMatch');
                     return ;
                 }
@@ -161,6 +167,7 @@ const PongZoneBoot = () => {
     const startGame = () => {
         setMatchready(true);
         gameSocket.emit('PongZone', {id: '', ...pongzone});
+        gameSocket.emit('StartBotGame', {width: pongzone.width, height: pongzone.height})
         gameSocket.emit('ballPermission');
     };
 
@@ -168,9 +175,9 @@ const PongZoneBoot = () => {
     return (
         <div
         style={{ '--image-url': `url(${gameMape})` } as React.CSSProperties} 
-        className={`bg-black bg-cover bg-center bg-[image:var(--image-url)] w-[100%] h-[80%] rounded-[10px] justify-center absolute bottom-0`}>
-            { !matchready && <button onClick={startGame}>START GAME</button>}
-            { matchready && <canvas ref={canvasRef} className='w-[100%] h-[100%] rounded-[10px]'/>}
+        className={`bg-black bg-cover bg-center bg-[image:var(--image-url)] w-[100%] h-[80%] rounded-[10px] flex justify-center  items-center absolute bottom-0`}>
+            { !matchready && <StartButton startGame={startGame}/>}
+            { matchready && <canvas ref={canvasRef} className='w-[100%] h-[100%] rounded-[10px] scale-[0.35] md:scale-50 lg:scale-100'/>}
         </div>
     );
 };

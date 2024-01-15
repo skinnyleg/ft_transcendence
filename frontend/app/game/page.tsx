@@ -36,7 +36,11 @@ function GameQueue() {
     },[]);
     
     useEffect(() => {
-        gameSocket.emit('ImReady');
+        gameSocket.emit('abort');
+        gameSocket.emit('PlayQueue');
+        gameSocket.on('userInQueue', () => {
+            gameSocket.emit('ImReady');
+        })
         
         const timer = setInterval(() => {
             setProgress((prevProgress) => (prevProgress < 90 ? prevProgress + 5 : prevProgress));

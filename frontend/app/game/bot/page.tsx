@@ -34,10 +34,14 @@ function    BotGame(){
     },[]);
 
 
-    setInterval(() => {
-        if (path !== `/game/bot`)
-            gameSocket.emit('leaveGameBot');
-    }, 1000);
+    // setInterval(() => {
+    //     // console.log('sending emit to leave bot game')
+    //     if (path !== `/game/bot`)
+    //     {
+    //         console.log('sending emit')
+    //         gameSocket.emit('leaveGameBot');
+    //     }
+    // }, 1000);
 
     return (
         <main className="main flex bg-cyan-900 justify-center items-center h-screen w-screen">

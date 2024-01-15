@@ -27,7 +27,7 @@ const LeaderboardCard: FC<LeaderboardCardProps> = ({user}) => {
 				<h1 className='w-1/3 lg:w-1/6'>Rank: {user.Rank}</h1>
 				<h1 className='hidden lg:flex lg:w-1/6'>Wins: {user.Wins}</h1>
 				<h1 className='hidden lg:flex lg:w-1/6'>Losses: {user.Losses}</h1>
-				<h1 className='w-1/3 md:w-1/6'>WinRate: {user.winrate}%</h1>
+				<h1 className='w-1/3 md:w-1/6'>WinRate: {user.winrateStr}%</h1>
 			</div> 
 	);
 }

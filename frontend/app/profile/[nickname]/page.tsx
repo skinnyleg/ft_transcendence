@@ -272,7 +272,7 @@ const Profile = () => {
     const [isprivateProfile, setisprivateProfile] = useState<boolean | undefined>(false);
     const [profileData, setProfileData] = useState<profileData | undefined>(undefined);
     const [achievements, setAchievements] = useState<Achievements[]>([])
-    const [matchHistory, setMatchHistory] = useState<any>([])
+    const [matchHistory, setMatchHistory] = useState<Match[]>([])
     const [notAchievements, setNotAchievements] = useState<Achievements[]>([])
     const pathname = usePathname();
     const socket = useContext(socketContext);
@@ -455,7 +455,7 @@ const Profile = () => {
                                 return (
                                     <div key={match?.id}
                                         className=" mb-2 w-full h-[20%] p-2 flex flex-row justify-between items-center rounded-[15px] border bg-cyan-100 border-lightQuartze">
-                                        <div className=" flex flex-row items-center gap-5">
+                                        <div className=" flex flex-row items-center gap-5  w-1/3">
                                             <img src={match?.loser?.profilePic}
                                                 className="rounded-full max-w-[40px] max-h-[40px] min-w-[40px] min-h-[40px]"
                                                 alt="loser picture"
@@ -470,7 +470,7 @@ const Profile = () => {
                                             </div>
                                             <span className="text-bold text-cyan-100">{match?.isMeWhoWon ? `won` : `lose`}</span>
                                         </div>
-                                        <div className="flex flex-row items-center gap-5">
+                                        <div className="flex flex-row   justify-end items-center gap-5 w-1/3">
                                             <h2 className="text-teal-600">{match?.winner?.nickname}</h2>
                                             <img src={match?.winner?.profilePic}
                                                 className="rounded-full max-w-[40px] max-h-[40px] min-w-[40px] min-h-[40px]"

@@ -71,6 +71,33 @@ export class GameService {
 		}
     }
 
+    findGameUserById(gameUserId: string)
+    {
+        for (const [key, gameUsers] of this.players_arr) {
+          const foundUser = gameUsers.find((gameUser) => gameUser.id === gameUserId);
+          if (foundUser) {
+            return key; // Return the found GameUser object
+          }
+        }
+        return null; // Return undefined if the GameUser object is not found
+    }
+
+
+    deleteGame(roomId: string, socketId: string)
+    {
+        console.log('roomId === ', roomId);
+        console.log('all rooms === ', this.players_arr);
+        const user1 = this.players_arr.get(roomId)[0];
+        const user2 = this.players_arr.get(roomId)[1];
+
+        if (user1.socket.id !== socketId)
+        user1.socket.emit('abortGame');
+        if (user2.socket.id !== socketId)
+            user2.socket.emit('abortGame');
+        this.players_arr.delete(roomId);
+        // console.log('room is === ', gameRoom);
+    }
+
     getUserBySocketId(socketId: string): GameUser | undefined {
         return this.Users.find((user) => user.socket.id === socketId);
     }
@@ -367,26 +394,56 @@ export class GameService {
     }
 
 
-    async handleMatchMaker(client : Socket, server : Server, theme : string, powerUp: string){
+    async handleMatchMaker(client : Socket){
         // Need to optimize this queue so can distiguish each room fo two players √
         // emit to client that is in Queue room √
         // distingue who is the client to update the status √
         const user = this.getUserBySocketId(client.id);
-        user.theme = theme;
-        user.powerUp = powerUp;
+        // if (user.theme === '')
+        //     user.theme = theme;
+        // if (user.powerUp === '')
+        //     user.powerUp = powerUp;
         const playerStatus = await this.userService.getStatus(user.id);
+        console.log('userStatus === ', playerStatus);
         if (playerStatus === UserStatus.IN_GAME)
         {
             user.socket.emit('error', `Already in Game here `);
             return ;
         }
-        if (user.IsInGame === true){
-            user.socket.emit('error', `Already in Game 11111`);
-            return ;
-        }
+        // if (user.IsInGame === true){
+        //     user.socket.emit('error', `Already in Game 11111`);
+        //     return ;
+        // }
         if (this.makeQueue.enQueue(user) == true){
             await this.userService.updateStatus(user.id, UserStatus.IN_QUEUE);
 			await this.emitToFriendsStatusGame(user.id, UserStatus.IN_QUEUE);
+            client.emit('userInQueue');
         }
+    }
+
+    async saveGameSettings(client : Socket, server : Server, theme : string, powerUp: string){
+        // Need to optimize this queue so can distiguish each room fo two players √
+        // emit to client that is in Queue room √
+        // distingue who is the client to update the status √
+        const user = this.getUserBySocketId(client.id);
+        // if (user.theme === '')
+            user.theme = theme;
+        // if (user.powerUp === '')
+            user.powerUp = powerUp;
+        // const playerStatus = await this.userService.getStatus(user.id);
+        // console.log('userStatus === ', playerStatus);
+        // if (playerStatus === UserStatus.IN_GAME)
+        // {
+        //     user.socket.emit('error', `Already in Game here `);
+        //     return ;
+        // }
+        // // if (user.IsInGame === true){
+        // //     user.socket.emit('error', `Already in Game 11111`);
+        // //     return ;
+        // // }
+        // if (this.makeQueue.enQueue(user) == true){
+        //     await this.userService.updateStatus(user.id, UserStatus.IN_QUEUE);
+		// 	await this.emitToFriendsStatusGame(user.id, UserStatus.IN_QUEUE);
+        // }
     }
 }

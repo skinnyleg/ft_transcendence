@@ -121,7 +121,7 @@ const Notifications = () => {
             });
         });
 
-        gameSocket.on("notifHistory", (data: NotificationsData) => {
+        gameSocket.on('notifHistory', (data: NotificationsData) => {
             console.log("data gameSocket == ", data);
             setNotifications((prevNotifications) => {
                 return [...prevNotifications, data];
@@ -141,7 +141,7 @@ const Notifications = () => {
             gameSocket.off('redirectPlayers_match');
         }
         //TODO now that added the dependency i need to test error notif again
-    }, [gameSocket])
+    }, [])
 
 
     useEffect(() => {

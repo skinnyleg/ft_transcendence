@@ -175,6 +175,7 @@ export interface LeaderboardData {
   Wins: number;
   Losses: number;
   winrate: number;
+  winrateStr: string;
   Rank: number;
   self: boolean;
 };

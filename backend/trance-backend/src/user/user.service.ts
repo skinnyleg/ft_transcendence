@@ -121,7 +121,8 @@ export class UserService {
 
 		const usersWithWinrates = users.map((user) => {
 		const totalGames = user.Wins + user.Losses;
-		const winrate = totalGames > 0 ? (user.Wins / totalGames) * 100 : 0;
+		let winrate = totalGames > 0 ? (user.Wins / totalGames) * 100 : 0;
+		const winrateStr = winrate.toFixed(2);
 
 		return {
 				id: user.id,
@@ -130,6 +131,7 @@ export class UserService {
 				Wins: user.Wins,
 				Losses: user.Losses,
 				winrate,
+				winrateStr,
 				Rank: user.Rank,
 				self: user.id === id,
 			};
@@ -1209,7 +1211,7 @@ export class UserService {
 	  
 		  Matches.push(obj);
 		}
-		console.log("begin ", Matches);
+		// console.log("begin ", Matches);
 		return Matches;
 	  }
 	  

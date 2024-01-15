@@ -15,12 +15,13 @@ import TopThree from '../ui/TopThree';
 import { ClassNames } from '@emotion/react';
 import GameType from '../game/ui/GameType';
 import GamePowerUps from '../game/ui/PowerUps';
+import gameSocket from '../context/gameSockets';
 
 
 function Dashboard() {
 
   const [dashboardData, setDashboardData] = useState<dashboardData | undefined>(undefined);
-  const [theme, setTheme] = useState('yo1.jpg');
+  const [theme, setTheme] = useState('/yo1.jpg');
   const [powerup, setPowerup] = useState('FireBall');
   const	[gameTypes, setgameTypes] = useState<string>("BOT");
 
@@ -39,6 +40,8 @@ function Dashboard() {
       }
     };
     fetchData();
+    gameSocket.emit('leaveGameBot');
+    gameSocket.emit('leaveQueue');
   }, []);
   const doneAchievements = dashboardData?.doneAchievements || [];
   const notDoneAchievements = dashboardData?.notDoneAchievements || [];

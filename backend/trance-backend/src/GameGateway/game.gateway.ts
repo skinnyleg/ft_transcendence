@@ -32,14 +32,16 @@ export class GameGateway {
     async QueueReady(client: Socket){
         var queueLength =  this.makeQueue.getQueue().length;
         var queueds =  this.makeQueue.getQueue();
-        console.log("Queue length 1111 ===  ", queueLength);
-        console.log("Queue  ===  ", queueds);
+        // console.log("Queue length 1111 ===  ", queueLength);
+        console.log("Queue before 2  ===  ", queueds.length);
         if (queueLength >= 2){
             const usr = this.gameService.getUserBySocketId(client.id);
             const user1 = this.makeQueue.dequeue(usr);
             const user2 = this.makeQueue.dequeue(null);
-            user1.roomId= user2.id;
-            user2.roomId= user2.id;
+            var queueds =  this.makeQueue.getQueue();
+            console.log('the queue has === ', queueds)
+                user1.roomId= user2.id;
+                user2.roomId= user2.id;
             // add user to player_arr √
             this.gameService.players_arr.set(user1.roomId, [user1, user2]);
             this.gameService.players_arr.get(user1.roomId)[0].isInQueue = false;
@@ -57,26 +59,65 @@ export class GameGateway {
             const power0  = this.gameService.players_arr.get(user1.roomId)[0].powerUp;
             const power1  = this.gameService.players_arr.get(user1.roomId)[1].powerUp;
             const roomId = this.gameService.players_arr.get(user1.roomId)[1].roomId;
-            console.log('ops0 : ', theme0, power0);
-            console.log('ops1 : ', theme1, power1);
+            // console.log('ops0 : ', theme0, power0);
+            // console.log('ops1 : ', theme1, power1);
             const infos : MatchInfos = await this.userService.genarateMatchInfo(this.gameService.players_arr.get(user1.roomId)[0].id, this.gameService.players_arr.get(user1.roomId)[1].id, roomId)
             this.gameService.players_arr.get(roomId)[0].socket.emit('playerSettings', ({theme: theme0, power: power0, id: 0, powerOpponenent: power1}))
             this.gameService.players_arr.get(roomId)[1].socket.emit('playerSettings', ({theme: theme1, power: power1, id: 1, powerOpponenent: power0}))
             this.server.to(this.gameService.players_arr.get(user1.roomId)[0].roomId).emit('MatchReady', infos);
-            this.makeQueue.deleteUserQueue(user1);
+            // this.makeQueue.deleteUserQueue(user1);
         }
-        console.log("Queue length 22222 ===  ", queueLength);
+        // console.log("Queue length 22222 ===  ", queueLength);
 
     }
 
+
+    @SubscribeMessage('abort')
+    async exitUsersFromGame(client: Socket)
+    {
+        const usr = this.gameService.getUserBySocketId(client.id);
+        const roomId = this.gameService.findGameUserById(usr.id);
+        console.log('roomID === ', roomId);
+        if (roomId === null)
+            return ;
+        this.gameService.deleteGame(roomId, client.id);
+    }
+
+    @SubscribeMessage('leaveQueue')
+    async leaveQueue(client: Socket)
+    {
+        const que1 = this.makeQueue.getQueue();
+        // console.log('before queue length === ', que1.length)
+        const usr = this.gameService.getUserBySocketId(client.id);
+        const user1 = this.makeQueue.dequeue(usr);
+        const que2 = this.makeQueue.getQueue();
+        // console.log('after queue length === ', que2.length)
+        this.userService.updateStatus(usr.id, UserStatus.ONLINE);
+        this.gameService.emitToFriendsStatusGame(usr.id, UserStatus.ONLINE);
+    }
+
     @SubscribeMessage('PlayQueue')
-    async QueueMaker(client: Socket, payload: Record<string, any>){
+    async QueueMaker(client: Socket){
         // console.log("palsss", payload);
         // const verify = await validateAndSendError(payload, ThemeDto);
         // if (verify.valid == true){
         //     this.gameService.sendWebSocketError(client, verify.error, false);
         // }
-        this.gameService.handleMatchMaker(client, this.server, payload.theme_, payload.powerUp_);
+        // console.log('here');
+        this.gameService.handleMatchMaker(client);
+    }
+
+
+    @SubscribeMessage('SaveSettings')
+    async SaveSettings(client: Socket, payload: Record<string, any>){
+        // console.log("palsss", payload);
+        // const verify = await validateAndSendError(payload, ThemeDto);
+        // if (verify.valid == true){
+        //     this.gameService.sendWebSocketError(client, verify.error, false);
+        // }
+        // console.log('here');
+        this.gameService.saveGameSettings(client, this.server, payload.theme_, payload.powerUp_);
+        client.emit('saved');
     }
 
     @SubscribeMessage('endBotMatch')
@@ -86,6 +127,19 @@ export class GameGateway {
         user.IsInGame = false;
         user.isInQueue = false;
         console.log("is Player In Gmae or Queue 00000");
+        this.userService.updateStatus(user.id, UserStatus.ONLINE);
+        this.gameService.emitToFriendsStatusGame(user.id, UserStatus.ONLINE);
+    }
+
+    @SubscribeMessage('leaveGameBot')
+    leaveGameBot(client : Socket){
+        let user = this.gameService.getUserBySocketId(client.id)
+        // console.log('user == ', user.id);
+        if (user === undefined)
+            return ;
+        user.isReady = false;
+        user.IsInGame = false;
+        user.isInQueue = false;
         this.userService.updateStatus(user.id, UserStatus.ONLINE);
         this.gameService.emitToFriendsStatusGame(user.id, UserStatus.ONLINE);
     }

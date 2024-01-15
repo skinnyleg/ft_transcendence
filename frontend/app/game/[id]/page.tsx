@@ -12,12 +12,24 @@ function Game() {
     const   {data, setData, gameId, setGameId, gameType} = useContext(GameContext);
     
     const path = usePathname();
+    const router = useRouter();
 
-    setInterval(() => {
-        if (path !== `/game/${gameId}`)
-            gameSocket.emit('leaveGame');
-    }, 1000);
+    // setInterval(() => {
+    //     if (path !== `/game/${gameId}`)
+    //         gameSocket.emit('leaveGame');
+    // }, 1000);
 
+
+    useEffect(() => {
+        gameSocket.on('abortGame', () => {
+            router.push('/Dashboard');
+        })
+
+        gameSocket.on('abort', (data: boolean) => {
+            if (data === true)
+                router.push('/Dashboard');
+        })
+    }, [gameSocket])
     
 
     return (
