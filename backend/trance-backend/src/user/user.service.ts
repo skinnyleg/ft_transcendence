@@ -8,6 +8,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { GameUser, Match, NotificationData, PlayerInfo } from 'src/classes/classes';
 import axios from 'axios';
+import { title } from 'process';
 
 @Injectable()
 export class UserService {
@@ -46,8 +47,6 @@ export class UserService {
 		})
 		return user;
 	}
-
-
 
 	async findOneByNickname(nick: string)
 	{
@@ -170,19 +169,10 @@ export class UserService {
 
 
 	async updateAchivements(userId: string, type: string){
-		const currentUser = await this.prisma.user.findFirst({
-			where: {
-				id: userId,
-			},
-			select: {
-				id: true,
-				Wins: true,
-			}
-		});
-
-		if (!currentUser)
-			throw new NotFoundException('user not found')
-
+		
+		
+		// console.log("hemjjjjujrree", currentUser);
+		
 		const AchivementId = await this.prisma.achievement.findFirst({
 			where: {
 				title: type,
@@ -192,33 +182,38 @@ export class UserService {
 				id: true,
 			}
 		});
-
+		
 		if (!AchivementId)
 			throw new NotFoundException('acheivement not found')
 
-		if (currentUser.Wins === 5){
-			const fiveMatchId = await this.prisma.achievement.findFirst({
-				where: {
-					title: type,
-					userId:userId
-				},
-				select: {
-					id: true,
-				}
-			});
-			const Achivements = await this.prisma.achievement.update({
-				where: {
-					id: fiveMatchId.id,
-				},
-				data: {
-					status: AchievementStatus.DONE,
-				},
-			});
-			return;
-		}
+		// const currentUser = await this.findOneById(userId);
+		// if (!currentUser)
+		// 	throw new NotFoundException('user not found')
+		// if (currentUser.Wins === 5){
+		// 	const fiveMatchId = await this.prisma.achievement.findFirst({
+		// 		where: {
+		// 			title: type,
+		// 			userId: currentUser.id
+		// 		},
+		// 		select: {
+		// 			id: true,
+		// 		}
+		// 	});
+		// 	const Achivements = await this.prisma.achievement.update({
+		// 		where: {
+		// 			id: fiveMatchId.id,
+		// 		},
+		// 		data: {
+		// 			status: AchievementStatus.DONE,
+		// 		},
+		// 	});
+		// 	return ;
+		// }
 		const Achivements = await this.prisma.achievement.update({
 		where: {
-			id : AchivementId.id,
+			id: AchivementId.id,
+			title: type,
+			userId: userId
 		},
 		data: {
 			status: AchievementStatus.DONE,
@@ -1097,9 +1092,6 @@ export class UserService {
 		const winnerscore : number = (player1.score > player2.score) ? player1.score : player2.score;
 		const loserscore : number = (player1.score > player2.score) ? player2.score : player1.score;
 		score = [player1.score, player2.score];
-		console.log("playerId1", player1.id)
-		console.log("playerId222", player2.id)
-		console.log("score : : ", score);
 		return (await this.prisma.game.create(
 			{
 				data:
@@ -1110,88 +1102,117 @@ export class UserService {
 					player:{connect: {id : player1.id}},
 					opponent:{connect: {id : player2.id}},
 				},
-			}
-		))
+			}));
 	}
+
 
 	async updateWinLose(player: GameUser){
 		const wins : boolean = player.win;
+		
 		if (wins){
-			return (
-				await this.prisma.user.update({
-					where:{
-						id: player.id,
-					},
-					data: {
-						Wins: {increment: 1}
-					}
-
-				})
-			)
+			await this.prisma.user.update({
+				where:{
+					id: player.id,
+				},
+				data: {
+					Wins: {increment: 1}
+				}
+			})
 		}
-		else{
-			return (
-				await this.prisma.user.update({
-					where:{
-						id: player.id,
-					},
-					data: {
-						Losses:{increment: 1} 
-					}
+		else
+		{
+			await this.prisma.user.update({
+				where:{
+					id: player.id,
+				},
+				data: {
+					Losses:{increment: 1} 
+				}
+			})
+		}
+		const players = await this.prisma.user.findMany({
+			select: {
+				id: true,
+				Wins: true,
+				Losses: true
+			}
+		});
 	
-				})
-			)
+		// Sort players by score in descending order
+		players.sort((a, b) => b.Wins - a.Wins);
+	
+		// Update ranks based on sorted positions
+		for (let rank = 1; rank <= players.length; rank++) {
+			const player = players[rank - 1];
+			await this.prisma.user.update({
+				where: {
+					id: player.id,
+				},
+				data: {
+					Rank: rank
+				}
+			});
 		}
+		return ;
 	}
 
-	getWinner(id : string, winnerId : string){
-		if (id === winnerId)
-			return true;
-		return false;
-	}
-
-	async getMatchs(id : string){
-		let Matches : Match[] ;
-		let isMewhowin = false;
-		let winnerUser : User;
-		let loserUser : User;
+	async getMatches(id: string) {
+		let Matches: Match[] = [];
 		const matches = await this.prisma.game.findMany({
-			where:{
+		  where: {
+			OR: [
+			  {
 				userId: id,
-			},
-		})
-		if (!matches){
-			return [];
+			  },
+			  {
+				opponentId: id,
+			  },
+			],
+		  },
+		});
+	  
+		if (!matches) {
+		  return [];
 		}
-		for(const match of matches){
-			if (this.getWinner(id, match.winner) === true){
-				isMewhowin = true;
-				winnerUser = await this.findOneById(id);
-				loserUser = await this.findOneById(match.opponentId);
-			}
-			else{
-				isMewhowin = false;
-				winnerUser = await this.findOneById(match.opponentId);
-				loserUser = await this.findOneById(match.userId);
-			}
-			const obj: Match = {
-				id : match.id,
-				winner : {
-					nickname: winnerUser.nickname,
-					profilePic: winnerUser.profilePic
-				},
-				loser : {
-					nickname: loserUser.nickname,
-					profilePic: loserUser.profilePic
-				},
-				isMeWhoWon: isMewhowin,
-				winnerScore : match.winnerScore,
-				loserScore: match.loserScore,
-			}
-			Matches.push(obj);
-		};
-		return [];
-	}
+	  
+		for (const match of matches) {
+		  let isMeWhoWin = false;
+		  let winnerUser: User;
+		  let loserUser: User;
+	  
+		  // Determine if the current user is the winner
+		  if (match.winner === id) {
+			isMeWhoWin = true;
+			winnerUser = await this.findOneById(id);
+			loserUser = await this.findOneById(match.winner === match.userId ? match.opponentId : match.userId);
+		  } else {
+			isMeWhoWin = false;
+			winnerUser = await this.findOneById(match.winner === match.userId ? match.userId : match.opponentId);
+			loserUser = await this.findOneById(id);
+		  }
+	  
+		  // Construct the result object
+		  const obj = {
+			id: match.id,
+			winner: {
+			  nickname: winnerUser.nickname,
+			  profilePic: winnerUser.profilePic,
+			},
+			loser: {
+			  nickname: loserUser.nickname,
+			  profilePic: loserUser.profilePic,
+			},
+			winnerScore: match.winnerScore,
+			loserScore: match.loserScore,
+			isMeWhoWon: isMeWhoWin,
+		  };
+	  
+		  Matches.push(obj);
+		}
+		console.log("begin ", Matches);
+		return Matches;
+	  }
+	  
 
 	async getSecret(id: string)
 	{

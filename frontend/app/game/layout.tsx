@@ -21,9 +21,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     const 	[playerR, setPlayerR] = useState<playerInfo | undefined>(undefined);
     const 	[gameType, setGameType] = useState<playerInfo | undefined>(undefined);
 	const 	[gameMape, setGameMape] = useState('/42.jpg');
+	const 	[powerUps, setPowerUps] = useState('');
 
 	return (
-		<GameContext.Provider value={{data, setData, gameId, setGameId, score, setScore, playerL, setPlayerL, playerR, setPlayerR, gameType, setGameType, gameMape, setGameMape}}>
+		<GameContext.Provider value={{powerUps, setPowerUps, data, setData, gameId, setGameId, score, setScore, playerL, setPlayerL, playerR, setPlayerR, gameType, setGameType, gameMape, setGameMape}}>
       	<div className="flex bg-main flex-col md:flex-row xl:h-screen lg:h-screen">
         	{children}
       	</div>

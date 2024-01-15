@@ -63,7 +63,6 @@ export class GameService {
             this.players_arr.delete(user.roomId);
 			await this.userService.updateStatus(user.id, UserStatus.ONLINE)
             await this.emitToFriendsStatusGame(user.id, UserStatus.ONLINE);
-            this.makeQueue.deleteUserQueue(client)
 			this.Users = this.Users.filter((u) => u.socket.id !== client.id);
 		}
 		catch (error)
@@ -81,8 +80,14 @@ export class GameService {
     }
 
     /** challenge Bot */
-    async challengeBot(client : Socket, playload: string){
+    async challengeBot(client : Socket, playload: any){
         const player = this.getUserBySocketId(client.id);
+        const playerStatus = await this.userService.getStatus(player.id);
+        if (playerStatus === UserStatus.IN_GAME || playerStatus ===  UserStatus.IN_QUEUE)
+        {
+            player.socket.emit('notification', `Already in Game Or Queue`);
+            return ;
+        }
         player.IsInGame = true;
         const infos = await this.userService.genarateMatchInfo(player.id, null, null);
         // Emit player infos to redirect him
@@ -238,16 +243,21 @@ export class GameService {
     // use Global rooms each contains 2 player before start  the game √
 
     async handleMatchFinish(arg, roomId){
-        this.players_arr.get(roomId)[0].score = arg.playerL.score;
-        this.players_arr.get(roomId)[1].score = arg.playerR.score;
+        const players = this.players_arr.get(roomId)
+        if (!players)
+            return ;
+        players[0].score = arg.playerL.score;
+        players[1].score = arg.playerR.score;
         
         if (arg.playerL.score > arg.playerR.score)
         {
             this.players_arr.get(roomId)[0].win = true;
+            this.userService.updateAchivements(this.players_arr.get(roomId)[0].id, "Win first match");
         }
         if (arg.playerL.score < arg.playerR.score)
         {
             this.players_arr.get(roomId)[1].win = true;
+            this.userService.updateAchivements(this.players_arr.get(roomId)[1].id, "Win first match");
         }
         this.players_arr.get(roomId)[0].IsInGame = false;
         this.players_arr.get(roomId)[1].IsInGame = false;
@@ -270,24 +280,19 @@ export class GameService {
         var opponent = 0;
         const players = this.players_arr.get(roomId);
         const player1 = this.getUserBySocketId(client.id);
+        player1.isReady = true;
         players[0] == player1 ? opponent = 1 : opponent = 0;
         const player2 = this.getUserById(players[opponent].id);
         // Erro indetifiying who is ready √
-       
-        if (this.players_arr.get(player1.roomId)[1].isReady == false || this.players_arr.get(player1.roomId)[0].isReady == false)
+        console.log("is player 1", player1.id)
+        console.log("is player 2", player2.id)
+        console.log("is player 44444 ",this.players_arr.get(roomId)[0].isReady)
+        console.log("is player 33333 ",this.players_arr.get(roomId)[1].isReady)
+        if (this.players_arr.get(roomId)[1].isReady == false || this.players_arr.get(roomId)[0].isReady == false)
             return ;
         // problem who is the 2nd player √ (add rom id as a userGame attribute) √
-        if (!player2)
-        {
-            player1.socket.emit('error', "Player Not connected")
-            return ;
-        }
-        if (!player1.IsInGame){
-            player1.socket.emit('error', "Your not in Game ...");
-            return ;
-        }
-        if (player2.IsInGame === false){
-            player1.socket.emit('error', "Player Not in Game, Send him a challenge request");
+        if (this.players_arr.get(roomId)[0].IsInGame === false || this.players_arr.get(roomId)[0].IsInGame === false){
+            player1.socket.emit('error', "Player Not in Game");
             return ;
         }
         this.userService.updateStatus(this.players_arr.get(player1.roomId)[1].id, UserStatus.IN_GAME);
@@ -339,13 +344,12 @@ export class GameService {
         }))
         //=--=
        
-        server.to(player1.roomId).emit('StartDrawing')
+        this.players_arr.get(roomId)[0].socket.emit('StartDrawing')
+        this.players_arr.get(roomId)[1].socket.emit('StartDrawing')
         
         this.players_arr.get(player1.roomId)[0].socket.on('EndGame', ((arg) => {
-            this.handleMatchFinish(arg, player1.roomId)
-        }));
-        this.players_arr.get(player1.roomId)[1].socket.on('EndGame', ((arg) => {
-           this.handleMatchFinish(arg, player1.roomId)
+            this.handleMatchFinish(arg, player1.roomId);
+            return ;
         }));
         return ;
     }
@@ -378,7 +382,7 @@ export class GameService {
             user.socket.emit('error', `Already in Game 11111`);
             return ;
         }
-        if (this.makeQueue.enQueue(client) == true){
+        if (this.makeQueue.enQueue(user) == true){
             await this.userService.updateStatus(user.id, UserStatus.IN_QUEUE);
 			await this.emitToFriendsStatusGame(user.id, UserStatus.IN_QUEUE);
         }

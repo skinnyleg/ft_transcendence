@@ -30,12 +30,13 @@ export class GameGateway {
     @SubscribeMessage('ImReady')
     async QueueReady(client: Socket){
         var queueLength =  this.makeQueue.getQueue().length;
-        // console.log("Queue length 1111 ===  ", queueLength);
+        var queueds =  this.makeQueue.getQueue();
+        console.log("Queue length 1111 ===  ", queueLength);
+        console.log("Queue  ===  ", queueds);
         if (queueLength >= 2){
-            const player1 = this.makeQueue.dequeue();
-            var user1 = this.gameService.getUserBySocketId(player1.id);
-            const player2 = this.makeQueue.dequeue();
-            var user2 = this.gameService.getUserBySocketId(player2.id);
+            const usr = this.gameService.getUserBySocketId(client.id);
+            const user1 = this.makeQueue.dequeue(usr);
+            const user2 = this.makeQueue.dequeue(null);
             user1.roomId= user2.id;
             user2.roomId= user2.id;
             // add user to player_arr √
@@ -52,7 +53,10 @@ export class GameGateway {
             const roomId = this.gameService.players_arr.get(user1.roomId)[1].roomId;
             const infos : MatchInfos = await this.userService.genarateMatchInfo(this.gameService.players_arr.get(user1.roomId)[0].id, this.gameService.players_arr.get(user1.roomId)[1].id, roomId)
             this.server.to(this.gameService.players_arr.get(user1.roomId)[0].roomId).emit('MatchReady', infos);
+            this.makeQueue.deleteUserQueue(user1);
         }
+        console.log("Queue length 22222 ===  ", queueLength);
+
     }
 
     @SubscribeMessage('PlayQueue')
@@ -72,7 +76,7 @@ export class GameGateway {
     }
 
     @SubscribeMessage('PlayBot')
-    async BotMatchMaker(client : Socket, payload: string){
+    async BotMatchMaker(client : Socket, payload: any){
         this.gameService.challengeBot(client, payload);
         // client.emit('gameBotTheme', payload);
     }
@@ -131,6 +135,8 @@ export class GameGateway {
     }
 
     async handleDisconnect(client: Socket) {
+        const user = this.gameService.getUserBySocketId(client.id)
+        await this.makeQueue.deleteUserQueue(user)
 		await this.gameService.deleteUser(client, this.server)
 		client.disconnect();
 	}

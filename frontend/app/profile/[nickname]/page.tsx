@@ -11,6 +11,7 @@ import Conditional from "@/app/ui/Conditional";
 import { ContextFriendProvider } from "@/app/context/profileContext";
 import { socketContext } from "@/app/context/soketContext";
 import { MatchInfo } from "@/app/game/types/interfaces";
+import axios from "axios";
 
 
 // const matchHistory = [{
@@ -271,7 +272,7 @@ const Profile = () => {
     const [isprivateProfile, setisprivateProfile] = useState<boolean | undefined>(false);
     const [profileData, setProfileData] = useState<profileData | undefined>(undefined);
     const [achievements, setAchievements] = useState<Achievements[]>([])
-    const [matchHistory, setMatchHistory] = useState<Match[]>([])
+    const [matchHistory, setMatchHistory] = useState<any>([])
     const [notAchievements, setNotAchievements] = useState<Achievements[]>([])
     const pathname = usePathname();
     const socket = useContext(socketContext);
@@ -302,7 +303,6 @@ const Profile = () => {
 
 
     useEffect(() => {
-        console.log('profileData === ', profileData);
         if (profileData === undefined)
             return ;
         const getAchievements = async () => {
@@ -334,10 +334,8 @@ const Profile = () => {
                     body: JSON.stringify({userId: profileData?.userData.id})
                 });
                 if (res.ok) {
-                    const MatchData = await res.json();
-                    setMatchHistory(MatchData);
-                    // console.log(profileData);
-                    // console.log("achievement == ", MatchData);
+                    const match = await res.json();
+                    setMatchHistory(match);
                 }
             } catch (error) {
                 console.error("Error during authentication check:", error);
@@ -458,11 +456,11 @@ const Profile = () => {
                                     <div key={match?.id}
                                         className=" mb-2 w-full h-[20%] p-2 flex flex-row justify-between items-center rounded-[15px] border bg-cyan-100 border-lightQuartze">
                                         <div className=" flex flex-row items-center gap-5">
-                                            <img src={match?.loser.profilePic}
+                                            <img src={match?.loser?.profilePic}
                                                 className="rounded-full max-w-[40px] max-h-[40px] min-w-[40px] min-h-[40px]"
                                                 alt="loser picture"
                                                 />
-                                            <h2 className="text-teal-600">{match?.loser.nickname}</h2>
+                                            <h2 className="text-teal-600">{match?.loser?.nickname}</h2>
                                         </div>
                                         <div className="bg-cyan-600 w-[20.41%] h-[56%] rounded-[30px] flex flex-row justify-evenly items-center">
                                             <div className="flex flex-row ">
@@ -473,8 +471,8 @@ const Profile = () => {
                                             <span className="text-bold text-cyan-100">{match?.isMeWhoWon ? `won` : `lose`}</span>
                                         </div>
                                         <div className="flex flex-row items-center gap-5">
-                                            <h2 className="text-teal-600">{match?.winner.nickname}</h2>
-                                            <img src={match?.winner.profilePic}
+                                            <h2 className="text-teal-600">{match?.winner?.nickname}</h2>
+                                            <img src={match?.winner?.profilePic}
                                                 className="rounded-full max-w-[40px] max-h-[40px] min-w-[40px] min-h-[40px]"
                                                 alt="winner picture"
                                             />

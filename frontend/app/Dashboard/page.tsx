@@ -14,6 +14,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import TopThree from '../ui/TopThree';
 import { ClassNames } from '@emotion/react';
 import GameType from '../game/ui/GameType';
+import GamePowerUps from '../game/ui/PowerUps';
 
 
 function Dashboard() {
@@ -45,7 +46,7 @@ function Dashboard() {
   const handleThemeChange = (newtheme: string) => {
     setTheme(newtheme);
   }
-  const handlePowerUpChange = (newpowerup: string) => {
+  const handlePowerUp = (newpowerup: string) => {
     setPowerup(newpowerup);
   }
 
@@ -65,7 +66,8 @@ function Dashboard() {
           
           <FriendsList />
 
-          <PowerUps handlePowerUpChange={handlePowerUpChange}/>
+          {/* <PowerUps handlePowerUpChange={handlePowerUpChange}/> */}
+          <GamePowerUps powerUpSetter={handlePowerUp}/>
         </div>
       </div>
     </main>

@@ -119,16 +119,14 @@ export class UserController {
 	
 	@Post('Achievements')
 	@UseGuards(JwtAuthGuard)
-	 getAchievements(@Body() payload: IdDto, @Req() req) {
-		// const id = getId(req);
+	getAchievements(@Body() payload: IdDto, @Req() req) {
 		return this.userService.getAchievements(payload.userId);
 	}
 
 	@UseGuards(JwtAuthGuard)
     @Post('MatchHistory')
     matchHistory(@Body() payload: IdDto, @Req() req){
-        // const id = getId(req);
-        return this.userService.getMatchs(payload.userId);
+        return this.userService.getMatches(payload.userId);
     }
 }
 

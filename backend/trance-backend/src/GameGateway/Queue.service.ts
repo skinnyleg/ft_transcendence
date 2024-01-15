@@ -1,33 +1,43 @@
 import { Injectable } from "@nestjs/common";
 import { Socket } from "socket.io";
+import { GameUser } from "src/classes/classes";
 
 @Injectable()
 export class makeQueue {
-    private queue: Socket[] = [];
+    private queue: GameUser[] = [];
 
-    enQueue(client : Socket){
-      console.log("playerd  has enter queue ",  client.id)
-      if (this.queue.indexOf(client)){
-        this.queue.push(client);
-        client.emit("InQueue", true);
+    enQueue(player : GameUser){
+      console.log("playerd  has enter queue 1 == ",  player.id)
+      if (this.queue.indexOf(player)){
+        this.queue.push(player);
+        player.socket.emit("InQueue", true);
         return true;
       }
       else{
-        client.emit("error", "You're already In Queue");
+        console.log("Im Heerre")
+        player.socket.emit("error", "You're already In Queue");
         return false;
       }
     }
     
-    dequeue(): Socket | undefined {
-      return this.queue.shift();
+    dequeue(client): GameUser | undefined {
+      const index = this.queue.indexOf(client)
+      console.log("indexx == ", index);
+      if (index >= 0){
+        return this.queue.splice(index, 1)[0];
+      }
+      else if (client == null)
+        return this.queue.shift();
     }
-    deleteUserQueue(client : Socket){
+    deleteUserQueue(client : GameUser){
       const index = this.queue.indexOf(client);
       console.log("iiiindeee", index);
-      this.queue.splice(index, 1);
+      if (index > -1){
+        this.queue.splice(index, 1);
+      }
       console.log("wdfewfewfewqfeW", this.queue);
     }
-    getQueue(): Socket[] {
+    getQueue(): GameUser[] {
       return this.queue;
     }
 }
