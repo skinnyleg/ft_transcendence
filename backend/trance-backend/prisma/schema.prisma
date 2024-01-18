@@ -172,13 +172,14 @@ model Blacklist {
 
 // Define a Match model
 model Game {
-  id          String @id @default(uuid())
+  id          String   @id @default(uuid())
   MatchScore  Int[]
   opponentId  String
   userId      String
   winner      String
   winnerScore Int
   loserScore  Int
-  player      User   @relation(name: "player", fields: [userId], references: [id])
-  opponent    User?  @relation(name: "opponent", fields: [opponentId], references: [id])
+  player      User     @relation(name: "player", fields: [userId], references: [id])
+  opponent    User?    @relation(name: "opponent", fields: [opponentId], references: [id])
+  createdAt   DateTime @default(now())
 }

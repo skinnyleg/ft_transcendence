@@ -22,15 +22,14 @@ function Game() {
 
 
     useEffect(() => {
-        gameSocket.on('abortGame', () => {
+        gameSocket.on('GameIdNotValid', () => {
             router.push('/Dashboard');
         })
 
-        gameSocket.on('abort', (data: boolean) => {
-            console.log('abort got emitted')
-            if (data === true)
-                router.push('/Dashboard');
-        })
+
+        return () => {
+            gameSocket.off('GameIdNotValid')
+        }
     }, [gameSocket])
 
 
@@ -53,13 +52,17 @@ function Game() {
         gameSocket.emit('getPlayersSettings')
         gameSocket.on('gameData', handleGameReady);
         gameSocket.on('playerSettings', handlePlayerSettings);
-        
         return () => {
             gameSocket.off('gameData', handleGameReady);
             gameSocket.off('playerSettings', handlePlayerSettings);
         };
     },[]);
     
+
+
+    // useEffect(() => {
+    //     gameSocket.emit('GameExist', {roomId: gameId})
+    // }, [gameId])
 
     return (
         <main className="main flex bg-cyan-900 justify-center items-center h-screen w-screen">

@@ -67,8 +67,10 @@ export default function LoginForm() {
         toast.error('Invalid credentials. Please check your username and password.', {autoClose: 500});
       } else if (response.status === 404) {
         toast.error('User not found. Please check your credentials.', {autoClose: 500});
+      } else if (response.status === 400) {
+        toast.error('You Have Not Set Your Password Yet', {autoClose: 500});
       } else {
-        toast.error(`Error, Please Try later`);
+        toast.error(`Error, Please Try later`, {autoClose: 500});
       }
     } catch (error) {
       toast.error('An unexpected error occurred. Please try again later.', {autoClose: 500});

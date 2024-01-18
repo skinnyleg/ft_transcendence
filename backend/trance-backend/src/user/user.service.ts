@@ -1129,31 +1129,89 @@ export class UserService {
 		})
 	}
 
-	async storeResults(player1 : GameUser, player2 : GameUser){
+	async storeResults(player1 : GameUser, player2 : GameUser, roomId: string){
 		var score: number[];
 		const winner : string = (player1.score > player2.score) ? player1.id : player2.id;
 		const winnerscore : number = (player1.score > player2.score) ? player1.score : player2.score;
 		const loserscore : number = (player1.score > player2.score) ? player2.score : player1.score;
 		score = [player1.score, player2.score];
-		return (await this.prisma.game.create(
-			{
-				data:
-				{
-					winner: winner,
-					winnerScore: winnerscore,
-					loserScore: loserscore,
-					player:{connect: {id : player1.id}},
-					opponent:{connect: {id : player2.id}},
-				},
-			}));
+		await this.prisma.game.update({
+			where: {
+				id: roomId,
+			},
+			data: {
+				winner: winner,
+				winnerScore: winnerscore,
+				loserScore: loserscore,
+			}
+		})
+		// return (await this.prisma.game.create(
+		// 	{
+		// 		data:
+		// 		{
+		// 			player:{connect: {id : player1.id}},
+		// 			opponent:{connect: {id : player2.id}},
+		// 		},
+		// 	}));
 	}
 
+
+	async getGame(roomId: string)
+	{
+		const game = await this.prisma.game.findUnique({
+			where: {
+				id: roomId,
+			},
+		})
+		if (!game)
+			return false;
+		return true;
+	}
+
+	async getGameWinner(roomId: string)
+	{
+		const game = await this.prisma.game.findUnique({
+			where: {
+				id: roomId,
+			},
+			select: {
+				winner: true,
+			}
+		})
+		console.log('game === ', game);
+		if (!game)
+			return false;
+		if (game.winner !== '')
+			return false;
+		return true;
+	}
 
 	async createGame(userId: string, opponentId: string)
 	{
-		
+		const game = await this.prisma.game.create({
+			data: {
+				MatchScore: [], // Assuming this is an empty array initially
+				player:{connect: {id : userId}},
+				opponent:{connect: {id : opponentId}},
+				winner: '',
+				winnerScore: 0,
+				loserScore: 0,
+			}
+		})
+		if (!game)
+			return null;
+		return game.id;
 	}
 
+
+	async deleteGame(roomId: string)
+	{
+		const game = await this.prisma.game.delete({
+			where: {
+				id: roomId,
+			}
+		})
+	}
 
 	async updateWinLose(player: GameUser){
 		const wins : boolean = player.win;
@@ -1228,6 +1286,9 @@ export class UserService {
 				opponentId: id,
 			  },
 			],
+		  },
+		  orderBy: {
+			createdAt: 'asc', // Use 'asc' for ascending order
 		  },
 		});
 	  
@@ -1521,7 +1582,10 @@ export class UserService {
 		const secret = authenticator.generateSecret();
 		const url = authenticator.keyuri(user.nickname,'Pong',secret);
 		if (user.isEnabled === true)
-			return ;
+		{
+			const url = user.otpauth_url;
+			return {img: url};
+		}
 		await this.prisma.user.update({
 			where: {
 				id: id,

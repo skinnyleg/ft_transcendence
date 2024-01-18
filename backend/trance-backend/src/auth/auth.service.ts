@@ -25,7 +25,10 @@ export class AuthService {
 			throw new NotFoundException("User Doesn't Exits")
 	
 		if (user.setPass == false)
+		{
+			console.log('setPass Error')
 			throw new BadRequestException('you need to set up a password')
+		}
 
 		const isMatch = await compareHash(password, user.password);
 		if (isMatch == false)

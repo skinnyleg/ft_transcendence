@@ -201,6 +201,24 @@ const PongZoneQueue = () => {
             console.log('inside drawing ball');
             Matter.Body.setVelocity(ball, { x: 6, y: 6 })
         });
+
+
+        gameSocket.on('abortGame', () => {
+            Matter.Body.setPosition(ball, { x: midleCanvas, y: midleVertical });
+            Matter.Body.setVelocity(ball, { x: 0, y: 0 });
+            route.push('/Dashboard');
+        })
+
+        gameSocket.on('abort', (data: boolean) => {
+            console.log('abort got emitted')
+            if (data === true)
+            {
+                Matter.Body.setPosition(ball, { x: midleCanvas, y: midleVertical });
+                Matter.Body.setVelocity(ball, { x: 0, y: 0 });
+                route.push('/Dashboard');
+            }
+        })
+
         const handleCollision = (event: any) => {
             var pairs = event.pairs;
             for (var i = 0, j = pairs.length; i != j; ++i) {
@@ -252,6 +270,8 @@ const PongZoneQueue = () => {
             gameSocket.off('leftPaddle');
             gameSocket.off('rightPaddle');
             gameSocket.off('redirectToDashboard');
+            gameSocket.off('abort')
+            gameSocket.off('abortGame')
             document.removeEventListener('keydown', handleKey);
             Matter.Events.off(engine, 'collisionStart',handleCollision)
             Render.stop(render);

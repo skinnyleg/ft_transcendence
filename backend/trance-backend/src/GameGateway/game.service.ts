@@ -182,6 +182,10 @@ export class GameService {
         }
         // TODO check if it's not needed when i implement the socket.off for the paddle movement
         this.players_arr.delete(roomId);
+        const checkWinner = await this.userService.getGameWinner(roomId);
+        if (checkWinner === true)
+            await this.userService.deleteGame(roomId);
+
 
         client.emit('readyToQueue');
         // console.log('room is === ', gameRoom);
@@ -296,10 +300,15 @@ export class GameService {
                     const nick = await this.userService.getNickById(me.id)
                     challenger.socket.emit('notification', `${nick} accepted your challenge`);
                     //// this used to be before the update req
-                    await challenger.socket.join(challenger.id);
-                    await me.socket.join(challenger.id);
-                    challenger.roomId = challenger.id;
-                    me.roomId = challenger.id;
+
+                    // TODO need to create new instance of game and use it's id
+                    const newGameId = await this.userService.createGame(me.id, challenger.id);
+                    if (!newGameId)
+                        return ;
+                    await challenger.socket.join(newGameId);
+                    await me.socket.join(newGameId);
+                    challenger.roomId = newGameId;
+                    me.roomId = newGameId;
                     ////
                     this.players_arr.set(me.roomId, [me, challenger]);
                     me.IsInGame = true;
@@ -378,14 +387,15 @@ export class GameService {
 
     // use Global rooms each contains 2 player before start  the game √
 
-    async handleMatchFinish(arg, roomId){
-        console.log('how many times')
+    async handleMatchFinish(arg, roomId: string, userId: string){
         const players = this.players_arr.get(roomId)
         if (!players)
             return ;
         players[0].score = arg.playerL.score;
         players[1].score = arg.playerR.score;
-        
+        if (this.players_arr.get(roomId)[0].id !== userId)
+            return ;
+
         if (arg.playerL.score > arg.playerR.score)
         {
             this.players_arr.get(roomId)[0].win = true;
@@ -414,7 +424,7 @@ export class GameService {
         this.players_arr.get(roomId)[1].IsInGame = false;
         this.players_arr.get(roomId)[0].isReady = false;
         this.players_arr.get(roomId)[1].isReady = false;
-        await this.userService.storeResults(this.players_arr.get(roomId)[0], this.players_arr.get(roomId)[1]);
+        await this.userService.storeResults(this.players_arr.get(roomId)[0], this.players_arr.get(roomId)[1], roomId);
         await this.userService.updateStatus(this.players_arr.get(roomId)[0].id, UserStatus.ONLINE);
         await this.userService.updateStatus(this.players_arr.get(roomId)[1].id, UserStatus.ONLINE);
         await this.emitToFriendsStatusGame(this.players_arr.get(roomId)[0].id, UserStatus.ONLINE);
@@ -545,10 +555,10 @@ export class GameService {
         this.players_arr.get(roomId)[0].socket.emit('StartDrawing')
         this.players_arr.get(roomId)[1].socket.emit('StartDrawing')
         
-        this.players_arr.get(player1.roomId)[0].socket.on('EndGame', ((arg) => {
-            this.handleMatchFinish(arg, player1.roomId);
-            return ;
-        }));
+        // this.players_arr.get(player1.roomId)[0].socket.on('EndGame', ((arg) => {
+        //     this.handleMatchFinish(arg, player1.roomId);
+        //     return ;
+        // }));
         return ;
     }
 

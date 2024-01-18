@@ -56,9 +56,15 @@ export class GameGateway {
             var queueds =  this.makeQueue.getQueue();
 
 
-            const newGameId = this.userService.createGame(user1.id, user2.id);
-                user1.roomId= user2.id;
-                user2.roomId= user2.id;
+            const newGameId = await this.userService.createGame(user1.id, user2.id);
+            if (!newGameId)
+                return ;
+
+            
+                // user1.roomId= user2.id;
+                // user2.roomId= user2.id;
+                user1.roomId= newGameId;
+                user2.roomId= newGameId;
                 console.log('user1 ready === ', user1.powerUp)
                 // console.log('user2 ready === ', user2.theme)
             // add user to player_arr √
@@ -145,6 +151,20 @@ export class GameGateway {
             }
     }
 
+
+
+    @SubscribeMessage('EndGame')
+    async handleEndOfMatch(client: Socket, payload: any)
+    {
+        const user = this.gameService.getUserBySocketId(client.id)
+        if (user === undefined)
+            return ;
+        // this.players_arr.get(player1.roomId)[0].socket.on('EndGame', ((arg) => {
+            this.gameService.handleMatchFinish(payload, user.roomId, user.id);
+            // return ;
+        // }));
+    }
+
     @SubscribeMessage('abort')
     async exitUsersFromGame(client: Socket)
     {
@@ -160,6 +180,18 @@ export class GameGateway {
             return ;
         }
         await this.gameService.deleteGame(roomId, client);
+    }
+
+
+    @SubscribeMessage('GameExist')
+    async doesGameIdExists(client: Socket, payload: any)
+    {
+        console.log('roomId in check === ', payload);
+        if (payload.roomId === undefined)
+            return ;
+        const game = await this.userService.getGame(payload.roomId);
+        if (game === false)
+            client.emit('GameIdNotValid');
     }
 
     @SubscribeMessage('getGameData')
