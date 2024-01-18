@@ -294,7 +294,7 @@ const PongZoneQueue = () => {
         style={{ '--image-url': `url(${settings.theme})` } as React.CSSProperties}
         className="bg-transparent bg-cover bg-center bg-[image:var(--image-url)] w-[100%] h-[80%] rounded-[10px] flex items-center justify-center absolute bottom-0">
             { !matchready && <StartButton startGame={startGame}/>}
-            { matchready && <canvas ref={canvasRef} className='w-[100%] h-[100%] rounded-[10px] scale-[0.35] md:scale-50 lg:scale-100'/>}
+            { matchready && <canvas ref={canvasRef} className='w-[100%] h-[100%] rounded-[10px]'/>}
         </div>
     );
 };

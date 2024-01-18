@@ -193,7 +193,7 @@ const PongZoneBoot = () => {
         style={{ '--image-url': `url(${gameMape})` } as React.CSSProperties} 
         className={`bg-black bg-cover bg-center bg-[image:var(--image-url)] w-[100%] h-[80%] rounded-[10px] flex justify-center  items-center absolute bottom-0`}>
             { !matchready && <StartButton startGame={startGame}/>}
-            { matchready && <canvas ref={canvasRef} className='w-[100%] h-[100%] rounded-[10px] scale-[0.35] md:scale-50 lg:scale-100'/>}
+            { matchready && <canvas ref={canvasRef} className='w-[100%] h-[100%] rounded-[10px]'/>}
         </div>
     );
 };

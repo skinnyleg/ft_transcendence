@@ -120,7 +120,7 @@ return (
       </div>
     </div>
     <div className={`${(search ) ? 'block' : 'hidden'} lg:hidden xl:hidden flex justify-start
-          md:mt-[15%] mt-[26%]  absolute w-screen bg-white shadow-md transition-transform duration-300 z-10 rounded-b-lg`}>
+          md:mt-[14.2%] mt-[26%]  absolute w-screen bg-white shadow-md transition-transform duration-300 z-10 rounded-b-lg`}>
           <div className="flex w-full flex-col"> 
             {searchShow && results.map((result) => (
               <Link href={`/profile/${result.nickname}`} key={result.id}>

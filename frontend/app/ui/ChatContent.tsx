@@ -132,7 +132,7 @@ const ChatContent: FC<ChatContentProps> = () => {
 			return () => {
 				chatSocket.off('messageDoneCH')
 				chatSocket.off('messagesCH')
-				chatSocket.off('newName')
+				// chatSocket.off('newName')
 				// chatSocket.off('changeDone')
 			}
 		},[channelId, chatSocket])

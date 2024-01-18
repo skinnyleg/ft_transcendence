@@ -152,9 +152,7 @@ const ChatTabChannel: FC<ChatTabProps> = () => {
         //     handleNewNotification(data);
         // });
 
-
 		return () => {
-			chatSocket.off('newName')
 			chatSocket.off('PicDone')
 			chatSocket.off('channelData')
 			chatSocket.off('joinDone')
@@ -162,6 +160,26 @@ const ChatTabChannel: FC<ChatTabProps> = () => {
 			// chatSocket.off('refreshSide')
 		}
 	}, [channelId, chatSocket, setChannel, setSearchInputCh])
+	
+	// useEffect(() => {
+
+	// 	chatSocket.on('newName', (data: {newName: string, oldName: string}) => {
+	// 		chatSocket.emit('getUserChannels');
+	// 		console.log('in newName listen2')
+	// 		if (checkOpenChannelId(data.oldName, channelId) == true)
+	// 		{
+	// 			chatSocket.emit('getDataCH', {
+	// 				channelName: data.newName
+	// 			})
+	// 			setChannelId(data.newName);
+	// 		}
+	// 	})
+
+	// 	return () => {
+	// 		chatSocket.off('newName')
+	// 	}
+	// }, [])
+
 
 
 	if (channel === undefined)

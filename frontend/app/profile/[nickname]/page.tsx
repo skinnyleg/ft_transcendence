@@ -405,7 +405,7 @@ const Profile = () => {
                         </div>
 
                     </div>
-                    <h1 className="text-cyan-900 text-[40px] lg:text-[50px] font-semibold">{profileData?.userData.Wins as number < 10 ? `0${profileData?.userData.Wins}`: `${profileData?.userData.Wins}`}</h1>
+                    <h1 className="text-cyan-900 text-[40px] md:text-[30px] lg:text-[50px] font-semibold">{profileData?.userData.Wins as number < 10 ? `0${profileData?.userData.Wins}`: `${profileData?.userData.Wins}`}</h1>
                 </div>
                 <div className="w-full md:w-1/4 h-[40%] md:h-[90%] bg-cyan-600 rounded-3xl flex flex-row justify-between items-center p-2 gap-2 ">
                     <div className="flex flex-row gap-2">
@@ -418,7 +418,7 @@ const Profile = () => {
                         </div>
 
                     </div>
-                    <h1 className="text-cyan-900 text-[40px] lg:text-[50px] font-semibold">{profileData?.userData.Losses as number < 10 ? `0${profileData?.userData.Losses}`: `${profileData?.userData.Losses}`}</h1>
+                    <h1 className="text-cyan-900 text-[40px] md:text-[30px] lg:text-[50px] font-semibold">{profileData?.userData.Losses as number < 10 ? `0${profileData?.userData.Losses}`: `${profileData?.userData.Losses}`}</h1>
                 </div>
                 <div className="w-full md:w-1/4 h-[40%] md:h-[90%] bg-cyan-600 rounded-3xl flex flex-row justify-between items-center p-2 gap-2 ">
                     <div className="flex flex-row gap-2">
@@ -430,7 +430,7 @@ const Profile = () => {
                             <p className="text-cyan-100 text-[16px] font-semibold">PING PONG ZONE</p>
                         </div>
                     </div>
-                    <h1 className="text-cyan-900 text-[40px] lg:text-[50px] font-semibold">{profileData?.userData.Rank as number < 10 ? `0${profileData?.userData.Rank}`: `${profileData?.userData.Rank}`}</h1>
+                    <h1 className="text-cyan-900 text-[40px] md:text-[30px] lg:text-[50px] font-semibold">{profileData?.userData.Rank as number < 10 ? `0${profileData?.userData.Rank}`: `${profileData?.userData.Rank}`}</h1>
                 </div>
                 <div className="w-full md:w-1/4 h-[40%] md:h-[90%] bg-cyan-600 rounded-3xl flex flex-row justify-between items-center p-2 gap-2 ">
                     <div className="flex flex-row gap-2">
@@ -443,7 +443,7 @@ const Profile = () => {
                         </div>
 
                     </div>
-                    <h1 className="text-cyan-900 text-[40px] lg:text-[50px] font-semibold">{renderWallet()}</h1>
+                    <h1 className="text-cyan-900 text-[40px] md:text-[30px] lg:text-[50px] font-semibold">{renderWallet()}</h1>
                 </div>
             </div>
             <div className="bg-cyan-600 lg:col-span-2 col-span-4 lg:row-start-4  lg:row-end-5 row-start-5 row-end-6 w-full xl:h-[48vh] lg:h-[48vh] h-[450px] shadow-md rounded-xl">

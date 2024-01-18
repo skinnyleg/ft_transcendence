@@ -99,7 +99,6 @@ const ChannelTab = () => {
 			// 	})
 			// }
 		})
-		
 
 		// maybe here TODO
 		chatSocket.on('muteDone', (data: {channelName: string}) => {
@@ -134,6 +133,7 @@ const ChannelTab = () => {
 			chatSocket.off('queryChannels').off()
 			chatSocket.off('channelDone').off()
 			chatSocket.off('PicDone')
+			chatSocket.off('muteDone')
 			chatSocket.off('messageDoneDM')
 			// chatSocket.off('outDone')
 		}

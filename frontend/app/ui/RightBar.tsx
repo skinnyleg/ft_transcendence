@@ -3,7 +3,7 @@ import { useEffect, type FC, useContext } from 'react';
 import ChannelTab from './ChannelTab';
 import PersonalTab from './PersonalTab';
 import { useSearchParams } from 'next/navigation';
-import { isBarOpen, isHidden, whichTab } from './ChatUtils';
+import { checkOpenChannelId, isBarOpen, isHidden, whichTab } from './ChatUtils';
 import { ChatContext, chatSocketContext } from '../context/soketContext';
 import { useRouter } from 'next/navigation';
 import { DmMessageInter, MessageInter } from '../interfaces/interfaces';
@@ -16,7 +16,7 @@ const RightBar: FC<RightBarProps> = ({}) => {
 	// const hidden = isHidden(searchParams)
 	// const which = whichTab(searchParams)
 	// const sideBar = isBarOpen(searchParams)
-	const {channelId, barOpen, personalId, hideTabs} = useContext(ChatContext)
+	const {channelId, barOpen, personalId, hideTabs, setChannelId} = useContext(ChatContext)
 	const chatSocket = useContext(chatSocketContext)
 	const router = useRouter()
 
@@ -58,6 +58,11 @@ const RightBar: FC<RightBarProps> = ({}) => {
 			// }
 		})
 
+
+		return () => {
+			chatSocket.off('messageDoneCH')
+			chatSocket.off('messageDoneDM')
+		}
 	}, [chatSocket])
 	// <div className={`h-full w-full  md:w-full md:flex lg:flex  lg:w-[21.74%] flex justify-between flex-col
 	// 	${hidden ? 'hidden' : ''} ${sideBar ? 'md:hidden' : ''} transition duration-1000 ease-in-out`}>
