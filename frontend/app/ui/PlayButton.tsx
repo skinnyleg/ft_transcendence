@@ -1,7 +1,7 @@
 interface PlayButtonProps { theme: string; PowerUp: string; gameType_: string}
 import {Button, ButtonGroup} from "@nextui-org/react";
 import { useRouter } from "next/navigation";
-import gameSocket, { GameContext } from "../context/gameSockets";
+import { GameContext, gameSocketContext } from "../context/gameSockets";
 import { useContext } from "react";
 
 
@@ -9,6 +9,7 @@ const PlayButton = ({ theme, PowerUp, gameType_ }:PlayButtonProps) => {
 
     const router = useRouter()
     const {setGameType} = useContext(GameContext);
+    const gameSocket = useContext(gameSocketContext)
 
     const redirectToGame = () => {
         if (gameType_ === 'QUEUE')

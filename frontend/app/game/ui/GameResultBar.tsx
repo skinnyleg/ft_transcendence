@@ -1,13 +1,14 @@
 import PlayerInfo from "./PlayerInfo";
 import MatchScore from "./MatchScore";
 import { useState, useEffect, useContext } from "react";
-import gameSocket, { GameContext } from "../../context/gameSockets";
+import { GameContext, gameSocketContext } from "../../context/gameSockets";
 import { playerInfo, playerInfoProps } from "../types/interfaces";
 
 
 const GameResultBar = () => {
 
     const {playerL, playerR} = useContext(GameContext);
+    const gameSocket = useContext(gameSocketContext)
 
     const obj1: playerInfoProps = {style: '', textPos: '', playerInfo: playerL};
     const obj2: playerInfoProps = {style:'flex-row-reverse', textPos:'text-end', playerInfo: playerR};

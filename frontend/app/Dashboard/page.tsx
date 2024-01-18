@@ -8,14 +8,14 @@ import axios from 'axios';
 import FriendsList from '../ui/FriendList';
 import { FaRobot } from "react-icons/fa";
 
-import {dashboardData, profileData} from '../interfaces/interfaces';
+import {NotificationsData, dashboardData, profileData} from '../interfaces/interfaces';
 import { QuestionMarkCircleIcon, QueueListIcon } from '@heroicons/react/24/outline';
 import { ToastContainer, toast } from 'react-toastify';
 import TopThree from '../ui/TopThree';
 import { ClassNames } from '@emotion/react';
 import GameType from '../game/ui/GameType';
 import GamePowerUps from '../game/ui/PowerUps';
-import gameSocket from '../context/gameSockets';
+import { gameSocketContext } from '../context/gameSockets';
 
 
 function Dashboard() {
@@ -24,6 +24,7 @@ function Dashboard() {
   const [theme, setTheme] = useState('/yo1.jpg');
   const [powerup, setPowerup] = useState('FireBall');
   const	[gameTypes, setgameTypes] = useState<string>("BOT");
+  const gameSocket = useContext(gameSocketContext);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -47,9 +48,11 @@ function Dashboard() {
   const notDoneAchievements = dashboardData?.notDoneAchievements || [];
   
   const handleThemeChange = (newtheme: string) => {
+    gameSocket.emit('SaveTheme', {theme: newtheme});
     setTheme(newtheme);
   }
   const handlePowerUp = (newpowerup: string) => {
+    gameSocket.emit('SavePowerUp', {powerUp: newpowerup});
     setPowerup(newpowerup);
   }
 

@@ -77,10 +77,10 @@ export default async function middleware(request: NextRequest){
     let token = request.cookies.get("token")?.value;
     const refreshtoken  = request.cookies.get("refresh");
     const succes = await checkAuth(token);
-    let isFirstTime = await checkVerification(token);
-    if (isFirstTime){
-      await firstLoginAchiv(token);
-    }
+    // let isFirstTime = await checkVerification(token);
+    // if (isFirstTime){
+    //   await firstLoginAchiv(token);
+    // }
     if (succes){
       return NextResponse.next();
     }

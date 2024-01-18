@@ -19,7 +19,7 @@ import { GiThroneKing } from "react-icons/gi";
 import { useRouter } from 'next/navigation';
 import MuteUser from './MuteUser';
 import { ChatContext, chatSocketContext } from '../context/soketContext';
-import gameSocket from '../context/gameSockets';
+import { gameSocketContext } from '../context/gameSockets';
 
 
 
@@ -35,6 +35,7 @@ const UserDropDown: FC<UserDropDownProps> = ({userRole, userCardRole, userNick, 
 
 	const [muteOptions, setMuteOptions] = useState(false);
 	const {channelId, setChannelId} = useContext(ChatContext);
+    const gameSocket = useContext(gameSocketContext)
 	const chatSocket = useContext(chatSocketContext);
 
 	const router = useRouter();

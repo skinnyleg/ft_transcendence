@@ -2,14 +2,16 @@
 import { useContext, useEffect } from "react";
 import PongZoneBoot from "../ui/BootLogic";
 import GameResultBar from "../ui/GameResultBar";
-import gameSocket, { GameContext } from "@/app/context/gameSockets";
+import { GameContext, gameSocketContext } from "@/app/context/gameSockets";
 import { usePathname } from "next/navigation";
 
 function    BotGame(){
 
     const   path = usePathname();
     const   {setPowerUps, setGameMape, setGameId, setPlayerL, setPlayerR} = useContext(GameContext);
+    const gameSocket = useContext(gameSocketContext)
 
+    
     useEffect(() => {
 
         gameSocket.emit('ImReadyBot');

@@ -7,7 +7,7 @@ import { chatSocketContext, socket, socketContext } from "../context/soketContex
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { IconWithTooltip } from "./CustomIcons";
-import gameSocket from "../context/gameSockets";
+import { gameSocketContext } from "../context/gameSockets";
 
 
 interface FriendsData {
@@ -22,6 +22,7 @@ const FriendsList = () => {
     const [friendsList, setFriendList] = useState<FriendsData[]>([]);
     const chatSocket = useContext(chatSocketContext);
     const socket = useContext(socketContext);
+    const gameSocket = useContext(gameSocketContext);
     const router = useRouter();
 
 
@@ -47,8 +48,8 @@ const FriendsList = () => {
     }, [])
 
     useEffect(() => {
-        const handleStatusChange = (stat : {id : string, status : UserStatus}) => {
-            console.log('in status change')
+        const handleStatusChangeGame = (stat : {id : string, status : UserStatus}) => {
+            // console.log('in status change')
             if (stat.status !== undefined) {
             setFriendList((prevFriendsList) => {
               return prevFriendsList.map((friend) => {
@@ -60,15 +61,15 @@ const FriendsList = () => {
             });
           }
         };
-        gameSocket.on("statusChange", handleStatusChange);
+        gameSocket.on('statusChange', handleStatusChangeGame);
         return () => {
-            gameSocket.off("statusChange", handleStatusChange);
+            gameSocket.off('statusChange', handleStatusChangeGame);
         };
       }, [gameSocket]);
     
     useEffect(() => {
         const handleStatusChange = (stat : {id : string, status : UserStatus}) => {
-            console.log('in status change')
+            // console.log('in status change')
             if (stat.status !== undefined) {
             setFriendList((prevFriendsList) => {
               return prevFriendsList.map((friend) => {
@@ -80,13 +81,12 @@ const FriendsList = () => {
             });
           }
         };
-        socket.on("statusChange", handleStatusChange);
-        gameSocket.on("statusChange", handleStatusChange);
-        console.log("is socket connected == ", gameSocket.connected);
+        socket.on('statusChange', handleStatusChange);
+        // gameSocket.on("statusChange", handleStatusChange);
         socket.on("refreshFriendsList", friendsGet);
         return () => {
             socket.off("statusChange", handleStatusChange);
-            gameSocket.off("statusChange", handleStatusChange);  
+            // gameSocket.off("statusChange", handleStatusChange);  
             socket.off("refreshFriendsList", friendsGet)
         };
       }, [socket]);

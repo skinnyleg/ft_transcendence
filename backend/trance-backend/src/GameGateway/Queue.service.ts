@@ -7,8 +7,9 @@ export class makeQueue {
     private queue: GameUser[] = [];
 
     enQueue(player : GameUser){
-      // console.log("playerd  has enter queue 1 == ",  player.id)
-      if (this.queue.indexOf(player)){
+      console.log("index off == ",  this.queue.indexOf(player))
+      if (this.queue.indexOf(player) === -1){
+        console.log('entered in queue')
         this.queue.push(player);
         player.socket.emit("InQueue", true);
         return true;
@@ -22,7 +23,7 @@ export class makeQueue {
     
     dequeue(client): GameUser | undefined {
       const index = this.queue.indexOf(client)
-      console.log("indexx == ", index);
+      // console.log("indexx == ", index);
       if (index >= 0){
         return this.queue.splice(index, 1)[0];
       }

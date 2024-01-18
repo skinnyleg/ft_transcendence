@@ -20,7 +20,7 @@ import { FaUserCircle } from "react-icons/fa";
 import { RiPingPongFill } from "react-icons/ri";
 import { ImBlocked } from "react-icons/im";
 import { TbLockOpen } from "react-icons/tb";
-import gameSocket from '../context/gameSockets';
+import { gameSocketContext } from '../context/gameSockets';
 
 
 interface PersonalDropDownProps {
@@ -34,6 +34,7 @@ const PersonalDropDown: FC<PersonalDropDownProps> = ({userRole, userNick}) => {
 	let [openPic, setOpenPic] = useState(false)
 	let [openPass, setOpenPass] = useState(false)
 	let [openType, setOpenType] = useState(false)
+    const gameSocket = useContext(gameSocketContext)
 	const chatSocket = useContext(chatSocketContext);
 	const {personalId, setPersonalId ,personal} = useContext(ChatContext);
 	const [error, setError] = useState<string>('')

@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import Matter from 'matter-js';
-import gameSocket, { GameContext } from '../../context/gameSockets';
+import { GameContext, gameSocketContext } from '../../context/gameSockets';
 import { useRouter } from 'next/navigation';
 import StartButton from './StartButton';
 
@@ -8,6 +8,7 @@ import StartButton from './StartButton';
 const PongZoneBoot = () => {
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const gameSocket = useContext(gameSocketContext)
     const width = 20;
     const height = 150;
     let speedR = 20;
@@ -112,7 +113,13 @@ const PongZoneBoot = () => {
             console.log('drawBall event has received');
         });
 
-        Matter.Events.on(engine, 'collisionStart', function(event) {
+        gameSocket.on('redirectToDashboard', () => {
+            route.push('/Dashboard');
+            // return ;
+        })
+
+
+        const handleCollision = (event: any) => {
             var pairs = event.pairs;
             for (var i = 0, j = pairs.length; i != j; ++i) {
                 var pair = pairs[i]; 
@@ -121,12 +128,20 @@ const PongZoneBoot = () => {
                     setScore({playerL: score.playerL, playerR: (++score.playerR)});
                     Matter.Body.setPosition(ball, { x: midleCanvas, y: midleVertical });
                     (score.playerR !== ExtraTime && score.playerL !== ExtraTime) && Matter.Body.setVelocity(ball, { x: -vilocityBallX, y: 5 })
+                    if (score.playerR === ExtraTime || score.playerL === ExtraTime) {
+                        Matter.Body.setVelocity(ball, { x: 0, y: 0 });
+                        gameSocket.emit('endBotMatch');
+                    }
                 }
                 else if ((pair.bodyA === ball && pair.bodyB === wallRight) || (pair.bodyA === wallRight && pair.bodyB === ball))
                 {
                     setScore({playerL: (++score.playerL), playerR: score.playerR});
                     Matter.Body.setPosition(ball, { x: midleCanvas, y: midleVertical });
                     (score.playerR !== ExtraTime && score.playerL !== ExtraTime) && Matter.Body.setVelocity(ball, { x: -vilocityBallX, y: 5 })
+                    if (score.playerR === ExtraTime || score.playerL === ExtraTime) {
+                        Matter.Body.setVelocity(ball, { x: 0, y: 0 });
+                        gameSocket.emit('endBotMatch');
+                    }
                 }
                 if ((pair.bodyA === ball && pair.bodyB === paddleRight) || (pair.bodyA === paddleRight && pair.bodyB === ball)) {
                     ball.velocity.y *= -1
@@ -134,32 +149,33 @@ const PongZoneBoot = () => {
                 }
                 else if ((pair.bodyA === ball && pair.bodyB === paddleLeft) || (pair.bodyA === paddleLeft && pair.bodyB === ball)) {
                     ball.velocity.x *= -1
-                    Matter.Body.setVelocity(ball, { x: -speedMeter.x, y: speedMeter.y })              
+                    Matter.Body.setVelocity(ball, { x: -speedMeter.x, y: speedMeter.y })
                 }
-                (score.playerR === ExtraTime || score.playerL === ExtraTime) && (Matter.Body.setVelocity(ball, { x: 0, y: 0 }));
-                (score.playerR === ExtraTime || score.playerL === ExtraTime) && (gameSocket.emit('gameBotEnd'));
-                (score.playerR === ExtraTime || score.playerL === ExtraTime) && route.push('/Dashboard');
-                if (score.playerR === ExtraTime || score.playerL === ExtraTime) {
-                    console.log('right score === ', score.playerR);
-                    console.log('left score === ', score.playerL);
-                    console.log('final Score === ', ExtraTime);
-                    Matter.Body.setVelocity(ball, { x: 0, y: 0 });
-                    console.log('match ended');
-                    gameSocket.emit('endBotMatch');
-                    return ;
-                }
+                // (score.playerR === ExtraTime || score.playerL === ExtraTime) && (Matter.Body.setVelocity(ball, { x: 0, y: 0 }));
+                // (score.playerR === ExtraTime || score.playerL === ExtraTime) && (gameSocket.emit('gameBotEnd'));
+                // (score.playerR === ExtraTime || score.playerL === ExtraTime) && route.push('/Dashboard');
+                // if (score.playerR === ExtraTime || score.playerL === ExtraTime) {
+                //     Matter.Body.setVelocity(ball, { x: 0, y: 0 });
+                //     gameSocket.emit('endBotMatch');
+                // }
                 Matter.Body.set(ball, { restitution: 1, friction: 0 }); // n9adro n7aydoha
             }
-        });
+        }
+
+
+        Matter.Events.on(engine, 'collisionStart', handleCollision);
         
         Render.run(render);
         const runner = Runner.create();
         Runner.run(runner, engine);
 
         return () => {
+            gameSocket.off('drawBallBot');
+            gameSocket.off('redirectToDashboard');
+            document.removeEventListener('keydown', handleKey);
+            Matter.Events.off(engine, 'collisionStart',handleCollision)
             Render.stop(render);
             Engine.clear(engine);
-            gameSocket.off('drawBallBot');
         };
 
     }, [matchready]);

@@ -116,6 +116,9 @@ export class UserService {
 				Losses: true,
 				Rank: true,
 			},
+			orderBy: {
+				Rank: 'asc', // Use 'desc' for descending order
+			},
 		});
 
 
@@ -222,6 +225,22 @@ export class UserService {
 		},
 		});
 		return ;
+	}
+
+
+	async checkWins(id: string)
+	{
+		const wins = await this.prisma.user.findUnique({
+			where: {
+				id: id,
+			},
+			select: {
+				Wins: true,
+			}
+		})
+		if (wins.Wins >= 5)
+			return true;
+		return false;
 	}
 
 	async getFriendsCards(id: string)
@@ -341,6 +360,7 @@ export class UserService {
 		// check request  .0
 		const requestExist = await this.prisma.request.findFirst({
 			where: {
+			  userId: opponentId,
 			  senderId: challengerId,
 			  typeOfRequest: RequestType.CHALLENGE,
 			  responded: false,
@@ -348,6 +368,16 @@ export class UserService {
 		});
 		if (requestExist)
 			throw new ConflictException('you have already sent challenge')
+		const requestExist2 = await this.prisma.request.findFirst({
+				where: {
+				  userId: challengerId,
+				  senderId: opponentId,
+				  typeOfRequest: RequestType.CHALLENGE,
+				  responded: false,
+				},
+			});
+		if (requestExist2)
+			throw new ConflictException('you already got a challenge from that user')
 		// check if one of them is in, geme
 		const isInGame = await this.prisma.user.findFirst({
 			where: {
@@ -465,6 +495,7 @@ export class UserService {
 
 		const requestExist = await this.prisma.request.findFirst({
 		  where: {
+			userId: recipientId,
 			senderId: senderId,
 			typeOfRequest: RequestType.FRIEND,
 			responded: false,
@@ -936,6 +967,7 @@ export class UserService {
 		else
 		{
 			let imgName = this.generateImgName(userData.profilePic);
+			// TODO check if image is already there
 			await this.downloadImage(userData.profilePic, `./uploads/avatar/${imgName}`);
 			userData.profilePic = `${process.env.BackendHost}/upload/profile/${imgName}`;
 		}
@@ -949,7 +981,7 @@ export class UserService {
 				userId: recipientId,
 			}
 		})
-		console.log('user1 == ', userOneFriends)
+		// console.log('user1 == ', userOneFriends)
 		if (userOneFriends === 1)
 		await this.updateAchivements(recipientId, 'make first friend')
 	
@@ -960,9 +992,16 @@ export class UserService {
 			}
 		})
 	
-		console.log('user2 == ', userTwoFriends)
+		// console.log('user2 == ', userTwoFriends)
 		if (userTwoFriends === 1)
 			await this.updateAchivements(senderId, 'make first friend')
+	}
+
+
+	async updateRank(userData: any)
+	{
+		const players = await this.prisma.user.count();
+		userData.Rank = players + 1; 
 	}
 
 	async create(userData: any)
@@ -974,23 +1013,26 @@ export class UserService {
 		}
 		catch (error)
 		{
-			console.log('Something Went Wrong');
+			// console.log('error === ', error);
+			console.log('Something Went Wrong couldnt download user image');
 			return 'NO';
 		}
+		await this.updateRank(userData);
 		const user = await this.prisma.user.create({
 			data: {
-			intraId: userData.intraId,
-			password: hashedPass,
-			profilePic: userData.profilePic,
-			BackgroundPic: userData.BackgroundPic,
-			wallet: userData.wallet,
-			level: userData.level,
-			Rank: userData.Rank,
-			status: UserStatus.ONLINE,
-			nickname: nick,
+				intraId: userData.intraId,
+				password: hashedPass,
+				profilePic: userData.profilePic,
+				BackgroundPic: userData.BackgroundPic,
+				wallet: userData.wallet,
+				level: userData.level,
+				Rank: userData.Rank,
+				status: UserStatus.ONLINE,
+				nickname: nick,
 			}
 		})
 		await this.linkAchievements(user.id);
+		await this.updateAchivements(user.id, 'First Login');
 		return user;
 	}
 
@@ -1036,7 +1078,6 @@ export class UserService {
 				}
 			}
 		});
-
 		const requestIds = requests.flatMap((user) => user.userRequests.map((req) => ({ id: req.id })));
 	
 		for (const req of requestIds)
@@ -1105,6 +1146,12 @@ export class UserService {
 					opponent:{connect: {id : player2.id}},
 				},
 			}));
+	}
+
+
+	async createGame(userId: string, opponentId: string)
+	{
+		
 	}
 
 

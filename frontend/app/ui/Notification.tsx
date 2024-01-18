@@ -7,9 +7,9 @@ import { CheckIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import React from 'react';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import gameSocket from "../context/gameSockets";
 import { useRouter } from "next/navigation";
 import { MatchInfo } from "../game/types/interfaces";
+import { gameSocketContext } from "../context/gameSockets";
 
 
 
@@ -21,6 +21,7 @@ const Notifications = () => {
     const [Error , setError] = useState<string>('');
     const socket = useContext(socketContext);
     const chatSocket = useContext(chatSocketContext);
+    const gameSocket = useContext(gameSocketContext);
     const {channelId, personalId} = useContext(ChatContext);
     const router = useRouter();
 
@@ -34,7 +35,6 @@ const Notifications = () => {
             });
             if (res.status === 200) {
                 const notification = await res.json();
-                // console.log('notifications == ', notification)
                 setNotifications(notification);
                 setNotificationNumber(notificationNumber + notification.length);
             }
@@ -129,10 +129,12 @@ const Notifications = () => {
             handleNewNotification(data);
         });
 
-
         gameSocket.on('redirectPlayers_match', (data: MatchInfo[]) => {
-            router.push(`/game/${data[0].id}`);
+            console.log('redirecting to game');
+              router.push(`/game/${data[0].roomId}`);
         })
+        if (gameSocket.connected)
+            gameSocket.emit('abort');
 
         return () => {
             gameSocket.off('notification');
@@ -180,8 +182,6 @@ const Notifications = () => {
     }, [socket]);
 
     const handleAcceptReq = (data: NotificationsData) => {
-        console.log('helo')
-        console.log("sadsacdwacdescfDEfdwfeW", data.notifData);
         let useId = data.notifData.userId;
         let reqId = data.requestId;
         if (data.notifData.typeOfRequest === 'JOINCHANNEL')

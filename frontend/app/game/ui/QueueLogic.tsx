@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef, useState } from 'react';
 import Matter from 'matter-js';
-import gameSocket, { GameContext } from '../../context/gameSockets';
+import { GameContext, gameSocketContext } from '../../context/gameSockets';
 import { ballCoordinates, pladdleCoordinates, playersCoordinates } from '../types/interfaces';
 import { usePathname, useRouter } from 'next/navigation';
 import StartButton from './StartButton';
@@ -9,6 +9,7 @@ import StartButton from './StartButton';
 const PongZoneQueue = () => {
 
     const   canvasRef = useRef<HTMLCanvasElement>(null);
+    const gameSocket = useContext(gameSocketContext)
     const   route = useRouter();
     const   [matchready, setMatchready] = useState<boolean>(false);
     const   [pongzone, setPongzone] = useState({width: 0, height: 0});
@@ -22,41 +23,61 @@ const PongZoneQueue = () => {
     let   ZoomInR: number = 150;
     let   ZoomInL: number = 150;
     let   ShrinkR: number = 150;
+    let speedR = 20;
     let   ShrinkL: number = 150;
 
 
+    
+
+    useEffect(() => {
+        // console.log('settings === ', settings)
         if (settings.id === 0) {
-            speedMeterL = (settings.powerUps === 'speedMeter') ? {x: 9 , y: 9 } : {x:6 , y: 6};
-            ZoomInL = (settings.powerUps === 'ZoomIn') ? 225 : 150;
-            ShrinkR = (settings.powerUps === 'Shrink') ? 100 : 150;
-            ExtraTime = (settings.powerUps === 'ExtraTime') ? 5 : 4;
-            console.log('settings L : ', settings);
+            speedMeterL = (settings.power === 'speedMeter') ? {x: 9 , y: 9 } : {x:6 , y: 6};
+            ZoomInL = (settings.power === 'ZoomIn') ? 225 : 150;
+            ShrinkR = (settings.power === 'Shrink') ? 100 : 150;
+            ExtraTime = (settings.power === 'ExtraTime') ? 5 : 4;
+            // console.log('settings R zoomL 0 : ', ZoomInL);
+            // console.log('settings powerUp : ', settings.power);
+            // console.log('output of ternary : ',  (settings.power === 'ZoomIn') ? 225 : 150);
+            // console.log('settings L 0 : ', settings);
             //
             speedMeterR = (settings.powerOpponenent === 'speedMeter') ? {x: 9 , y: 9 } : {x:6 , y: 6};
             ZoomInR = (settings.powerOpponenent === 'ZoomIn') ? 225 : 150;
             ShrinkL = (settings.powerOpponenent === 'Shrink') ? 100 : 150;
             ExtraTime = (settings.powerOpponenent === 'ExtraTime') ?  5 : 4;
+            // console.log('settings R zoomR 0 : ', ZoomInR);
+            // console.log('settings powerUp : ', settings.powerOpponenent);
+            // console.log('output of ternary : ',  (settings.powerOpponenent === 'ZoomIn') ? 225 : 150);
+            // console.log('settings R 0 : ', settings);
+            
             //
         }
         else if (settings.id === 1) {
-            speedMeterR = (settings.powerUps === 'speedMeter') ? {x: 9 , y: 9 } : {x:6 , y: 6};
-            ZoomInR = (settings.powerUps === 'ZoomIn') ? 225 : 150;
-            ShrinkL = (settings.powerUps === 'Shrink') ? 100 : 150;
-            ExtraTime = (settings.powerUps === 'ExtraTime') ? 5 : 4;
-            console.log('settings R : ', settings);
+            speedMeterR = (settings.power === 'speedMeter') ? {x: 9 , y: 9 } : {x:6 , y: 6};
+            ZoomInR = (settings.power === 'ZoomIn') ? 225 : 150;
+            ShrinkL = (settings.power === 'Shrink') ? 100 : 150;
+            ExtraTime = (settings.power === 'ExtraTime') ? 5 : 4;
+            // console.log('settings L zoomR 1 : ', ZoomInR);
+            // console.log('settings powerUp : ', settings.power);
+            // console.log('output of ternary : ',  (settings.power === 'ZoomIn') ? 225 : 150);
+            // console.log('settings R 1 : ', settings);
             //
             speedMeterL = (settings.powerOpponenent === 'speedMeter') ? {x: 9 , y: 9 } : {x:6 , y: 6};
             ZoomInL = (settings.powerOpponenent === 'ZoomIn') ? 225 : 150;
             ShrinkR = (settings.powerOpponenent === 'Shrink') ? 100 : 150;
             ExtraTime = (settings.powerOpponenent === 'ExtraTime') ? 5 : 4;
-            console.log('settings L : ', settings);
+            // console.log('settings L zoomL 1 : ', ZoomInL);
+            // console.log('settings powerUp : ', settings.powerOpponenent);
+            // console.log('output of ternary : ',  (settings.powerOpponenent === 'ZoomIn') ? 225 : 150);
+            // console.log('settings L 1 : ', settings);
             //
         }
         ShrinkL = (ShrinkL === 100) ? ShrinkL : ZoomInL;
         ShrinkR = (ShrinkR === 100) ? ShrinkR : ZoomInR;
-    
-    useEffect(() => {
-
+        // ShrinkL = ZoomInL;
+        // ShrinkR = ZoomInR;
+        // console.log('left paddle === ', ShrinkL)
+        // console.log('right paddle === ', ShrinkR)
         const { Engine, Render, World, Bodies, Composite, Runner} = Matter;
         
         const engine = Engine.create({
@@ -113,75 +134,128 @@ const PongZoneQueue = () => {
             switch (event.key) {
                 case 'ArrowUp':
                     console.log('times--')
-                    gameSocket.emit('arrow', 'UP');
+                    gameSocket.emit('arrow', {move: 'UP'});
                     break;
                 case 'ArrowDown':
                     console.log('times++')
-                    gameSocket.emit('arrow', 'DOWN'); 
+                    gameSocket.emit('arrow', {move: 'DOWN'}); 
                     break;
             }
         };
         document.addEventListener('keydown', handleKey);
                 
+
+        let   currentPositionLeft = { x: (minX + width), y: midleVertical };
+        let   currentPositionRight = { x: (maxX - width), y: midleVertical };
+
+        const handleLeft = (move: string) => {
+
+            let   newPositionLeft = { ...currentPositionLeft }; 
+
+            switch (move) {
+                case 'UP':
+                    newPositionLeft.y -= speedR;
+                    break;
+                case 'DOWN':
+                    newPositionLeft.y += speedR;
+                    break;
+            }
+            newPositionLeft.y = Math.max(minY + ZoomInL/2, Math.min(newPositionLeft.y, maxY- ZoomInL/2));
+            Matter.Body.setPosition(paddleLeft, newPositionLeft);
+            currentPositionLeft = newPositionLeft;
+        };
+
+        const handleRight = (move: string) => {
+
+            let   newPositionRight = { ...currentPositionRight }; 
+
+            switch (move) {
+                case 'UP':
+                    newPositionRight.y -= speedR;
+                    break;
+                case 'DOWN':
+                    newPositionRight.y += speedR;
+                    break;
+            }
+            newPositionRight.y = Math.max(minY + ZoomInR/2, Math.min(newPositionRight.y, maxY- ZoomInR/2));
+            Matter.Body.setPosition(paddleRight, newPositionRight);
+            currentPositionRight = newPositionRight;
+        };
+
         gameSocket.on('leftPaddle', (Cordinates: any) => {
-            const paddleL: pladdleCoordinates  = {x: Cordinates.x, y: Cordinates.y};
-            Matter.Body.setPosition(paddleLeft, paddleL);
-            Matter.Body.setPosition(paddleRight, {x: paddleRight.position.x, y: paddleL.y});
+            handleLeft(Cordinates);
+            // const paddleL: pladdleCoordinates  = {x: Cordinates.x, y: Cordinates.y};
+            // Matter.Body.setPosition(paddleLeft, paddleL);
+            // Matter.Body.setPosition(paddleRight, {x: paddleRight.position.x, y: paddleL.y});
         });
         gameSocket.on('rightPaddle', (Cordinates: any) => {
-            const paddleL: pladdleCoordinates  = {x: Cordinates.x, y: Cordinates.y};
-            Matter.Body.setPosition(paddleRight, paddleL);
+            handleRight(Cordinates);
+            // const paddleL: pladdleCoordinates  = {x: Cordinates.x, y: Cordinates.y};
+            // Matter.Body.setPosition(paddleRight, paddleL);
         });
-        
+        gameSocket.on('redirectToDashboard', () => {
+            route.push('/Dashboard');
+            // return ;
+        })
         gameSocket.on('StartDrawing', () => {
             console.log('inside drawing ball');
             Matter.Body.setVelocity(ball, { x: 6, y: 6 })
         });
-
-        Matter.Events.on(engine, 'collisionStart', function(event) {
+        const handleCollision = (event: any) => {
             var pairs = event.pairs;
             for (var i = 0, j = pairs.length; i != j; ++i) {
                 var pair = pairs[i]; 
-                (score.playerR === ExtraTime || score.playerL === ExtraTime) && (Matter.Body.setVelocity(ball, { x: 0, y: 0 }));
-                (score.playerR === ExtraTime) ? gameSocket.emit('playerRighttWin') : score.playerL === ExtraTime ?  gameSocket.emit('playerLeftWin') : '';
-                (score.playerR === ExtraTime || score.playerL === ExtraTime) && route.push('/Dashboard');
-                if (score.playerR === ExtraTime || score.playerL === ExtraTime) {
-                    Matter.Body.setVelocity(ball, { x: 0, y: 0 });
-                    gameSocket.emit('EndGame', {playerL: {score: score.playerL}, playerR: {score: score.playerR}});
-                    return ;
-                }
+                // if (score.playerR === ExtraTime || score.playerL === ExtraTime) {
+                //     Matter.Body.setPosition(ball, { x: midleCanvas, y: midleVertical });
+                //     Matter.Body.setVelocity(ball, { x: 0, y: 0 });
+                //     gameSocket.emit('EndGame', {playerL: {score: score.playerL}, playerR: {score: score.playerR}});
+                // }
                 if ((pair.bodyA === ball && pair.bodyB === wallLeft) || (pair.bodyA === wallLeft && pair.bodyB === ball))
                 {
                     setScore({playerL: score.playerL, playerR: (++score.playerR)});
                     Matter.Body.setPosition(ball, { x: midleCanvas, y: midleVertical });
                     Matter.Body.setVelocity(ball, { x: 5, y: 5 });
+                    if (score.playerR === ExtraTime || score.playerL === ExtraTime) {
+                        Matter.Body.setPosition(ball, { x: midleCanvas, y: midleVertical });
+                        Matter.Body.setVelocity(ball, { x: 0, y: 0 });
+                        gameSocket.emit('EndGame', {playerL: {score: score.playerL}, playerR: {score: score.playerR}});
+                    }
                 }
                 else if ((pair.bodyA === ball && pair.bodyB === wallRight) || (pair.bodyA === wallRight && pair.bodyB === ball))
                 {
                     setScore({playerL: (++score.playerL), playerR: score.playerR});
                     Matter.Body.setPosition(ball, { x: midleCanvas, y: midleVertical });
                     Matter.Body.setVelocity(ball, { x: -5, y: 5 })
+                    if (score.playerR === ExtraTime || score.playerL === ExtraTime) {
+                        Matter.Body.setPosition(ball, { x: midleCanvas, y: midleVertical });
+                        Matter.Body.setVelocity(ball, { x: 0, y: 0 });
+                        gameSocket.emit('EndGame', {playerL: {score: score.playerL}, playerR: {score: score.playerR}});
+                    }
                 }
                 if ((pair.bodyA === ball && pair.bodyB === paddleRight) || (pair.bodyA === paddleRight && pair.bodyB === ball)) {
                     Matter.Body.setVelocity(ball, { x: speedMeterR.x, y: speedMeterR.y })
                 }
                 else if ((pair.bodyA === ball && pair.bodyB === paddleLeft) || (pair.bodyA === paddleLeft && pair.bodyB === ball)) {
-                    Matter.Body.setVelocity(ball, { x: speedMeterL.x, y: speedMeterL.y })              
+                    Matter.Body.setVelocity(ball, { x: speedMeterL.x, y: speedMeterL.y })
                 }
-                Matter.Body.set(ball, { restitution: 1, friction: 0 }); // n9adro n7aydoha
+                // Matter.Body.set(ball, { restitution: 1, friction: 0 }); // n9adro n7aydoha
             }
-        });
+        }
+        Matter.Events.on(engine, 'collisionStart', handleCollision);
         
         Render.run(render);
         const runner = Runner.create();
         Runner.run(runner, engine);
         
         return () => {
-            Render.stop(render);
-            Engine.clear(engine);
             gameSocket.off('StartDrawing');
             gameSocket.off('leftPaddle');
             gameSocket.off('rightPaddle');
+            gameSocket.off('redirectToDashboard');
+            document.removeEventListener('keydown', handleKey);
+            Matter.Events.off(engine, 'collisionStart',handleCollision)
+            Render.stop(render);
+            Engine.clear(engine);
         };
         
     }, [matchready]);

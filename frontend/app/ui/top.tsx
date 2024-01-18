@@ -97,7 +97,7 @@ export default function TopBar () {
           </div>
             <div   className="lg:flex xl:flex md:hidden hidden pr-2 lg:space-x-4 ">
               <Notifications/>
-                <Link href={`${process.env.NEXT_PUBLIC_FRONTEND_HOST}/profile/${nickname}`}>
+                <Link rel="prefetch" href={`${process.env.NEXT_PUBLIC_FRONTEND_HOST}/profile/${nickname}`}>
                   <img src={profilePic} alt="yo" className="max-w-[50px] max-h-[50px] min-w-[50px] min-h-[50px] rounded-full border-accents border-[2px] hidden lg:flex" />
                 </Link>
             </div> 

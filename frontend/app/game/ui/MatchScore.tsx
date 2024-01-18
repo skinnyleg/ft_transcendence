@@ -1,10 +1,11 @@
 import { useState, useEffect, useContext } from "react";
-import gameSocket, { GameContext } from "../../context/gameSockets";
+import { GameContext, gameSocketContext } from "../../context/gameSockets";
 
 const MatchScore = () => {
 
     // const [scores, setScore] = useState({playerL: 0, playerR: 0});
     const   {score, setScore, gameId} = useContext(GameContext);
+    const gameSocket = useContext(gameSocketContext)
 
     // useEffect(() => {
         

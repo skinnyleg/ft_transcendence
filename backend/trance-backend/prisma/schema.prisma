@@ -104,7 +104,7 @@ model Request {
   responded            Boolean     @default(false)
   channelName          String?     @unique
   createdAt            DateTime    @default(now())
-  expiresAt  DateTime  @default(dbgenerated("NOW() + interval '10 second'"))
+  expiresAt            DateTime    @default(dbgenerated("NOW() + interval '10 second'"))
 }
 
 model Achievement {
@@ -114,7 +114,7 @@ model Achievement {
   status      AchievementStatus
   userScore   Int               @default(0)
   totalScore  Int
-  User        User?             @relation(fields: [userId], references: [id])
+  User        User?             @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      String
 }
 
@@ -172,13 +172,13 @@ model Blacklist {
 
 // Define a Match model
 model Game {
-  id         String @id @default(uuid())
-  MatchScore Int[]
-  opponentId String
-  userId     String
-  winner     String
+  id          String @id @default(uuid())
+  MatchScore  Int[]
+  opponentId  String
+  userId      String
+  winner      String
   winnerScore Int
   loserScore  Int
-  player     User   @relation(name: "player", fields: [userId], references: [id])
-  opponent   User?  @relation(name: "opponent", fields: [opponentId], references: [id])
+  player      User   @relation(name: "player", fields: [userId], references: [id])
+  opponent    User?  @relation(name: "opponent", fields: [opponentId], references: [id])
 }
