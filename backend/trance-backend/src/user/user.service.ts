@@ -1206,11 +1206,25 @@ export class UserService {
 
 	async deleteGame(roomId: string)
 	{
-		const game = await this.prisma.game.delete({
+		const gameExists = await this.prisma.game.findUnique({
 			where: {
 				id: roomId,
 			}
 		})
+		console.log('game is === ', gameExists)
+		if (!gameExists)
+			return ;
+		try {
+			const game = await this.prisma.game.delete({
+				where: {
+					id: roomId,
+				}
+			})
+		}
+		catch (error)
+		{
+			return ;
+		}
 	}
 
 	async updateWinLose(player: GameUser){

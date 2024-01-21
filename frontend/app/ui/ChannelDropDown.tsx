@@ -42,7 +42,7 @@ const ChannelDropDown: FC<ChannelDropDownProps> = ({userRole, showSideBar, chann
 		chatSocket.emit('getDataCH', {
 			channelName: channelId
 		})
-		setHideTabs(false)
+		// setHideTabs(false)
 	}
 
 

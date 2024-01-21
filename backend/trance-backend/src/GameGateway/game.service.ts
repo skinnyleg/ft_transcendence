@@ -21,6 +21,7 @@ export class GameService {
     
     sendWebSocketError(client: Socket, errorMessage: string, exit: boolean) 
 	{
+        console.log('error is === ', errorMessage);
 		client.emit('error', errorMessage );
 		if (exit == true)
 			client.disconnect();
@@ -49,11 +50,15 @@ export class GameService {
     async saveUser(client: Socket) {
 		let user: User;
 		try {
-			const token: string = client.handshake.headers.token as string;
+            const token: string = client.handshake.headers.token as string;
 			const payload = await this.jwtService.verifyAsync(token, { secret: process.env.jwtsecret })
 			user = await this.userService.findOneById(payload.sub);
+            await this.userService.updateStatus(user.id, UserStatus.ONLINE)
             this.Users.push({id: user.id, socket: client, isInQueue: false, IsInGame : false, isReady: false, score: 0, roomId: '', win: false, matchInfos: {}, theme: '/yo1.jpg', powerUp: 'FireBall'});
-		}
+            await this.emitToFriendsStatusGame(user.id, UserStatus.ONLINE);
+            console.log(this.Users.length);
+            client.emit('redirToDash');
+        }
 		catch (error)
 		{
 			this.sendWebSocketError(client, "User not found", true)
@@ -64,27 +69,34 @@ export class GameService {
     async deleteUser(client: Socket, server: Server){
         try {
             const user = this.getUserBySocketId(client.id);
+            // console.log("user has ==== ", user);
+            if (user === undefined)
+                return ;
             server.to(user.roomId).emit("abort", true);
-            if (this.players_arr.size > 0)
-            {
-                const pl1 = this.players_arr.get(user.roomId)[0];
-                const pl2 = this.players_arr.get(user.roomId)[1];
-                for (const player of this.Users){
-                    if (player.id == pl1.id || player.id == pl2.id){
-                        player.isInQueue = false;
-                        player.IsInGame = false;
-                        player.isReady = false;
-                        player.matchInfos = [];
-                        player.roomId = '';
-                        player.win = false;
-                        await this.userService.updateStatus(player.id, UserStatus.OFFLINE)
-                        await this.emitToFriendsStatusGame(player.id, UserStatus.OFFLINE);
-                    }
-                }
-            }
-            this.players_arr.delete(user.roomId);
-			await this.userService.updateStatus(user.id, UserStatus.OFFLINE)
-            await this.emitToFriendsStatusGame(user.id, UserStatus.OFFLINE);
+            // if (this.players_arr.size > 0)
+            // {
+            //     const pl1 = this.players_arr.get(user.roomId)[0];
+            //     const pl2 = this.players_arr.get(user.roomId)[1];
+            //     if (pl1.socket.id === client.id)
+            //         pl2.socket.emit('abort', true);
+            //     else
+            //         pl1.socket.emit('abort', true);
+            //     for (const player of this.Users){
+            //         if (player.id == pl1.id || player.id == pl2.id){
+            //             player.isInQueue = false;
+            //             player.IsInGame = false;
+            //             player.isReady = false;
+            //             player.matchInfos = [];
+            //             player.roomId = '';
+            //             player.win = false;
+            //             await this.userService.updateStatus(player.id, UserStatus.OFFLINE)
+            //             await this.emitToFriendsStatusGame(player.id, UserStatus.OFFLINE);
+            //         }
+            //     }
+            // }
+            // this.players_arr.delete(user.roomId);
+			// await this.userService.updateStatus(user.id, UserStatus.OFFLINE)
+            // await this.emitToFriendsStatusGame(user.id, UserStatus.OFFLINE);
 			this.Users = this.Users.filter((u) => u.socket.id !== client.id);
 		}
 		catch (error)
@@ -107,87 +119,69 @@ export class GameService {
 
     async deleteGame(roomId: string, client: Socket)
     {
-        // console.log('roomId === ', roomId);
-        // console.log('all rooms === ', this.players_arr);
-        const user1 = this.players_arr.get(roomId)[0];
-        const user2 = this.players_arr.get(roomId)[1];
-        user1.isReady = false;
-        user2.isReady = false;
-        user1.IsInGame = false;
-        user2.IsInGame = false;
-        user1.matchInfos = [];
-        user2.matchInfos = [];
-        user1.roomId = '';
-        user2.roomId = '';
-        user1.win = false;
-        user2.win = false;
-
-        // player.isInQueue = false;
-        // player.isReady = false;
-        // player.matchInfos = [];
-        // player.roomId = '';
-        // player.win = false;
-
-        // user1.socket.off('arrow');
-
-        // user1.socket.off('arrow', ((arg)=> {
-        //     switch (arg) {
-        //         case 'UP':
-        //             this.players_arr.get(roomId)[0].socket.emit('leftPaddle', 'UP')
-        //             this.players_arr.get(roomId)[1].socket.emit('leftPaddle', 'UP')
-        //         // if (leftPaddel.y > 0  + leftPaddel.height / 2)
-        //         //     leftPaddel.y -= 10;
-        //             break;
-        //         case 'DOWN':
-        //             this.players_arr.get(roomId)[0].socket.emit('leftPaddle', 'DOWN')
-        //             this.players_arr.get(roomId)[1].socket.emit('leftPaddle', 'DOWN')
-        //             // if (leftPaddel.y < (height - leftPaddel.height / 2))
-        //             //     leftPaddel.y += 10;
-        //             break;
-        //     }
-        //     // this.players_arr.get(roomId)[0].socket.emit('leftPaddle', leftPaddel)
-        //     // this.players_arr.get(roomId)[1].socket.emit('leftPaddle', leftPaddel)
-        // }))
-        // user2.socket.off('arrow', ((arg)=> {
-        //     switch (arg) {
-        //         case 'UP':
-        //             this.players_arr.get(roomId)[0].socket.emit('rightPaddle', 'UP')
-        //             this.players_arr.get(roomId)[1].socket.emit('rightPaddle', 'UP')
-        //         // if (leftPaddel.y > 0  + leftPaddel.height / 2)
-        //         //     leftPaddel.y -= 10;
-        //             break;
-        //         case 'DOWN':
-        //             this.players_arr.get(roomId)[0].socket.emit('rightPaddle', 'DOWN')
-        //             this.players_arr.get(roomId)[1].socket.emit('rightPaddle', 'DOWN')
-        //             // if (leftPaddel.y < (height - leftPaddel.height / 2))
-        //             //     leftPaddel.y += 10;
-        //             break;
-        //     }
-        //     // this.players_arr.get(roomId)[0].socket.emit('rightPaddle', rightPaddle)
-        //     // this.players_arr.get(roomId)[1].socket.emit('rightPaddle', rightPaddle)
-        // }))
-        await this.userService.updateStatus(user1.id, UserStatus.ONLINE);
-        await this.emitToFriendsStatusGame(user1.id, UserStatus.ONLINE);
-        await this.userService.updateStatus(user2.id, UserStatus.ONLINE);
-        await this.emitToFriendsStatusGame(user2.id, UserStatus.ONLINE);
-        if (user1.socket.id !== client.id)
-        {
-            user1.socket.emit('abortGame');
-            console.log('user1 got aborted ==== ', user1.id)
-        }
-        if (user2.socket.id !== client.id)
-        {
-            user2.socket.emit('abortGame');
-            console.log('user2 got aborted ==== ', user2.id)
-        }
-        // TODO check if it's not needed when i implement the socket.off for the paddle movement
-        this.players_arr.delete(roomId);
+        const user = this.getUserBySocketId(client.id);
+        if (user === undefined)
+            return ;
+        user.isReady = false;
+        user.IsInGame = false;
+        user.matchInfos = [];
+        user.roomId = '';
+        user.win = false;
+        await this.userService.updateStatus(user.id, UserStatus.ONLINE);
+        await this.emitToFriendsStatusGame(user.id, UserStatus.ONLINE);
         const checkWinner = await this.userService.getGameWinner(roomId);
         if (checkWinner === true)
+        {
             await this.userService.deleteGame(roomId);
+            // console.log('in delete game');
+        }
+        this.players_arr.delete(roomId);
+        // console.log('roomId === ', roomId);
+        // console.log('all rooms === ', this.players_arr);
+        // if (!this.players_arr.has(roomId))
+        //     return ;
+        // const user1 = this.players_arr.get(roomId)[0];
+        // const user2 = this.players_arr.get(roomId)[1];
+        // if (user1 !== undefined)
+        // {
+        //     user1.isReady = false;
+        //     user1.IsInGame = false;
+        //     user1.matchInfos = [];
+        //     user1.roomId = '';
+        //     user1.win = false;
+        // }
+        // if (user2 !== undefined)
+        // {
+        //     user2.isReady = false;
+        //     user2.IsInGame = false;
+        //     user2.matchInfos = [];
+        //     user2.roomId = '';
+        //     user2.win = false;
+        //     // await this.userService.updateStatus(user2.id, UserStatus.ONLINE);
+        //     // await this.emitToFriendsStatusGame(user2.id, UserStatus.ONLINE);
+        // }
+        // if (user1 !== undefined && user1.socket.id !== client.id)
+        // {
+        //     console.log('user1 got aborted ==== ', user1.id)
+        //     user1.socket.emit('abortGame');
+        //     // this.players_arr.delete(roomId);
+        //     // await this.userService.deleteGame(roomId);
+        // }
+        // if (user2 !== undefined && user2.socket.id !== client.id)
+        // {
+        //     console.log('user2 got aborted ==== ', user2.id)
+        //     user2.socket.emit('abortGame');
+        //     // this.players_arr.delete(roomId);
+        //     // await this.userService.deleteGame(roomId);
+        // }
+        // TODO check if it's not needed when i implement the socket.off for the paddle movement
+        // const checkWinner = await this.userService.getGameWinner(roomId);
+        // if (checkWinner === true && user1.socket.id === client.id)
+        // {
+        //     console.log('in delete game');
+        // }
 
 
-        client.emit('readyToQueue');
         // console.log('room is === ', gameRoom);
     }
 
@@ -431,6 +425,7 @@ export class GameService {
         await this.emitToFriendsStatusGame(this.players_arr.get(roomId)[1].id, UserStatus.ONLINE);
         await this.userService.updateWinLose(this.players_arr.get(roomId)[0]);
         await this.userService.updateWinLose(this.players_arr.get(roomId)[1]);
+        console.log('enter in endGame')
         this.players_arr.get(roomId)[0].socket.emit('redirectToDashboard');
         this.players_arr.get(roomId)[1].socket.emit('redirectToDashboard');
     }

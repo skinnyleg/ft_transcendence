@@ -28,6 +28,7 @@ const CreateChannel: FC<CreateChannelProps> = () => {
 	setChannelPass('')
     setIsOpen(false)
 	setIsRequired(false);
+	setImgData(undefined);
   }
 
   function openModal() {

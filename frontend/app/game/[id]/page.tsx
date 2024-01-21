@@ -21,20 +21,24 @@ function Game() {
     // }, 1000);
 
 
+    // useEffect(() => {
+    //     gameSocket.on('GameIdNotValid', () => {
+    //         router.push('/Dashboard');
+    //     })
+
+
+    //     return () => {
+    //         gameSocket.off('GameIdNotValid')
+    //     }
+    // }, [gameSocket])
+
+
     useEffect(() => {
-        gameSocket.on('GameIdNotValid', () => {
+        gameSocket.on('redirToDash', () => {
             router.push('/Dashboard');
         })
-
-
-        return () => {
-            gameSocket.off('GameIdNotValid')
-        }
-    }, [gameSocket])
-
-
-    useEffect(() => {
         const handleGameReady = (data: any) => {
+            console.log('data in gameReady === ', data);
             console.log('emit match ready');            
             setGameType('QUEUE');
             setData(data);
@@ -43,20 +47,22 @@ function Game() {
             setPlayerR({name: data[1].nickname, picture: data[1].profilePic});
             // router.push(`/game/${data[0].roomId}`);
         };
-
+        
         const handlePlayerSettings = (data: any) => {
-            console.log('settings before pressing start === ', data);
+            console.log('settings === ', data);
             setSettings({theme: data.theme, power: data.power, id: data.id, powerOpponenent: data.powerOpponenent});
         };
         gameSocket.emit('getGameData')
         gameSocket.emit('getPlayersSettings')
         gameSocket.on('gameData', handleGameReady);
         gameSocket.on('playerSettings', handlePlayerSettings);
+        
         return () => {
             gameSocket.off('gameData', handleGameReady);
             gameSocket.off('playerSettings', handlePlayerSettings);
+            gameSocket.off('redirToDash');
         };
-    },[]);
+    },[gameSocket]);
     
 
 

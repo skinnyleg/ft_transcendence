@@ -44,55 +44,61 @@ export class GameGateway {
 
     @SubscribeMessage('ImReady')
     async QueueReady(client: Socket){
+        // console.log('start in im ready')
         var queueLength =  this.makeQueue.getQueue().length;
         var queueds =  this.makeQueue.getQueue();
         // console.log("Queue length 1111 ===  ", queueLength);
-        console.log("Queue before 2  ===  ", queueds.length);
+        // console.log("Queue before 2  ===  ", queueds.length);
         // console.log('the queue has === ', queueds)
         if (queueLength >= 2){
+            // console.log('start if queue has 2')
             const usr = this.gameService.getUserBySocketId(client.id);
             const user1 = this.makeQueue.dequeue(usr);
             const user2 = this.makeQueue.dequeue(null);
             var queueds =  this.makeQueue.getQueue();
-
-
+            
+            
             const newGameId = await this.userService.createGame(user1.id, user2.id);
             if (!newGameId)
-                return ;
-
-            
-                // user1.roomId= user2.id;
-                // user2.roomId= user2.id;
-                user1.roomId= newGameId;
-                user2.roomId= newGameId;
-                console.log('user1 ready === ', user1.powerUp)
-                // console.log('user2 ready === ', user2.theme)
-            // add user to player_arr √
-            this.gameService.players_arr.set(user1.roomId, [user1, user2]);
-            this.gameService.players_arr.get(user1.roomId)[0].isInQueue = false;
-            this.gameService.players_arr.get(user1.roomId)[1].isInQueue = false;
-            user1.socket.join(user1.roomId);
-            user2.socket.join(user2.roomId);
-            // this.gameService.players_arr.get(user1.roomId)
-            // update Status
-            this.gameService.players_arr.get(user1.roomId)[0].IsInGame = true;
-            this.gameService.players_arr.get(user1.roomId)[1].IsInGame = true;
-            // Match is Ready Backend can start Send corrdinations √
-            // const theme0  = this.gameService.players_arr.get(user1.roomId)[0].theme;
-            // const theme1  = this.gameService.players_arr.get(user1.roomId)[1].theme;
-            // const power0  = this.gameService.players_arr.get(user1.roomId)[0].powerUp;
-            // const power1  = this.gameService.players_arr.get(user1.roomId)[1].powerUp;
-            // const roomId = this.gameService.players_arr.get(user1.roomId)[1].roomId;
-            // console.log('ops0 : ', theme0, power0);
-            // console.log('ops1 : ', theme1, power1);
-            // const infos : MatchInfos = await this.userService.genarateMatchInfo(this.gameService.players_arr.get(user1.roomId)[0].id, this.gameService.players_arr.get(user1.roomId)[1].id, roomId)
-            // this.gameService.players_arr.get(roomId)[0].socket.emit('playerSettings', ({theme: theme0, power: power0, id: 0, powerOpponenent: power1}))
-            // this.gameService.players_arr.get(roomId)[1].socket.emit('playerSettings', ({theme: theme1, power: power1, id: 1, powerOpponenent: power0}))
-            // this.server.to(this.gameService.players_arr.get(user1.roomId)[0].roomId).emit('MatchReady', infos);
-            this.server.to(this.gameService.players_arr.get(user1.roomId)[0].roomId).emit('MatchReady', {roomId: user1.roomId});
-            this.makeQueue.deleteUserQueue(user1);
-        }
-        // console.log("Queue length 22222 ===  ", queueLength);
+            return ;
+        
+        
+        // user1.roomId= user2.id;
+        // user2.roomId= user2.id;
+        user1.roomId= newGameId;
+        user2.roomId= newGameId;
+        // console.log('user1 ready === ', user1.powerUp)
+        // console.log('user2 ready === ', user2.theme)
+        // add user to player_arr √
+        this.gameService.players_arr.set(user1.roomId, [user1, user2]);
+        this.gameService.players_arr.get(user1.roomId)[0].isInQueue = false;
+        this.gameService.players_arr.get(user1.roomId)[1].isInQueue = false;
+        user1.socket.join(user1.roomId);
+        user2.socket.join(user2.roomId);
+        // this.gameService.players_arr.get(user1.roomId)
+        // update Status
+        this.gameService.players_arr.get(user1.roomId)[0].IsInGame = true;
+        this.gameService.players_arr.get(user1.roomId)[1].IsInGame = true;
+        // Match is Ready Backend can start Send corrdinations √
+        // const theme0  = this.gameService.players_arr.get(user1.roomId)[0].theme;
+        // const theme1  = this.gameService.players_arr.get(user1.roomId)[1].theme;
+        // const power0  = this.gameService.players_arr.get(user1.roomId)[0].powerUp;
+        // const power1  = this.gameService.players_arr.get(user1.roomId)[1].powerUp;
+        // const roomId = this.gameService.players_arr.get(user1.roomId)[1].roomId;
+        // console.log('ops0 : ', theme0, power0);
+        // console.log('ops1 : ', theme1, power1);
+        // const infos : MatchInfos = await this.userService.genarateMatchInfo(this.gameService.players_arr.get(user1.roomId)[0].id, this.gameService.players_arr.get(user1.roomId)[1].id, roomId)
+        // this.gameService.players_arr.get(roomId)[0].socket.emit('playerSettings', ({theme: theme0, power: power0, id: 0, powerOpponenent: power1}))
+        // this.gameService.players_arr.get(roomId)[1].socket.emit('playerSettings', ({theme: theme1, power: power1, id: 1, powerOpponenent: power0}))
+        // this.server.to(this.gameService.players_arr.get(user1.roomId)[0].roomId).emit('MatchReady', infos);
+        this.server.to(this.gameService.players_arr.get(user1.roomId)[0].roomId).emit('MatchReady', {roomId: user1.roomId});
+        this.makeQueue.deleteUserQueue(user1);
+        // console.log('end if queue has 2')
+        // var queueLength =  this.makeQueue.getQueue().length;
+        // console.log('length of queue === ', queueLength)
+    }
+    // console.log('end in im ready')
+    // console.log("Queue length 22222 ===  ", queueLength);
 
     }
 
@@ -160,7 +166,7 @@ export class GameGateway {
         if (user === undefined)
             return ;
         // this.players_arr.get(player1.roomId)[0].socket.on('EndGame', ((arg) => {
-            this.gameService.handleMatchFinish(payload, user.roomId, user.id);
+        await this.gameService.handleMatchFinish(payload, user.roomId, user.id);
             // return ;
         // }));
     }
@@ -168,7 +174,10 @@ export class GameGateway {
     @SubscribeMessage('abort')
     async exitUsersFromGame(client: Socket)
     {
+        // console.log('begin of abort')
         const usr = this.gameService.getUserBySocketId(client.id);
+        if (usr === undefined)
+            return ;
         const roomId = this.gameService.findGameUserById(usr.id);
 
         // usr.theme = '/yo1.jpg';
@@ -179,7 +188,12 @@ export class GameGateway {
             client.emit('readyToQueue');
             return ;
         }
+        // console.log('in abort before deleteGame')
         await this.gameService.deleteGame(roomId, client);
+        // console.log('in abort after deleteGame === ', roomId)
+        this.server.to(roomId).emit('abortGame');
+        client.emit('readyToQueue');
+        // console.log('in abort after emit abort === ', roomId)
     }
 
 
@@ -198,6 +212,8 @@ export class GameGateway {
     async getGameData(client: Socket)
     {
         const user1 = this.gameService.getUserBySocketId(client.id);
+        if (user1 === undefined)
+            return ;
         if (this.gameService.players_arr.get(user1.roomId) === undefined)
             return;
         const infos : MatchInfos = await this.userService.genarateMatchInfo(this.gameService.players_arr.get(user1.roomId)[0].id, this.gameService.players_arr.get(user1.roomId)[1].id, user1.roomId)
@@ -209,6 +225,8 @@ export class GameGateway {
     {
         const user1 = this.gameService.getUserBySocketId(client.id);
         // console.log('romm === ', this.gameService.players_arr.get(user1.roomId))
+        if (user1 === undefined)
+            return ;
         if (this.gameService.players_arr.get(user1.roomId) === undefined)
             return;
         const theme0  = this.gameService.players_arr.get(user1.roomId)[0].theme;
@@ -230,6 +248,8 @@ export class GameGateway {
         const que1 = this.makeQueue.getQueue();
         // console.log('before queue length === ', que1.length)
         const usr = this.gameService.getUserBySocketId(client.id);
+        if (usr === undefined)
+            return ;
         const user1 = this.makeQueue.dequeue(usr);
         const que2 = this.makeQueue.getQueue();
         usr.isReady = false;
@@ -250,8 +270,9 @@ export class GameGateway {
         // if (verify.valid == true){
         //     this.gameService.sendWebSocketError(client, verify.error, false);
         // }
-        // console.log('here');
+        // console.log('here in play queue');
         await this.gameService.handleMatchMaker(client);
+        // console.log('after in play queue');
     }
 
 

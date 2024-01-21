@@ -12,13 +12,14 @@ interface DmComponentProps {
 const DmComponent: FC<DmComponentProps> = ({Dm}) => {
 	const router = useRouter();
 
-	const {personalId, setPersonalId, setSearchInputDm, setChannelId, setHideTabs} = useContext(ChatContext);
+	const {personalId, setPersonalId, setSearchInputDm, setChannelId, setHideTabs, setChannel} = useContext(ChatContext);
 
 	const setDmQuery = () => {
 		console.log('here == ', Dm.dmId);
 		// router.replace(`/Chat?personal=${Dm.dmId}`);
 		setPersonalId(Dm.dmId);
 		setChannelId('');
+		setChannel();
 		setHideTabs(true);
 		// setSearchInputDm('');
 	}

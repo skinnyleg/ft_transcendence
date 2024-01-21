@@ -10,9 +10,9 @@ function GameQueue() {
     const   [progress, setProgress] = useState<number>(5);
     const gameSocket = useContext(gameSocketContext)
     const   {setScore,setGameMape, setPowerUps, setData, setGameId, setPlayerL, setPlayerR, gameType, setGameType, settings, setSettings} = useContext(GameContext);
-
     useEffect(() => {
         const handleGameReady = (data: {roomId: string}) => {
+            console.log('data in queue === ', data)
             setProgress(100);
             // console.log('emit match ready');            
             // setGameType('QUEUE');
@@ -35,7 +35,7 @@ function GameQueue() {
             gameSocket.off('MatchReady');
             // gameSocket.off('playerSettings');
         };
-    },[]);
+    },[gameSocket]);
     
     useEffect(() => {
         gameSocket.emit('abort');
@@ -60,7 +60,7 @@ function GameQueue() {
             gameSocket.off('readyToQueue')
         };
 
-    }, []);
+    }, [gameSocket]);
 
     return (
         <main className="main flex bg-cyan-900 justify-center items-center h-screen w-screen">

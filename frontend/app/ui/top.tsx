@@ -10,6 +10,7 @@ import { socket} from '../context/soketContext';
 import { ContextProvider, picturesContext } from "../context/profilePicContext";
 
 import { toast } from 'react-toastify';
+import { useRouter } from 'next/navigation';
 
 export default function TopBar () {
 
@@ -17,6 +18,7 @@ export default function TopBar () {
   const [show, setShow] = useState(false);
   const [results, setRes] = useState<responseData[]>([]);
   const searchRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   const handleClickOutside = (e: MouseEvent) => {
     if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
@@ -97,9 +99,11 @@ export default function TopBar () {
           </div>
             <div   className="lg:flex xl:flex md:hidden hidden pr-2 lg:space-x-4 ">
               <Notifications/>
-                <Link rel="prefetch" href={`${process.env.NEXT_PUBLIC_FRONTEND_HOST}/profile/${nickname}`}>
+              <div onClick={() => router.push(`${process.env.NEXT_PUBLIC_FRONTEND_HOST}/profile/${nickname}`)}>
+                {/* <Link rel="prefetch" href={`${process.env.NEXT_PUBLIC_FRONTEND_HOST}/profile/${nickname}`}> */}
                   <img src={profilePic} alt="yo" className="max-w-[50px] max-h-[50px] min-w-[50px] min-h-[50px] rounded-full border-accents border-[2px] hidden lg:flex" />
-                </Link>
+                {/* </Link> */}
+              </div>
             </div> 
         </div>
   );
