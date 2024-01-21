@@ -30,7 +30,7 @@ const TopThree = ()=> {
 		}
 		catch (error)
 		{
-			console.log("error1 == ", error);
+			// console.log("error1 == ", error);
 		}
 		return data;
 	}

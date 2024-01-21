@@ -26,14 +26,14 @@ const PersonalContent: FC<PersonalContentProps> = () => {
 		// const searchParams = useSearchParams()
 
 		useEffect(() => {
-			// console.log("ref obj == ", scrollableRef.current)
+			// // console.log("ref obj == ", scrollableRef.current)
 			if (scrollableRef.current) {
 				// Scroll to the bottom when Messages or addBlur change
 				scrollableRef.current.scrollTop = scrollableRef.current.scrollHeight;
 				// scrollableRef.current?.scrollIntoView({ behavior: "smooth" })
 			}
 			// return () => {
-			// 	// console.log("cleanup")
+			// 	// // console.log("cleanup")
 			// 	scrollableRef.current = null;
 			// }
 		}, [messages]);
@@ -51,7 +51,7 @@ const PersonalContent: FC<PersonalContentProps> = () => {
 				setMessages(data);
 			})
 			chatSocket.on('messageDoneDM', (data: DmMessageInter) => {
-					console.log("messages Data personal done == ", data);
+					// console.log("messages Data personal done == ", data);
 					chatSocket.emit('getUserDms');
 					if (checkOpenPersonalId(data.dmId, personalId) == true)
 					{
@@ -62,7 +62,7 @@ const PersonalContent: FC<PersonalContentProps> = () => {
 			})
 
 				chatSocket.on('messageDoneCH', (data: MessageInter) => {
-					console.log('got new message == ', data);
+					// console.log('got new message == ', data);
 					chatSocket.emit('getUserChannels');
 					// if (checkOpenChannelId(data.channelId, channelId) == true)
 					// {

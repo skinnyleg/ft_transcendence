@@ -27,7 +27,7 @@ const ChatSideBar: FC<ChatSideBarProps> = () => {
 
 
 	useEffect(() => {
-		// console.log('load time users channels')
+		// // console.log('load time users channels')
 
 		//Old Method
 		// chatSocket.emit('getChSidebar', {
@@ -43,14 +43,14 @@ const ChatSideBar: FC<ChatSideBarProps> = () => {
 	useEffect(() => {
 
 		chatSocket.on('channelSidebar', (data: ChannelUser[]) => {
-			// console.log('sideBar data == ', data);
+			// // console.log('sideBar data == ', data);
 			setChannelsUsers(data);
 		})
 
 
 		// Old Method
 		// chatSocket.on('refreshSide', () => {
-		// 	// console.log('refresh == ', channelId)
+		// 	// // console.log('refresh == ', channelId)
 		// 	chatSocket.emit('getChSidebar', {
 		// 		channelName: channelId
 		// 	})
@@ -63,7 +63,7 @@ const ChatSideBar: FC<ChatSideBarProps> = () => {
 
 		// New Method
 		chatSocket.on('refreshSide', () => {
-			// console.log('refresh == ', channelId)
+			// // console.log('refresh == ', channelId)
 			chatSocket.emit('getChSidebar', {
 				channelName: channelId
 			})

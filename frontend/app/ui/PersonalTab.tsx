@@ -40,7 +40,7 @@ const PersonalTab = () => {
 		
 		
 		chatSocket.on('userDms', (data: DmsInter[]) => {
-			// console.log("DMs == ", data);
+			// // console.log("DMs == ", data);
 			setUserDms(data);
 		})
 
@@ -48,9 +48,9 @@ const PersonalTab = () => {
 			chatSocket.emit('getUserDms');
 		})
 		// chatSocket.on('outDone', (data: {channelName: string}) => {
-		// 	console.log('searchParams == ', searchParams.get('channel'))
-		// 	console.log('sent from on == ', data.channelName)
-		// 	console.log('sent from state == ', channelId)
+		// 	// console.log('searchParams == ', searchParams.get('channel'))
+		// 	// console.log('sent from on == ', data.channelName)
+		// 	// console.log('sent from state == ', channelId)
 		// 	if (checkOpenChannelId(data.channelName, channelId) == true)
 		// 	{
 		// 		deleteChannelQuery();

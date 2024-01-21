@@ -7,15 +7,15 @@ export class makeQueue {
     private queue: GameUser[] = [];
 
     enQueue(player : GameUser){
-      console.log("index off == ",  this.queue.indexOf(player))
+      // // console.log("index off == ",  this.queue.indexOf(player))
       if (this.queue.indexOf(player) === -1){
-        console.log('entered in queue')
+        // // console.log('entered in queue')
         this.queue.push(player);
         player.socket.emit("InQueue", true);
         return true;
       }
       else{
-        // console.log("Im Heerre")
+        // // console.log("Im Heerre")
         player.socket.emit("error", "You're already In Queue");
         return false;
       }
@@ -23,7 +23,7 @@ export class makeQueue {
     
     dequeue(client): GameUser | undefined {
       const index = this.queue.indexOf(client)
-      // console.log("indexx == ", index);
+      // // console.log("indexx == ", index);
       if (index >= 0){
         return this.queue.splice(index, 1)[0];
       }
@@ -32,11 +32,11 @@ export class makeQueue {
     }
     deleteUserQueue(client : GameUser){
       const index = this.queue.indexOf(client);
-      // console.log("iiiindeee", index);
+      // // console.log("iiiindeee", index);
       if (index > -1){
         this.queue.splice(index, 1);
       }
-      // console.log("wdfewfewfewqfeW", this.queue);
+      // // console.log("wdfewfewfewqfeW", this.queue);
     }
     getQueue(): GameUser[] {
       return this.queue;

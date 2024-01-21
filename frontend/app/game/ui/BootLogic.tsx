@@ -110,7 +110,7 @@ const PongZoneBoot = () => {
 
         gameSocket.on('drawBallBot', () => {
             Matter.Body.setVelocity(ball, { x: 5, y: 5 })
-            console.log('drawBall event has received');
+            // console.log('drawBall event has received');
         });
 
         gameSocket.on('redirectToDashboard', () => {
@@ -187,7 +187,7 @@ const PongZoneBoot = () => {
         gameSocket.emit('ballPermission');
     };
 
-    // console.log('map == ', gameMape);
+    // // console.log('map == ', gameMape);
     return (
         <div
         style={{ '--image-url': `url(${gameMape})` } as React.CSSProperties} 

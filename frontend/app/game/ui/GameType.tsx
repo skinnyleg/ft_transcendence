@@ -11,7 +11,7 @@ function  GameType ({typeSetter}: any) {
     const   [choise, setChoise] = useState({BOT: 'teal-300', QUEUE: 'cyan-900'});
     
     // useEffect(() => {
-    //     console.log('typesetter === ', )
+    //     // console.log('typesetter === ', )
     // },[]);
 
         const handleBotGame = () => {

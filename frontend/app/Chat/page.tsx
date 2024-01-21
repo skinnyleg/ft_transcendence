@@ -24,10 +24,10 @@ const Chat: React.FC<ChatProps> = () => {
 	// 	if (searchParams.has('channel') && searchParams.get('channel') !== '')
 	// 	{
 	// 		newName = searchParams.get('channel') as string
-	// 		// console.log('newName in root == ', newName);
+	// 		// // console.log('newName in root == ', newName);
 	// 		// setChannelId(newName);
 	// 	}
-	// 	// console.log('newName == ', newName)
+	// 	// // console.log('newName == ', newName)
 	// 	return newName
 	// }
 
@@ -56,16 +56,16 @@ const Chat: React.FC<ChatProps> = () => {
 	// 	{
 	// 		newName = searchParams.get('personal') as string
 	// 		// router.replace('/Chat');
-	// 		// console.log('newName in root == ', newName);
+	// 		// // console.log('newName in root == ', newName);
 	// 		// setChannelId(newName);
 	// 	}
-	// 	// console.log('newName == ', newName)
+	// 	// // console.log('newName == ', newName)
 	// 	return newName
 	// }
 	
 	// const [personalId, setPersonalId] = useState<string>(extractPersonalName())
 	// const setChannelQuery = (newName: string) => {
-	// 	// console.log('newName == ', newName)
+	// 	// // console.log('newName == ', newName)
 	// 	if (newName === '')
 	// 	{
 	// 		deleteChannelQuery();
@@ -75,7 +75,7 @@ const Chat: React.FC<ChatProps> = () => {
 	// }
 
 	// const setPersonalQuery = (newName: string) => {
-	// 	// console.log('newName == ', newName)
+	// 	// // console.log('newName == ', newName)
 	// 	if (newName === '')
 	// 	{
 	// 		deleteChannelQuery();
@@ -97,7 +97,7 @@ const Chat: React.FC<ChatProps> = () => {
 
 	// useEffect(() => {
 	// 	channelId = channelId;
-	// 	console.log('ref == ', channelId)
+	// 	// console.log('ref == ', channelId)
 	// }, [channelId])
 
 	useEffect(() => {
@@ -105,9 +105,9 @@ const Chat: React.FC<ChatProps> = () => {
 
 		// Old Method
 		// chatSocket.on('outDone', (data: {channelName: string}) => {
-		// 	// console.log('searchParams == ', searchParams.get('channel'))
-		// 	// console.log('page sent from on == ', data.channelName)
-		// 	// console.log('page sent from state == ', channelId)
+		// 	// // console.log('searchParams == ', searchParams.get('channel'))
+		// 	// // console.log('page sent from on == ', data.channelName)
+		// 	// // console.log('page sent from state == ', channelId)
 		// 	if (checkOpenChannelId(data.channelName, channelId) == true)
 		// 	{
 		// 		// deleteChannelQuery();
@@ -117,7 +117,7 @@ const Chat: React.FC<ChatProps> = () => {
 		// 	chatSocket.emit('getUserChannels');
 		// })
 		// chatSocket.on('newName', (data: {newName: string, oldName: string}) => {
-		// 	console.log('am\'I here')
+		// 	// console.log('am\'I here')
 		// 	chatSocket.emit('getUserChannels');
 		// 	if (checkOpenChannelId(data.oldName, channelId) == true)
 		// 	{
@@ -131,9 +131,9 @@ const Chat: React.FC<ChatProps> = () => {
 
 		// New Method
 		chatSocket.on('outDone', (data: {channelName: string}) => {
-			// console.log('searchParams == ', searchParams.get('channel'))
-			// console.log('page sent from on == ', data.channelName)
-			// console.log('page sent from state == ', channelId)
+			// // console.log('searchParams == ', searchParams.get('channel'))
+			// // console.log('page sent from on == ', data.channelName)
+			// // console.log('page sent from state == ', channelId)
 			if (checkOpenChannelId(data.channelName, channelId) == true)
 			{
 				// deleteChannelQuery();
@@ -174,15 +174,15 @@ const Chat: React.FC<ChatProps> = () => {
 					setUser(nickname);
 				}
 			} catch (error) {
-				console.log('error ' , error);
+				// console.log('error ' , error);
 			}
 		}
 		fetchUser();
-		console.log('load time effect')
+		// console.log('load time effect')
 
 		chatSocket.emit('getSaveDmId')
 		chatSocket.on('sentDmId', (data: {dmId: string}) => {
-			console.log('dmId sent ==' , data.dmId)
+			// console.log('dmId sent ==' , data.dmId)
 			setPersonalId(data.dmId);
 		})
 

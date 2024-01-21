@@ -28,7 +28,6 @@ const ChatTopBar: FC<ChatTopBarProps> = () => {
 		setHideTabs(false)
 	}
 	const showSideBar = () => {
-		// TODO rather than query string use state
 		// router.replace(`/Chat?channel=${channelId}&bar=open`);
 		setBarOpen(true);
 	}

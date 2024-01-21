@@ -315,8 +315,8 @@ const Profile = () => {
                 });
                 if (res.ok) {
                     const achievementsData = await res.json();
-                    // console.log(profileData);
-                    // console.log("achievement == ", achievementsData);
+                    // // console.log(profileData);
+                    // // console.log("achievement == ", achievementsData);
                     setAchievements(achievementsData.doneAchievements);
                     setNotAchievements(achievementsData.notDoneAchievements);
                 }
@@ -348,7 +348,7 @@ const Profile = () => {
     var level : number = profileData?.userData?.level;
     var isblocked : boolean | undefined = profileData?.isBlocked;
     var isfriend : boolean | undefined = profileData?.isfriend;
-    // console.log('isblocked in profiele == ', profileData?.isBlocked)
+    // // console.log('isblocked in profiele == ', profileData?.isBlocked)
     function formatNumber(num: number, precision = 1) {
         const lookup = [
           { value: 1, symbol: "" },

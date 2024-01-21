@@ -30,7 +30,7 @@ export class UserController {
 	@Get('FirstLogin')
 	firstLogin(@Req() req){
 		const id = getId(req);
-		console.log("lopolopooo ----- 555")
+		// // console.log("lopolopooo ----- 555")
 		return (this.userService.updateAchivements(id, "First Login"));
 	}
 

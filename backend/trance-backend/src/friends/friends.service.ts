@@ -42,7 +42,7 @@ export class FriendsService {
 			this.sendWebSocketError(client, "User not found", true)
 			return;
 		}
-		// console.log(user);
+		// // console.log(user);
 		try {
 			await this.emitNotifications(client, user.id);
 		}
@@ -94,7 +94,7 @@ export class FriendsService {
 			if (toSend !== undefined)
 			{
 				const notif = await this.userService.generateNotifData(requestId);
-				// console.log('notification === ', notif);
+				// // console.log('notification === ', notif);
 				toSend.socket.emit('notifHistory', notif);
 			}
 			client.emit('notification', 'Friend request sent successfully');

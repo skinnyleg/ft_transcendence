@@ -23,8 +23,8 @@ const PersonalTypeBar: FC<PersonalTypeBarProps> = () => {
 			if (message.trim().length)
 			{
 
-				// console.log('message == ', message.trim().length)
-				// console.log('receiverId == ', personal.reciverId)
+				// // console.log('message == ', message.trim().length)
+				// // console.log('receiverId == ', personal.reciverId)
 				chatSocket.emit('sendMsgDM', {
 					receiverId: personal.reciverId,
 					content: message,

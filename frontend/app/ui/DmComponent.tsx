@@ -15,7 +15,7 @@ const DmComponent: FC<DmComponentProps> = ({Dm}) => {
 	const {personalId, setPersonalId, setSearchInputDm, setChannelId, setHideTabs, setChannel} = useContext(ChatContext);
 
 	const setDmQuery = () => {
-		console.log('here == ', Dm.dmId);
+		// console.log('here == ', Dm.dmId);
 		// router.replace(`/Chat?personal=${Dm.dmId}`);
 		setPersonalId(Dm.dmId);
 		setChannelId('');

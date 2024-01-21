@@ -38,8 +38,8 @@ function Game() {
             router.push('/Dashboard');
         })
         const handleGameReady = (data: any) => {
-            console.log('data in gameReady === ', data);
-            console.log('emit match ready');            
+            // console.log('data in gameReady === ', data);
+            // console.log('emit match ready');            
             setGameType('QUEUE');
             setData(data);
             setGameId(data[0].roomId);
@@ -49,7 +49,7 @@ function Game() {
         };
         
         const handlePlayerSettings = (data: any) => {
-            console.log('settings === ', data);
+            // console.log('settings === ', data);
             setSettings({theme: data.theme, power: data.power, id: data.id, powerOpponenent: data.powerOpponenent});
         };
         gameSocket.emit('getGameData')

@@ -38,29 +38,29 @@ const MuteUser: FC<MuteUserProps> = ({isOpen, setIsOpen, userNick, userId}) => {
 	const {channelId} = useContext(ChatContext);
 
 	const handleTypeChange = (type: string) => {
-		console.log("type is ", type);
+		// console.log("type is ", type);
 		setType(type);
 	}
 
   function closeModal() {
-    console.log("closing")
+    // console.log("closing")
     setIsOpen(false)
 }
 
 function openModal() {
-    console.log("opening")
+    // console.log("opening")
     setIsOpen(true)
   }
 
 
   	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-		  console.log('muteType == ', type);
+		  // console.log('muteType == ', type);
 		e.preventDefault();
 		let index = types.findIndex((item) => item.type === type);
 		if (index === -1 && types[0].type === type)
 			index = 0;
 
-		console.log('type index == ', time[index]);
+		// console.log('type index == ', time[index]);
 
 		chatSocket.emit('muteUser', {
 			channelName: channelId,

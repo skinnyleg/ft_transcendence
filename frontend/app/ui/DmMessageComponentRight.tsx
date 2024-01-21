@@ -9,7 +9,7 @@ interface DmMessageComponentRightProps {
 const DmMessageComponentRight: FC<DmMessageComponentRightProps> = ({message}) => {
 
 	// const picExists = () => {
-	// 	// console.log('message == ', message);
+	// 	// // console.log('message == ', message);
 	// 	if (message && message.picture !== undefined && message.picture !== null)
 	// 		return true;
 	// 	return false;

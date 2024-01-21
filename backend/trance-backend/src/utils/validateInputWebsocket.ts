@@ -7,7 +7,12 @@ export async function validateAndSendError(payload: Record<string, any>, dtoClas
   const errors = await validate(Dto as Object);
 
   if (errors.length > 0) {
-    const errorMessage = Object.values(errors[0].constraints).join(', ');
+    // // console.log('error === ', errors);
+    let errorMessage;
+    if (errors[0].constraints !== undefined)
+      errorMessage = Object.values(errors[0].constraints).join(', ');
+    else
+      errorMessage = 'Something Is Wrong With The Data Sent'
     return {valid: true, error: errorMessage};
   }
 

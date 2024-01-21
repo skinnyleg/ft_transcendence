@@ -26,7 +26,7 @@ export default function LoginForm() {
       credentials: 'include',
       headers: { 'Content-Type': 'application/json'},
     });
-    // console.log('response == ', response.status);
+    // // console.log('response == ', response.status);
     // if (response.status === 200) {
       // const res = await response.json();
       // toast.success("Welcome ...!");
@@ -53,7 +53,7 @@ export default function LoginForm() {
         headers: { 'Content-Type': 'application/json'},
         body: JSON.stringify({ username, password }),
       });
-      console.log('response == ', response.status);
+      // console.log('response == ', response.status);
       if (response.status === 200) {
         const res = await response.json();
         toast.success("Welcome ...!");

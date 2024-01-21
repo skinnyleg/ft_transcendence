@@ -24,35 +24,35 @@ const RightBar: FC<RightBarProps> = ({}) => {
 
 	useEffect(() => {
 		chatSocket.on('messageDoneCH', (data: MessageInter) => {
-			// console.log('got new message == ', data);
+			// // console.log('got new message == ', data);
 			chatSocket.emit('getUserChannels');
 			// if (checkOpenChannelId(data.channelId, channelId) == true)
 			// {
 			// 	setMessages((prevMessages) => {
-			// 		console.log('prevmessages == ', prevMessages);
+			// 		// console.log('prevmessages == ', prevMessages);
 			// 		const index = prevMessages.length - 1;
 			// 		if (index >= 0 && prevMessages[index].sender === data.sender)
 			// 		{
 			// 			prevMessages[index].picture = '';
 			// 		}
-			// 		console.log('data == ', data);
+			// 		// console.log('data == ', data);
 			// 		return [...prevMessages, data]
 			// 	})
 			// }
 		})
 		chatSocket.on('messageDoneDM', (data: DmMessageInter) => {
-			// console.log('got new message == ', data);
+			// // console.log('got new message == ', data);
 			chatSocket.emit('getUserDms');
 			// if (checkOpenChannelId(data.channelId, channelId) == true)
 			// {
 			// 	setMessages((prevMessages) => {
-			// 		console.log('prevmessages == ', prevMessages);
+			// 		// console.log('prevmessages == ', prevMessages);
 			// 		const index = prevMessages.length - 1;
 			// 		if (index >= 0 && prevMessages[index].sender === data.sender)
 			// 		{
 			// 			prevMessages[index].picture = '';
 			// 		}
-			// 		console.log('data == ', data);
+			// 		// console.log('data == ', data);
 			// 		return [...prevMessages, data]
 			// 	})
 			// }

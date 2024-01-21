@@ -23,7 +23,7 @@ const ChannelPass: FC<ChannelPassProps> = ({isOpen, setIsOpen}) => {
 	const [error, setError] = useState<string>('')
 
   function closeModal() {
-    console.log("closing")
+    // console.log("closing")
     setIsOpen(false)
 	setPassword('')
 	setConfPassword('')
@@ -31,7 +31,7 @@ const ChannelPass: FC<ChannelPassProps> = ({isOpen, setIsOpen}) => {
 }
 
 function openModal() {
-    console.log("opening")
+    // console.log("opening")
     setIsOpen(true)
   }
 

@@ -35,17 +35,17 @@ const ChannelTab = () => {
 			chatSocket.emit('getUserChannels');
 		   });
 		   chatSocket.on('queryChannels', (data: ChannelInter[]) => {
-			   // console.log('query channels == ', data)
+			   // // console.log('query channels == ', data)
 			   setUserChannels(data);
 		   })
 		   chatSocket.on('channelDone', (data: ChannelInter) => {
-			   // console.log('inside channel Done append')
+			   // // console.log('inside channel Done append')
 			   setUserChannels((prevuserChannels) => {
 				   return [...prevuserChannels, data]
 			   })
 		   })
 		   chatSocket.on('UserChannels', (data: ChannelInter[]) => {
-			// console.log("channels == ", data);
+			// // console.log("channels == ", data);
 			setUserChannels(data);
 		})
 
@@ -63,10 +63,10 @@ const ChannelTab = () => {
 
 		// Old method 
 		// chatSocket.on('PicDone', (data: {channelName: string}) => {
-		// 	// console.log('change pic')
-		// 	// console.log('searchParams == ', searchParams.get('channel'))
-		// 	// console.log('sent from on == ', data.channelName)
-		// 	// console.log('sent from state == ', channelId)
+		// 	// // console.log('change pic')
+		// 	// // console.log('searchParams == ', searchParams.get('channel'))
+		// 	// // console.log('sent from on == ', data.channelName)
+		// 	// // console.log('sent from state == ', channelId)
 		// 	chatSocket.emit('getUserChannels')
 		// 	if (checkOpenChannelId(data.channelName, channelId) === true)
 		// 	{
@@ -87,10 +87,10 @@ const ChannelTab = () => {
 
 		//new Method
 		chatSocket.on('PicDone', (data: {channelName: string}) => {
-			// console.log('change pic')
-			// console.log('searchParams == ', searchParams.get('channel'))
-			// console.log('sent from on == ', data.channelName)
-			// console.log('sent from state == ', channelId)
+			// // console.log('change pic')
+			// // console.log('searchParams == ', searchParams.get('channel'))
+			// // console.log('sent from on == ', data.channelName)
+			// // console.log('sent from state == ', channelId)
 			chatSocket.emit('getUserChannels')
 			// if (checkOpenChannelId(data.channelName, channelId) === true)
 			// {
@@ -112,9 +112,9 @@ const ChannelTab = () => {
 
 
 		// chatSocket.on('outDone', (data: {channelName: string}) => {
-		// 	console.log('searchParams == ', searchParams.get('channel'))
-		// 	console.log('sent from on == ', data.channelName)
-		// 	console.log('sent from state == ', channelId)
+		// 	// console.log('searchParams == ', searchParams.get('channel'))
+		// 	// console.log('sent from on == ', data.channelName)
+		// 	// console.log('sent from state == ', channelId)
 		// 	if (checkOpenChannelId(data.channelName, channelId) == true)
 		// 	{
 		// 		deleteChannelQuery();
@@ -124,7 +124,7 @@ const ChannelTab = () => {
 		// })
 
 		// chatSocket.on('messageDoneDM', (data: DmMessageInter) => {
-		// 	console.log("messages Data personal doneasdasdas == ", data);
+		// 	// console.log("messages Data personal doneasdasdas == ", data);
 		// 	chatSocket.emit('getUserDms');
 		// })
 	

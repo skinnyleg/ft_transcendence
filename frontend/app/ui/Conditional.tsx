@@ -26,14 +26,14 @@ const Conditional = ({isfriend, privateProfile, userId, isBlocked} : DataProps )
     const [friendIcon, setFriendIcon] = useState<boolean | undefined>();
     const [blockIcon, setBlockIcon] = useState<boolean | undefined>();
 
-    // console.log("Blocker ++++++== ", isBlocked)
-    // console.log("friens ++++++== ", isfriend)
+    // // console.log("Blocker ++++++== ", isBlocked)
+    // // console.log("friens ++++++== ", isfriend)
 
     useEffect(() => {
         // if (isfriend)
         //     setFriendIcon(true);
 
-        // console.log('blocked == ', isBlocked)
+        // // console.log('blocked == ', isBlocked)
         // if (isBlocked)
         // {
         //     setBlockIcon(true);
@@ -59,13 +59,13 @@ const Conditional = ({isfriend, privateProfile, userId, isBlocked} : DataProps )
 
     // Events Emiter
     const handleAddFriend = () => {
-        console.log('frined == ', friendIcon);
-        console.log(userId, socket.connected);
+        // console.log('frined == ', friendIcon);
+        // console.log(userId, socket.connected);
         socket.emit("add-friend", {userId});
     }
     const handleDeleteFriend = () => {
-        console.log('frined == ', friendIcon);
-        console.log(userId, socket.connected);
+        // console.log('frined == ', friendIcon);
+        // console.log(userId, socket.connected);
         socket.emit("remove-friend", {userId});
     }
 

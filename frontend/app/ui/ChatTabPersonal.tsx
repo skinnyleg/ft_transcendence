@@ -49,7 +49,7 @@ const ChatTabPersonal: FC<ChatTabProps> = () => {
 
 
 		chatSocket.on('DmData', (data: DmsInter) => {
-			// console.log('channel data2 == ', data);
+			// // console.log('channel data2 == ', data);
 			setPersonal(data);
 		})
 		
@@ -75,9 +75,9 @@ const ChatTabPersonal: FC<ChatTabProps> = () => {
 
 		// chatSocket.on('PicDone', (data: {channelName: string}) => {
 		// 	chatSocket.emit('getUserChannels')
-		// 	// console.log('chat tab searchParams == ', searchParams.get('channel'))
-		// 	// console.log('chat tab sent from on == ', data.channelName)
-		// 	// console.log('chat tab sent from state == ', channelId)
+		// 	// // console.log('chat tab searchParams == ', searchParams.get('channel'))
+		// 	// // console.log('chat tab sent from on == ', data.channelName)
+		// 	// // console.log('chat tab sent from state == ', channelId)
 		// 	if (checkOpenChannelId(data.channelName, channelId) == true)
 		// 	{
 		// 		chatSocket.emit('getDataCH', {
@@ -88,9 +88,9 @@ const ChatTabPersonal: FC<ChatTabProps> = () => {
 
 
 		// chatSocket.on('outDone', (data: {channelName: string}) => {
-		// 	console.log('chat tab searchParams == ', searchParams.get('channel'))
-		// 	console.log('chat tab sent from on == ', data.channelName)
-		// 	console.log('chat tab sent from state == ', channelId)
+		// 	// console.log('chat tab searchParams == ', searchParams.get('channel'))
+		// 	// console.log('chat tab sent from on == ', data.channelName)
+		// 	// console.log('chat tab sent from state == ', channelId)
 		// 	if (checkOpenChannelId(data.channelName, channelId) == true)
 		// 	{
 		// 		deleteChannelQuery();
@@ -101,7 +101,7 @@ const ChatTabPersonal: FC<ChatTabProps> = () => {
 
 
 		// chatSocket.on("notifHistory", (data: NotificationsData) => {
-        //     console.log("data chatSocket == ", data);
+        //     // console.log("data chatSocket == ", data);
         //     setNotifications((prevNotifications) => {
         //         return [...prevNotifications, data];
         //     });

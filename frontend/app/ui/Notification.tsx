@@ -66,7 +66,7 @@ const Notifications = () => {
 
 
         chatSocket.on("notification", (notif) => {
-            console.log("ni=otif sent" ,notif);
+            // console.log("ni=otif sent" ,notif);
             toast.success(notif, {
                 toastId: 'chatNotifSucces',
                 autoClose: 500
@@ -75,7 +75,7 @@ const Notifications = () => {
 
 
         chatSocket.on("failed", (notif) => {
-            console.log('error notif == ', notif)
+            // console.log('error notif == ', notif)
             if (check_notif(notif) === true)
                 return ;
             toast.error(notif, {
@@ -85,7 +85,7 @@ const Notifications = () => {
         });
 
         chatSocket.on("notifHistory", (data: NotificationsData) => {
-            console.log("data chatSocket == ", data);
+            // console.log("data chatSocket == ", data);
             setNotifications((prevNotifications) => {
                 return [...prevNotifications, data];
             });
@@ -97,13 +97,12 @@ const Notifications = () => {
             chatSocket.off('notifHistory');
             chatSocket.off('failed');
         }
-        //TODO now that added the dependency i need to test error notif again
     }, [chatSocket])
 
 
     useEffect(() => {
         gameSocket.on("notification", (notif) => {
-            console.log("ni=otif sent" ,notif);
+            // console.log("ni=otif sent" ,notif);
             toast.success(notif, {
                 toastId: 'gameNotifSucces',
                 autoClose: 500
@@ -112,7 +111,7 @@ const Notifications = () => {
 
 
         gameSocket.on("error", (notif) => {
-            console.log('error notif == ', notif)
+            // console.log('error notif == ', notif)
             if (check_notif(notif) === true)
                 return ;
             toast.error(notif, {
@@ -122,7 +121,7 @@ const Notifications = () => {
         });
 
         gameSocket.on('notifHistory', (data: NotificationsData) => {
-            console.log("data gameSocket == ", data);
+            // console.log("data gameSocket == ", data);
             setNotifications((prevNotifications) => {
                 return [...prevNotifications, data];
             });
@@ -130,7 +129,7 @@ const Notifications = () => {
         });
 
         gameSocket.on('redirectPlayers_match', (data: MatchInfo[]) => {
-            console.log('redirecting to game');
+            // console.log('redirecting to game');
               router.push(`/game/${data[0].roomId}`);
         })
         if (gameSocket.connected)
@@ -142,13 +141,12 @@ const Notifications = () => {
             gameSocket.off('error');
             gameSocket.off('redirectPlayers_match');
         }
-        //TODO now that added the dependency i need to test error notif again
     }, [gameSocket])
 
 
     useEffect(() => {
         socket.on("notification", (notif) => {
-            console.log("ni=otif sent" ,notif);
+            // console.log("ni=otif sent" ,notif);
             toast.success(notif, {
                 toastId: 'success',
                 autoClose: 500
@@ -156,7 +154,7 @@ const Notifications = () => {
         });
 
         socket.on("error", (error) => {
-            console.log("error sent" ,error);
+            // console.log("error sent" ,error);
             toast.error(error.message, {
                 toastId: 'error',
                 autoClose: 500
@@ -165,8 +163,8 @@ const Notifications = () => {
         });
 
         socket.on("notifHistory", (data: NotificationsData) => {
-            console.log("data socket == ", data);
-            console.log(socket.connected, data);
+            // console.log("data socket == ", data);
+            // console.log(socket.connected, data);
             setNotifications((prevNotifications) => {
                 return [...prevNotifications, data];
             });
@@ -198,7 +196,7 @@ const Notifications = () => {
         }
         else
         {
-            console.log('here')
+            // console.log('here')
             socket.emit("accept-request", {userId : useId , requestId : reqId});
             socket.on('refreshPersonalTab', () => {
                 chatSocket.emit('getUserDms');

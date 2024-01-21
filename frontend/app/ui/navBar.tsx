@@ -24,7 +24,7 @@ function NavBar ({handleShowMenu}: NavBarProps)
 {
   const [show, setShow] = useState(false);
   var currentPath = usePathname();
-  // console.log('pathname == ', currentPath)
+  // // console.log('pathname == ', currentPath)
   const router = useRouter();  
 
 
@@ -81,7 +81,7 @@ function NavBar ({handleShowMenu}: NavBarProps)
 //           setProfilePic(nickname.profilePic);
 //           setBackgroundPic(nickname.backgroundPic);
 //           setNickname(nickname.nickname);
-//           console.log("nick:", nickname);
+//           // console.log("nick:", nickname);
 //         }
 //       } catch (error) {
 //         toast.error('Error fetching data');

@@ -45,7 +45,7 @@ export class DmService {
         });
         if (!newMessage)
             throw new ConflictException('creat message failed');
-        console.log('newmessage: ', newMessage);
+        // console.log('newmessage: ', newMessage);
         const messageInfo = await this.prisma.message.findUnique({
             where: { id: newMessage.id },
             include: {

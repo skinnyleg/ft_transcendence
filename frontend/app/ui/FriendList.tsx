@@ -49,7 +49,7 @@ const FriendsList = () => {
 
     useEffect(() => {
         const handleStatusChangeGame = (stat : {id : string, status : UserStatus}) => {
-            // console.log('in status change')
+            // // console.log('in status change')
             if (stat.status !== undefined) {
             setFriendList((prevFriendsList) => {
               return prevFriendsList.map((friend) => {
@@ -69,7 +69,7 @@ const FriendsList = () => {
     
     useEffect(() => {
         const handleStatusChange = (stat : {id : string, status : UserStatus}) => {
-            // console.log('in status change')
+            // // console.log('in status change')
             if (stat.status !== undefined) {
             setFriendList((prevFriendsList) => {
               return prevFriendsList.map((friend) => {
@@ -92,7 +92,7 @@ const FriendsList = () => {
       }, [socket]);
 
       const sendMessage = (userId: string) => {
-        console.log('here')
+        // console.log('here')
         chatSocket.emit('sendMsgDM', {
             receiverId : userId
         })

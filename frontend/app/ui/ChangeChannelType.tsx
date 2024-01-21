@@ -26,12 +26,12 @@ const ChannelType: FC<ChannelTypeProps> = ({isOpen, setIsOpen, currentType}) => 
 	const [error, setError] = useState<string>('')
 
 	const handleTypeChange = (type: string) => {
-		console.log("type is ", type);
+		// console.log("type is ", type);
 		setType(type);
 	}
 
   function closeModal() {
-    console.log("closing")
+    // console.log("closing")
 	setType(currentType)
 	setError('');
     setIsOpen(false)
@@ -40,7 +40,7 @@ const ChannelType: FC<ChannelTypeProps> = ({isOpen, setIsOpen, currentType}) => 
 }
 
 function openModal() {
-    console.log("opening")
+    // console.log("opening")
     setIsOpen(true)
 	setPassword('')
 	setConfPassword('')

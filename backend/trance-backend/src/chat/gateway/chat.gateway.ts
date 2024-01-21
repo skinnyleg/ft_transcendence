@@ -46,13 +46,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 	async onModuleInit() {
 		try
 		{
-			console.log('------ WebSocket Gateway started ------');
+			// console.log('------ WebSocket Gateway started ------');
 			this.usersSockets.length = 0;
 			await this.Outils.pushMutedUsers();
 			// await this.Outils.MuteExpiration();
 		}
 		catch (error) {
-			console.log('error<onModuleInit>: ', error.message);
+			// console.log('error<onModuleInit>: ', error.message);
 		}
 	}
 
@@ -63,14 +63,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			const token: string = client.handshake.headers.token as string;
 			const payload = await this.jwtService.verifyAsync(token, { secret: process.env.jwtsecret })
 			const user = await this.userService.findOneById(payload.sub);
-			// console.log('usereqw == ', user);
+			// // console.log('usereqw == ', user);
 			client.data.user = user;
 			// this.usersSockets.find((isExist) => { isExist.userId === user.id ? (throw new error('ffff')) : null});
 			// for(const isExist of this.usersSockets) {
 			// 	if (isExist.userId === user.id)
 			// 		throw new ForbiddenException('only one tab allowed for connection');
 			// }
-			console.log(`------ coonect: ${user.nickname} ------`);
+			// console.log(`------ coonect: ${user.nickname} ------`);
 			this.usersSockets.push({userId: user.id, socket: client});
 			await this.DmService.UserStatus2Others(user.id, this.usersSockets, UserStatus.ONLINE);
 			client.emit('ready');
@@ -85,7 +85,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 	{
 		try
 		{
-			console.log(`------ User disconnect ${client.data.user.nickname}------`);
+			// console.log(`------ User disconnect ${client.data.user.nickname}------`);
 			const array: {userId: string, socket: any}[] = [];
 			await this.DmService.UserStatus2Others(client.data.user.id, this.usersSockets, UserStatus.OFFLINE);
 			for (const user of this.usersSockets) {
@@ -147,13 +147,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 	{
 		try
 		{
-			// console.log('channelName == ', data.channelName)
+			// // console.log('channelName == ', data.channelName)
 			await  this.DmOutils.validateDtoData(data, stringDto);
 			const { channelName } = data;
 			const user = client.data.user;
-			// console.log('channelName == ', channelName)
+			// // console.log('channelName == ', channelName)
 			const channel = await this.Outils.findChannelByName(channelName);
-			// console.log('channelName == ', channelName)
+			// // console.log('channelName == ', channelName)
 			let buffer: channelsSide = {};
 			buffer.channelId = channel.id;
 			buffer.channelName = channel.name;
@@ -187,7 +187,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 				const reqID = await this.userService.generateRequest(user.id, ownerId, 
 					RequestType.JOINCHANNEL, false, data.channelName);
 				if (ownerSocket) {
-					console.log('entered to private cond')
+					// console.log('entered to private cond')
 					const obj = (await this.userService.generateNotifData(reqID))
 					ownerSocket.socket.emit('notifHistory', obj);
 				}
@@ -203,7 +203,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			await this.channelService.emitNotif2channelUsers(notif2users, ['joinDone', 'refreshSide']);
 		}
 		catch (error) {
-			console.log('entered error ')
+			// console.log('entered error ')
 			this.DmOutils.Error(client, 'joinChannel', error, 'join channel failed');
 		}
 	}
@@ -353,10 +353,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			return ;
 		}
 		const userDmId = this.saveDmId.find((user) => user.userId === user2.id)
-		console.log('array before1 ==' , this.saveDmId);
+		// console.log('array before1 ==' , this.saveDmId);
 		client.emit('sentDmId', {dmId: userDmId.dmId});
 		this.saveDmId = this.saveDmId.filter((user) => user.userId !== user2.id)
-		console.log('array before2 ==' , this.saveDmId);
+		// console.log('array before2 ==' , this.saveDmId);
 	}
 
 	@SubscribeMessage('sendMsgDM')

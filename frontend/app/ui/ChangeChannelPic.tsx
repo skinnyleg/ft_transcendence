@@ -25,12 +25,12 @@ const ChannelPic: FC<ChannelPicProps> = ({isOpen, setIsOpen, currentPic}) => {
 
 
   function closeModal() {
-    console.log("closing")
+    // console.log("closing")
     setIsOpen(false)
 }
 
 function openModal() {
-    console.log("opening")
+    // console.log("opening")
     setIsOpen(true)
   }
 
@@ -47,7 +47,7 @@ function openModal() {
 				formData.append("file", imgData);
 				try {
 					const url = process.env.NEXT_PUBLIC_BACKEND_HOST;
-					console.log('url == ', url);
+					// console.log('url == ', url);
 	
 					const results = await fetch(`${url}/upload/ChannelPic`, {
 						credentials: 'include',
@@ -60,11 +60,11 @@ function openModal() {
 					if (results) {
 					}
 					else {
-						console.log("error")
+						// console.log("error")
 					}
 				}
 				catch (error : any) {
-					console.log("error from catch == ", error)
+					// console.log("error from catch == ", error)
 				}
 			}
 			chatSocket.emit('refreshPicture', {

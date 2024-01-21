@@ -14,7 +14,7 @@ const checkVerification = async (token:string | undefined) => {
       },
       });
       if (res.status === 401) {
-        console.log("fuck");
+        // console.log("fuck");
         return true;
       }
       if (res.status === 200){
@@ -40,13 +40,13 @@ const refreshToken = async (refreshtoken : string) => {
         'Authorization': `Bearer ${refreshtoken}`
     },
     });
-    console.log("status", res.status);
+    // console.log("status", res.status);
     const result = res.json()
     if (res.status === 200) {
       return result;
     }
     if (res.status === 401){
-      console.log("unauthorized")
+      // console.log("unauthorized")
       return result;
     }
     else{
@@ -66,7 +66,7 @@ const firstLoginAchiv = async (token : string | undefined) => {
         headers: { "Content-Type": "application/json" },
     });
     if (res.ok) {
-        console.log("success");
+        // console.log("success");
     }
     } catch (error) {
     console.error("Error during check:", error);

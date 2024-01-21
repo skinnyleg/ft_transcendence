@@ -10,7 +10,7 @@ export const FriendStatusContext = createContext<any>({});
 export const ContextFriendProvider = ({ children }: { children: any })=> {
     const pathname = usePathname();
     let nickname : string = pathname.split("/")[2];
-    // console.log("niiimkm ===== ", nickname);
+    // // console.log("niiimkm ===== ", nickname);
     const [friendshipStatus, setFriendshipStatus] = useState('');
     const getFriendshipStatus = async () => {
       try {
@@ -25,13 +25,13 @@ export const ContextFriendProvider = ({ children }: { children: any })=> {
           setFriendshipStatus(status.status);
         }
       } catch (error : any) {
-        // console.log("data Ere", error.message)
+        // // console.log("data Ere", error.message)
         toast.error(error.message);
       }
     };
     useEffect(() => {
       getFriendshipStatus();
-      // console.log("lolo11111");
+      // // console.log("lolo11111");
     }, []);   
     
     const updateStatus = () => {

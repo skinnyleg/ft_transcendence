@@ -23,8 +23,8 @@ const ChatTypeBar: FC<ChatTypeBarProps> = () => {
 			if (message.trim().length)
 			{
 
-				console.log('message == ', message.trim().length)
-				// console.log('channelId == ', channelId)
+				// console.log('message == ', message.trim().length)
+				// // console.log('channelId == ', channelId)
 				chatSocket.emit('sendMsgCH', {
 					content: message,
 					channelName: channelId,

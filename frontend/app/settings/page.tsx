@@ -33,7 +33,7 @@ const Settings : React.FC = () => {
                 credentials: 'include',
                 method: 'POST',
                 body: formData,})
-                console.log ("file === ", results);
+                // console.log ("file === ", results);
 
                 if (results.ok){
                     const pic = await results.json();
@@ -77,7 +77,7 @@ const Settings : React.FC = () => {
         if (newNick){
             try{
                 const results = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/nick`, {nickname : newNick}, {withCredentials:true});
-                console.log(results.status);
+                // console.log(results.status);
                 if (results.status === 201){
                     updateProfile(null, null, newNick);
                 }
@@ -109,10 +109,11 @@ const Settings : React.FC = () => {
         {
             try{
                 const results =  await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/pass`, {password : passConfirmation}, {withCredentials : true});
-                console.log("ressuuuusdls", results);
+                // console.log("ressuuuusdls", results);
                 if (results.status === 201){
                     setPassConfirmation('');
                     setPass('');
+                    toast.success("Password Change Was Successful", {toastId: "PassChange", autoClose: 1000});
                 }
                 else {
                     toast.error("Unable To change Password Please try again", {toastId: "Error", autoClose: 1000});
@@ -127,14 +128,14 @@ const Settings : React.FC = () => {
     const enableQrVer = async () => {
         try{
             const results =  await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/2FA`, {Enabled : !QrEnabled}, {withCredentials : true});
-            console.log("srta", results.status);
+            // console.log("srta", results.status);
             if (results.status === 201){
-                console.log("YYYYYYo")
+                // console.log("YYYYYYo")
               setQrEnabled(!QrEnabled);
                 
             }
             else {
-                console.log("error");
+                // console.log("error");
                 toast.error("Unable To change Nickname Please try again", {toastId: "Error", autoClose: 1000});
             }
         } catch (error : any) {
@@ -147,7 +148,7 @@ const Settings : React.FC = () => {
             const results =  await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/GenerateQr`, {withCredentials : true});
             if (results.status === 200){
                 setEnabled(!enabled);
-                console.log(results.data)
+                // console.log(results.data)
                 setQr(results.data.img)
             }
         } catch (error : any){
@@ -184,16 +185,16 @@ const Settings : React.FC = () => {
         const UpdateStatus = async () => {
             try{
                 const results = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/auth/UpdateFirstLogin`, {}, {withCredentials:true});
-                console.log("res == ", results);
+                // console.log("res == ", results);
                 if (results.status === 200)
                 {
-                    console.log("LOOL")
+                    // console.log("LOOL")
                 }
                 else {
                     toast.error("Unable To change Nickname Please try again", {toastId: "Error", autoClose: 1000});
                 }
             } catch (error : any) {
-                console.log("error == ", error);
+                // console.log("error == ", error);
                 toast.error(error.response.data.message, {toastId: "Error", autoClose: 1000});
             }
             
@@ -207,7 +208,7 @@ const Settings : React.FC = () => {
             });
             if (res.ok) {
               const enable = await res.json();
-              console.log(enable);
+              // console.log(enable);
               setQrEnabled(enable.isEnabled);
               setEnabled(enable.isEnabled)
               if (enable.isEnabled === true)

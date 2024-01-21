@@ -30,25 +30,25 @@ const PongZoneQueue = () => {
     
 
     useEffect(() => {
-        // console.log('settings === ', settings)
+        // // console.log('settings === ', settings)
         if (settings.id === 0) {
             speedMeterL = (settings.power === 'speedMeter') ? {x: 9 , y: 9 } : {x:6 , y: 6};
             ZoomInL = (settings.power === 'ZoomIn') ? 225 : 150;
             ShrinkR = (settings.power === 'Shrink') ? 100 : 150;
-            ExtraTime = (settings.power === 'ExtraTime') ? 5 : 4;
-            // console.log('settings R zoomL 0 : ', ZoomInL);
-            // console.log('settings powerUp : ', settings.power);
-            // console.log('output of ternary : ',  (settings.power === 'ZoomIn') ? 225 : 150);
-            // console.log('settings L 0 : ', settings);
+            ExtraTime = (settings.power === 'ExtraTime' || settings.powerOpponenent === 'ExtraTime') ? 5 : 4;
+            // // console.log('settings R zoomL 0 : ', ZoomInL);
+            // // console.log('settings powerUp : ', settings.power);
+            // // console.log('output of ternary : ',  (settings.power === 'ZoomIn') ? 225 : 150);
+            // // console.log('settings L 0 : ', settings);
             //
             speedMeterR = (settings.powerOpponenent === 'speedMeter') ? {x: 9 , y: 9 } : {x:6 , y: 6};
             ZoomInR = (settings.powerOpponenent === 'ZoomIn') ? 225 : 150;
             ShrinkL = (settings.powerOpponenent === 'Shrink') ? 100 : 150;
-            ExtraTime = (settings.powerOpponenent === 'ExtraTime') ?  5 : 4;
-            // console.log('settings R zoomR 0 : ', ZoomInR);
-            // console.log('settings powerUp : ', settings.powerOpponenent);
-            // console.log('output of ternary : ',  (settings.powerOpponenent === 'ZoomIn') ? 225 : 150);
-            // console.log('settings R 0 : ', settings);
+            // ExtraTime = (settings.powerOpponenent === 'ExtraTime') ?  5 : 4;
+            // // console.log('settings R zoomR 0 : ', ZoomInR);
+            // // console.log('settings powerUp : ', settings.powerOpponenent);
+            // // console.log('output of ternary : ',  (settings.powerOpponenent === 'ZoomIn') ? 225 : 150);
+            // // console.log('settings R 0 : ', settings);
             
             //
         }
@@ -56,28 +56,29 @@ const PongZoneQueue = () => {
             speedMeterR = (settings.power === 'speedMeter') ? {x: 9 , y: 9 } : {x:6 , y: 6};
             ZoomInR = (settings.power === 'ZoomIn') ? 225 : 150;
             ShrinkL = (settings.power === 'Shrink') ? 100 : 150;
-            ExtraTime = (settings.power === 'ExtraTime') ? 5 : 4;
-            // console.log('settings L zoomR 1 : ', ZoomInR);
-            // console.log('settings powerUp : ', settings.power);
-            // console.log('output of ternary : ',  (settings.power === 'ZoomIn') ? 225 : 150);
-            // console.log('settings R 1 : ', settings);
+            // ExtraTime = (settings.power === 'ExtraTime') ? 5 : 4;
+            ExtraTime = (settings.power === 'ExtraTime' || settings.powerOpponenent === 'ExtraTime') ? 5 : 4;
+            // // console.log('settings L zoomR 1 : ', ZoomInR);
+            // // console.log('settings powerUp : ', settings.power);
+            // // console.log('output of ternary : ',  (settings.power === 'ZoomIn') ? 225 : 150);
+            // // console.log('settings R 1 : ', settings);
             //
             speedMeterL = (settings.powerOpponenent === 'speedMeter') ? {x: 9 , y: 9 } : {x:6 , y: 6};
             ZoomInL = (settings.powerOpponenent === 'ZoomIn') ? 225 : 150;
             ShrinkR = (settings.powerOpponenent === 'Shrink') ? 100 : 150;
-            ExtraTime = (settings.powerOpponenent === 'ExtraTime') ? 5 : 4;
-            // console.log('settings L zoomL 1 : ', ZoomInL);
-            // console.log('settings powerUp : ', settings.powerOpponenent);
-            // console.log('output of ternary : ',  (settings.powerOpponenent === 'ZoomIn') ? 225 : 150);
-            // console.log('settings L 1 : ', settings);
+            // ExtraTime = (settings.powerOpponenent === 'ExtraTime') ? 5 : 4;
+            // // console.log('settings L zoomL 1 : ', ZoomInL);
+            // // console.log('settings powerUp : ', settings.powerOpponenent);
+            // // console.log('output of ternary : ',  (settings.powerOpponenent === 'ZoomIn') ? 225 : 150);
+            // // console.log('settings L 1 : ', settings);
             //
         }
         ShrinkL = (ShrinkL === 100) ? ShrinkL : ZoomInL;
         ShrinkR = (ShrinkR === 100) ? ShrinkR : ZoomInR;
         // ShrinkL = ZoomInL;
         // ShrinkR = ZoomInR;
-        // console.log('left paddle === ', ShrinkL)
-        // console.log('right paddle === ', ShrinkR)
+        // // console.log('left paddle === ', ShrinkL)
+        // // console.log('right paddle === ', ShrinkR)
         const { Engine, Render, World, Bodies, Composite, Runner} = Matter;
         
         const engine = Engine.create({
@@ -101,7 +102,7 @@ const PongZoneQueue = () => {
         const maxY = render.bounds.max.y;
         const maxX = render.bounds.max.x;
         setPongzone({width: maxX, height: maxY});
-        // console.log(`front : h-${maxY} & w-${maxX}`);
+        // // console.log(`front : h-${maxY} & w-${maxX}`);
     
         const midleVertical = ((maxY - minY) / 2) + minY;
         const midleCanvas = ((maxX- minX) / 2) + minX;
@@ -133,11 +134,11 @@ const PongZoneQueue = () => {
         const handleKey = (event: KeyboardEvent) => {
             switch (event.key) {
                 case 'ArrowUp':
-                    console.log('times--')
+                    // console.log('times--')
                     gameSocket.emit('arrow', {move: 'UP'});
                     break;
                 case 'ArrowDown':
-                    console.log('times++')
+                    // console.log('times++')
                     gameSocket.emit('arrow', {move: 'DOWN'}); 
                     break;
             }
@@ -198,7 +199,7 @@ const PongZoneQueue = () => {
             // return ;
         })
         gameSocket.on('StartDrawing', () => {
-            console.log('inside drawing ball');
+            // console.log('inside drawing ball');
             Matter.Body.setVelocity(ball, { x: 6, y: 6 })
         });
 
@@ -210,7 +211,7 @@ const PongZoneQueue = () => {
         })
 
         gameSocket.on('abort', (data: boolean) => {
-            console.log('abort got emitted')
+            // console.log('abort got emitted')
             if (data === true)
             {
                 Matter.Body.setPosition(ball, { x: midleCanvas, y: midleVertical });
@@ -283,9 +284,9 @@ const PongZoneQueue = () => {
 
     const path = usePathname();
     const startGame = () => {
-        console.log('path name: ', path);
+        // console.log('path name: ', path);
         setMatchready(true);
-        console.log('startGame: ', matchready);
+        // console.log('startGame: ', matchready);
         gameSocket.emit('startGame', {roomId: gameId, ...pongzone});
     };
 

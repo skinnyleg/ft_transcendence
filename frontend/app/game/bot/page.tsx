@@ -37,10 +37,10 @@ function    BotGame(){
 
 
     // setInterval(() => {
-    //     // console.log('sending emit to leave bot game')
+    //     // // console.log('sending emit to leave bot game')
     //     if (path !== `/game/bot`)
     //     {
-    //         console.log('sending emit')
+    //         // console.log('sending emit')
     //         gameSocket.emit('leaveGameBot');
     //     }
     // }, 1000);

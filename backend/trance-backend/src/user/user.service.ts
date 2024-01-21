@@ -176,7 +176,7 @@ export class UserService {
 	async updateAchivements(userId: string, type: string){
 		
 		
-		// console.log("hemjjjjujrree", currentUser);
+		// // console.log("hemjjjjujrree", currentUser);
 		
 		const AchivementId = await this.prisma.achievement.findFirst({
 			where: {
@@ -323,8 +323,8 @@ export class UserService {
 			},
 		});
 
-		// console.log('firend instance == ', friendExist)
-		// console.log('id is == ', recipientId)
+		// // console.log('firend instance == ', friendExist)
+		// // console.log('id is == ', recipientId)
 		if (!friendExist)
 			throw new NotFoundException('no instanse found')
 
@@ -981,7 +981,7 @@ export class UserService {
 				userId: recipientId,
 			}
 		})
-		// console.log('user1 == ', userOneFriends)
+		// // console.log('user1 == ', userOneFriends)
 		if (userOneFriends === 1)
 		await this.updateAchivements(recipientId, 'make first friend')
 	
@@ -992,7 +992,7 @@ export class UserService {
 			}
 		})
 	
-		// console.log('user2 == ', userTwoFriends)
+		// // console.log('user2 == ', userTwoFriends)
 		if (userTwoFriends === 1)
 			await this.updateAchivements(senderId, 'make first friend')
 	}
@@ -1013,8 +1013,8 @@ export class UserService {
 		}
 		catch (error)
 		{
-			// console.log('error === ', error);
-			console.log('Something Went Wrong couldnt download user image');
+			// // console.log('error === ', error);
+			// console.log('Something Went Wrong couldnt download user image');
 			return 'NO';
 		}
 		await this.updateRank(userData);
@@ -1178,7 +1178,7 @@ export class UserService {
 				winner: true,
 			}
 		})
-		console.log('game === ', game);
+		// // console.log('game === ', game);
 		if (!game)
 			return false;
 		if (game.winner !== '')
@@ -1211,7 +1211,7 @@ export class UserService {
 				id: roomId,
 			}
 		})
-		console.log('game is === ', gameExists)
+		// // console.log('game is === ', gameExists)
 		if (!gameExists)
 			return ;
 		try {
@@ -1344,7 +1344,7 @@ export class UserService {
 	  
 		  Matches.push(obj);
 		}
-		// console.log("begin ", Matches);
+		// // console.log("begin ", Matches);
 		return Matches;
 	  }
 	  
@@ -1653,9 +1653,9 @@ export class UserService {
 
 	async getFriendStatus(id: string, nickname: string)
 	{
-		// console.log("nickname", nickname);
+		// // console.log("nickname", nickname);
 		const user = await this.findOneByNickname(nickname);
-		// console.log("userID", user.id);
+		// // console.log("userID", user.id);
 
 		if (!user)
 			throw new NotFoundException('User Not Found')
@@ -1683,7 +1683,7 @@ export class UserService {
 				return ({status: 'BLOCKED'})
 			return ({status: 'NONE'})
 		}
-		// console.log("friendStatus", friendStatus.status);
+		// // console.log("friendStatus", friendStatus.status);
 		return {status: friendStatus.status};
 	}
 }

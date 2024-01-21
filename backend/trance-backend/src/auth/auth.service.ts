@@ -26,7 +26,7 @@ export class AuthService {
 	
 		if (user.setPass == false)
 		{
-			console.log('setPass Error')
+			// console.log('setPass Error')
 			throw new BadRequestException('you need to set up a password')
 		}
 
@@ -44,7 +44,7 @@ export class AuthService {
 		const refresh = await this.createToken(user.id, user.nickname, REFRESHEXP, REFRESHSECRET)
 		res.cookie('token', token)
 		res.cookie('refresh', refresh)
-		console.log("token == ", token)
+		// console.log("token == ", token)
 		res.status(200).json(token);
 	}
 
@@ -82,7 +82,7 @@ export class AuthService {
 
 		if (!user)
 			throw new NotFoundException("User Doesn't Exits")
-		console.log("old token == ", req.cookies.token);
+		// console.log("old token == ", req.cookies.token);
 		// res.clearCookie('token');
 		// res.clearCookie('refresh');
 		const token = await this.createToken(user.id, user.nickname, TOKENEXP, TOKENSECRET)
