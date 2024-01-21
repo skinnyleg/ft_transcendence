@@ -15,13 +15,13 @@ const PlayButton = ({ theme, PowerUp, gameType_ }:PlayButtonProps) => {
         if (gameType_ === 'QUEUE')
         {
             console.log('theme front : ', PowerUp);
-            gameSocket.emit('SaveSettings', {theme_: theme, powerUp_: PowerUp});
+            gameSocket.emit('SaveSettings', {theme: theme, powerUp: PowerUp});
             // gameSocket.on('InQueue', () => { router.push('/game') });
             gameSocket.on('saved', () => { router.push('/game') });
         }
         else if (gameType_ === 'BOT')
         {
-            gameSocket.emit('PlayBot', {theme_: theme, powerUp_: PowerUp});
+            gameSocket.emit('PlayBot', {theme: theme, powerUp: PowerUp});
             router.push('/game/bot');
         }
     };

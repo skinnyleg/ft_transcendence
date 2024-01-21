@@ -5,11 +5,11 @@ import { makeQueue } from "./Queue.service";
 import { oponentDto } from "./Dto/userId";
 import { validateAndSendError } from "src/utils/validateInputWebsocket";
 import { RequestActionDto } from "src/friends/Dto/requestDto";
-import { BotDto, GameSettingsDto } from "./Dto/GameSettingsDto";
+import { BotDto, GameSettingsDto, MoveDto } from "./Dto/GameSettingsDto";
 import { UserService } from "src/user/user.service";
 import { MatchInfos } from "src/classes/classes";
 import { UserStatus } from "@prisma/client";
-import { ThemeDto } from "./Dto/ThemeDto";
+import { GameCustomizationDto, PowerUpDto, ThemeDto } from "./Dto/ThemeDto";
 
 @WebSocketGateway({ namespace: 'GameGateway', cors: {
     origin: process.env.FrontendHost,
@@ -31,15 +31,27 @@ export class GameGateway {
 
 
     @SubscribeMessage('SaveTheme')
-    saveTheme(client: Socket, payload: Record<string, any>)
+    async saveTheme(client: Socket, payload: Record<string, any>)
     {
-        this.gameService.saveTheme(client, payload.theme);
+        const verify = await validateAndSendError(payload, ThemeDto);
+        if (verify.valid == true){
+            this.gameService.sendWebSocketError(client, verify.error, false);
+        }
+        else{
+            this.gameService.saveTheme(client, verify.input.theme);
+        }
     }
 
     @SubscribeMessage('SavePowerUp')
-    SavePowerUp(client: Socket, payload: Record<string, any>)
+    async SavePowerUp(client: Socket, payload: Record<string, any>)
     {
-        this.gameService.savePowerUp(client, payload.powerUp);
+        const verify = await validateAndSendError(payload, PowerUpDto);
+        if (verify.valid == true){
+            this.gameService.sendWebSocketError(client, verify.error, false);
+        }
+        else{
+            this.gameService.savePowerUp(client, verify.input.powerUp);
+        }
     }
 
     @SubscribeMessage('ImReady')
@@ -108,53 +120,54 @@ export class GameGateway {
     @SubscribeMessage('arrow')
     async movePaddle(client: Socket, payload: Record<string, any>)
     {
-        const user = this.gameService.getUserBySocketId(client.id);
-        if (user === undefined)
-            return ;
-        const roomId = this.gameService.findGameUserById(user.id);
-        if (roomId === null)
-            return ;
-        if (this.gameService.players_arr.get(roomId)[1].isReady == false || this.gameService.players_arr.get(roomId)[0].isReady == false)
-            return ;
-        // problem who is the 2nd player √ (add rom id as a userGame attribute) √
-        if (this.gameService.players_arr.get(roomId)[0].IsInGame === false || this.gameService.players_arr.get(roomId)[0].IsInGame === false){
-            // player1.socket.emit('error', "Player Not in Game");
-            return ;
+        const verify = await validateAndSendError(payload, MoveDto);
+        if (verify.valid == true){
+            this.gameService.sendWebSocketError(client, verify.error, false);
         }
-        const move = payload.move;
-        // this.players_arr.get(roomId)[0].socket.emit('leftPaddle', 'UP')
-        // this.players_arr.get(roomId)[1].socket.emit('leftPaddle', 'DOWN')
-        // this.players_arr.get(roomId)[0].socket.emit('rightPaddle', 'UP')
-        // this.players_arr.get(roomId)[1].socket.emit('rightPaddle', 'DOWN')
-
-
-
-            switch (move) {
-                case 'UP':
-                    if (user.id === this.gameService.players_arr.get(roomId)[0].id)
-                    {
-                        this.gameService.players_arr.get(roomId)[1].socket.emit('leftPaddle', 'UP')
-                        this.gameService.players_arr.get(roomId)[0].socket.emit('leftPaddle', 'UP')
-                    }
-                    else
-                    {
-                        this.gameService.players_arr.get(roomId)[1].socket.emit('rightPaddle', 'UP')
-                        this.gameService.players_arr.get(roomId)[0].socket.emit('rightPaddle', 'UP')  
-                    }
-                    break;
-                case 'DOWN':
-                    if (user.id === this.gameService.players_arr.get(roomId)[0].id)
-                    {
-                        this.gameService.players_arr.get(roomId)[1].socket.emit('leftPaddle', 'DOWN')
-                        this.gameService.players_arr.get(roomId)[0].socket.emit('leftPaddle', 'DOWN')
-                    }
-                    else
-                    {
-                        this.gameService.players_arr.get(roomId)[1].socket.emit('rightPaddle', 'DOWN')
-                        this.gameService.players_arr.get(roomId)[0].socket.emit('rightPaddle', 'DOWN')  
-                    }
-                    break;
+        else
+        {
+            const user = this.gameService.getUserBySocketId(client.id);
+            if (user === undefined)
+                return ;
+            const roomId = this.gameService.findGameUserById(user.id);
+            if (roomId === null)
+                return ;
+            if (this.gameService.players_arr.get(roomId)[1].isReady == false || this.gameService.players_arr.get(roomId)[0].isReady == false)
+                return ;
+            // problem who is the 2nd player √ (add rom id as a userGame attribute) √
+            if (this.gameService.players_arr.get(roomId)[0].IsInGame === false || this.gameService.players_arr.get(roomId)[0].IsInGame === false){
+                // player1.socket.emit('error', "Player Not in Game");
+                return ;
             }
+            const move = verify.input.move;
+
+                switch (move) {
+                    case 'UP':
+                        if (user.id === this.gameService.players_arr.get(roomId)[0].id)
+                        {
+                            this.gameService.players_arr.get(roomId)[1].socket.emit('leftPaddle', 'UP')
+                            this.gameService.players_arr.get(roomId)[0].socket.emit('leftPaddle', 'UP')
+                        }
+                        else
+                        {
+                            this.gameService.players_arr.get(roomId)[1].socket.emit('rightPaddle', 'UP')
+                            this.gameService.players_arr.get(roomId)[0].socket.emit('rightPaddle', 'UP')  
+                        }
+                        break;
+                    case 'DOWN':
+                        if (user.id === this.gameService.players_arr.get(roomId)[0].id)
+                        {
+                            this.gameService.players_arr.get(roomId)[1].socket.emit('leftPaddle', 'DOWN')
+                            this.gameService.players_arr.get(roomId)[0].socket.emit('leftPaddle', 'DOWN')
+                        }
+                        else
+                        {
+                            this.gameService.players_arr.get(roomId)[1].socket.emit('rightPaddle', 'DOWN')
+                            this.gameService.players_arr.get(roomId)[0].socket.emit('rightPaddle', 'DOWN')  
+                        }
+                        break;
+                }
+        }
     }
 
 
@@ -162,6 +175,7 @@ export class GameGateway {
     @SubscribeMessage('EndGame')
     async handleEndOfMatch(client: Socket, payload: any)
     {
+        //TODO validation
         const user = this.gameService.getUserBySocketId(client.id)
         if (user === undefined)
             return ;
@@ -197,16 +211,16 @@ export class GameGateway {
     }
 
 
-    @SubscribeMessage('GameExist')
-    async doesGameIdExists(client: Socket, payload: any)
-    {
-        console.log('roomId in check === ', payload);
-        if (payload.roomId === undefined)
-            return ;
-        const game = await this.userService.getGame(payload.roomId);
-        if (game === false)
-            client.emit('GameIdNotValid');
-    }
+    // @SubscribeMessage('GameExist')
+    // async doesGameIdExists(client: Socket, payload: any)
+    // {
+    //     console.log('roomId in check === ', payload);
+    //     if (payload.roomId === undefined)
+    //         return ;
+    //     const game = await this.userService.getGame(payload.roomId);
+    //     if (game === false)
+    //         client.emit('GameIdNotValid');
+    // }
 
     @SubscribeMessage('getGameData')
     async getGameData(client: Socket)
@@ -279,13 +293,17 @@ export class GameGateway {
     @SubscribeMessage('SaveSettings')
     async SaveSettings(client: Socket, payload: Record<string, any>){
         // console.log("palsss", payload);
-        // const verify = await validateAndSendError(payload, ThemeDto);
-        // if (verify.valid == true){
-        //     this.gameService.sendWebSocketError(client, verify.error, false);
-        // }
+        const verify = await validateAndSendError(payload, GameCustomizationDto);
+        if (verify.valid == true){
+            this.gameService.sendWebSocketError(client, verify.error, false);
+        }
+        else
+        {
+            this.gameService.saveGameSettings(client, this.server, verify.input.theme, verify.input.powerUp);
+            client.emit('saved');
+        }
         // console.log('here');
-        this.gameService.saveGameSettings(client, this.server, payload.theme_, payload.powerUp_);
-        client.emit('saved');
+
     }
 
     @SubscribeMessage('endBotMatch')
@@ -315,7 +333,14 @@ export class GameGateway {
 
     @SubscribeMessage('PlayBot')
     async BotMatchMaker(client : Socket, payload: any){
-        this.gameService.challengeBot(client, payload);
+        const verify = await validateAndSendError(payload, GameCustomizationDto);
+        if (verify.valid == true){
+            this.gameService.sendWebSocketError(client, verify.error, false);
+        }
+        else
+        {
+            this.gameService.challengeBot(client, verify.input);
+        }
         // client.emit('gameBotTheme', payload);
     }
 

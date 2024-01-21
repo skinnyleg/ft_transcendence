@@ -24,8 +24,8 @@ function    BotGame(){
 
         gameSocket.on('BotReady', handleBotReady);
         gameSocket.on('gameBotTheme', (gameInfo: any) => {
-            setGameMape(gameInfo.theme_);
-            setPowerUps(gameInfo.powerUp_);
+            setGameMape(gameInfo.theme);
+            setPowerUps(gameInfo.powerUp);
         });
         
         return () => {

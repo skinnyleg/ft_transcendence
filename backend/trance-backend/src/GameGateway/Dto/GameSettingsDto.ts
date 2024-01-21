@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsUUID } from "class-validator";
+import { IsNotEmpty, IsNumber, IsString, IsUUID } from "class-validator";
 
 export class GameSettingsDto {
 	@IsNotEmpty()
@@ -14,4 +14,11 @@ export class BotDto{
 	@IsNumber()
 	width:number;
 	height: number;
+}
+
+
+export class MoveDto{
+	@IsNotEmpty()
+	@IsString()
+	move: string;
 }
