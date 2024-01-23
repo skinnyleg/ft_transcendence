@@ -1014,8 +1014,9 @@ export class UserService {
 		catch (error)
 		{
 			// // console.log('error === ', error);
-			// console.log('Something Went Wrong couldnt download user image');
-			return 'NO';
+			userData.profilePic = '/defaultAvatarPic.png';
+			console.log('Something Went Wrong couldnt download user image');
+			// return 'NO';
 		}
 		await this.updateRank(userData);
 		const user = await this.prisma.user.create({

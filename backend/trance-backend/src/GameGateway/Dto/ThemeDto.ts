@@ -7,7 +7,7 @@ export class ThemeDto{
 }
 
 export class PowerUpDto{
-    @IsNotEmpty()
+    // @IsNotEmpty()
 	@IsString()
 	powerUp: string;
 }

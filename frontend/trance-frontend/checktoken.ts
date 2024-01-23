@@ -5,14 +5,14 @@ async function checkAuth(token:string | undefined)  {
     try {
       // // console.log(token);
       
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/auth/CheckToken`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_MIDDLEWARE}/auth/CheckToken`, {
         method: 'GET',
       headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
       },
       });
-      // // console.log("status", res.status);
+      // console.log("status", res);
       if (res.status === 401) {
         // // console.log("fuck");
         success = false;
@@ -26,6 +26,7 @@ async function checkAuth(token:string | undefined)  {
       }
     } catch (error) {
         success = false;
+        // console.log("catch error == ", error);
       // console.error("Error during authentication check:", error);
     }
     finally{

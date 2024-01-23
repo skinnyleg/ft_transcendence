@@ -42,7 +42,8 @@ export class GameService {
         const user = this.getUserBySocketId(client.id)
         if (user === undefined)
             return ;
-
+        if (powerUp === '')
+            powerUp = 'FireBall';
         user.powerUp = powerUp;
     }
 

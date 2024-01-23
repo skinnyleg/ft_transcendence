@@ -29,7 +29,7 @@ export class AuthService {
 			// console.log('setPass Error')
 			throw new BadRequestException('you need to set up a password')
 		}
-
+		// console.log('here === in sign in')
 		const isMatch = await compareHash(password, user.password);
 		if (isMatch == false)
 			throw new UnauthorizedException('Wrong Crendentiels')

@@ -76,11 +76,13 @@ const firstLoginAchiv = async (token : string | undefined) => {
 export default async function middleware(request: NextRequest){
     let token = request.cookies.get("token")?.value;
     const refreshtoken  = request.cookies.get("refresh");
+    // console.log('token in middleware is === ', token)
     const succes = await checkAuth(token);
     // let isFirstTime = await checkVerification(token);
     // if (isFirstTime){
     //   await firstLoginAchiv(token);
     // }
+    // console.log('success == ', succes);
     if (succes){
       return NextResponse.next();
     }
