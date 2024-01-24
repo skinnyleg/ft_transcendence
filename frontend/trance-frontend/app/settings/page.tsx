@@ -234,7 +234,7 @@ return (
                     <div className="absolute right-10 -translate-x-1/2 -translate-y-1/2 text-[50px] rounded-full bg-white">
                         <PlusCircleIcon className="text-accents w-10 h-10" />
                     </div>
-                    <div className="absolute bottom-[-10]  left-28 lg:left-32">
+                    <div className="absolute bottom-[-10]  left-28 md:left-32">
                         <h1 className="text-black text-2xl inline-block ">{nickname}</h1>
                     </div>
                 </div>

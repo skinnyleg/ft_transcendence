@@ -106,8 +106,8 @@ return (
             onChange={(e) => {setSearch(e.target.value); if (e.target.value) setSearchShow(true); else {setSearchShow(false); setRes([]);} }}
             type="search"
             placeholder="Search..."
-            className={`p-1 ${showBar ? '' : 'hidden'}  w-full h-[5%] border border-gray-300 text-black 
-             focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-transparent fixed xs:mt-[4%] md:mt-[1%] left-0 right-0 z-10`}
+            className={`p-1 ${showBar ? '' : 'hidden'}  w-full h-[40px] border border-gray-300 text-black 
+             focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-transparent fixed mt-[20px] left-0 right-0 z-10`}
           />
         </div>
         <Link href={`${process.env.NEXT_PUBLIC_FRONTEND_HOST}/profile/${nickname}`}>
@@ -120,7 +120,7 @@ return (
       </div>
     </div>
     <div className={`${(search ) ? 'block' : 'hidden'} lg:hidden xl:hidden flex justify-start
-          md:mt-[14.2%] mt-[26%]  absolute w-screen bg-white shadow-md transition-transform duration-300 z-10 rounded-b-lg`}>
+          mt-[110px] absolute w-screen bg-white shadow-md transition-transform duration-300 z-10 rounded-b-lg`}>
           <div className="flex w-full flex-col"> 
             {searchShow && results.map((result) => (
               <Link href={`/profile/${result.nickname}`} key={result.id}>
@@ -132,7 +132,7 @@ return (
             ))}
           </div>
     </div>
-    <nav className={`flex flex-col lg:ml-2 lg:mt-2 xl:mt-2 lg:block md:mt-20 mt-[6vh] fixed lg:h-[98%] h-[94%] bg-nav w-15 ${show ? '' : 'hidden'} lg:rounded-xl border border-blackpink transition-transform duration-300 w-20`}>
+    <nav className={`flex flex-col lg:ml-2 lg:mt-2 xl:mt-2 lg:block mt-[6vh] fixed lg:h-[98%] h-[94%] bg-nav w-15 ${show ? '' : 'hidden'} lg:rounded-xl border border-blackpink transition-transform duration-300 w-20`}>
       <div className="flex flex-col flex-grow">
         <div className="flex items-center justify-center mt-6 h-16 w-10 mx-auto xl:h-30 xl:w-30 font-medium hover:opacity">
           <Image

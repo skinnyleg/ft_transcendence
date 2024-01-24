@@ -3,11 +3,12 @@ import { useContext, useEffect } from "react";
 import PongZoneBoot from "../ui/BootLogic";
 import GameResultBar from "../ui/GameResultBar";
 import { GameContext, gameSocketContext } from "@/app/context/gameSockets";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 function    BotGame(){
 
     const   path = usePathname();
+    const router = useRouter();
     const   {setPowerUps, setGameMape, setGameId, setPlayerL, setPlayerR} = useContext(GameContext);
     const gameSocket = useContext(gameSocketContext)
 
@@ -15,7 +16,9 @@ function    BotGame(){
     useEffect(() => {
 
         gameSocket.emit('ImReadyBot');
-
+        gameSocket.on('redirToDash', () => {
+            router.push('/Dashboard');
+        })
         const handleBotReady = (data: any) => {
             setGameId(data.id);
             setPlayerL({name: data.nickname, picture: data.profilePic});
@@ -29,6 +32,7 @@ function    BotGame(){
         });
         
         return () => {
+            gameSocket.off('redirToDash');
             gameSocket.off('BotReady', handleBotReady);
             gameSocket.off('gameBotTheme', (theme: any) => { setGameMape(theme)});
         };
