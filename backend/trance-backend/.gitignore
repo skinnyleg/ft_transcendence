@@ -13,6 +13,7 @@ lerna-debug.log*
 
 # OS
 .DS_Store
+postman.json
 
 # Tests
 /coverage
@@ -33,3 +34,8 @@ lerna-debug.log*
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+# webSocketEvent.txt
+
+# migrations folder
+migrations/

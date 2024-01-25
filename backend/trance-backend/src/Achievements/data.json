@@ -1,0 +1,44 @@
+[
+  {
+    "id": "Win first match",
+    "title": "Win first match",
+    "description": "You won your first ever match",
+    "userScore": 0,
+    "totalScore": 1
+  },
+  {
+    "id": "First Login",
+    "title": "First Login",
+    "description": "Welcome to Pong Zone",
+    "userScore": 0,
+    "totalScore": 1
+  },
+  {
+    "id": "Lose first match",
+    "title": "Lose first match",
+    "description": "You lost your first ever match",
+    "userScore": 0,
+    "totalScore": 1
+  },
+  {
+    "id": "Win five matches",
+    "title": "Win five matches",
+    "description": "You won five matches",
+    "userScore": 0,
+    "totalScore": 5
+  },
+  {
+    "id": "clean Shoot",
+    "title": "clean Shoot",
+    "description": "Clean Shoot",
+    "userScore": 0,
+    "totalScore": 5
+  },
+  {
+    "id": "make first friend",
+    "title": "make first friend",
+    "description": "make first friend",
+    "userScore": 0,
+    "totalScore": 5
+  }
+]

@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { Request } from 'express';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
+export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {;
   constructor() {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
@@ -16,9 +16,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   private static extractJWT(req: Request): string | null {
+    // console.log("token.... == ", req.cookies);
     if (req.cookies && 'token' in req.cookies) {
-		if (req.cookies.token.length > 0)
-			return req.cookies.token;
+      if (req.cookies.token.length > 0) {
+        return req.cookies.token;
+      }
     }
     return null;
   }
