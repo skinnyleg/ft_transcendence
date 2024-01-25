@@ -385,6 +385,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 			}
 			else
 			{
+				if (receiverSocket) {
+					receiverSocket.socket.emit('refreshUserDms');
+				}
 				this.saveDmId.push({userId: user.id, dmId: dmId});
 				client.emit('redirect')
 			}
