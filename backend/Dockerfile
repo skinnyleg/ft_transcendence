@@ -14,6 +14,4 @@ RUN chmod +x script.sh
 
 RUN npm i
 
-# RUN npm run build
-
 CMD [ "./script.sh" ]
