@@ -34,9 +34,7 @@ const ChannelPassword: FC<ChannelPasswordProps> = () => {
 		})
 		chatSocket.on('failed', (data: string) => {
 			setError(data);
-			// return ;
 		})
-		// closeModal();
 	}
 
 
@@ -108,7 +106,6 @@ const ChannelPassword: FC<ChannelPasswordProps> = () => {
 										<button
 											type="submit"
 											className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-green-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-											// onClick={handleSubmit}
 										>
 										Submit
 										</button>

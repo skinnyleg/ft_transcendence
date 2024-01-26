@@ -38,29 +38,23 @@ const MuteUser: FC<MuteUserProps> = ({isOpen, setIsOpen, userNick, userId}) => {
 	const {channelId} = useContext(ChatContext);
 
 	const handleTypeChange = (type: string) => {
-		// console.log("type is ", type);
 		setType(type);
 	}
 
   function closeModal() {
-    // console.log("closing")
     setIsOpen(false)
 }
 
 function openModal() {
-    // console.log("opening")
     setIsOpen(true)
   }
 
 
   	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-		  // console.log('muteType == ', type);
 		e.preventDefault();
 		let index = types.findIndex((item) => item.type === type);
 		if (index === -1 && types[0].type === type)
 			index = 0;
-
-		// console.log('type index == ', time[index]);
 
 		chatSocket.emit('muteUser', {
 			channelName: channelId,
@@ -118,7 +112,6 @@ function openModal() {
 										<button
 											type="submit"
 											className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-green-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-											// onClick={handleSubmit}
 										>
 										Submit
 										</button>

@@ -162,8 +162,6 @@ export class ChannelOutils {
 
     async   getChannelIdByName(channelName: string):Promise<string | null>
     {
-        // // console.log('get channel id: ', channelName);
-        // // console.log('channel name 01: ', newName);
         const channel = await this.findChannelByName(channelName);
         return channel?.id || null;
     }
@@ -299,7 +297,6 @@ export class ChannelOutils {
 
     async   checkRequest(data: any, ownerId: string, senderId: string)
     {
-        // channelName: data.channelName,
         const checkRequest = await this.prisma.request.findFirst({
             where: {
                 typeOfRequest: 'JOINCHANNEL',
@@ -326,7 +323,6 @@ export class ChannelOutils {
         });
         if (!channel)
             throw new NotFoundException(`${channelName} not found`);
-        //     return 'NONE';
         const checkBlacklist = await this.isUserInBlacklist(channel.name, userId)
         if (checkBlacklist) {
             for(const user of channel.blacklist) {

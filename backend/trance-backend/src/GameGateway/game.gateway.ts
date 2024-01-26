@@ -106,9 +106,7 @@ export class GameGateway {
                     return ;
                 if (this.gameService.players_arr.get(roomId)[1].isReady == false || this.gameService.players_arr.get(roomId)[0].isReady == false)
                     return ;
-                // problem who is the 2nd player √ (add rom id as a userGame attribute) √
                 if (this.gameService.players_arr.get(roomId)[0].IsInGame === false || this.gameService.players_arr.get(roomId)[0].IsInGame === false){
-                    // player1.socket.emit('error', "Player Not in Game");
                     return ;
                 }
                 const move = verify.input.move;
@@ -192,18 +190,6 @@ export class GameGateway {
             this.gameService.sendWebSocketError(client, "Error on abort Event", false);
         }
     }
-
-
-    // @SubscribeMessage('GameExist')
-    // async doesGameIdExists(client: Socket, payload: any)
-    // {
-    //     // console.log('roomId in check === ', payload);
-    //     if (payload.roomId === undefined)
-    //         return ;
-    //     const game = await this.userService.getGame(payload.roomId);
-    //     if (game === false)
-    //         client.emit('GameIdNotValid');
-    // }
 
     @SubscribeMessage('getGameData')
     async getGameData(client: Socket)

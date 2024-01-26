@@ -45,8 +45,6 @@ export class DmOutils {
 				},
 			},
 		});
-		// if (!dm)
-		// 	throw new NotFoundException('dm not found');
 		return dm?.id || null;
     }
     
@@ -56,10 +54,8 @@ export class DmOutils {
 		Object.assign(ObjectDto, data);
 		const ValidationError: ValidationError[] = await validate(ObjectDto);
 		if (ValidationError.length > 0) {
-			// console.error('ValidationErrors: ', ValidationError);
 			throw new BadRequestException('Invalide data');
 		}
-		// return data as typeof dtoClass;
 	}
 
 	async   getUserIdByName(nickname: string): Promise<string | null>

@@ -7,7 +7,6 @@ export async function validateAndSendError(payload: Record<string, any>, dtoClas
   const errors = await validate(Dto as Object);
 
   if (errors.length > 0) {
-    // // console.log('error === ', errors);
     let errorMessage;
     if (errors[0].constraints !== undefined)
       errorMessage = Object.values(errors[0].constraints).join(', ');

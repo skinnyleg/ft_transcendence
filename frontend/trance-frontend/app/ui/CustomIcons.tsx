@@ -2,7 +2,6 @@
 
 import React, { ElementType } from 'react';
 import PropTypes from 'prop-types';
-import { IoMdSettings, /* other icons */ } from 'react-icons/io';  // Import other icons as needed
 import { Tooltip } from 'react-tooltip'
 import { IoMdAddCircleOutline } from "react-icons/io";
 
@@ -28,12 +27,6 @@ export const IconWithTooltip : React.FC<IconWithTooltipProps> = ({ icon, tooltip
   );
 };
 
-// IconWithTooltip.propTypes = {
-//   icon: PropTypes.elementType.isRequired,  // PropType for a React component type
-//   tooltipId: PropTypes.string.isRequired,
-//   tooltipContent: PropTypes.string.isRequired,
-//   styles: PropTypes.string.isRequired,
-// };
 
 interface CreateChannelIconProps {
   style: string;

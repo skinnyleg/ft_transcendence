@@ -49,7 +49,6 @@ const FriendsList = () => {
 
     useEffect(() => {
         const handleStatusChangeGame = (stat : {id : string, status : UserStatus}) => {
-            // // console.log('in status change')
             if (stat.status !== undefined) {
             setFriendList((prevFriendsList) => {
               return prevFriendsList.map((friend) => {
@@ -69,7 +68,6 @@ const FriendsList = () => {
     
     useEffect(() => {
         const handleStatusChange = (stat : {id : string, status : UserStatus}) => {
-            // // console.log('in status change')
             if (stat.status !== undefined) {
             setFriendList((prevFriendsList) => {
               return prevFriendsList.map((friend) => {
@@ -82,17 +80,14 @@ const FriendsList = () => {
           }
         };
         socket.on('statusChange', handleStatusChange);
-        // gameSocket.on("statusChange", handleStatusChange);
         socket.on("refreshFriendsList", friendsGet);
         return () => {
             socket.off("statusChange", handleStatusChange);
-            // gameSocket.off("statusChange", handleStatusChange);  
             socket.off("refreshFriendsList", friendsGet)
         };
       }, [socket]);
 
       const sendMessage = (userId: string) => {
-        // console.log('here')
         chatSocket.emit('sendMsgDM', {
             receiverId : userId
         })
@@ -135,7 +130,6 @@ const FriendsList = () => {
                                         {friend.nickname}
                                     </div>
                                     <div className="flex flex-row justify-center items-center gap-2 md:gap-6  w-full">
-                                        {/* <button className="bg-button rounded-md px-2 py-1 text-white text-xs lg:block md:block xs:hidden">Challenge</button> */}
                                         <IconWithTooltip
                                             icon={GiPingPongBat}
                                             styles='w-6 h-4 md:w-8 md:h-8  text-button xs:block hover:cursor-pointer'
@@ -143,8 +137,6 @@ const FriendsList = () => {
                                             tooltipContent="Challenge"
                                             clickBehavior={() => challenge_friend(friend.id)}
                                         />
-                                        {/* <GiPingPongBat  className="w-6 h-4 md:w-8 md:h-8  text-button xs:block hover:cursor-pointer" /> */}
-                                        {/* <button onClick={(e) => {sendMessage(friend.id)}} className="bg-button rounded-md px-2 py-1 text-white text-xs lg:block md:block xs:hidden">Chat</button> */}
                                         <IconWithTooltip
                                             icon={ChatBubbleBottomCenterIcon}
                                             styles='w-6 h-4 md:w-8 md:h-8  text-button xs:block hover:cursor-pointer'
@@ -152,7 +144,6 @@ const FriendsList = () => {
                                             tooltipContent="Send Message"
                                             clickBehavior={() => sendMessage(friend.id)}
                                         />
-                                        {/* <ChatBubbleBottomCenterIcon className="w-6 h-4 md:w-8 md:h-8  text-button xs:block hover:cursor-pointer" onClick={(e) => {sendMessage(friend.id)}}/> */}
                                     </div>
                                 </div>
                         ))

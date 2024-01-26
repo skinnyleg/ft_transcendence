@@ -42,7 +42,6 @@ export class FriendsService {
 			this.sendWebSocketError(client, "User not found", true)
 			return;
 		}
-		// // console.log(user);
 		try {
 			await this.emitNotifications(client, user.id);
 		}
@@ -94,7 +93,6 @@ export class FriendsService {
 			if (toSend !== undefined)
 			{
 				const notif = await this.userService.generateNotifData(requestId);
-				// // console.log('notification === ', notif);
 				toSend.socket.emit('notifHistory', notif);
 			}
 			client.emit('notification', 'Friend request sent successfully');
@@ -142,7 +140,6 @@ export class FriendsService {
 				const nick = await this.userService.getNickById(sender.id)
 				toSend.socket.emit('notification', `${nick} has blocked you`);
 				toSend.socket.emit('refreshBlockDm')
-				// toSend.socket.emit('refreshBlockIcon', {val: true});
 			}
 			client.emit('notification', 'block request sent successfully');
 			sender.socket.emit('refreshBlockDm')
@@ -167,7 +164,6 @@ export class FriendsService {
 				const nick = await this.userService.getNickById(sender.id)
 				toSend.socket.emit('notification', `${nick} has unblocked you`);
 				toSend.socket.emit('refreshBlockDm')
-				// toSend.socket.emit('refreshBlockIcon', {val: false});
 			}
 			client.emit('notification', 'unblock request sent successfully');
 			sender.socket.emit('refreshBlockIcon', {val: false});

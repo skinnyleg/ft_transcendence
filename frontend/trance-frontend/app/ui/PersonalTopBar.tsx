@@ -21,7 +21,6 @@ interface PersonalTopBarProps {}
 const PersonalTopBar: FC<PersonalTopBarProps> = () => {
 
 	const router = useRouter();
-	// const searchParams = useSearchParams()
 	const {personalId, setPersonalId, personal, setPersonal, setHideTabs} = useContext(ChatContext);
 	const [status,setStatus] = useState<string>(personal.userStatus)
 	const socket = useContext(socketContext);
@@ -29,16 +28,11 @@ const PersonalTopBar: FC<PersonalTopBarProps> = () => {
 
 
 	const handleBack = () => {
-		// router.replace('/Chat');
 		setHideTabs(false);
 	}
 	const showSideBar = () => {
 		router.replace(`/Chat?personal=${personalId}`);
 	}
-
-	// useEffect(() => {
-	// 	setStatus(personal.userStatus);
-	// }, [])
 
 	useEffect(() => {
 			chatSocket.on('statusChange', (data:({id: string, status: UserStatus})) => {

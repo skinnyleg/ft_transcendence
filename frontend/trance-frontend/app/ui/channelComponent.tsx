@@ -16,12 +16,10 @@ const ChannelComponent: FC<channelComponentProps> = ({channel}) => {
 
 
 	const setChannelQuery = () => {
-		// // console.log('set channel name == ', channel.channelName)
 		setChannelId(channel.channelName);
 		setPersonalId('');
 		setPersonal();
 		setHideTabs(true);
-		// router.push(`/Chat?channel=${channel.channelName}`);
 	}
 	return (
 		<div onClick={setChannelQuery} className='gap-2 rounded-[15px] w-full h-12 mb-1 text-black p-0 flex justify-between items-center hover:cursor-pointer'>
@@ -35,7 +33,6 @@ const ChannelComponent: FC<channelComponentProps> = ({channel}) => {
 				/>
 				<div className='flex flex-col bg-teal-100 w-full h-full pl-2 rounded-xl'>
 					<h1 className='font-bold text-base '>{channel.channelName}</h1>
-					{/* <p className='text-gray-500 text-sm'>{channel.lastMsg === '' ? 'No New Messages' : channel.lastMsg}</p> */}
 					<p className='text-gray-500 text-sm'>  {channel.lastMsg.length > 15
 								? `${channel.lastMsg.substring(0, 15)}...`
 								: channel.lastMsg === ''

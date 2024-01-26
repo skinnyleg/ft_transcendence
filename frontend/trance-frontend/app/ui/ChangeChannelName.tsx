@@ -18,7 +18,6 @@ interface ChannelNameProps {
 const ChannelName: FC<ChannelNameProps> = ({isOpen, setIsOpen}) => {
 
 	const [name, setName] = useState<string>('');
-	// const searchParams = useSearchParams();
 	const router = useRouter();
 	const chatSocket = useContext(chatSocketContext);
 	const {channelId, setChannelId} = useContext(ChatContext);
@@ -44,8 +43,6 @@ function openModal() {
 			channelName: channelId,
 			newName: name,
 		})
-		// setChannelId(name);
-		// setChannelQuery(name)
 		closeModal();
 	}
 

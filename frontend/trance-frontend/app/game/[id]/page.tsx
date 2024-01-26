@@ -15,41 +15,20 @@ function Game() {
     const path = usePathname();
     const router = useRouter();
 
-    // setInterval(() => {
-    //     if (path !== `/game/${gameId}`)
-    //         gameSocket.emit('leaveGame');
-    // }, 1000);
-
-
-    // useEffect(() => {
-    //     gameSocket.on('GameIdNotValid', () => {
-    //         router.push('/Dashboard');
-    //     })
-
-
-    //     return () => {
-    //         gameSocket.off('GameIdNotValid')
-    //     }
-    // }, [gameSocket])
-
 
     useEffect(() => {
         gameSocket.on('redirToDash', () => {
             router.push('/Dashboard');
         })
-        const handleGameReady = (data: any) => {
-            // console.log('data in gameReady === ', data);
-            // console.log('emit match ready');            
+        const handleGameReady = (data: any) => {         
             setGameType('QUEUE');
             setData(data);
             setGameId(data[0].roomId);
             setPlayerL({name: data[0].nickname, picture: data[0].profilePic});
             setPlayerR({name: data[1].nickname, picture: data[1].profilePic});
-            // router.push(`/game/${data[0].roomId}`);
         };
         
         const handlePlayerSettings = (data: any) => {
-            // console.log('settings === ', data);
             setSettings({theme: data.theme, power: data.power, id: data.id, powerOpponenent: data.powerOpponenent});
         };
         gameSocket.emit('getGameData')
@@ -63,12 +42,6 @@ function Game() {
             gameSocket.off('redirToDash');
         };
     },[gameSocket]);
-    
-
-
-    // useEffect(() => {
-    //     gameSocket.emit('GameExist', {roomId: gameId})
-    // }, [gameId])
 
     return (
         <main className="main flex bg-cyan-900 justify-center items-center h-screen w-screen">

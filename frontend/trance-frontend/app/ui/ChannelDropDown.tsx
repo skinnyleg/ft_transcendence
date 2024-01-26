@@ -42,7 +42,6 @@ const ChannelDropDown: FC<ChannelDropDownProps> = ({userRole, showSideBar, chann
 		chatSocket.emit('getDataCH', {
 			channelName: channelId
 		})
-		// setHideTabs(false)
 	}
 
 
@@ -81,7 +80,6 @@ const ChannelDropDown: FC<ChannelDropDownProps> = ({userRole, showSideBar, chann
 				styles='w-8 h-8 hover:cursor-pointer'
 				tooltipId="OpenToolTip"
 				tooltipContent=""
-				// clickBehavior={showSideBar}
 			/>
           </Menu.Button>
         </div>
@@ -111,7 +109,6 @@ const ChannelDropDown: FC<ChannelDropDownProps> = ({userRole, showSideBar, chann
 									styles='w-6 h-6 hover:cursor-pointer'
 									tooltipId="OpenToolTip"
 									tooltipContent=""
-									// clickBehavior={showSideBar}
 								/>
 								Change Name
 								</button>
@@ -131,7 +128,6 @@ const ChannelDropDown: FC<ChannelDropDownProps> = ({userRole, showSideBar, chann
 									styles='w-8 h-8 hover:cursor-pointer'
 									tooltipId="OpenToolTip"
 									tooltipContent=""
-									// clickBehavior={showSideBar}
 								/>
 								Change Picture
 							  </button>
@@ -151,7 +147,6 @@ const ChannelDropDown: FC<ChannelDropDownProps> = ({userRole, showSideBar, chann
 									styles='w-8 h-8 hover:cursor-pointer'
 									tooltipId="OpenToolTip"
 									tooltipContent=""
-									// clickBehavior={showSideBar}
 								/>
 								Change Type
 							  </button>
@@ -173,7 +168,6 @@ const ChannelDropDown: FC<ChannelDropDownProps> = ({userRole, showSideBar, chann
 												styles='w-6 h-6 hover:cursor-pointer'
 												tooltipId="OpenToolTip"
 												tooltipContent=""
-												// clickBehavior={showSideBar}
 											/>
 											Change Password
 										  </button>
@@ -199,7 +193,6 @@ const ChannelDropDown: FC<ChannelDropDownProps> = ({userRole, showSideBar, chann
 						styles='w-7 h-6 hover:cursor-pointer '
 						tooltipId="OpenToolTip"
 						tooltipContent=""
-						// clickBehavior={showSideBar}
 					/>
                     See Members
                   </button>
@@ -222,7 +215,6 @@ const ChannelDropDown: FC<ChannelDropDownProps> = ({userRole, showSideBar, chann
 								styles='w-6 h-6 hover:cursor-pointer'
 								tooltipId="OpenToolTip"
 								tooltipContent=""
-								// clickBehavior={showSideBar}
 							/>
 							Delete Channel
 							</button>

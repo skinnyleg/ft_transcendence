@@ -21,6 +21,3 @@ export const gameSocket = io(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/GameGatewa
 
 export const GameContext = React.createContext<any>({});
 export const gameSocketContext = createContext(gameSocket);
-
-
-// export gameSocket;

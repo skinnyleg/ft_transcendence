@@ -4,12 +4,8 @@ services:
     image: postgres:13
     restart: always
     container_name: tranceDB
-    # ports:
-    #   - "5432:5432"
     env_file:
       - ./.env
-    # volumes:
-    #   - my-db:/var/lib/postgresql/data
     networks:
       - mynetwork
 

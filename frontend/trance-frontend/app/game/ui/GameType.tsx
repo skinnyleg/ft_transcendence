@@ -9,10 +9,6 @@ function  GameType ({typeSetter}: any) {
     const   router = useRouter();
     const   {} = useContext(GameContext);
     const   [choise, setChoise] = useState({BOT: 'teal-300', QUEUE: 'cyan-900'});
-    
-    // useEffect(() => {
-    //     // console.log('typesetter === ', )
-    // },[]);
 
         const handleBotGame = () => {
             typeSetter('BOT');

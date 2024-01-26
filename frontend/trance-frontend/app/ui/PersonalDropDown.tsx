@@ -55,22 +55,12 @@ const PersonalDropDown: FC<PersonalDropDownProps> = ({userRole, userNick}) => {
 		socket.emit('block-friend', {
 			userId: personal.reciverId
 		})
-		// socket.on('notification', (data: string) => {
-		// 	chatSocket.emit('getDataDm', {
-		// 		dmId: personalId
-		// 	})
-		// })
 	}
 	
 	const UnblockUser = () => {
 		socket.emit('unblock-friend', {
 			userId: personal.reciverId
 		})
-		// socket.on('notification', (data: string) => {
-		// 	chatSocket.emit('getDataDm', {
-		// 		dmId: personalId
-		// 	})
-		// })
 	}
 
   return (
@@ -83,7 +73,6 @@ const PersonalDropDown: FC<PersonalDropDownProps> = ({userRole, userNick}) => {
 				styles='w-8 h-8 hover:cursor-pointer'
 				tooltipId="OpenToolTip"
 				tooltipContent=""
-				// clickBehavior={showSideBar}
 			/>
           </Menu.Button>
         </div>
@@ -111,7 +100,6 @@ const PersonalDropDown: FC<PersonalDropDownProps> = ({userRole, userNick}) => {
 						styles='w-6 h-6 hover:cursor-pointer'
 						tooltipId="OpenToolTip"
 						tooltipContent=""
-						// clickBehavior={showSideBar}
 					/>
 					View Profile
 					</button>
@@ -134,7 +122,6 @@ const PersonalDropDown: FC<PersonalDropDownProps> = ({userRole, userNick}) => {
 									styles='w-6 h-6 hover:cursor-pointer'
 									tooltipId="OpenToolTip"
 									tooltipContent=""
-									// clickBehavior={showSideBar}
 								/>
 								Unblock User
 								</button>
@@ -160,7 +147,6 @@ const PersonalDropDown: FC<PersonalDropDownProps> = ({userRole, userNick}) => {
 									styles='w-6 h-6 hover:cursor-pointer'
 									tooltipId="OpenToolTip"
 									tooltipContent=""
-									// clickBehavior={showSideBar}
 								/>
 								Challenge User
 								</button>
@@ -181,7 +167,6 @@ const PersonalDropDown: FC<PersonalDropDownProps> = ({userRole, userNick}) => {
 									styles='w-6 h-6 hover:cursor-pointer'
 									tooltipId="OpenToolTip"
 									tooltipContent=""
-									// clickBehavior={showSideBar}
 								/>
 								Block User
 								</button>

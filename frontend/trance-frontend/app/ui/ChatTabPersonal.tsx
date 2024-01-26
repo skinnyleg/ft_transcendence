@@ -19,7 +19,6 @@ interface ChatTabProps {}
 
 
 const ChatTabPersonal: FC<ChatTabProps> = () => {
-	// const searchParams = useSearchParams();
 	const chatSocket = useContext(chatSocketContext);
 	const {personalId, setPersonalId, setPersonal, personal, setSearchInputDm} = useContext(ChatContext);
 	const router = useRouter()
@@ -49,73 +48,10 @@ const ChatTabPersonal: FC<ChatTabProps> = () => {
 
 
 		chatSocket.on('DmData', (data: DmsInter) => {
-			// // console.log('channel data2 == ', data);
 			setPersonal(data);
 		})
-		
-
-		// chatSocket.on('joinDone', () => {
-		// 	chatSocket.emit('getUserChannels');
-		// 		chatSocket.emit('getDataCH', {
-		// 			channelName: channelId,
-		// 		})
-		// 		setSearchInput('')
-		// })
-
-
-
-		// chatSocket.on('changeDone', (data: {channelName: string}) => {
-		// 	if (checkOpenChannelId(data.channelName, channelId) == true)
-		// 	{
-		// 		chatSocket.emit('getDataCH', {
-		// 			channelName: channelId,
-		// 		})
-		// 	}
-		// })
-
-		// chatSocket.on('PicDone', (data: {channelName: string}) => {
-		// 	chatSocket.emit('getUserChannels')
-		// 	// // console.log('chat tab searchParams == ', searchParams.get('channel'))
-		// 	// // console.log('chat tab sent from on == ', data.channelName)
-		// 	// // console.log('chat tab sent from state == ', channelId)
-		// 	if (checkOpenChannelId(data.channelName, channelId) == true)
-		// 	{
-		// 		chatSocket.emit('getDataCH', {
-		// 			channelName: channelId,
-		// 		})
-		// 	}
-		// })
-
-
-		// chatSocket.on('outDone', (data: {channelName: string}) => {
-		// 	// console.log('chat tab searchParams == ', searchParams.get('channel'))
-		// 	// console.log('chat tab sent from on == ', data.channelName)
-		// 	// console.log('chat tab sent from state == ', channelId)
-		// 	if (checkOpenChannelId(data.channelName, channelId) == true)
-		// 	{
-		// 		deleteChannelQuery();
-		// 		setChannelId('');
-		// 	}
-		// 	chatSocket.emit('getUserChannels');
-		// })
-
-
-		// chatSocket.on("notifHistory", (data: NotificationsData) => {
-        //     // console.log("data chatSocket == ", data);
-        //     setNotifications((prevNotifications) => {
-        //         return [...prevNotifications, data];
-        //     });
-        //     handleNewNotification(data);
-        // });
-
-
 		return () => {
-			// chatSocket.off('newName')
-			// chatSocket.off('PicDone')
 			chatSocket.off('DmData')
-			// chatSocket.off('joinDone')
-			// chatSocket.off('changeDone')
-			// chatSocket.off('outDone')
 		}
 	}, [chatSocket, setPersonal])
 
@@ -123,17 +59,14 @@ const ChatTabPersonal: FC<ChatTabProps> = () => {
 	if (personal === undefined)
 	{
 		return (
-			// <h1>Start Chatting Now</h1>
 			<></>
 		);
 	}
 		return (
 			<div className='w-full h-full bg-teal-600 lg:ml-2 rounded-xl flex flex-col justify-between p-3'>
 				<PersonalTopBar
-					// key={channel.id}
 					/>
 				<PersonalContent
-					// key={channel.id}
 					/>
 				<PersonalTypeBar
 					key={personal?.dmId}

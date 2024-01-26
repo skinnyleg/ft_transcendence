@@ -26,12 +26,6 @@ export default function LoginForm() {
       credentials: 'include',
       headers: { 'Content-Type': 'application/json'},
     });
-    // // console.log('response == ', response.status);
-    // if (response.status === 200) {
-      // const res = await response.json();
-      // toast.success("Welcome ...!");
-      // router.push('/Dashboard', undefined);
-    // } 
   }
 
   useEffect(() => {
@@ -53,7 +47,6 @@ export default function LoginForm() {
         headers: { 'Content-Type': 'application/json'},
         body: JSON.stringify({ username, password }),
       });
-      // console.log('response == ', response.status);
       if (response.status === 200) {
         const res = await response.json();
         toast.success("Welcome ...!");
@@ -76,19 +69,14 @@ export default function LoginForm() {
       toast.error('An unexpected error occurred. Please try again later.', {autoClose: 500});
     }
     };
-    // h-[60%] md:h-[50%] lg:h-[66%] xl:h-[55%]
 
   return (
     <form className="border-[3px] border-solid xl:px-[70px] xl:pt-[35px] xl:pb-[70px] border-[rgba(88,130,193,0.49)] bg-[#189AB4] backdrop-blur-[12.5px] w-[75%] md:w-[43.48%] h-fit rounded-[15px] flex flex-col justify-center items-center" onSubmit={handleSubmit}>
-      {/* <div className="flex-1 rounded-lg bg-accents border border-gray-300 w-full h-full px-6 pb-4 pt-8 mt-10"> */}
       <div className='w-full h-full p-2  flex flex-col gap-4 rounded-[15px]'>
         <div className='text-[#D4F1F4] font-gilroy text-[20px] font-bold leading-normal self-start '>
-            {/* <h1 className={`${lusitana.className} mb-3 lg:text-2xl md:text-xl text-xl`}> */}
               Login
-            {/* </h1> */}
         </div>
         <div className="flex flex-col gap-1">
-          {/* <div className="mt-0"> */}
           
             <label
               className="text-[#D4F1F4] font-bebas-neue text-[12px] font-normal leading-normal"
@@ -96,7 +84,6 @@ export default function LoginForm() {
             >
               USER
             </label>
-            {/* <div className="relative"> */}
               <input
                 className="p-2 rounded-[15px] w-full h-[30px] border border-[#BCBEC0] bg-[#D4F1F4]"
                 id="user" 
@@ -113,7 +100,6 @@ export default function LoginForm() {
               >
                 PASSWORD
               </label>
-              {/* <div className="relative"> */}
                 <input
                   className="p-2 rounded-[15px] w-full h-[30px] border border-[#BCBEC0] bg-[#D4F1F4]"
                   id="password" 

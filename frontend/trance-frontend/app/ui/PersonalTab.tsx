@@ -12,17 +12,10 @@ const PersonalTab = () => {
 
 
 	const chatSocket = useContext(chatSocketContext)
-	// const searchParams = useSearchParams();
 	const router = useRouter()
 	const {channelId, setChannelId,personalId, searchInputDm, setSearchInputDm} = useContext(ChatContext);
 	const [userDms, setUserDms] = useState<DmsInter[]>([]);
 	const [info, setInfo] = useState<string>('Add Some Friends');
-	// const hidden = whichTab(searchParams)
-
-
-	const deleteChannelQuery = () => {
-		router.replace(`/Chat`);
-	}
 
 
 	useEffect(() => {
@@ -40,34 +33,19 @@ const PersonalTab = () => {
 		
 		
 		chatSocket.on('userDms', (data: DmsInter[]) => {
-			// // console.log("DMs == ", data);
 			setUserDms(data);
 		})
 
 		chatSocket.on('refreshUserDms', () => {
 			chatSocket.emit('getUserDms');
 		})
-		// chatSocket.on('outDone', (data: {channelName: string}) => {
-		// 	// console.log('searchParams == ', searchParams.get('channel'))
-		// 	// console.log('sent from on == ', data.channelName)
-		// 	// console.log('sent from state == ', channelId)
-		// 	if (checkOpenChannelId(data.channelName, channelId) == true)
-		// 	{
-		// 		deleteChannelQuery();
-		// 		setChannelId('');
-		// 	}
-		// 	chatSocket.emit('getUserChannels');
-		// })
 
 		return () => {
 			chatSocket.off('userDms').off()
 			chatSocket.off('refreshUserDms').off()
-			// chatSocket.off('outDone')
 		}
 	}, [chatSocket])
 
-
-	// ${hidden === 'personal' ? 'w-[79%]' : 'w-full'}
 
 	return (
 		<div className={` rounded-[15px] p-3  shadow-lg bg-teal-600 w-full h-[49%] flex flex-col`}>

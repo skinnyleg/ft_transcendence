@@ -33,7 +33,6 @@ const Settings : React.FC = () => {
                 credentials: 'include',
                 method: 'POST',
                 body: formData,})
-                // console.log ("file === ", results);
 
                 if (results.ok){
                     const pic = await results.json();
@@ -77,7 +76,6 @@ const Settings : React.FC = () => {
         if (newNick){
             try{
                 const results = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/nick`, {nickname : newNick}, {withCredentials:true});
-                // console.log(results.status);
                 if (results.status === 201){
                     updateProfile(null, null, newNick);
                 }
@@ -86,7 +84,6 @@ const Settings : React.FC = () => {
                 }
             } catch (error : any) {
                 toast.error(error.response.data.message, {toastId: "Error", autoClose: 1000});
-                // setError(error.response.data.message[0]);
             }finally {
                 setNewNick('');
             }
@@ -109,7 +106,6 @@ const Settings : React.FC = () => {
         {
             try{
                 const results =  await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/pass`, {password : passConfirmation}, {withCredentials : true});
-                // console.log("ressuuuusdls", results);
                 if (results.status === 201){
                     setPassConfirmation('');
                     setPass('');
@@ -128,14 +124,11 @@ const Settings : React.FC = () => {
     const enableQrVer = async () => {
         try{
             const results =  await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/2FA`, {Enabled : !QrEnabled}, {withCredentials : true});
-            // console.log("srta", results.status);
             if (results.status === 201){
-                // console.log("YYYYYYo")
               setQrEnabled(!QrEnabled);
                 
             }
             else {
-                // console.log("error");
                 toast.error("Unable To change Nickname Please try again", {toastId: "Error", autoClose: 1000});
             }
         } catch (error : any) {
@@ -148,7 +141,6 @@ const Settings : React.FC = () => {
             const results =  await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/GenerateQr`, {withCredentials : true});
             if (results.status === 200){
                 setEnabled(!enabled);
-                // console.log(results.data)
                 setQr(results.data.img)
             }
         } catch (error : any){
@@ -185,16 +177,11 @@ const Settings : React.FC = () => {
         const UpdateStatus = async () => {
             try{
                 const results = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/auth/UpdateFirstLogin`, {}, {withCredentials:true});
-                // console.log("res == ", results);
-                if (results.status === 200)
+                if (results.status !== 200)
                 {
-                    // console.log("LOOL")
-                }
-                else {
                     toast.error("Unable To change Nickname Please try again", {toastId: "Error", autoClose: 1000});
                 }
             } catch (error : any) {
-                // console.log("error == ", error);
                 toast.error(error.response.data.message, {toastId: "Error", autoClose: 1000});
             }
             
@@ -208,7 +195,6 @@ const Settings : React.FC = () => {
             });
             if (res.ok) {
               const enable = await res.json();
-              // console.log(enable);
               setQrEnabled(enable.isEnabled);
               setEnabled(enable.isEnabled)
               if (enable.isEnabled === true)
@@ -298,7 +284,6 @@ return (
                         <h3 className={`${enabled ? 'flex': "hidden"} text-red-400 xl:text-md lg:text-md md:text-sm text-sm w-full mt-2`}>Please scan or disable QR code before leaving the page</h3>
                         <div className={`${enabled ? 'flex': "hidden"} mt-5  xl:h-[20vh] lg:h-[20vh] md:h-[20vh] h-auto w-[80%] mx-auto  flex justify-center`} style={{ height: "auto", maxWidth: 260, width: "100%" }}>
                             <QRCode
-                            // size={100}
                             style={{ height: "auto"}}
                             className="w-[70%] h-[50%]"
                             value={Qr as string}

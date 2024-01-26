@@ -20,15 +20,12 @@ interface ChatTopBarProps {}
 const ChatTopBar: FC<ChatTopBarProps> = () => {
 
 	const router = useRouter();
-	// const searchParams = useSearchParams()
 	const {channelId, setChannelId, channel, setBarOpen, setHideTabs} = useContext(ChatContext);
 
 	const handleBack = () => {
-		// router.replace('/Chat');
 		setHideTabs(false)
 	}
 	const showSideBar = () => {
-		// router.replace(`/Chat?channel=${channelId}&bar=open`);
 		setBarOpen(true);
 	}
 

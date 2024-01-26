@@ -26,17 +26,14 @@ export class AuthService {
 	
 		if (user.setPass == false)
 		{
-			// console.log('setPass Error')
 			throw new BadRequestException('you need to set up a password')
 		}
-		// console.log('here === in sign in')
 		const isMatch = await compareHash(password, user.password);
 		if (isMatch == false)
 			throw new UnauthorizedException('Wrong Crendentiels')
 		res.cookie('id', user.id, {signed: true})
 		if (user.isEnabled == true)
 		{
-			// res.redirect(`${process.env.FrontendHost}/Qr`);
 			res.status(202).json({valid: true});
 			return ;
 		}
@@ -44,7 +41,6 @@ export class AuthService {
 		const refresh = await this.createToken(user.id, user.nickname, REFRESHEXP, REFRESHSECRET)
 		res.cookie('token', token)
 		res.cookie('refresh', refresh)
-		// console.log("token == ", token)
 		res.status(200).json(token);
 	}
 
@@ -53,7 +49,6 @@ export class AuthService {
 		res.clearCookie('refresh');
 		res.clearCookie('id');
 		res.redirect(`${process.env.FrontendHost}/`)
-		// return res.status(200).send({message: "signOut was succefull"})
 	}
 
 
@@ -82,9 +77,6 @@ export class AuthService {
 
 		if (!user)
 			throw new NotFoundException("User Doesn't Exits")
-		// console.log("old token == ", req.cookies.token);
-		// res.clearCookie('token');
-		// res.clearCookie('refresh');
 		const token = await this.createToken(user.id, user.nickname, TOKENEXP, TOKENSECRET)
 		const refresh = await this.createToken(user.id, user.nickname, REFRESHEXP, REFRESHSECRET)
 		res.cookie('token', token)

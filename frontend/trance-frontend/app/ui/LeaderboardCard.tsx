@@ -15,8 +15,6 @@ const LeaderboardCard: FC<LeaderboardCardProps> = ({user}) => {
 						<div className='max-w-[35px] max-h-[35px] min-w-[35px] min-h-[35px] md:max-w-[50px] md:max-h-[50px] md:min-w-[50px] md:min-h-[50px]'>
 							<img
 								src={user.profilePic}
-								// width={50}
-								// height={50}
 								alt='user Pic'
 								className='rounded-full text-white max-w-[35px] max-h-[35px] min-w-[35px] min-h-[35px] md:max-w-[50px] md:max-h-[50px] md:min-w-[50px] md:min-h-[50px]'
 							/>

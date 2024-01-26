@@ -45,7 +45,6 @@ export class DmService {
         });
         if (!newMessage)
             throw new ConflictException('creat message failed');
-        // console.log('newmessage: ', newMessage);
         const messageInfo = await this.prisma.message.findUnique({
             where: { id: newMessage.id },
             include: {
@@ -53,8 +52,6 @@ export class DmService {
                 Dm: { select: { id: true } }
             },
         });
-        messageInfo
-        // return newMessage;
         return messageInfo;
     }
 
@@ -142,7 +139,6 @@ export class DmService {
 
     async   generateDm(receiverId: string , senderId: string, receiverSocket: any)
     {
-        // const receiverId = await this.dmOutils.getUserIdByName(receiver);
         let dmId = await this.dmOutils.getDmIdby2User(senderId, receiverId);
         if (dmId === null) {
         	await this.creatDMchat(senderId, receiverId);

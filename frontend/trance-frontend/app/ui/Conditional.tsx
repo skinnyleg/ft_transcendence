@@ -26,18 +26,7 @@ const Conditional = ({isfriend, privateProfile, userId, isBlocked} : DataProps )
     const [friendIcon, setFriendIcon] = useState<boolean | undefined>();
     const [blockIcon, setBlockIcon] = useState<boolean | undefined>();
 
-    // // console.log("Blocker ++++++== ", isBlocked)
-    // // console.log("friens ++++++== ", isfriend)
-
     useEffect(() => {
-        // if (isfriend)
-        //     setFriendIcon(true);
-
-        // // console.log('blocked == ', isBlocked)
-        // if (isBlocked)
-        // {
-        //     setBlockIcon(true);
-        // }
         setFriendIcon(isfriend);
         setBlockIcon(isBlocked)
         
@@ -59,13 +48,9 @@ const Conditional = ({isfriend, privateProfile, userId, isBlocked} : DataProps )
 
     // Events Emiter
     const handleAddFriend = () => {
-        // console.log('frined == ', friendIcon);
-        // console.log(userId, socket.connected);
         socket.emit("add-friend", {userId});
     }
     const handleDeleteFriend = () => {
-        // console.log('frined == ', friendIcon);
-        // console.log(userId, socket.connected);
         socket.emit("remove-friend", {userId});
     }
 
@@ -140,140 +125,7 @@ const Conditional = ({isfriend, privateProfile, userId, isBlocked} : DataProps )
         );
     }
 
-    // if (isfriend && !privateProfile)
-    // {
-    //     if (isBlocked){
-    //         return (
-    //             <div className="flex flex-row rounded-3xl justify-evenly items-center text-white mx-auto  h-full xl:w-[80%] w-[100%]">
-    //                 <div className={`flex text-white text-sm rounded-full hover:cursor-pointer`} onClick={handleUnblockUser}>
-    //                     <IconWithTooltip
-    //                         icon={CiUnlock}
-    //                         styles='text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8'
-    //                         tooltipId="UnblockToolTip"
-    //                         tooltipContent="Unblock"
-    //                     />
-    //                     {/* <CiUnlock className="text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8"/> */}
-    //                 </div>
-    //                 <div className="flex  text-white text-sm rounded-full hover:cursor-pointer" onClick={handleDeleteFriend}>
-    //                     <IconWithTooltip
-    //                         icon={UserMinusIcon}
-    //                         styles='text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8'
-    //                         tooltipId="RemoveFriendToolTip"
-    //                         tooltipContent="Remove Friend"
-    //                     />
-    //                     {/* <UserMinusIcon className="text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8"/> */}
-    //                 </div>
-    //                 <div className=" text-white text-sm rounded-full pr-1 hover:cursor-pointer" onClick={sendMessage}>
-    //                     <IconWithTooltip
-    //                         icon={ChatBubbleLeftEllipsisIcon}
-    //                         styles='text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8'
-    //                         tooltipId="SendMessageToolTip"
-    //                         tooltipContent="Send Message"
-    //                     />
-    //                     {/* <ChatBubbleLeftEllipsisIcon className="text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8"/> */}
-    //                 </div>
-    //             </div>
-    //         );
-    //     }
-    //     return (
-    //         <div className="flex flex-row rounded-3xl  justify-evenly items-center text-white mx-auto h-full xl:w-[80%] w-[100%]">
-    //             <div className={`flex text-white text-sm rounded-full hover:cursor-pointer`} onClick={handleBlockUser}>
-    //                 <IconWithTooltip
-    //                     icon={NoSymbolIcon}
-    //                     styles='text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8'
-    //                     tooltipId="BlockToolTip"
-    //                     tooltipContent="Block User"
-    //                 />
-    //                 {/* <NoSymbolIcon className="text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8"/> */}
-    //             </div>
-    //             <div className="flex  text-white text-sm rounded-full hover:cursor-pointer" onClick={handleDeleteFriend}>
-    //                 <IconWithTooltip
-    //                     icon={UserMinusIcon}
-    //                     styles='text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8'
-    //                     tooltipId="RemoveFriendToolTip"
-    //                     tooltipContent="Remove Friend"
-    //                 />
-    //                 {/* <UserMinusIcon className="text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8"/> */}
-    //             </div>
-    //             <div className=" text-white text-sm rounded-full pr-1 hover:cursor-pointer" onClick={sendMessage}>
-    //                 <IconWithTooltip
-    //                     icon={ChatBubbleLeftEllipsisIcon}
-    //                     styles='text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8'
-    //                     tooltipId="SendMessageToolTip"
-    //                     tooltipContent="Send Message"
-    //                 />
-    //                 {/* <ChatBubbleLeftEllipsisIcon className="text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8"/> */}
-    //             </div>
-    //         </div>
-    //     );
-    // }
-    // if (!isfriend && !privateProfile)
-    // {
-    //     if (isBlocked){
-    //         return (
-    //             <div className="flex flex-row rounded-3xl justify-evenly  items-center text-white mx-auto text-center xl:w-[80%] w-[100%]">
-    //                 <div className={`${isBlocked ? 'hidden' : ''}flex text-white text-sm rounded-full hover:cursor-pointer`} onClick={handleUnblockUser}>
-    //                     <IconWithTooltip
-    //                         icon={CiUnlock}
-    //                         styles='text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8'
-    //                         tooltipId="UnblockToolTip"
-    //                         tooltipContent="Unblock"
-    //                     />
-    //                     {/* <CiUnlock className="text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8"/> */}
-    //                 </div>
-    //                 <div className="flex  text-white text-sm rounded-full hover:cursor-pointer" onClick={handleAddFriend}>
-    //                     <IconWithTooltip
-    //                         icon={UserPlusIcon}
-    //                         styles='text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8'
-    //                         tooltipId="AddUserToolTip"
-    //                         tooltipContent="Add User"
-    //                     />
-    //                     {/* <UserPlusIcon className="text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8"/> */}
-    //                 </div>
-    //                 <div className=" text-white text-sm rounded-full hover:cursor-pointer" onClick={sendMessage}>
-    //                     <IconWithTooltip
-    //                         icon={ChatBubbleLeftEllipsisIcon}
-    //                         styles='text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8'
-    //                         tooltipId="SendMessageToolTip"
-    //                         tooltipContent="Send Message"
-    //                     />
-    //                     {/* <ChatBubbleLeftEllipsisIcon className="text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8 pr-1"/> */}
-    //                 </div>
-    //             </div>
-    //         );
-    //     }
-    //     return (
-    //         <div className="flex flex-row rounded-lg justify-evenly items-center text-white xl:w-[100%] lg:w-[100%] md:w-[100%] w-[100%] ">
-    //             <div className={`${isBlocked ? 'hidden' : ''}flex text-white  text-sm rounded-full hover:cursor-pointer`} onClick={handleBlockUser}>
-    //                 <IconWithTooltip
-    //                     icon={NoSymbolIcon}
-    //                     styles='text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8'
-    //                     tooltipId="BlockToolTip"
-    //                     tooltipContent="Block User"
-    //                 />
-    //                 {/* <NoSymbolIcon className="text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8"/> */}
-    //             </div>
-    //             <div className="flex  text-white text-sm rounded-full hover:cursor-pointer" onClick={handleAddFriend}>
-    //                 <IconWithTooltip
-    //                     icon={UserPlusIcon}
-    //                     styles='text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8'
-    //                     tooltipId="AddUserToolTip"
-    //                     tooltipContent="Add User"
-    //                 />
-    //                 {/* <UserPlusIcon className="text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8"/> */}
-    //             </div>
-    //             <div className=" text-white text-sm rounded-full hover:cursor-pointer" onClick={sendMessage}>
-    //                 <IconWithTooltip
-    //                     icon={ChatBubbleLeftEllipsisIcon}
-    //                     styles='text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8'
-    //                     tooltipId="SendMessageToolTip"
-    //                     tooltipContent="Send Message"
-    //                 />
-    //                 {/* <ChatBubbleLeftEllipsisIcon className="text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8 pr-1"/> */}
-    //             </div>
-    //         </div>
-    //     );
-    // }
+ 
     return (
         <div className="flex flex-row mx-auto justify-evenly items-center text-white w-[100%]">
             <div className=" text-white text-sm rounded-full hover:cursor-pointer" onClick={() => {router.push("/settings")}}>
@@ -283,7 +135,6 @@ const Conditional = ({isfriend, privateProfile, userId, isBlocked} : DataProps )
                     tooltipId="SettingsToolTip"
                     tooltipContent="Settings"
                 />
-                {/* <IoSettingsSharp className="text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8 "/> */}
             </div>
             <div className="text-white text-sm rounded-full hover:cursor-pointer" onClick={() => {router.push("/Dashboard")}}>
                 <IconWithTooltip
@@ -292,7 +143,6 @@ const Conditional = ({isfriend, privateProfile, userId, isBlocked} : DataProps )
                     tooltipId="HomeToolTip"
                     tooltipContent="Home"
                 />
-                {/* <HomeIcon className="text-button xl:w-8 xl:h-8 lg:w-8 lg:h-8 h-5 w-5 md:h-8 md:w-8 " /> */}
             </div>
         </div>
     );

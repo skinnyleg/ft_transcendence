@@ -16,7 +16,6 @@ const ChatSideBar: FC<ChatSideBarProps> = () => {
 
 	const {channelIdRef,channelId, setChannelId, user, channel, setBarOpen} = useContext(ChatContext);
 
-	// const searchParams = useSearchParams()
 	const router = useRouter();
 	const val = channel?.userRole as string;
 	const isJoined = val !== 'none' ? true : false;
@@ -27,14 +26,6 @@ const ChatSideBar: FC<ChatSideBarProps> = () => {
 
 
 	useEffect(() => {
-		// // console.log('load time users channels')
-
-		//Old Method
-		// chatSocket.emit('getChSidebar', {
-		// 	channelName: channelId
-		// })
-
-		// New Method
 		chatSocket.emit('getChSidebar', {
 			channelName: channelId
 		})
@@ -43,27 +34,10 @@ const ChatSideBar: FC<ChatSideBarProps> = () => {
 	useEffect(() => {
 
 		chatSocket.on('channelSidebar', (data: ChannelUser[]) => {
-			// // console.log('sideBar data == ', data);
 			setChannelsUsers(data);
 		})
 
-
-		// Old Method
-		// chatSocket.on('refreshSide', () => {
-		// 	// // console.log('refresh == ', channelId)
-		// 	chatSocket.emit('getChSidebar', {
-		// 		channelName: channelId
-		// 	})
-		// 	chatSocket.emit('getDataCH',{
-		// 		channelName: channelId
-		// 	})
-		// })
-
-
-
-		// New Method
 		chatSocket.on('refreshSide', () => {
-			// // console.log('refresh == ', channelId)
 			chatSocket.emit('getChSidebar', {
 				channelName: channelId
 			})
@@ -88,7 +62,6 @@ const ChatSideBar: FC<ChatSideBarProps> = () => {
 	const handleCloseSideBar = () => {
 		setSearch('');
 		setBarOpen(false);
-		// router.replace(`/Chat?channel=${channelId}`);
 	}
 
 	const renderBar = (channelUsers: ChannelUser[], userRole: string[]) => {
@@ -107,14 +80,6 @@ const ChatSideBar: FC<ChatSideBarProps> = () => {
 			</div>
 		);
 	}
-
-		// if (channelUsers.length === 0)
-		// {
-		// 	return (
-		// 		<></>
-		// 	);
-		// }
-
 		return (
 		<div className={`w-full bg-teal-600 lg:ml-2 rounded-xl flex flex-col p-2 h-full overflow-y-auto styled-scrollbar`}>
 			<div className={`${isJoined === true ? '' : 'blur overflow-y-hidden pointer-events-none'}`}>
