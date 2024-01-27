@@ -43,12 +43,3 @@ services:
 networks:
   mynetwork:
     driver: bridge
-
-
-volumes:
-  my-db:
-    driver_opts:
-      device: /Users/hmoubal/Desktop/DB_data
-      o: bind
-      type: none
-
