@@ -1004,6 +1004,12 @@ export class UserService {
 		userData.Rank = players + 1; 
 	}
 
+	async generateIntraId(userData: any)
+	{
+		const players = await this.prisma.user.count();
+		userData.intraId = players + 1; 
+	}
+
 	async create(userData: any)
 	{
 		const nick = await generateNickname(userData.nickname);
@@ -1037,6 +1043,36 @@ export class UserService {
 		return user;
 	}
 
+
+	async createNewUser(username: string, password: string)
+	{
+		const userData: any = {
+			intraId: 0,
+			nick: username,
+			Rank: 0,
+		}
+		const nick = await generateNickname(username);
+		const hashedPass : string = await hashPass(password);
+		await this.updateRank(userData);
+		await this.generateIntraId(userData);
+		const user = await this.prisma.user.create({
+			data: {
+				intraId: userData.intraId,
+				password: hashedPass,
+				profilePic: '/defaultAvatarPic.png',
+				BackgroundPic: '/DefaultBackground.png',
+				wallet: 0,
+				level: 0,
+				Rank: userData.Rank,
+				status: UserStatus.ONLINE,
+				nickname: nick,
+				setPass: true,
+			}
+		})
+		await this.linkAchievements(user.id);
+		await this.updateAchivements(user.id, 'First Login');
+		return user;
+	}
 
 	async linkAchievements(id: string)
 	{

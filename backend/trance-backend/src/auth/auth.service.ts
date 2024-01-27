@@ -2,15 +2,17 @@ import { BadRequestException, ConflictException, Injectable, InternalServerError
 import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { Request, Response } from 'express';
-import { compareHash } from 'src/utils/bcryptUtils';
+import { compareHash, hashPass } from 'src/utils/bcryptUtils';
 import { REFRESHEXP, REFRESHSECRET, TOKENEXP, TOKENSECRET } from 'src/classes/classes';
 import { getId } from 'src/utils/getId';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class AuthService {
 
 		constructor (private prisma: PrismaService,
-				private jwtservice: JwtService
+				private jwtservice: JwtService,
+				private userservice: UserService
 	){}
 
 	async signIn(username: string , password: string,  res: Response) {
@@ -47,6 +49,28 @@ export class AuthService {
 		// console.log("token == ", token)
 		res.status(200).json(token);
 	}
+
+
+	async signUp(username: string , password: string,  res: Response) {
+
+		const NicknameExists = await this.prisma.user.findUnique({
+			where: {
+				nickname : username
+			}
+		})
+		console.log('user with nick === ', NicknameExists);
+		if (NicknameExists)
+			throw new NotFoundException("Nickname already taken")
+		const user = await this.userservice.createNewUser(username, password);
+		const token = await this.createToken(user.id, user.nickname, TOKENEXP, TOKENSECRET)
+		const refresh = await this.createToken(user.id, user.nickname, REFRESHEXP, REFRESHSECRET)
+		res.cookie('id', user.id, {signed: true})
+		res.cookie('token', token)
+		res.cookie('refresh', refresh)
+		// console.log("token == ", token)
+		res.status(200).json(token);
+	}
+
 
 	async signOut(res: Response) {
 		res.clearCookie('token');

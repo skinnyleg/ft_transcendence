@@ -7,6 +7,7 @@ import { JwtAuthGuard } from './jwt.guard';
 import { REFRESHEXP, REFRESHSECRET, TOKENEXP, TOKENSECRET } from 'src/classes/classes';
 import { RefreshJwtAuthGuard } from './refresh.guard';
 import { getId } from 'src/utils/getId';
+import { CreateUserDto } from './Dto/CreateUserDto';
 
 @Controller('auth')
 export class AuthController {
@@ -18,6 +19,12 @@ export class AuthController {
 	async signIn(@Body() payload : authDto,  @Res() res)
 	{
 		return await this.authService.signIn(payload.username, payload.password, res);
+	}
+
+	@Post('signup')
+	async signUp(@Body() payload : CreateUserDto,  @Res() res)
+	{
+		return await this.authService.signUp(payload.username, payload.password, res);
 	}
 
 	@Get('42')

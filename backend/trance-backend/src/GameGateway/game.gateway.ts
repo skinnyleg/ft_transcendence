@@ -194,16 +194,19 @@ export class GameGateway {
     }
 
 
-    // @SubscribeMessage('GameExist')
-    // async doesGameIdExists(client: Socket, payload: any)
-    // {
-    //     // console.log('roomId in check === ', payload);
-    //     if (payload.roomId === undefined)
-    //         return ;
-    //     const game = await this.userService.getGame(payload.roomId);
-    //     if (game === false)
-    //         client.emit('GameIdNotValid');
-    // }
+    @SubscribeMessage('GameExist')
+    async doesGameIdExists(client: Socket, payload: any)
+    {
+        if (payload.roomId === undefined)
+            return ;
+        const user = this.gameService.getUserBySocketId(client.id);
+        if (user === undefined)
+            return ;
+
+        const roomId = this.gameService.findGameUserById(user.id);
+        if (roomId === null)
+            client.emit('GameIdNotValid');
+    }
 
     @SubscribeMessage('getGameData')
     async getGameData(client: Socket)

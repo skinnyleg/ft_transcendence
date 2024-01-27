@@ -21,16 +21,16 @@ function Game() {
     // }, 1000);
 
 
-    // useEffect(() => {
-    //     gameSocket.on('GameIdNotValid', () => {
-    //         router.push('/Dashboard');
-    //     })
+    useEffect(() => {
+        gameSocket.on('GameIdNotValid', () => {
+            router.push('/Dashboard');
+        })
 
 
-    //     return () => {
-    //         gameSocket.off('GameIdNotValid')
-    //     }
-    // }, [gameSocket])
+        return () => {
+            gameSocket.off('GameIdNotValid')
+        }
+    }, [gameSocket])
 
 
     useEffect(() => {
@@ -66,9 +66,9 @@ function Game() {
     
 
 
-    // useEffect(() => {
-    //     gameSocket.emit('GameExist', {roomId: gameId})
-    // }, [gameId])
+    useEffect(() => {
+        gameSocket.emit('GameExist', {roomId: gameId})
+    }, [gameId])
 
     return (
         <main className="main flex bg-cyan-900 justify-center items-center h-screen w-screen">

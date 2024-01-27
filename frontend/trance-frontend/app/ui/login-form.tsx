@@ -19,6 +19,12 @@ export default function LoginForm() {
   const [error, setError] = useState('');
   const [isErrorVisible, setIsErrorVisible] = useState(true);
   const router = useRouter();
+  let lastClicked = '';
+
+
+  const buttonClicked = (e) => {
+    lastClicked = e.target.innerHTML;
+  }
 
   const deleteCookies = async () => {
     const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/auth/clearCookies`, {
@@ -45,14 +51,27 @@ export default function LoginForm() {
   
     const username = event.currentTarget.user.value;
     const password = event.currentTarget.password.value;
-  
+    let response;
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/auth/signin`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json'},
-        body: JSON.stringify({ username, password }),
-      });
+
+      if (lastClicked.includes('SIGN UP'))
+      {
+          response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/auth/signup`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json'},
+            body: JSON.stringify({ username, password }),
+           });
+      }
+      else
+      {
+          response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/auth/signin`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json'},
+            body: JSON.stringify({ username, password }),
+           });
+      }
       // console.log('response == ', response.status);
       if (response.status === 200) {
         const res = await response.json();
@@ -66,7 +85,7 @@ export default function LoginForm() {
       else if (response.status === 401) {
         toast.error('Invalid credentials. Please check your username and password.', {autoClose: 500});
       } else if (response.status === 404) {
-        toast.error('User not found. Please check your credentials.', {autoClose: 500});
+        toast.error('Please check your credentials.', {autoClose: 500});
       } else if (response.status === 400) {
         toast.error('You Have Not Set Your Password Yet', {autoClose: 500});
       } else {
@@ -124,7 +143,10 @@ export default function LoginForm() {
                 />
 
             </div>
-            <LoginButton />
+            <LoginButton 
+              lastClicked={lastClicked}
+              buttonClicked={buttonClicked}
+            />
             <div className='flex flex-row gap-2 items-center'>
               <div className="border-t border-black w-1/2"></div>
               <p className='text-[#020943] font-bebas-neue text-center font-bold text-[15px]'>OR</p>
@@ -148,12 +170,17 @@ export default function LoginForm() {
   );
 }
 
-function LoginButton() {
+function LoginButton({lastClicked, buttonClicked}) {
  const { pending } = useFormStatus();
 
  return (
-      <button className="w-full bg-[#05445E]  rounded-[15px] px-4 py-[7px] mt-[40px] flex items-center justify-center" aria-disabled={pending}>
-      <span className="text-[#D4F1F4] font-bold text-[20px] items-center">SIGN IN</span>
-    </button>
+        <div className="flex flex-row gap-2">
+          <button onClick={(e) => {buttonClicked(e)}} className="w-full bg-[#05445E]  rounded-[15px] px-4 py-[7px] mt-[40px] flex items-center justify-center" aria-disabled={pending}>
+            <span className="text-[#D4F1F4] font-bold text-[20px] items-center">SIGN IN</span>
+          </button>
+          <button onClick={(e) => {buttonClicked(e)}} className="w-full bg-[#05445E]  rounded-[15px] px-4 py-[7px] mt-[40px] flex items-center justify-center" aria-disabled={pending}>
+            <span className="text-[#D4F1F4] font-bold text-[20px] items-center">SIGN UP</span>
+          </button>
+        </div>
  );
 }
