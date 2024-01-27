@@ -909,6 +909,13 @@ export class UserService {
 		{
 			let imgName = this.generateImgName(userData.profilePic);
 			await this.downloadImage(userData.profilePic, `./uploads/avatar/${imgName}`);
+			const newDir = path.join(__dirname, '..', '..' , 'uploads', 'avatar');
+			const filePath = path.join(newDir, imgName);
+			fs.stat(filePath, (err, stats) => {
+				if (err || !stats.isFile()) {
+				  throw new NotFoundException('Image not found');
+				}
+			});
 			userData.profilePic = `${process.env.BackendHost}/upload/profile/${imgName}`;
 		}
 	}
