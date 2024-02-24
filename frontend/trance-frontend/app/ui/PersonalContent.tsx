@@ -19,23 +19,12 @@ const PersonalContent: FC<PersonalContentProps> = () => {
 		const scrollableRef = useRef<any>(null);
 		const {personalId, setPersonalId, user, personal} = useContext(ChatContext);
 		const [messages, setMessages] = useState<DmMessageInter[]>([])
-		// const isJoined = channel?.userRole;
-		// const channelType = channel?.channelType;
-		// const addBlur = (isJoined === 'none') && (channelType === 'PROTECTED' || channelType === 'PRIVATE');
 		const chatSocket = useContext(chatSocketContext);
-		// const searchParams = useSearchParams()
 
 		useEffect(() => {
-			// // console.log("ref obj == ", scrollableRef.current)
 			if (scrollableRef.current) {
-				// Scroll to the bottom when Messages or addBlur change
 				scrollableRef.current.scrollTop = scrollableRef.current.scrollHeight;
-				// scrollableRef.current?.scrollIntoView({ behavior: "smooth" })
 			}
-			// return () => {
-			// 	// // console.log("cleanup")
-			// 	scrollableRef.current = null;
-			// }
 		}, [messages]);
 
 
@@ -51,7 +40,6 @@ const PersonalContent: FC<PersonalContentProps> = () => {
 				setMessages(data);
 			})
 			chatSocket.on('messageDoneDM', (data: DmMessageInter) => {
-					// console.log("messages Data personal done == ", data);
 					chatSocket.emit('getUserDms');
 					if (checkOpenPersonalId(data.dmId, personalId) == true)
 					{
@@ -61,23 +49,15 @@ const PersonalContent: FC<PersonalContentProps> = () => {
 					}
 			})
 
-				chatSocket.on('messageDoneCH', (data: MessageInter) => {
-					// console.log('got new message == ', data);
-					chatSocket.emit('getUserChannels');
-					// if (checkOpenChannelId(data.channelId, channelId) == true)
-					// {
-					// 	setMessages((prevMessages) => {
-					// 		return [...prevMessages, data]
-					// 	})
-					// }
-				})
+			chatSocket.on('messageDoneCH', (data: MessageInter) => {
+				chatSocket.emit('getUserChannels');
+			})
 
 				
 			return () => {
 				chatSocket.off('messageDoneDM')
+				chatSocket.off('messageDoneCH')
 				chatSocket.off('messagesDM')
-				// chatSocket.off('newName')
-				// chatSocket.off('changeDone')
 			}
 		},[personalId, chatSocket])
 

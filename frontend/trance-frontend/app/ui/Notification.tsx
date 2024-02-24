@@ -66,7 +66,6 @@ const Notifications = () => {
 
 
         chatSocket.on("notification", (notif) => {
-            // console.log("ni=otif sent" ,notif);
             toast.success(notif, {
                 toastId: 'chatNotifSucces',
                 autoClose: 500
@@ -75,7 +74,6 @@ const Notifications = () => {
 
 
         chatSocket.on("failed", (notif) => {
-            // console.log('error notif == ', notif)
             if (check_notif(notif) === true)
                 return ;
             toast.error(notif, {
@@ -85,7 +83,6 @@ const Notifications = () => {
         });
 
         chatSocket.on("notifHistory", (data: NotificationsData) => {
-            // console.log("data chatSocket == ", data);
             setNotifications((prevNotifications) => {
                 return [...prevNotifications, data];
             });
@@ -102,7 +99,6 @@ const Notifications = () => {
 
     useEffect(() => {
         gameSocket.on("notification", (notif) => {
-            // console.log("ni=otif sent" ,notif);
             toast.success(notif, {
                 toastId: 'gameNotifSucces',
                 autoClose: 500
@@ -111,7 +107,6 @@ const Notifications = () => {
 
 
         gameSocket.on("error", (notif) => {
-            // console.log('error notif == ', notif)
             if (check_notif(notif) === true)
                 return ;
             toast.error(notif, {
@@ -121,7 +116,6 @@ const Notifications = () => {
         });
 
         gameSocket.on('notifHistory', (data: NotificationsData) => {
-            // console.log("data gameSocket == ", data);
             setNotifications((prevNotifications) => {
                 return [...prevNotifications, data];
             });
@@ -129,7 +123,6 @@ const Notifications = () => {
         });
 
         gameSocket.on('redirectPlayers_match', (data: MatchInfo[]) => {
-            // console.log('redirecting to game');
               router.push(`/game/${data[0].roomId}`);
         })
         if (gameSocket.connected)
@@ -146,7 +139,6 @@ const Notifications = () => {
 
     useEffect(() => {
         socket.on("notification", (notif) => {
-            // console.log("ni=otif sent" ,notif);
             toast.success(notif, {
                 toastId: 'success',
                 autoClose: 500
@@ -154,7 +146,6 @@ const Notifications = () => {
         });
 
         socket.on("error", (error) => {
-            // console.log("error sent" ,error);
             toast.error(error.message, {
                 toastId: 'error',
                 autoClose: 500
@@ -163,8 +154,6 @@ const Notifications = () => {
         });
 
         socket.on("notifHistory", (data: NotificationsData) => {
-            // console.log("data socket == ", data);
-            // console.log(socket.connected, data);
             setNotifications((prevNotifications) => {
                 return [...prevNotifications, data];
             });
@@ -196,7 +185,6 @@ const Notifications = () => {
         }
         else
         {
-            // console.log('here')
             socket.emit("accept-request", {userId : useId , requestId : reqId});
             socket.on('refreshPersonalTab', () => {
                 chatSocket.emit('getUserDms');
@@ -249,7 +237,6 @@ const Notifications = () => {
                             <img src={notification.notifData.userProfilePic} alt="profile" className="rounded-full max-w-[40px] max-h-[40px] min-w-[40px] min-h-[40px]" />
                             <p className="ml-1 w-1/2 text-black text-sm">{notification.notifData.description}</p>
                             <div className="flex w-1/4 h-10 justify-between rounded-full bg-slate-100">
-                            {/* ${notification.notifData.typeOfRequest === 'FRIEND' ? 'block' : 'hidden'} */}
                                 <CheckIcon className={`w-full h-10 text-green-600 cursor-pointer `} onClick={() => {handleAcceptReq(notification)}}/>
                                 <XMarkIcon className={`w-full h-10 text-red-600 cursor-pointer `} onClick={() => {handleRefuseReq(notification)}}/>
                             </div>

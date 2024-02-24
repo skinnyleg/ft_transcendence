@@ -15,7 +15,6 @@ interface ChannelPassProps {
 
 const ChannelPass: FC<ChannelPassProps> = ({isOpen, setIsOpen}) => {
 
-//   let [isOpen, setIsOpen] = useState(false)
 	const [password, setPassword] = useState<string>('')
 	const [confPassword, setConfPassword] = useState<string>('')
 	const chatSocket = useContext(chatSocketContext);
@@ -23,7 +22,6 @@ const ChannelPass: FC<ChannelPassProps> = ({isOpen, setIsOpen}) => {
 	const [error, setError] = useState<string>('')
 
   function closeModal() {
-    // console.log("closing")
     setIsOpen(false)
 	setPassword('')
 	setConfPassword('')
@@ -31,7 +29,6 @@ const ChannelPass: FC<ChannelPassProps> = ({isOpen, setIsOpen}) => {
 }
 
 function openModal() {
-    // console.log("opening")
     setIsOpen(true)
   }
 
@@ -124,7 +121,6 @@ function openModal() {
 										<button
 											type="submit"
 											className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-green-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-											// onClick={handleSubmit}
 										>
 										Submit
 										</button>

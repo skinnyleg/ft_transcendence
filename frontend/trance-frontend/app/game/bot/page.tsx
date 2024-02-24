@@ -39,16 +39,6 @@ function    BotGame(){
 
     },[]);
 
-
-    // setInterval(() => {
-    //     // // console.log('sending emit to leave bot game')
-    //     if (path !== `/game/bot`)
-    //     {
-    //         // console.log('sending emit')
-    //         gameSocket.emit('leaveGameBot');
-    //     }
-    // }, 1000);
-
     return (
         <main className="main flex bg-cyan-900 justify-center items-center h-screen w-screen">
             <div className="bg-cyan-100 h-[93.75%] w-[95.83%] flex space-x-[0.87%] items-end justify-center rounded-[15px]">

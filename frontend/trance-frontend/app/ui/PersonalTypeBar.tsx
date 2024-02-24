@@ -22,9 +22,6 @@ const PersonalTypeBar: FC<PersonalTypeBarProps> = () => {
 		const sendMessage = () => {
 			if (message.trim().length)
 			{
-
-				// // console.log('message == ', message.trim().length)
-				// // console.log('receiverId == ', personal.reciverId)
 				chatSocket.emit('sendMsgDM', {
 					receiverId: personal.reciverId,
 					content: message,
@@ -61,7 +58,6 @@ const PersonalTypeBar: FC<PersonalTypeBarProps> = () => {
 								styles='w-8 h-8 focus:ring-0 outline-none'
 								tooltipId="SendToolTip"
 								tooltipContent='Send Message'
-								// clickBehavior={sendMessage}
 							/>
 						</div>
 					</div>

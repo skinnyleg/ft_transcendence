@@ -39,7 +39,6 @@ const PongZoneBoot = () => {
             canvas: canvasRef.current === null ? undefined : canvasRef.current,
             engine: engine,
             options: {
-                // background: '#ffffff',
                 background: 'transparent',
                 wireframes: false,
             } 
@@ -110,12 +109,10 @@ const PongZoneBoot = () => {
 
         gameSocket.on('drawBallBot', () => {
             Matter.Body.setVelocity(ball, { x: 5, y: 5 })
-            // console.log('drawBall event has received');
         });
 
         gameSocket.on('redirectToDashboard', () => {
             route.push('/Dashboard');
-            // return ;
         })
 
 
@@ -151,13 +148,6 @@ const PongZoneBoot = () => {
                     ball.velocity.x *= -1
                     Matter.Body.setVelocity(ball, { x: -speedMeter.x, y: speedMeter.y })
                 }
-                // (score.playerR === ExtraTime || score.playerL === ExtraTime) && (Matter.Body.setVelocity(ball, { x: 0, y: 0 }));
-                // (score.playerR === ExtraTime || score.playerL === ExtraTime) && (gameSocket.emit('gameBotEnd'));
-                // (score.playerR === ExtraTime || score.playerL === ExtraTime) && route.push('/Dashboard');
-                // if (score.playerR === ExtraTime || score.playerL === ExtraTime) {
-                //     Matter.Body.setVelocity(ball, { x: 0, y: 0 });
-                //     gameSocket.emit('endBotMatch');
-                // }
                 Matter.Body.set(ball, { restitution: 1, friction: 0 }); // n9adro n7aydoha
             }
         }
@@ -187,7 +177,6 @@ const PongZoneBoot = () => {
         gameSocket.emit('ballPermission');
     };
 
-    // // console.log('map == ', gameMape);
     return (
         <div
         style={{ '--image-url': `url(${gameMape})` } as React.CSSProperties} 

@@ -15,13 +15,10 @@ const DmComponent: FC<DmComponentProps> = ({Dm}) => {
 	const {personalId, setPersonalId, setSearchInputDm, setChannelId, setHideTabs, setChannel} = useContext(ChatContext);
 
 	const setDmQuery = () => {
-		// console.log('here == ', Dm.dmId);
-		// router.replace(`/Chat?personal=${Dm.dmId}`);
 		setPersonalId(Dm.dmId);
 		setChannelId('');
 		setChannel();
 		setHideTabs(true);
-		// setSearchInputDm('');
 	}
 	return (
 		<div onClick={setDmQuery} className='gap-2 rounded-[15px] w-full h-12 mb-1 text-black p-0 flex justify-between items-center hover:cursor-pointer'>
@@ -35,7 +32,6 @@ const DmComponent: FC<DmComponentProps> = ({Dm}) => {
 				/>
 				<div className='flex flex-col bg-teal-100 w-full h-full pl-2 rounded-xl'>
 					<h1 className='font-bold text-base '>{Dm.name}</h1>
-					{/* <p className='text-gray-500 text-sm'>{channel.lastMsg === '' ? 'No New Messages' : channel.lastMsg}</p> */}
 					<p className='text-gray-500 text-sm'>  {Dm.lastMsg.length > 7
 								? `${Dm.lastMsg.substring(0, 7)}...`
 								: Dm.lastMsg === ''

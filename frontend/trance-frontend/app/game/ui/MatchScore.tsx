@@ -3,21 +3,9 @@ import { GameContext, gameSocketContext } from "../../context/gameSockets";
 
 const MatchScore = () => {
 
-    // const [scores, setScore] = useState({playerL: 0, playerR: 0});
     const   {score, setScore, gameId} = useContext(GameContext);
     const gameSocket = useContext(gameSocketContext)
 
-    // useEffect(() => {
-        
-    //     gameSocket.on('score-update', (data) => {
-    //         setScore(data);
-    //     });
-
-    //     return () => {
-    //         gameSocket.off('score-update');
-    //     };
-
-    // },[]);
     
     return (
         <div className="flex flex-row justify-center rounded-lg h-[50%] w-[30%] space-x-[2.5%]">

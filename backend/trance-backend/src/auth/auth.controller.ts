@@ -70,7 +70,6 @@ export class AuthController {
 	@Get('CheckToken')
 	CheckToken(@Res() res)
 	{
-		// console.log('token is verified')
 		res.status(200).send({message: "true"})
 	}
 
@@ -102,7 +101,6 @@ export class AuthController {
 	@Get('clearCookies')
 	deleteCookies(@Res() res)
 	{
-		// console.log('cookies are being cleared');
 		res.clearCookie('token');
 		res.clearCookie('refresh');
 		res.clearCookie('id');

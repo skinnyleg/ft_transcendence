@@ -98,14 +98,6 @@ export interface ChannelInter {
   channelType: string
 }
 
-// export interface ChannelInter {
-// 	id: string,
-// 	channelName: string,
-// 	channelPic: string,
-// 	isJoined: string,
-// 	channelType: string;
-// 	userRole?: string;
-// }
 
 
 export interface DmsInter {
@@ -118,28 +110,12 @@ export interface DmsInter {
 	userStatus?: string
 }
 
-
-// export interface DmsInter {
-// 	id: string,
-// 	userPic: string,
-// 	userNick: string,
-// }
-
-
 export interface ChannelUser {
   username: string,
   userId: string,
   channelRole: string,
   userPicture: string
 }
-
-// export interface ChannelUser {
-// 	id: string;
-// 	userPic: string,
-// 	userNick: string;
-// 	userRole: string;
-// }
-
 
 export interface DmMessageInter {
 	dmId: string,
@@ -158,15 +134,6 @@ export interface MessageInter {
   message: string,
   time: string
 }
-
-// export interface MessageInter {
-// 	id: string;
-// 	senderPic?: string,
-// 	senderNick: string;
-// 	content: string;
-// 	timeStamp: string;
-// }
-
 
 export interface LeaderboardData {
   id: string;

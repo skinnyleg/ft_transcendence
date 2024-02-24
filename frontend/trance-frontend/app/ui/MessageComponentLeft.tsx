@@ -21,8 +21,6 @@ const MessageComponentLeft: FC<MessageComponentLeftProps> = ({message}) => {
 					<div className='max-w-[50px] max-h-[50px] min-w-[50px] min-h-[50px] p-2 flex self-end'>
 						<img
 							src={message.picture as string}
-							// width={50}
-							// height={50}
 							alt='user pic'
 							className='rounded-full bg-teal-400 w-full h-full max-w-[35px] max-h-[35px] min-w-[35px] min-h-[35px]'
 						/>

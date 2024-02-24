@@ -16,9 +16,6 @@ export class UserService {
 	constructor(private readonly prisma: PrismaService){}
 
 
-
-
-
 	async findOneByIntraId(intraId: number)
 	{
 		const user = await this.prisma.user.findUnique({
@@ -174,10 +171,7 @@ export class UserService {
 
 
 	async updateAchivements(userId: string, type: string){
-		
-		
-		// // console.log("hemjjjjujrree", currentUser);
-		
+				
 		const AchivementId = await this.prisma.achievement.findFirst({
 			where: {
 				title: type,
@@ -190,30 +184,6 @@ export class UserService {
 		
 		if (!AchivementId)
 			throw new NotFoundException('acheivement not found')
-
-		// const currentUser = await this.findOneById(userId);
-		// if (!currentUser)
-		// 	throw new NotFoundException('user not found')
-		// if (currentUser.Wins === 5){
-		// 	const fiveMatchId = await this.prisma.achievement.findFirst({
-		// 		where: {
-		// 			title: type,
-		// 			userId: currentUser.id
-		// 		},
-		// 		select: {
-		// 			id: true,
-		// 		}
-		// 	});
-		// 	const Achivements = await this.prisma.achievement.update({
-		// 		where: {
-		// 			id: fiveMatchId.id,
-		// 		},
-		// 		data: {
-		// 			status: AchievementStatus.DONE,
-		// 		},
-		// 	});
-		// 	return ;
-		// }
 		const Achivements = await this.prisma.achievement.update({
 		where: {
 			id: AchivementId.id,
@@ -323,8 +293,6 @@ export class UserService {
 			},
 		});
 
-		// // console.log('firend instance == ', friendExist)
-		// // console.log('id is == ', recipientId)
 		if (!friendExist)
 			throw new NotFoundException('no instanse found')
 
@@ -357,7 +325,7 @@ export class UserService {
 		if (!opponent)
 			throw new NotFoundException('user Doesn\'t exist')
 
-		// check request  .0
+		// check request
 		const requestExist = await this.prisma.request.findFirst({
 			where: {
 			  userId: opponentId,
@@ -654,32 +622,6 @@ export class UserService {
 		if (!user)
 			throw new NotFoundException('user Doesn\'t exist')
 
-		// const friendStatus = await this.prisma.friendStatus.findFirst({
-		// where: {
-		// 	OR: [
-		// 	{
-		// 		userId: senderId,
-		// 		friendId: recipientId,
-		// 		status: {
-		// 		in: [Status.FRIEND], // Check for FRIEND or PENDING status
-		// 		},
-		// 	},
-		// 	{
-		// 		userId: recipientId,
-		// 		friendId: senderId,
-		// 		status: {
-		// 		in: [Status.FRIEND], // Check for FRIEND or PENDING status
-		// 		},
-		// 	},
-		// 	],
-		// },
-		// });
-		
-		// if (!friendStatus)
-		// 	throw new ConflictException('you need to be friends to block')
-		
-		// await this.deleteFriend(senderId)
-		// await this.deleteFriend(recipientId)
 		const sender = await this.prisma.user.findUnique({
 			where: {
 				id: senderId,
@@ -699,7 +641,6 @@ export class UserService {
 		sender.usersBlocked.push(recipientId);
 
 		user.BlockedBy.push(senderId);
-
 
 		await this.prisma.user.update({
 			where: {
@@ -967,8 +908,14 @@ export class UserService {
 		else
 		{
 			let imgName = this.generateImgName(userData.profilePic);
-			// TODO check if image is already there
 			await this.downloadImage(userData.profilePic, `./uploads/avatar/${imgName}`);
+			const newDir = path.join(__dirname, '..', '..' , 'uploads', 'avatar');
+			const filePath = path.join(newDir, imgName);
+			fs.stat(filePath, (err, stats) => {
+				if (err || !stats.isFile()) {
+				  throw new NotFoundException('Image not found');
+				}
+			});
 			userData.profilePic = `${process.env.BackendHost}/upload/profile/${imgName}`;
 		}
 	}
@@ -981,7 +928,6 @@ export class UserService {
 				userId: recipientId,
 			}
 		})
-		// // console.log('user1 == ', userOneFriends)
 		if (userOneFriends === 1)
 		await this.updateAchivements(recipientId, 'make first friend')
 	
@@ -992,7 +938,6 @@ export class UserService {
 			}
 		})
 	
-		// // console.log('user2 == ', userTwoFriends)
 		if (userTwoFriends === 1)
 			await this.updateAchivements(senderId, 'make first friend')
 	}
@@ -1019,10 +964,8 @@ export class UserService {
 		}
 		catch (error)
 		{
-			// // console.log('error === ', error);
-			userData.profilePic = '/defaultAvatarPic.png';
 			console.log('Something Went Wrong couldnt download user image');
-			// return 'NO';
+			userData.profilePic = '/defaultAvatarPic.png';
 		}
 		await this.updateRank(userData);
 		const user = await this.prisma.user.create({
@@ -1182,14 +1125,6 @@ export class UserService {
 				loserScore: loserscore,
 			}
 		})
-		// return (await this.prisma.game.create(
-		// 	{
-		// 		data:
-		// 		{
-		// 			player:{connect: {id : player1.id}},
-		// 			opponent:{connect: {id : player2.id}},
-		// 		},
-		// 	}));
 	}
 
 
@@ -1215,7 +1150,6 @@ export class UserService {
 				winner: true,
 			}
 		})
-		// // console.log('game === ', game);
 		if (!game)
 			return false;
 		if (game.winner !== '')
@@ -1248,7 +1182,6 @@ export class UserService {
 				id: roomId,
 			}
 		})
-		// // console.log('game is === ', gameExists)
 		if (!gameExists)
 			return ;
 		try {
@@ -1381,7 +1314,6 @@ export class UserService {
 	  
 		  Matches.push(obj);
 		}
-		// // console.log("begin ", Matches);
 		return Matches;
 	  }
 	  
@@ -1560,8 +1492,6 @@ export class UserService {
 			isfriend = true;
 		if (user.BlockedBy.find((bo) => bo === id))
 			isBlocked = true;
-		// if (user.id === id)
-		// 	userProfile = true;
 		const {BlockedBy, usersBlocked , ...userSend} = user;
 		return {userData: userSend, isfriend, privateProfile: userProfile, isBlocked};
   }
@@ -1690,9 +1620,7 @@ export class UserService {
 
 	async getFriendStatus(id: string, nickname: string)
 	{
-		// // console.log("nickname", nickname);
 		const user = await this.findOneByNickname(nickname);
-		// // console.log("userID", user.id);
 
 		if (!user)
 			throw new NotFoundException('User Not Found')
@@ -1720,7 +1648,6 @@ export class UserService {
 				return ({status: 'BLOCKED'})
 			return ({status: 'NONE'})
 		}
-		// // console.log("friendStatus", friendStatus.status);
 		return {status: friendStatus.status};
 	}
 }

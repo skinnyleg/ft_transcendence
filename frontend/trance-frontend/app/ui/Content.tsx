@@ -10,7 +10,6 @@ interface ContentProps {}
 
 
 const Content: FC<ContentProps> = ({}) => {
-	// const searchParams = useSearchParams();
 	const {channelId, personalId, barOpen, hideTabs} = useContext(ChatContext);
 
 	return (
@@ -21,7 +20,6 @@ const Content: FC<ContentProps> = ({}) => {
 			)}
 			{(channelId !== '' && personalId === '') &&  (
 				<div className={`lg:flex lg:flex-grow w-full pb-0 ${barOpen ? 'hidden md:flex' : ''} ${hideTabs ? '' : 'hidden md:flex'} transition ease-in-out duration-700`}>
-						 {/* <div className={`lg:flex lg:w-[46.78%] w-full pb-0 ${barOpen ? 'hidden md:flex' : ''} transition ease-in-out duration-700`}> */}
 						<ChatTabChannel />
 					</div>
 			)}

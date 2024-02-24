@@ -21,7 +21,6 @@ export class GameService {
     
     sendWebSocketError(client: Socket, errorMessage: string, exit: boolean) 
 	{
-        // console.log('error is === ', errorMessage);
 		client.emit('error', errorMessage );
 		if (exit == true)
 			client.disconnect();
@@ -69,34 +68,9 @@ export class GameService {
     async deleteUser(client: Socket, server: Server){
         try {
             const user = this.getUserBySocketId(client.id);
-            // // console.log("user has ==== ", user);
             if (user === undefined)
                 return ;
             server.to(user.roomId).emit("abort", true);
-            // if (this.players_arr.size > 0)
-            // {
-            //     const pl1 = this.players_arr.get(user.roomId)[0];
-            //     const pl2 = this.players_arr.get(user.roomId)[1];
-            //     if (pl1.socket.id === client.id)
-            //         pl2.socket.emit('abort', true);
-            //     else
-            //         pl1.socket.emit('abort', true);
-            //     for (const player of this.Users){
-            //         if (player.id == pl1.id || player.id == pl2.id){
-            //             player.isInQueue = false;
-            //             player.IsInGame = false;
-            //             player.isReady = false;
-            //             player.matchInfos = [];
-            //             player.roomId = '';
-            //             player.win = false;
-            //             await this.userService.updateStatus(player.id, UserStatus.OFFLINE)
-            //             await this.emitToFriendsStatusGame(player.id, UserStatus.OFFLINE);
-            //         }
-            //     }
-            // }
-            // this.players_arr.delete(user.roomId);
-			// await this.userService.updateStatus(user.id, UserStatus.OFFLINE)
-            // await this.emitToFriendsStatusGame(user.id, UserStatus.OFFLINE);
 			this.Users = this.Users.filter((u) => u.socket.id !== client.id);
 		}
 		catch (error)
@@ -113,7 +87,7 @@ export class GameService {
             return key; // Return the found GameUser object
           }
         }
-        return null; // Return undefined if the GameUser object is not found
+        return null; // Return null if the GameUser object is not found
     }
 
 
@@ -133,55 +107,8 @@ export class GameService {
         if (checkWinner === true)
         {
             await this.userService.deleteGame(roomId);
-            // // console.log('in delete game');
         }
         this.players_arr.delete(roomId);
-        // // console.log('roomId === ', roomId);
-        // // console.log('all rooms === ', this.players_arr);
-        // if (!this.players_arr.has(roomId))
-        //     return ;
-        // const user1 = this.players_arr.get(roomId)[0];
-        // const user2 = this.players_arr.get(roomId)[1];
-        // if (user1 !== undefined)
-        // {
-        //     user1.isReady = false;
-        //     user1.IsInGame = false;
-        //     user1.matchInfos = [];
-        //     user1.roomId = '';
-        //     user1.win = false;
-        // }
-        // if (user2 !== undefined)
-        // {
-        //     user2.isReady = false;
-        //     user2.IsInGame = false;
-        //     user2.matchInfos = [];
-        //     user2.roomId = '';
-        //     user2.win = false;
-        //     // await this.userService.updateStatus(user2.id, UserStatus.ONLINE);
-        //     // await this.emitToFriendsStatusGame(user2.id, UserStatus.ONLINE);
-        // }
-        // if (user1 !== undefined && user1.socket.id !== client.id)
-        // {
-        //     // console.log('user1 got aborted ==== ', user1.id)
-        //     user1.socket.emit('abortGame');
-        //     // this.players_arr.delete(roomId);
-        //     // await this.userService.deleteGame(roomId);
-        // }
-        // if (user2 !== undefined && user2.socket.id !== client.id)
-        // {
-        //     // console.log('user2 got aborted ==== ', user2.id)
-        //     user2.socket.emit('abortGame');
-        //     // this.players_arr.delete(roomId);
-        //     // await this.userService.deleteGame(roomId);
-        // }
-        // const checkWinner = await this.userService.getGameWinner(roomId);
-        // if (checkWinner === true && user1.socket.id === client.id)
-        // {
-        //     // console.log('in delete game');
-        // }
-
-
-        // // console.log('room is === ', gameRoom);
     }
 
     getUserBySocketId(socketId: string): GameUser | undefined {
@@ -206,12 +133,11 @@ export class GameService {
         // Emit player infos to redirect him
         client.on('ImReadyBot', () => {
             client.emit('BotReady', infos);
-            // // console.log();
             client.emit('gameBotTheme', playload);
         }) ;
         client.on('ballPermission', () => { client.emit('drawBallBot') });
     }
-    /** End c */
+    /** End challenge */
 
     async challenge(client: Socket, opponentId){
         const challenger = this.getUserBySocketId(client.id);
@@ -292,8 +218,6 @@ export class GameService {
                 if (bool){
                     const nick = await this.userService.getNickById(me.id)
                     challenger.socket.emit('notification', `${nick} accepted your challenge`);
-                    //// this used to be before the update req
-
                     const newGameId = await this.userService.createGame(me.id, challenger.id);
                     if (!newGameId)
                         return ;
@@ -301,16 +225,12 @@ export class GameService {
                     await me.socket.join(newGameId);
                     challenger.roomId = newGameId;
                     me.roomId = newGameId;
-                    ////
                     this.players_arr.set(me.roomId, [me, challenger]);
                     me.IsInGame = true;
                     challenger.IsInGame = true;
                     // emit players info + redirect theme to play √
                     const infos : MatchInfos = await this.userService.genarateMatchInfo(this.players_arr.get(me.roomId)[0].id, this.players_arr.get(me.roomId)[1].id, me.roomId)
-                    // // console.log('infos === ', infos)
                     server.to(me.roomId).emit('redirectPlayers_match', infos);
-                    // challenger.socket.emit('redirectPlayers_match', infos);
-                    // server.to(me.roomId).emit('MatchReady', me.roomId);
                 }
                 else
                 {
@@ -334,7 +254,6 @@ export class GameService {
             catch(error){
                 this.sendWebSocketError(me.socket, error.message, false);
             }
-            // me.socket.emit('notification', 'User is Offline');
             return;
         }
 
@@ -348,15 +267,6 @@ export class GameService {
             this.sendWebSocketError(me.socket, error.message, false);
         }
     }
-    
-    // async drawPaddlesBot(player: GameUser, BotPaddel: leftPaddle , PlayerPaddle: leftPaddle){
-    //     player.socket.emit("drawBotPaddles", BotPaddel)
-    //     player.socket.emit("drawPlayerPaddles", PlayerPaddle)
-    // }
-
-    // drawBallBot(player, ball: Ball){
-    //     player.socket.emit("drawBall", (ball))
-    // }
 
     async startBotGame(client: Socket, width: number, height : number){
         const player = this.getUserBySocketId(client.id);
@@ -422,7 +332,6 @@ export class GameService {
         await this.emitToFriendsStatusGame(this.players_arr.get(roomId)[1].id, UserStatus.ONLINE);
         await this.userService.updateWinLose(this.players_arr.get(roomId)[0]);
         await this.userService.updateWinLose(this.players_arr.get(roomId)[1]);
-        // // console.log('enter in endGame')
         this.players_arr.get(roomId)[0].socket.emit('redirectToDashboard');
         this.players_arr.get(roomId)[1].socket.emit('redirectToDashboard');
     }
@@ -439,10 +348,6 @@ export class GameService {
         players[0] == player1 ? opponent = 1 : opponent = 0;
         const player2 = this.getUserById(players[opponent].id);
         // Erro indetifiying who is ready √
-        // // console.log("is player 1", player1.id)
-        // // console.log("is player 2", player2.id)
-        // // console.log("is player 1 ",this.players_arr.get(roomId)[0].isReady)
-        // // console.log("is player 2",this.players_arr.get(roomId)[1].isReady)
         if (this.players_arr.get(roomId)[1].isReady == false || this.players_arr.get(roomId)[0].isReady == false)
             return ;
         // problem who is the 2nd player √ (add rom id as a userGame attribute) √
@@ -450,107 +355,13 @@ export class GameService {
             player1.socket.emit('error', "Player Not in Game");
             return ;
         }
-        // // console.log('game Started');
         this.userService.updateStatus(this.players_arr.get(player1.roomId)[1].id, UserStatus.IN_GAME);
         this.userService.updateStatus(this.players_arr.get(player1.roomId)[0].id, UserStatus.IN_GAME);
         await this.emitToFriendsStatusGame(this.players_arr.get(player1.roomId)[0].id, UserStatus.IN_GAME);
         await this.emitToFriendsStatusGame(this.players_arr.get(player1.roomId)[1].id, UserStatus.IN_GAME);
-        //=--=
-        // var leftPaddel : leftPaddle = {
-        //     height: 150,
-        //     width: 20,
-        //     x : 20,
-        //     y: (height / 2),
-        //     score : 0,
-        // };
-        // var rightPaddle : leftPaddle = {
-        //     height: 150,
-        //     width: 20,
-        //     x : width - 20,
-        //     y : (height) / 2,
-        //     score : 0,
-        // };
-        // this.players_arr.get(roomId)[0].socket.on('arrow', ((arg)=> {
-        //     switch (arg) {
-        //         case 'UP':
-        //         if (leftPaddel.y > 0  + leftPaddel.height / 2)
-        //             leftPaddel.y -= 10;
-        //             break;
-        //         case 'DOWN':
-        //             if (leftPaddel.y < (height - leftPaddel.height / 2))
-        //                 leftPaddel.y += 10;
-        //             break;
-        //     }
-        //     this.players_arr.get(roomId)[0].socket.emit('leftPaddle', leftPaddel)
-        //     this.players_arr.get(roomId)[1].socket.emit('leftPaddle', leftPaddel)
-        // }))
-        // this.players_arr.get(roomId)[1].socket.on('arrow', ((arg)=> {
-        //     switch (arg) {
-        //         case 'UP':
-        //             if (rightPaddle.y > 0 + rightPaddle.height / 2)
-        //             rightPaddle.y -= 10;
-        //             break;
-        //         case 'DOWN':
-        //             if (rightPaddle.y < (height - rightPaddle.height / 2))    
-        //                 rightPaddle.y += 10;
-        //             break;
-        //     }
-        //     this.players_arr.get(roomId)[0].socket.emit('rightPaddle', rightPaddle)
-        //     this.players_arr.get(roomId)[1].socket.emit('rightPaddle', rightPaddle)
-        // }))
-        //=--=
-
-
-        //////// my version
-        // // console.log('roomId === ', roomId);
-        // // console.log('room === ',  this.players_arr.get(roomId));
-        // this.players_arr.get(roomId)[0].socket.on('arrow', ((arg)=> {
-        //     switch (arg) {
-        //         case 'UP':
-        //             this.players_arr.get(roomId)[0].socket.emit('leftPaddle', 'UP')
-        //             this.players_arr.get(roomId)[1].socket.emit('leftPaddle', 'UP')
-        //         // if (leftPaddel.y > 0  + leftPaddel.height / 2)
-        //         //     leftPaddel.y -= 10;
-        //             break;
-        //         case 'DOWN':
-        //             this.players_arr.get(roomId)[0].socket.emit('leftPaddle', 'DOWN')
-        //             this.players_arr.get(roomId)[1].socket.emit('leftPaddle', 'DOWN')
-        //             // if (leftPaddel.y < (height - leftPaddel.height / 2))
-        //             //     leftPaddel.y += 10;
-        //             break;
-        //     }
-        //     // this.players_arr.get(roomId)[0].socket.emit('leftPaddle', leftPaddel)
-        //     // this.players_arr.get(roomId)[1].socket.emit('leftPaddle', leftPaddel)
-        // }))
-        // this.players_arr.get(roomId)[1].socket.on('arrow', ((arg)=> {
-        //     switch (arg) {
-        //         case 'UP':
-        //             this.players_arr.get(roomId)[0].socket.emit('rightPaddle', 'UP')
-        //             this.players_arr.get(roomId)[1].socket.emit('rightPaddle', 'UP')
-        //         // if (leftPaddel.y > 0  + leftPaddel.height / 2)
-        //         //     leftPaddel.y -= 10;
-        //             break;
-        //         case 'DOWN':
-        //             this.players_arr.get(roomId)[0].socket.emit('rightPaddle', 'DOWN')
-        //             this.players_arr.get(roomId)[1].socket.emit('rightPaddle', 'DOWN')
-        //             // if (leftPaddel.y < (height - leftPaddel.height / 2))
-        //             //     leftPaddel.y += 10;
-        //             break;
-        //     }
-        //     // this.players_arr.get(roomId)[0].socket.emit('rightPaddle', rightPaddle)
-        //     // this.players_arr.get(roomId)[1].socket.emit('rightPaddle', rightPaddle)
-        // }))
-
-
-        ///////
        
         this.players_arr.get(roomId)[0].socket.emit('StartDrawing')
         this.players_arr.get(roomId)[1].socket.emit('StartDrawing')
-        
-        // this.players_arr.get(player1.roomId)[0].socket.on('EndGame', ((arg) => {
-        //     this.handleMatchFinish(arg, player1.roomId);
-        //     return ;
-        // }));
         return ;
     }
 
@@ -572,22 +383,12 @@ export class GameService {
         // emit to client that is in Queue room √
         // distingue who is the client to update the status √
         const user = this.getUserBySocketId(client.id);
-        // if (user.theme === '')
-        //     user.theme = theme;
-        // if (user.powerUp === '')
-        //     user.powerUp = powerUp;
         const playerStatus = await this.userService.getStatus(user.id);
-        // // console.log('userStatus hoel === ', playerStatus);
-        // // console.log('user is  === ', user.id);
         if (playerStatus === UserStatus.IN_GAME)
         {
             user.socket.emit('error', `Already in Game here `);
             return ;
         }
-        // if (user.IsInGame === true){
-        //     user.socket.emit('error', `Already in Game 11111`);
-        //     return ;
-        // }
         if (this.makeQueue.enQueue(user) == true){
             await this.userService.updateStatus(user.id, UserStatus.IN_QUEUE);
 			await this.emitToFriendsStatusGame(user.id, UserStatus.IN_QUEUE);
@@ -600,24 +401,7 @@ export class GameService {
         // emit to client that is in Queue room √
         // distingue who is the client to update the status √
         const user = this.getUserBySocketId(client.id);
-        // if (user.theme === '')
-            user.theme = theme;
-        // if (user.powerUp === '')
-            user.powerUp = powerUp;
-        // const playerStatus = await this.userService.getStatus(user.id);
-        // // console.log('userStatus === ', playerStatus);
-        // if (playerStatus === UserStatus.IN_GAME)
-        // {
-        //     user.socket.emit('error', `Already in Game here `);
-        //     return ;
-        // }
-        // // if (user.IsInGame === true){
-        // //     user.socket.emit('error', `Already in Game 11111`);
-        // //     return ;
-        // // }
-        // if (this.makeQueue.enQueue(user) == true){
-        //     await this.userService.updateStatus(user.id, UserStatus.IN_QUEUE);
-		// 	await this.emitToFriendsStatusGame(user.id, UserStatus.IN_QUEUE);
-        // }
+        user.theme = theme;
+        user.powerUp = powerUp;
     }
 }

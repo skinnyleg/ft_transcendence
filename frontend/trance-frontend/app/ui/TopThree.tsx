@@ -30,7 +30,6 @@ const TopThree = ()=> {
 		}
 		catch (error)
 		{
-			// console.log("error1 == ", error);
 		}
 		return data;
 	}
@@ -51,7 +50,6 @@ const TopThree = ()=> {
             <div className="text-[15px] md:text-[25px] lg:text-[35px] font-semibold">Unknown</div>
           </div>
           <div className='w-fit h-fit'>
-            {/* <img src={medals[index]} alt={`medal` + (index)} className='w-11 h-12 rounded-[15px]'/> */}
             <Image
               priority
               src={medals[index]}
@@ -67,7 +65,6 @@ const TopThree = ()=> {
 
   return (
     <div className=" p-0 rounded-md lg:col-span-2  col-span-1 lg:col-start-4 lg:col-end-6 md:row-start-4 md:row-end-5 lg:row-start-1 lg:row-end-2 w-full md:h-[350px] h-[350px] xl:h-[100%] lg:h-[100%]">
-      {/* <h4 className="text-xl font-bold text-white mb-0">LEADERBOARD</h4>  */}
       <div className="flex flex-col  p-0   h-full  w-full justify-between gap-0">
 
         {
@@ -81,7 +78,6 @@ const TopThree = ()=> {
                   <div className="text-[15px] md:text-[25px] lg:text-[35px] font-semibold">{userRank.nickname}</div>
                 </div>
                 <div className='w-fit h-fit'>
-                  {/* <img src={medals[index]} alt={`medal` + (index)} className='w-11 h-12 rounded-[15px]'/> */}
                   <Image
                     priority
                     src={medals[index]}

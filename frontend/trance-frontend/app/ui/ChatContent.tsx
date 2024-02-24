@@ -21,36 +21,15 @@ const ChatContent: FC<ChatContentProps> = () => {
 		const channelType = channel?.channelType;
 		const addBlur = (isJoined === 'none') && (channelType === 'PROTECTED' || channelType === 'PRIVATE');
 		const chatSocket = useContext(chatSocketContext);
-		// const searchParams = useSearchParams()
 
 		useEffect(() => {
-			// // console.log("ref obj == ", scrollableRef.current)
 			if (scrollableRef.current) {
-				// Scroll to the bottom when Messages or addBlur change
 				scrollableRef.current.scrollTop = scrollableRef.current.scrollHeight;
-				// scrollableRef.current?.scrollIntoView({ behavior: "smooth" })
 			}
-			// return () => {
-			// 	// // console.log("cleanup")
-			// 	scrollableRef.current = null;
-			// }
 		}, [messages]);
 
 
 		useEffect(() => {
-			
-			// getChannelName(searchParams)
-			// chatSocket.emit('getMessagesCH', {
-			// 	channelName: channelId,
-			// })
-			
-
-			// Old Method
-			// chatSocket.emit('getMessagesCH', {
-			// 	channelName: channelId,
-			// })
-
-
 			chatSocket.emit('getMessagesCH', {
 				channelName: channelId,
 			})
@@ -59,80 +38,29 @@ const ChatContent: FC<ChatContentProps> = () => {
 
 		useEffect(() => {
 
-			// chatSocket.on('joinDone', () => {
-			// 	// console.log("getmessafee lplwlww == ");
-			// 	chatSocket.emit('getMessagesCH', {
-			// 		channelName: channelId,
-			// 	})
-			// })
-
-
-
 			chatSocket.on('messagesCH', (data: MessageInter[]) => {
-			// // console.log("message Data == ", data);
 				setMessages(data);
 			})
 
-
-			//Old Methi=od
-			// chatSocket.on('messageDoneCH', (data: MessageInter) => {
-			// 	// // console.log('got new message == ', data);
-			// 	chatSocket.emit('getUserChannels');
-			// 	if (checkOpenChannelId(data.channelId, channelId) == true)
-			// 	{
-			// 		setMessages((prevMessages) => {
-			// 			// console.log('prevmessages == ', prevMessages);
-			// 			const index = prevMessages.length - 1;
-			// 			if (index >= 0 && prevMessages[index].sender === data.sender)
-			// 			{
-			// 				prevMessages[index].picture = '';
-			// 			}
-			// 			// console.log('data == ', data);
-			// 			return [...prevMessages, data]
-			// 		})
-			// 	}
-			// })
-
-
-
-			// New Method
 			chatSocket.on('messageDoneCH', (data: MessageInter) => {
-				// // console.log('got new message == ', data);
 				chatSocket.emit('getUserChannels');
 				if (checkOpenChannelId(data.channelId, channelId) == true)
 				{
 					setMessages((prevMessages) => {
-						// console.log('prevmessages == ', prevMessages);
 						const index = prevMessages.length - 1;
 						if (index >= 0 && prevMessages[index].sender === data.sender)
 						{
 							prevMessages[index].picture = '';
 						}
-						// console.log('data == ', data);
 						return [...prevMessages, data]
 					})
 				}
 			})
 
-
-			// chatSocket.on('newName', (data: {newName: string, oldName: string}) => {
-			// 	// console.log('am\'I here')
-			// 	chatSocket.emit('getUserChannels');
-			// 	if (checkOpenChannelId(data.oldName, channelId) == true)
-			// 	{
-			// 		chatSocket.emit('getDataCH', {
-			// 			channelName: data.newName
-			// 		})
-			// 		setChannelId(data.newName);
-			// 	}
-			// })
-
 				
 			return () => {
 				chatSocket.off('messageDoneCH')
 				chatSocket.off('messagesCH')
-				// chatSocket.off('newName')
-				// chatSocket.off('changeDone')
 			}
 		},[channelId, chatSocket])
 

@@ -124,7 +124,6 @@ const UserDropDown: FC<UserDropDownProps> = ({userRole, userCardRole, userNick, 
 				styles='w-8 h-8 hover:cursor-pointer'
 				tooltipId="OpenToolTip"
 				tooltipContent=""
-				// clickBehavior={showSideBar}
 			/>
           </Menu.Button>
         </div>
@@ -152,7 +151,6 @@ const UserDropDown: FC<UserDropDownProps> = ({userRole, userCardRole, userNick, 
 						styles='w-6 h-6 hover:cursor-pointer'
 						tooltipId="OpenToolTip"
 						tooltipContent=""
-						// clickBehavior={showSideBar}
 					/>
 					View Profile
 				  </button>
@@ -173,7 +171,6 @@ const UserDropDown: FC<UserDropDownProps> = ({userRole, userCardRole, userNick, 
 						styles='w-6 h-6 hover:cursor-pointer'
 						tooltipId="OpenToolTip"
 						tooltipContent=""
-						// clickBehavior={showSideBar}
 					/>
 					Challenge User
 				  </button>
@@ -196,7 +193,6 @@ const UserDropDown: FC<UserDropDownProps> = ({userRole, userCardRole, userNick, 
 									styles='w-6 h-6 hover:cursor-pointer'
 									tooltipId="OpenToolTip"
 									tooltipContent=""
-									// clickBehavior={showSideBar}
 								/>
 								Mute User
 							  </button>
@@ -217,7 +213,6 @@ const UserDropDown: FC<UserDropDownProps> = ({userRole, userCardRole, userNick, 
 									styles='w-8 h-8 hover:cursor-pointer'
 									tooltipId="OpenToolTip"
 									tooltipContent=""
-									// clickBehavior={showSideBar}
 								/>
 								Kick User
 							  </button>
@@ -238,7 +233,6 @@ const UserDropDown: FC<UserDropDownProps> = ({userRole, userCardRole, userNick, 
 									styles='w-6 h-6 hover:cursor-pointer'
 									tooltipId="OpenToolTip"
 									tooltipContent=""
-									// clickBehavior={showSideBar}
 								/>
 								Ban User
 							  </button>
@@ -261,7 +255,6 @@ const UserDropDown: FC<UserDropDownProps> = ({userRole, userCardRole, userNick, 
 											styles='w-6 h-6 hover:cursor-pointer'
 											tooltipId="OpenToolTip"
 											tooltipContent=""
-											// clickBehavior={showSideBar}
 										/>
 										Demote
 									  </button>
@@ -286,7 +279,6 @@ const UserDropDown: FC<UserDropDownProps> = ({userRole, userCardRole, userNick, 
 											styles='w-6 h-6 hover:cursor-pointer'
 											tooltipId="OpenToolTip"
 											tooltipContent=""
-											// clickBehavior={showSideBar}
 										/>
 										Promote
 									  </button>
@@ -314,7 +306,6 @@ const UserDropDown: FC<UserDropDownProps> = ({userRole, userCardRole, userNick, 
 									styles='w-6 h-6 hover:cursor-pointer'
 									tooltipId="OpenToolTip"
 									tooltipContent=""
-									// clickBehavior={showSideBar}
 								/>
 								set As Owner
 								</button>

@@ -26,12 +26,10 @@ const ChannelType: FC<ChannelTypeProps> = ({isOpen, setIsOpen, currentType}) => 
 	const [error, setError] = useState<string>('')
 
 	const handleTypeChange = (type: string) => {
-		// console.log("type is ", type);
 		setType(type);
 	}
 
   function closeModal() {
-    // console.log("closing")
 	setType(currentType)
 	setError('');
     setIsOpen(false)
@@ -40,7 +38,6 @@ const ChannelType: FC<ChannelTypeProps> = ({isOpen, setIsOpen, currentType}) => 
 }
 
 function openModal() {
-    // console.log("opening")
     setIsOpen(true)
 	setPassword('')
 	setConfPassword('')
@@ -163,7 +160,6 @@ function openModal() {
 										<button
 											type="submit"
 											className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-green-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-											// onClick={handleSubmit}
 										>
 										Submit
 										</button>

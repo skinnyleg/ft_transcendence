@@ -55,7 +55,6 @@ const GamePowerUps = ({powerUpSetter}: any) => {
                 <div onClick={() => {handlePower('ExtraTime')}}
                 className={`hover:cursor-pointer w-[22.5%] h-[90%] rounded-[15px] ${power === 'ExtraTime' ? "bg-teal-300" : 'bg-cyan-100'}`}>
                     <Image
-                        // proper
                         className="w-full h-full"
                         src={ExtraTime}
                         alt="extra goal"

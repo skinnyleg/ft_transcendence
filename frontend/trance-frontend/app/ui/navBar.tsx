@@ -24,7 +24,6 @@ function NavBar ({handleShowMenu}: NavBarProps)
 {
   const [show, setShow] = useState(false);
   var currentPath = usePathname();
-  // // console.log('pathname == ', currentPath)
   const router = useRouter();  
 
 
@@ -33,9 +32,6 @@ function NavBar ({handleShowMenu}: NavBarProps)
   const [error, setError] = useState<string | null>(null);
   const [results, setRes] = useState<responseData[]>([]);
   const [showBar, setShowBar] = useState(false); // show search barr
-  // const [profilePic, setProfilePic] = useState('');
-  // const [backgroundPic, setBackgroundPic] = useState('');
-  // const [nickname, setNickname] = useState('');
 
   const searchBackend = async (query: string) => {
     try {
@@ -68,27 +64,6 @@ function NavBar ({handleShowMenu}: NavBarProps)
     }
   }, [search, debouncedSearchBackend]);
 
-//   useEffect(() => {
-//     const getnickname = async () => {
-//       try {
-//         const res = await fetch(`http://localhost:8000/user/Nickname`, {
-//           method: "GET",
-//           credentials: "include",
-//           headers: { "Content-Type": "application/json" },
-//         });
-//         if (res.ok) {
-//           const nickname : profileNickPic = await res.json();
-//           setProfilePic(nickname.profilePic);
-//           setBackgroundPic(nickname.backgroundPic);
-//           setNickname(nickname.nickname);
-//           // console.log("nick:", nickname);
-//         }
-//       } catch (error) {
-//         toast.error('Error fetching data');
-//       }
-//     };
-//     getnickname();
-// });
 const {profilePic, backgroundPic, nickname} = useContext(picturesContext)
 return (
   <div className={`${inter.className}`}>
@@ -170,7 +145,6 @@ return (
             hover:text-accents`, {
           'text-accents'  : currentPath === "/",
           })}>
-            {/* <ArrowLeftOnRectangleIcon className="xl:w-[75%] lg:w-[60%] md:w-[50%] w-[50%]" /> */}
             <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" viewBox="0 0 45 45" fill="none">
               <rect width="45" height="45" rx="10" fill="#05445E"/>
               <path d="M18.75 20.625V15L28.125 22.5L18.75 30V24.375H1.875V20.625H18.75ZM4.60837 28.125H8.59035C10.8155 33.6221 16.2049 37.5 22.5 37.5C30.7843 37.5 37.5 30.7843 37.5 22.5C37.5 14.2157 30.7843 7.5 22.5 7.5C16.2049 7.5 10.8155 11.3778 8.59035 16.875H4.60837C6.99763 9.26792 14.1044 3.75 22.5 3.75C32.8552 3.75 41.25 12.1447 41.25 22.5C41.25 32.8552 32.8552 41.25 22.5 41.25C14.1044 41.25 6.99763 35.7321 4.60837 28.125Z" fill="#a8a29e"/>

@@ -29,12 +29,9 @@ function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // const response = await axios.get('${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/Dashboard', { withCredentials: true});
         const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/Dashboard`, { withCredentials: true});
-        // // console.log("Dash", response.status);
         setDashboardData(response.data);
       } catch (error) {
-        // console.log('error == ', error);
         toast.error('Error fetching data', {
           autoClose: 500
         });
@@ -72,7 +69,6 @@ function Dashboard() {
           
           <FriendsList />
 
-          {/* <PowerUps handlePowerUpChange={handlePowerUpChange}/> */}
           <GamePowerUps powerUpSetter={handlePowerUp}/>
         </div>
       </div>

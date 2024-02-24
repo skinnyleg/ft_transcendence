@@ -5,10 +5,6 @@ import { LeaderboardData } from '../interfaces/interfaces'
 import Leaderboard from '../ui/Leaderboard'
 
 
-
-
-
-
 interface LeaderboardProps {}
 
 const LeaderboardPage: FC<LeaderboardProps> = () => {
@@ -31,7 +27,6 @@ const LeaderboardPage: FC<LeaderboardProps> = () => {
 		}
 		catch (error)
 		{
-			// console.log("error1 == ", error);
 		}
 		return data;
 	}

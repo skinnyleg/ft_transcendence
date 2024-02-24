@@ -22,9 +22,6 @@ const ChatTypeBar: FC<ChatTypeBarProps> = () => {
 		const sendMessage = () => {
 			if (message.trim().length)
 			{
-
-				// console.log('message == ', message.trim().length)
-				// // console.log('channelId == ', channelId)
 				chatSocket.emit('sendMsgCH', {
 					content: message,
 					channelName: channelId,
@@ -54,15 +51,11 @@ const ChatTypeBar: FC<ChatTypeBarProps> = () => {
 			}
 			else
 			{
-				// setIsDisabled(true);
 				setBarValue('Your Request Has Been Sent')
 			}
 			chatSocket.emit('joinChannel', {
 				channelName: channelId
 			})
-			// chatSocket.on('failed' , (data: string) => {
-			// 	setBarValue(data);
-			// })
 			setSearchInputCh('')
 
 			
@@ -88,7 +81,6 @@ const ChatTypeBar: FC<ChatTypeBarProps> = () => {
 								styles='w-8 h-8 focus:ring-0 outline-none'
 								tooltipId="SendToolTip"
 								tooltipContent='Send Message'
-								// clickBehavior={sendMessage}
 							/>
 						</div>
 					</div>

@@ -10,8 +10,6 @@ WORKDIR /home/backend
 
 RUN chmod +x script.sh
 
-# RUN npm update
-
 RUN npm i
 
 CMD [ "./script.sh" ]

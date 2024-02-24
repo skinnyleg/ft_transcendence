@@ -55,9 +55,7 @@ const CreateChannel: FC<CreateChannelProps> = () => {
 				const formData = new FormData();
 				formData.append("file", imgData);
 				try {
-					const url = process.env.NEXT_PUBLIC_BACKEND_HOST;
-					// console.log('url == ', url);
-	
+					const url = process.env.NEXT_PUBLIC_BACKEND_HOST;	
 					const results = await fetch(`${url}/upload/ChannelPic`, {
 						credentials: 'include',
 						method: 'POST',
@@ -66,21 +64,12 @@ const CreateChannel: FC<CreateChannelProps> = () => {
 						},
 						body: formData,
 					})
-					if (results) {
-					}
-					else {
-						// console.log("error")
-					}
 				}
 				catch (error : any) {
-					// console.log("error from catch == ", error)
 				}
 			}
 			if (personalId === '')
-			{
-				// // console.log('personalId === ', personalId)
 				setChannelId(channelName);
-			}
 		})
 		closeModal();
 	}

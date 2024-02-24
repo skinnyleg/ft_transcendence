@@ -8,7 +8,6 @@ const PowerUps = ({handlePowerUpChange}: PowerUpsProps) => {
 
   const [powerup, setPowerup] = useState('');
   const powerupshandle = (newPowerup : string) => {
-    // // console.log(newPowerup);
     setPowerup(newPowerup);
     handlePowerUpChange(newPowerup);
   }
@@ -21,8 +20,6 @@ const PowerUps = ({handlePowerUpChange}: PowerUpsProps) => {
         <Swiper
           slidesPerView={4}
           pagination={{ clickable: true }}
-          // onSlideChange={() => // console.log('slide change')}
-          // onSwiper={(swiper) => // console.log(swiper)}
           width={1000}
           >
           {['/52.jpg', '/yo.jpg', '/yo1.jpg', '/42.jpg', '/yo1.jpg', '/yo.jpg'].map((image, index) => (
