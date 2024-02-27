@@ -15,7 +15,7 @@ export const viewport = {
 export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
-    <div className="flex bg-main flex-col md:flex-row h-screen overflow-y-auto styled-scrollbar">
+    <div className="flex bg-[#D4F1F4] flex-col md:flex-row h-screen overflow-y-auto styled-scrollbar">
       <LayoutClinet>
         <ContextFriendProvider>
           {children}

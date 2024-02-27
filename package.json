@@ -1,0 +1,16 @@
+{
+  "name": "your-project-name",
+  "version": "1.0.0",
+  "description": "Description of your project",
+  "main": "index.js",
+  "scripts": {
+    "start:all": "npm run start:prisma & npm run start:backend & npm run start:frontend",
+    "start:backend": "cd backend/trance-backend && npm run start:dev",
+    "start:prisma": "cd backend/trance-backend && npx prisma migrate dev --name test && npx prisma studio",
+    "start:frontend": "cd frontend/trance-frontend && npm run dev"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+  }
+}

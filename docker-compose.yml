@@ -4,39 +4,41 @@ services:
     image: postgres:13
     restart: always
     container_name: tranceDB
+    ports:
+      - "5432:5432"
     env_file:
       - ./.env
     networks:
       - mynetwork
 
 
-  backend:
-    image: backend
-    build: ./backend
-    container_name: backend
-    env_file:
-      - ./backend/trance-backend/.env
-    ports:
-      - "8000:8000"
-    restart: always
-    networks:
-      - mynetwork
-    depends_on:
-      - postgres
+  # backend:
+  #   image: backend
+  #   build: ./backend
+  #   container_name: backend
+  #   env_file:
+  #     - ./backend/trance-backend/.env
+  #   ports:
+  #     - "8000:8000"
+  #   restart: always
+  #   networks:
+  #     - mynetwork
+  #   depends_on:
+  #     - postgres
 
-  frontend:
-    image: frontend
-    build: ./frontend
-    container_name: frontend
-    env_file:
-      - ./frontend/trance-frontend/.env
-    ports:
-      - "3000:3000"
-    restart: always
-    networks:
-      - mynetwork
-    depends_on:
-      - backend
+  # frontend:
+  #   image: frontend
+  #   build: ./frontend
+  #   container_name: frontend
+  #   env_file:
+  #     - ./frontend/trance-frontend/.env
+  #   ports:
+  #     - "3000:3000"
+  #   restart: always
+  #   networks:
+  #     - mynetwork
+  #   depends_on:
+  #     - backend
 
 
 

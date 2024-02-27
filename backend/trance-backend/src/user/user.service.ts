@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotAcceptableException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotAcceptableException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { authenticator } from 'otplib';
 import { AchievementStatus, RequestType, Status, User, UserStatus } from '@prisma/client';
@@ -1513,7 +1513,7 @@ export class UserService {
 		return users;
   }
 
-	async enable2FA(id: string, login: string)
+	async enable2FA(id: string, QrCode: string)
 	{
 		const isEnabled = await this.prisma.user.findUnique({
 			where: {
@@ -1525,6 +1525,14 @@ export class UserService {
 		})
 		if (isEnabled.isEnabled == true)
 			throw new ConflictException('2FA already enabled')
+		const secret = await this.getSecret(id);
+		if (!secret)
+			throw new ConflictException('user hasn\'t enabled 2FA')
+
+		console.log('QrCode === ', QrCode);
+		const isValid = authenticator.check(QrCode, secret);
+		if (!isValid)
+			throw new UnauthorizedException('Wrong QrCode')
 
 		await this.prisma.user.update({
 			where: {
@@ -1602,15 +1610,15 @@ export class UserService {
 		})
 	}
 
-	async TwoFA(id: string, Enabled: boolean)
+	async TwoFA(id: string, Enabled: boolean, QrCode: string)
 	{
 		const user = await this.findOneById(id);
 		if (!user)
 			throw new NotFoundException('user not found')
-
+		console.log('enabled == ', Enabled);
 		if (Enabled == true)
 		{
-			await this.enable2FA(id, user.nickname)
+			await this.enable2FA(id, QrCode)
 			return {valid:true}
 		}
 		await this.disable2FA(id)

@@ -45,7 +45,7 @@ export class UserController {
 	@Post('2FA')
 	handleTwoFA(@Body() payload: Enable2FADto, @Req() req) {
 		const id = getId(req);
-		return this.userService.TwoFA(id, payload.Enabled)
+		return this.userService.TwoFA(id, payload.Enabled, payload.QrCode)
 	}
 
 

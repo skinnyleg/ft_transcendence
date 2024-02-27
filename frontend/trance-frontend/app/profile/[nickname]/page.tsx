@@ -12,6 +12,7 @@ import { ContextFriendProvider } from "@/app/context/profileContext";
 import { socketContext } from "@/app/context/soketContext";
 import { MatchInfo } from "@/app/game/types/interfaces";
 import axios from "axios";
+import { picturesContext } from "@/app/context/profilePicContext";
 
 
 const Profile = () => {
@@ -24,12 +25,15 @@ const Profile = () => {
     const [notAchievements, setNotAchievements] = useState<Achievements[]>([])
     const pathname = usePathname();
     const socket = useContext(socketContext);
-    let nickname : string = pathname.split("/")[2];
+    const [userNickname, setUserNickname] = useState<string | undefined>('');
+    const [userProfilePic, setUserProfilePic] = useState<string | undefined>('');
+    const [userBackPic, setUserBackPic] = useState<string | undefined>('');
+    let nicknameUrl : string = pathname.split("/")[2];
 
     useEffect(() => {
         const getProfileData = async () => {
             try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/profile/${nickname}`, {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/user/profile/${nicknameUrl}`, {
                     method: "GET",
                     credentials: "include",
                     headers: { "Content-Type": "application/json" },
@@ -46,7 +50,9 @@ const Profile = () => {
         getProfileData();
         setIsFriend(profileData?.isfriend);
         setisprivateProfile(profileData?.privateProfile);
-
+        // setUserNickname(profileData?.userData.nickname);
+        // setUserProfilePic(profileData?.userData.profilePic);
+        // setUserBackPic(profileData?.userData.BackgroundPic);
     }, []);
 
 
@@ -89,6 +95,9 @@ const Profile = () => {
         };
         getAchievements();
         getMatchHistory();
+        setUserNickname(profileData?.userData.nickname);
+        setUserProfilePic(profileData?.userData.profilePic);
+        setUserBackPic(profileData?.userData.BackgroundPic);
     }, [profileData])
 
     var level : number = profileData?.userData?.level;
@@ -116,27 +125,39 @@ const Profile = () => {
     }
 
     return (
-    <main className="flex flex-col h-screen">
+    <main className="flex flex-col h-screen  ">
         <TopBar />
-        <div className="flex flex-col h-screen xl:mt-15 mt-20 lg:mt-5">
+        <div className="flex flex-col h-full xl:mt-15 mt-20 lg:mt-5 bg-[#D4F1F4]">
         <div className="grid grid-cols-4 xl:gap-5 gap-3 w-full h-[90%] md:grid-row-6 grid-row-6 ">
             <div className="relative col-start-1 col-end-5 xl:h-[22vh] lg:h-[22vh] md:h-[200px] h-[200px] row-start-1 row-end-2 w-full shadow-md rounded-xl">
                 <div className="flex relative flex-col text-4xl text-white text-bold-900 rounded-xl xl:h-[100%] lg:h-[100%] md:h-[200px] h-[200px]">
-                    <img src={profileData?.userData.BackgroundPic} className="w-full rounded-md h-full object-cover" alt="background Image"></img>
+                    <img src={userBackPic} className="w-full rounded-md h-full object-cover" alt="background Image"></img>
                 </div>
                 <div  className="rounded-full lg:w-[100px] md:w-[90px] w-[80px] xl:h-[150px] xl:w-[150px] absolute bottom-0 left-0 transform  xl:translate-x-[8px] xl:translate-y-[55px] translate-x-[8px] translate-y-[30px] border-2 max-w-[90px] max-h-[90px] min-w-[90px] min-h-[90px]">
-                    <img src={profileData?.userData.profilePic} alt="profile Picture" className="lg:w-[100px] md:w-[90px] w-[80px] xl:h-[150px] xl:w-[150px] rounded-full max-w-[90px] max-h-[90px] min-w-[90px] min-h-[90px]" />
+                    <img src={userProfilePic} alt="profile Picture" className="lg:w-[100px] md:w-[90px] w-[80px] xl:h-[150px] xl:w-[150px] rounded-full max-w-[90px] max-h-[90px] min-w-[90px] min-h-[90px]" />
                 </div>
                 <div className="absolute bottom-[-10] left-24">
-                    <h2 className=" text-black text-2xl left-10 inline-block pl-3">{profileData?.userData.nickname}</h2>
+                    <h2 className=" text-black text-2xl left-10 inline-block pl-3">{userNickname}</h2>
                 </div>
             </div>
             <div className="bg-lightblue lg:col-start-2 lg:col-end-4 lg:row-start-2 lg:mt-0 mt-2 md:mt-4 lg:row-end-3 col-start-1 col-end-4 row-start-3 row-end-4
             h-[30px] xl:h-[40px] rounded-2xl lg:w-[100%] md:w-[100%] w-[90%] flex shadow-md">
                 <ProgressBar level={level} />
             </div>
-            <div className="relative col-start-4 mx-auto col-end-5 mt-2 md:mt-4  bg-accents rounded-2xl lg:mt-0 lg:row-start-2 h-[30px] xl:h-[40px] lg:row-end-3 row-start-3 row-end-4 flex w-[100%] lg:w-[70%] xl:w-[70%]">
-                <Conditional isfriend={isfriend} privateProfile = {profileData?.privateProfile} isBlocked = {isblocked} userId= {profileData?.userData?.id}/>
+            <div className="relative col-start-4 mx-auto col-end-5 mt-2 md:mt-4  rounded-2xl lg:mt-0 lg:row-start-2 h-[30px] xl:h-[40px] lg:row-end-3 row-start-3 row-end-4 flex w-[100%] lg:w-[70%] xl:w-[70%]">
+                <Conditional
+                    isfriend={isfriend}
+                    privateProfile = {profileData?.privateProfile}
+                    isBlocked = {isblocked}
+                    userId= {profileData?.userData?.id}
+                    profileData={profileData}
+                    userNickname={userNickname}
+                    userProfilePic={userProfilePic}
+                    userBackPic={userBackPic}
+                    setUserNickname={setUserNickname}
+                    setUserProfilePic={setUserProfilePic}
+                    setUserBackPic={setUserBackPic}
+                />
             </div>
             <div className="col-span-4 lg:row-start-3 lg:row-end-4 row-start-4 row-end-5 flex flex-col md:flex-row justify-evenly  gap-2 items-center  w-full xl:h-[150px] lg:h-[150px] md:h-[12vh] h-[500px] rounded-3xl">
                 <div className="w-full md:w-1/4 h-[40%] md:h-[90%] bg-cyan-600 rounded-3xl flex flex-row justify-between items-center p-2 gap-2 ">
