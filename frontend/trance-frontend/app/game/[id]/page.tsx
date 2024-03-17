@@ -59,15 +59,12 @@ function Game() {
             gameSocket.off('redirToDash');
         };
     },[gameSocket]);
-<<<<<<< HEAD
     
 
 
     useEffect(() => {
         gameSocket.emit('GameExist', {roomId: gameId})
     }, [gameId])
-=======
->>>>>>> main
 
     return (
         <main className="main flex bg-cyan-900 justify-center items-center h-screen w-screen">
